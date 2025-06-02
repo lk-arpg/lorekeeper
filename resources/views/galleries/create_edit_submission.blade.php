@@ -14,7 +14,7 @@
     <h1>
         {{ $submission->id ? 'Edit Submission (#' . $submission->id . ', "' . $submission->displayTitle . '")' : 'Submit to ' . $gallery->name }}
         @if ($submission->id)
-            <div class="float-right">
+            <div class="float-end">
                 @if ($submission->status == 'Accepted')
                     <a href="#" class="btn btn-warning archive-submission-button">{{ $submission->isVisible ? 'Archive' : 'Unarchive' }}</a>
                 @endif
@@ -37,7 +37,7 @@
         <h2>Main Content</h2>
         <p>Upload an image and/or text as the content of your submission. You <strong>can</strong> upload both in the event that you have an image with accompanying text or vice versa.</p>
 
-        <div class="form-group" id="imageForm">
+        <div class="mb-3" id="imageForm">
             {!! Form::label('image', 'Image Upload', ['class' => 'h5']) !!}
             @if ($submission->id && isset($submission->hash) && $submission->hash)
                 <div class="card mb-2" id="existingImage">
@@ -60,10 +60,10 @@
             </div>
         </div>
 
-        <div class="form-group">
+        <div class="mb-3">
             {!! Form::label('text', 'Writing / Text', ['class' => 'h5']) !!} {!! add_help('If you have a text submission, you can paste it here. You can also use the WYSIWYG editor to format your text. If you have an image submission, you can leave this blank or add a text to supplement your image submission.') !!}
             @if (config('lorekeeper.settings.hide_textarea_on_gallery_submissions.enable'))
-                <a href="#writingForm" id="writingFormCollapseBtn" class="mx-2 mb-2 btn btn-sm btn-primary" data-toggle="collapse" aria-expanded="false">Hide Textarea</a>
+                <a href="#writingForm" id="writingFormCollapseBtn" class="mx-2 mb-2 btn btn-sm btn-primary" data-bs-toggle="collapse" aria-expanded="false">Hide Textarea</a>
             @endif
             <div id="writingForm" class="collapse show">
                 {!! Form::textarea('text', $submission->text ?? old('text'), ['class' => 'form-control wysiwyg']) !!}
@@ -73,17 +73,17 @@
         <div class="row">
             <div class="col-md">
                 <h3>Basic Information</h3>
-                <div class="form-group">
+                <div class="mb-3">
                     {!! Form::label('title', 'Title', ['class' => 'h5']) !!} {!! add_help('You <strong>do not</strong> need to indicate that a piece is a trade, gift, for a prompt etc. as this will be automatically added based on your input elsewhere in this form.') !!}
                     {!! Form::text('title', $submission->title ?? old('title'), ['class' => 'form-control']) !!}
                 </div>
 
-                <div class="form-group">
+                <div class="mb-3">
                     {!! Form::label('description', 'Description (Optional)', ['class' => 'h5']) !!}
                     {!! Form::textarea('description', $submission->description ?? old('description'), ['class' => 'form-control wysiwyg']) !!}
                 </div>
 
-                <div class="form-group">
+                <div class="mb-3">
                     {!! Form::label('content_warning', 'Content Warning (Optional)', ['class' => 'h5']) !!} {!! add_help(
                         'Provide a succinct content warning for the piece if necessary. If a content warning is provided, the thumbnail will be replaced with a generic image and the warning displayed under it. The piece will be displayed in full on its page, however.',
                     ) !!}
@@ -91,7 +91,7 @@
                 </div>
 
                 @if ($gallery->prompt_selection == 1 && (!$submission->id || Auth::user()->hasPower('manage_submissions')))
-                    <div class="form-group">
+                    <div class="mb-3">
                         {!! Form::label('prompt_id', ($submission->id && Auth::user()->hasPower('manage_submissions') ? '[Admin] ' : '') . 'Prompt (Optional)') !!} {!! add_help(
                             'This <strong>does not</strong> automatically submit to the selected prompt, and you will need to submit to it separately. The prompt selected here will be displayed on the submission page for future reference. You will not be able to edit this after creating the submission.',
                         ) !!}
@@ -102,7 +102,7 @@
                 @endif
 
                 @if ($submission->id && Auth::user()->hasPower('manage_submissions'))
-                    <div class="form-group">
+                    <div class="mb-3">
                         {!! Form::label('gallery_id', '[Admin] Gallery / Move Submission') !!} {!! add_help(
                             'Use in the event you need to move a submission between galleries. If left blank, leaves the submission in its current location. Note that if currency rewards from submissions are enabled, this won\'t retroactively fill out the form if moved from a gallery where they are disabled to one where they are enabled.',
                         ) !!}
@@ -133,7 +133,7 @@
                         @endforeach
                     @endif
                 </div>
-                <div class="text-right mb-3">
+                <div class="text-end mb-3">
                     <a href="#" class="btn btn-outline-info" id="addCharacter">Add Character</a>
                 </div>
             </div>
@@ -147,17 +147,17 @@
                             <p>If this piece is a collaboration, add collaborators and their roles here, including yourself. <strong>Otherwise, leave this blank</strong>. You <strong>will not</strong> be able to edit this once the submission has been
                                 accepted, but will while it is still pending.</p>
                             @if (!$submission->id || $submission->status == 'Pending')
-                                <div class="text-right mb-3">
+                                <div class="text-end mb-3">
                                     <a href="#" class="btn btn-outline-info" id="add-collaborator">Add Collaborator</a>
                                 </div>
                                 <div id="collaboratorList">
                                     @if ($submission->id)
                                         @foreach ($submission->collaborators as $collaborator)
                                             <div class="mb-2">
-                                                <div class="d-flex">{!! $collaborator->has_approved ? '<div class="btn btn-success mb-2 mr-2" data-toggle="tooltip" title="Has Approved"><i class="fas fa-check"></i></div>' : '' !!}{!! Form::select('collaborator_id[]', $users, $collaborator->user_id, ['class' => 'form-control mr-2 collaborator-select original', 'placeholder' => 'Select User']) !!}</div>
+                                                <div class="d-flex">{!! $collaborator->has_approved ? '<div class="btn btn-success mb-2 me-2" data-bs-toggle="tooltip" title="Has Approved"><i class="fas fa-check"></i></div>' : '' !!}{!! Form::select('collaborator_id[]', $users, $collaborator->user_id, ['class' => 'form-control me-2 collaborator-select original', 'placeholder' => 'Select User']) !!}</div>
                                                 <div class="d-flex">
-                                                    {!! Form::text('collaborator_data[]', $collaborator->data, ['class' => 'form-control mr-2', 'placeholder' => 'Role (Sketch, Lines, etc.)']) !!}
-                                                    <a href="#" class="remove-collaborator btn btn-danger mb-2">×</a>
+                                                    {!! Form::text('collaborator_data[]', $collaborator->data, ['class' => 'form-control me-2', 'placeholder' => 'Role (Sketch, Lines, etc.)']) !!}
+                                                    <a href="#" class="remove-collaborator btn btn-danger mb-2">�</a>
                                                 </div>
                                             </div>
                                         @endforeach
@@ -165,10 +165,10 @@
                                     @if (old('collaborator_id'))
                                         @foreach (old('collaborator_id') as $key => $collaborator)
                                             <div class="mb-2">
-                                                <div class="d-flex">{!! Form::select('collaborator_id[]', $users, $collaborator, ['class' => 'form-control mr-2 collaborator-select original', 'placeholder' => 'Select User']) !!}</div>
+                                                <div class="d-flex">{!! Form::select('collaborator_id[]', $users, $collaborator, ['class' => 'form-control me-2 collaborator-select original', 'placeholder' => 'Select User']) !!}</div>
                                                 <div class="d-flex">
-                                                    {!! Form::text('collaborator_data[]', old('collaborator_data')[$key], ['class' => 'form-control mr-2', 'placeholder' => 'Role (Sketch, Lines, etc.)']) !!}
-                                                    <a href="#" class="remove-collaborator btn btn-danger mb-2">×</a>
+                                                    {!! Form::text('collaborator_data[]', old('collaborator_data')[$key], ['class' => 'form-control me-2', 'placeholder' => 'Role (Sketch, Lines, etc.)']) !!}
+                                                    <a href="#" class="remove-collaborator btn btn-danger mb-2">�</a>
                                                 </div>
                                             </div>
                                         @endforeach
@@ -193,20 +193,20 @@
                             <p>If this piece is gift, part of a trade, or was commissioned, specify the related user(s) here and select their role. <strong>Otherwise, leave this blank</strong>. You <strong>will not</strong> be able to edit this once the
                                 submission has been accepted, but will while it is still pending.</p>
                             @if (!$submission->id || $submission->status == 'Pending')
-                                <div class="text-right mb-3">
+                                <div class="text-end mb-3">
                                     <a href="#" class="btn btn-outline-info" id="add-participant">Add Participant</a>
                                 </div>
                                 <div id="participantList">
                                     @if ($submission->id)
                                         @foreach ($submission->participants as $participant)
                                             <div class="mb-2">
-                                                <div class="d-flex">{!! Form::select('participant_id[]', $users, $participant->user_id, ['class' => 'form-control mr-2 participant-select original', 'placeholder' => 'Select User']) !!}</div>
+                                                <div class="d-flex">{!! Form::select('participant_id[]', $users, $participant->user_id, ['class' => 'form-control me-2 participant-select original', 'placeholder' => 'Select User']) !!}</div>
                                                 <div class="d-flex">
                                                     {!! Form::select('participant_type[]', ['Gift' => 'Gift For', 'Trade' => 'Traded For', 'Comm' => 'Commissioned', 'Comm (Currency)' => 'Commissioned (' . $currency->name . ')'], $participant->type, [
-                                                        'class' => 'form-control mr-2',
+                                                        'class' => 'form-control me-2',
                                                         'placeholder' => 'Select Role',
                                                     ]) !!}
-                                                    <a href="#" class="remove-participant btn btn-danger mb-2">×</a>
+                                                    <a href="#" class="remove-participant btn btn-danger mb-2">�</a>
                                                 </div>
                                             </div>
                                         @endforeach
@@ -214,13 +214,13 @@
                                     @if (old('participant_id'))
                                         @foreach (old('participant_id') as $key => $participant)
                                             <div class="mb-2">
-                                                <div class="d-flex">{!! Form::select('participant_id[]', $users, $participant, ['class' => 'form-control mr-2 participant-select original', 'placeholder' => 'Select User']) !!}</div>
+                                                <div class="d-flex">{!! Form::select('participant_id[]', $users, $participant, ['class' => 'form-control me-2 participant-select original', 'placeholder' => 'Select User']) !!}</div>
                                                 <div class="d-flex">
                                                     {!! Form::select('participant_type[]', ['Gift' => 'Gift For', 'Trade' => 'Traded For', 'Comm' => 'Commissioned', 'Comm (Currency)' => 'Commissioned (' . $currency->name . ')'], old('participant_type')[$key], [
-                                                        'class' => 'form-control mr-2',
+                                                        'class' => 'form-control me-2',
                                                         'placeholder' => 'Select Role',
                                                     ]) !!}
-                                                    <a href="#" class="remove-participant btn btn-danger mb-2">×</a>
+                                                    <a href="#" class="remove-participant btn btn-danger mb-2">�</a>
                                                 </div>
                                             </div>
                                         @endforeach
@@ -247,22 +247,22 @@
                                     submission.</p>
 
                                 @foreach (config('lorekeeper.group_currency_form') as $key => $field)
-                                    <div class="form-group">
+                                    <div class="mb-3">
                                         @if ($field['type'] == 'checkbox')
-                                            <input class="form-check-input ml-0 pr-4" name="{{ $key }}" type="checkbox" value="{{ isset($field['value']) ? $field['value'] : 1 }}">
+                                            <input class="form-check-input ms-0 pe-4" name="{{ $key }}" type="checkbox" value="{{ isset($field['value']) ? $field['value'] : 1 }}">
                                         @endif
                                         @if (isset($field['label']))
                                             {!! Form::label(isset($field['multiple']) && $field['multiple'] ? $key . '[]' : $key, $field['label'], [
-                                                'class' => 'label-class' . ($field['type'] == 'checkbox' ? ' ml-3' : '') . (isset($field['rules']) && $field['rules'] ? ' ' . $field['rules'] : ''),
+                                                'class' => 'label-class' . ($field['type'] == 'checkbox' ? ' ms-3' : '') . (isset($field['rules']) && $field['rules'] ? ' ' . $field['rules'] : ''),
                                             ]) !!}
                                         @endif
                                         @if ($field['type'] == 'choice' && isset($field['choices']))
                                             @foreach ($field['choices'] as $value => $choice)
                                                 <div class="choice-wrapper">
-                                                    <input class="form-check-input ml-0 pr-4" name="{{ isset($field['multiple']) && $field['multiple'] ? $key . '[]' : $key }}"
+                                                    <input class="form-check-input ms-0 pe-4" name="{{ isset($field['multiple']) && $field['multiple'] ? $key . '[]' : $key }}"
                                                         id="{{ isset($field['multiple']) && $field['multiple'] ? $key . '[]' : $key . '_' . $value }}" type="{{ isset($field['multiple']) && $field['multiple'] ? 'checkbox' : 'radio' }}"
                                                         value="{{ $value }}">
-                                                    <label for="{{ $key }}[]" class="label-class ml-3">{{ $choice }}</label>
+                                                    <label for="{{ $key }}[]" class="label-class ms-3">{{ $choice }}</label>
                                                 </div>
                                             @endforeach
                                         @elseif($field['type'] != 'checkbox')
@@ -278,33 +278,33 @@
         </div>
 
         @if ($submission->id && Auth::user()->id != $submission->user->id && Auth::user()->hasPower('manage_submissions'))
-            <div class="form-group">
+            <div class="mb-3">
                 {!! Form::checkbox('alert_user', 1, true, ['class' => 'form-check-input', 'data-toggle' => 'toggle', 'data-onstyle' => 'danger']) !!}
-                {!! Form::label('alert_user', 'Notify User', ['class' => 'form-check-label ml-3']) !!} {!! add_help('This will send a notification to the user that either their submission has been edited or moved. It does not send both notifications, preferring the move notification if relevant.') !!}
+                {!! Form::label('alert_user', 'Notify User', ['class' => 'form-check-label ms-3']) !!} {!! add_help('This will send a notification to the user that either their submission has been edited or moved. It does not send both notifications, preferring the move notification if relevant.') !!}
             </div>
         @endif
 
-        <div class="text-right">
+        <div class="text-end">
             <a href="#" class="btn btn-primary" id="submitButton">Submit</a>
         </div>
         {!! Form::close() !!}
 
         @include('galleries._character_select')
         <div class="collaborator-row hide mb-2">
-            {!! Form::select('collaborator_id[]', $users, null, ['class' => 'form-control mr-2 collaborator-select', 'placeholder' => 'Select User']) !!}
+            {!! Form::select('collaborator_id[]', $users, null, ['class' => 'form-control me-2 collaborator-select', 'placeholder' => 'Select User']) !!}
             <div class="d-flex">
-                {!! Form::text('collaborator_data[]', null, ['class' => 'form-control mr-2', 'placeholder' => 'Role (Sketch, Lines, etc.)']) !!}
-                <a href="#" class="remove-collaborator btn btn-danger mb-2">×</a>
+                {!! Form::text('collaborator_data[]', null, ['class' => 'form-control me-2', 'placeholder' => 'Role (Sketch, Lines, etc.)']) !!}
+                <a href="#" class="remove-collaborator btn btn-danger mb-2">�</a>
             </div>
         </div>
         <div class="participant-row hide mb-2">
-            {!! Form::select('participant_id[]', $users, null, ['class' => 'form-control mr-2 participant-select', 'placeholder' => 'Select User']) !!}
+            {!! Form::select('participant_id[]', $users, null, ['class' => 'form-control me-2 participant-select', 'placeholder' => 'Select User']) !!}
             <div class="d-flex">
                 {!! Form::select('participant_type[]', ['Gift' => 'Gift For', 'Trade' => 'Traded For', 'Comm' => 'Commissioned', 'Comm (Currency)' => 'Commissioned (' . $currency->name . ')'], null, [
-                    'class' => 'form-control mr-2',
+                    'class' => 'form-control me-2',
                     'placeholder' => 'Select Role',
                 ]) !!}
-                <a href="#" class="remove-participant btn btn-danger mb-2">×</a>
+                <a href="#" class="remove-participant btn btn-danger mb-2">�</a>
             </div>
         </div>
 
@@ -313,7 +313,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <span class="modal-title h5 mb-0">Confirm Submission</span>
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal">&times;</button>
                     </div>
                     <div class="modal-body">
                         <p>
@@ -325,7 +325,7 @@
                                 submission.{{ $submission->status == 'Pending' ? ' If you have added or removed any collaborators, they will not be informed (so as not to send additional notifications to previously notified collaborators), so please make sure to do so if necessary as all collaborators must approve a submission for it to be submitted for admin approval.' : '' }}
                             @endif
                         </p>
-                        <div class="text-right">
+                        <div class="text-end">
                             <a href="#" id="formSubmit" class="btn btn-primary">Confirm</a>
                         </div>
                     </div>

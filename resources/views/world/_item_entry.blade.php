@@ -1,12 +1,12 @@
 <div class="row world-entry">
     @if ($imageUrl)
-        <div class="col-md-3 world-entry-image"><a href="{{ $imageUrl }}" data-lightbox="entry" data-title="{{ $name }}"><img src="{{ $imageUrl }}" class="world-entry-image" alt="{{ $name }}" /></a></div>
+        <div class="col-md-3 world-entry-image"><a href="{{ $imageUrl }}" data-lightbox="entry" data-bs-title="{{ $name }}"><img src="{{ $imageUrl }}" class="world-entry-image" alt="{{ $name }}" /></a></div>
     @endif
     <div class="{{ $imageUrl ? 'col-md-9' : 'col-12' }}">
         <x-admin-edit title="Item" :object="$item" />
         <h3>
             @if (!$item->is_released)
-                <i class="fas fa-eye-slash mr-1"></i>
+                <i class="fas fa-eye-slash me-1"></i>
             @endif
             {!! $name !!}
             @if (isset($idUrl) && $idUrl)
@@ -69,8 +69,8 @@
             @endif
             {!! $description !!}
             @if (((isset($item->uses) && $item->uses) || (isset($item->source) && $item->source) || $item->shop_stock_count || (isset($item->data['prompts']) && $item->data['prompts'])) && config('lorekeeper.extensions.item_entry_expansion.extra_fields'))
-                <div class="text-right">
-                    <a data-toggle="collapse" href="#item-{{ $item->id }}" class="text-primary">
+                <div class="text-end">
+                    <a data-bs-toggle="collapse" href="#item-{{ $item->id }}" class="text-primary">
                         <strong>Show details...</strong>
                     </a>
                 </div>

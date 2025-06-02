@@ -43,10 +43,10 @@
                             <div class="col-6 col-md-3">
                                 <div class="logs-table-cell">
                                     {!! Form::open(['url' => 'admin/settings/' . $setting->key, 'class' => 'd-flex justify-content-end']) !!}
-                                    <div class="form-group mr-3 mb-3">
+                                    <div class="mb-3 me-3 mb-3">
                                         {!! Form::text('value', $setting->value, ['class' => 'form-control']) !!}
                                     </div>
-                                    <div class="form-group mb-3">
+                                    <div class="mb-3 mb-3">
                                         {!! Form::submit('Edit', ['class' => 'btn btn-primary']) !!}
                                     </div>
                                     {!! Form::close() !!}

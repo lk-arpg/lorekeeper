@@ -1,39 +1,39 @@
 {!! Form::open(['url' => 'admin/character/image/' . $image->id . '/traits']) !!}
-<div class="form-group">
+<div class="mb-3">
     {!! Form::label('Species') !!}
     {!! Form::select('species_id', $specieses, $image->species_id, ['class' => 'form-control', 'id' => 'species']) !!}
 </div>
 
-<div class="form-group" id="subtypes">
+<div class="mb-3" id="subtypes">
     {!! Form::label('Subtypes (Optional)') !!}
     {!! Form::select('subtype_ids[]', $subtypes, $image->subtypes()->pluck('subtype_id')->toArray() ?? [], ['class' => 'form-control', 'id' => 'subtype', 'multiple']) !!}
 </div>
 
-<div class="form-group">
+<div class="mb-3">
     {!! Form::label('Character Rarity') !!}
     {!! Form::select('rarity_id', $rarities, $image->rarity_id, ['class' => 'form-control']) !!}
 </div>
 
-<div class="form-group">
+<div class="mb-3">
     {!! Form::label('Traits') !!}
     <div><a href="#" class="btn btn-primary mb-2" id="add-feature">Add Trait</a></div>
     <div id="featureList">
         @foreach ($image->features as $feature)
             <div class="d-flex mb-2">
-                {!! Form::select('feature_id[]', $features, $feature->feature_id, ['class' => 'form-control mr-2 feature-select original', 'placeholder' => 'Select Trait']) !!}
-                {!! Form::text('feature_data[]', $feature->data, ['class' => 'form-control mr-2', 'placeholder' => 'Extra Info (Optional)']) !!}
-                <a href="#" class="remove-feature btn btn-danger mb-2">×</a>
+                {!! Form::select('feature_id[]', $features, $feature->feature_id, ['class' => 'form-control me-2 feature-select original', 'placeholder' => 'Select Trait']) !!}
+                {!! Form::text('feature_data[]', $feature->data, ['class' => 'form-control me-2', 'placeholder' => 'Extra Info (Optional)']) !!}
+                <a href="#" class="remove-feature btn btn-danger mb-2">�</a>
             </div>
         @endforeach
     </div>
     <div class="feature-row hide mb-2">
-        {!! Form::select('feature_id[]', $features, null, ['class' => 'form-control mr-2 feature-select', 'placeholder' => 'Select Trait']) !!}
-        {!! Form::text('feature_data[]', null, ['class' => 'form-control mr-2', 'placeholder' => 'Extra Info (Optional)']) !!}
-        <a href="#" class="remove-feature btn btn-danger mb-2">×</a>
+        {!! Form::select('feature_id[]', $features, null, ['class' => 'form-control me-2 feature-select', 'placeholder' => 'Select Trait']) !!}
+        {!! Form::text('feature_data[]', null, ['class' => 'form-control me-2', 'placeholder' => 'Extra Info (Optional)']) !!}
+        <a href="#" class="remove-feature btn btn-danger mb-2">�</a>
     </div>
 </div>
 
-<div class="text-right">
+<div class="text-end">
     {!! Form::submit('Edit', ['class' => 'btn btn-primary']) !!}
 </div>
 {!! Form::close() !!}

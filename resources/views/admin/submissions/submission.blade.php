@@ -15,7 +15,7 @@
 
         <h1>
             {{ $submission->prompt_id ? 'Submission' : 'Claim' }} (#{{ $submission->id }})
-            <span class="float-right badge badge-{{ $submission->status == 'Pending' || $submission->status == 'Draft' ? 'secondary' : ($submission->status == 'Approved' ? 'success' : 'danger') }}">
+            <span class="float-end badge badge-{{ $submission->status == 'Pending' || $submission->status == 'Draft' ? 'secondary' : ($submission->status == 'Approved' ? 'success' : 'danger') }}">
                 {{ $submission->status }}
             </span>
         </h1>
@@ -48,7 +48,7 @@
                 <div class="col-md-10 col-8"><a href="{{ $submission->url }}">{{ $submission->url }}</a></div>
             </div>
             @if (config('lorekeeper.settings.allow_gallery_submissions_on_prompts') && $submission->data['gallery_submission_id'])
-                <div class="row mb-2 no-gutters">
+                <div class="row mb-2 g-0">
                     <div class="col-md-2">
                         <h5 class="mb-0">Gallery Submission</h5>
                     </div>
@@ -100,7 +100,7 @@
                 @include('widgets._character_select_entry', ['characterCurrencies' => $characterCurrencies, 'items' => $items, 'tables' => $tables, 'character' => $character, 'expanded_rewards' => $expanded_rewards])
             @endforeach
         </div>
-        <div class="text-right mb-3">
+        <div class="text-end mb-3">
             <a href="#" class="btn btn-outline-info" id="addCharacter">Add Character</a>
         </div>
 
@@ -152,14 +152,14 @@
             </table>
         @endif
 
-        <div class="form-group">
+        <div class="mb-3">
             {!! Form::label('staff_comments', 'Staff Comments (Optional)') !!}
             {!! Form::textarea('staff_comments', $submission->staffComments, ['class' => 'form-control wysiwyg']) !!}
         </div>
 
-        <div class="text-right">
-            <a href="#" class="btn btn-danger mr-2" id="rejectionButton">Reject</a>
-            <a href="#" class="btn btn-secondary mr-2" id="cancelButton">Cancel</a>
+        <div class="text-end">
+            <a href="#" class="btn btn-danger me-2" id="rejectionButton">Reject</a>
+            <a href="#" class="btn btn-secondary me-2" id="cancelButton">Cancel</a>
             <a href="#" class="btn btn-success" id="approvalButton">Approve</a>
         </div>
 
@@ -168,7 +168,7 @@
         <div id="characterComponents" class="hide">
             <div class="submission-character mb-3 card">
                 <div class="card-body">
-                    <div class="text-right"><a href="#" class="remove-character text-muted"><i class="fas fa-times"></i></a></div>
+                    <div class="text-end"><a href="#" class="remove-character text-muted"><i class="fas fa-times"></i></a></div>
                     <div class="row">
                         <div class="col-md-2 align-items-stretch d-flex">
                             <div class="d-flex text-center align-items-center">
@@ -177,7 +177,7 @@
                             </div>
                         </div>
                         <div class="col-md-10">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 {!! Form::label('slug', 'Character Code') !!}
                                 {!! Form::select('slug[]', $characters, null, ['class' => 'form-control character-code', 'placeholder' => 'Select Character']) !!}
                             </div>
@@ -198,7 +198,7 @@
                                     <tbody class="character-rewards">
                                     </tbody>
                                 </table>
-                                <div class="text-right">
+                                <div class="text-end">
                                     <a href="#" class="btn btn-outline-primary btn-sm add-reward">Add Reward</a>
                                 </div>
                             </div>
@@ -226,7 +226,7 @@
                     @endif
 
                     <td class="d-flex align-items-center">
-                        {!! Form::text('character_quantity[]', 0, ['class' => 'form-control mr-2  character-rewardable-quantity']) !!}
+                        {!! Form::text('character_quantity[]', 0, ['class' => 'form-control me-2  character-rewardable-quantity']) !!}
                         <a href="#" class="remove-reward d-block"><i class="fas fa-times text-muted"></i></a>
                     </td>
                 </tr>
@@ -239,11 +239,11 @@
                 <div class="modal-content hide" id="approvalContent">
                     <div class="modal-header">
                         <span class="modal-title h5 mb-0">Confirm Approval</span>
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal">&times;</button>
                     </div>
                     <div class="modal-body">
                         <p>This will approve the {{ $submission->prompt_id ? 'submission' : 'claim' }} and distribute the above rewards to the user.</p>
-                        <div class="text-right">
+                        <div class="text-end">
                             <a href="#" id="approvalSubmit" class="btn btn-success">Approve</a>
                         </div>
                     </div>
@@ -251,11 +251,11 @@
                 <div class="modal-content hide" id="cancelContent">
                     <div class="modal-header">
                         <span class="modal-title h5 mb-0">Confirm Cancellation</span>
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal">&times;</button>
                     </div>
                     <div class="modal-body">
                         <p>This will cancel the {{ $submission->prompt_id ? 'submission' : 'claim' }} and send it back to drafts. Make sure to include a staff comment if you do this!</p>
-                        <div class="text-right">
+                        <div class="text-end">
                             <a href="#" id="cancelSubmit" class="btn btn-secondary">Cancel</a>
                         </div>
                     </div>
@@ -263,11 +263,11 @@
                 <div class="modal-content hide" id="rejectionContent">
                     <div class="modal-header">
                         <span class="modal-title h5 mb-0">Confirm Rejection</span>
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal">&times;</button>
                     </div>
                     <div class="modal-body">
                         <p>This will reject the {{ $submission->prompt_id ? 'submission' : 'claim' }}.</p>
-                        <div class="text-right">
+                        <div class="text-end">
                             <a href="#" id="rejectionSubmit" class="btn btn-danger">Reject</a>
                         </div>
                     </div>

@@ -27,11 +27,11 @@
     <p>Banning the user will remove their rank, cancel all of their queued submissions and transfers, and prevent them from using any other site features. The ban reason will be displayed on the blacklist.</p>
 
     {!! Form::open(['url' => 'admin/users/' . $user->name . '/ban', 'id' => 'banForm']) !!}
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::label('Reason (Optional; no HTML)') !!}
         {!! Form::textarea('ban_reason', $user->settings->ban_reason, ['class' => 'form-control']) !!}
     </div>
-    <div class="text-right">
+    <div class="text-end">
         {!! Form::submit($user->is_banned ? 'Edit' : 'Ban', ['class' => 'btn btn' . ($user->is_banned ? '' : '-outline') . '-danger ban-button']) !!}
     </div>
     {!! Form::close() !!}
@@ -39,7 +39,7 @@
     @if ($user->is_banned)
         <h3>Unban</h3>
         <p>Unbanning the user will grant them access to site features again. However, if they had a rank before being banned, it will not be restored.</p>
-        <div class="text-right">
+        <div class="text-end">
             <a href="#" class="btn btn-outline-danger unban-button">Unban</a>
         </div>
     @endif

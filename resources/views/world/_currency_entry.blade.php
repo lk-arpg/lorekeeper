@@ -1,13 +1,13 @@
 <div class="row world-entry">
     @if ($currency->has_image)
-        <div class="col-md-3 world-entry-image"><a href="{{ $currency->currencyImageUrl }}" data-lightbox="entry" data-title="{{ $currency->name }}"><img src="{{ $currency->currencyImageUrl }}" class="world-entry-image" alt="{{ $currency->name }}" /></a>
+        <div class="col-md-3 world-entry-image"><a href="{{ $currency->currencyImageUrl }}" data-lightbox="entry" data-bs-title="{{ $currency->name }}"><img src="{{ $currency->currencyImageUrl }}" class="world-entry-image" alt="{{ $currency->name }}" /></a>
         </div>
     @endif
     <div class="{{ $currency->has_image ? 'col-md-9' : 'col-12' }}">
         <x-admin-edit title="Currency" :object="$currency" />
         <h3>
             @if (!$currency->is_visible)
-                <i class="fas fa-eye-slash mr-1"></i>
+                <i class="fas fa-eye-slash me-1"></i>
             @endif
             {{ $currency->name }} @if ($currency->abbreviation)
                 ({{ $currency->abbreviation }})

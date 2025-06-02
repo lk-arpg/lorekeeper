@@ -18,7 +18,7 @@
 @endif
 
 @if (!$isClaim)
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::label('prompt_id', 'Prompt') !!}
         {!! Form::select('prompt_id', $prompts, isset($submission->prompt_id) ? $submission->prompt_id : old('prompt_id') ?? Request::get('prompt_id'), ['class' => 'form-control selectize', 'id' => 'prompt', 'placeholder' => '']) !!}
     </div>
@@ -26,7 +26,7 @@
 
 <div class="row">
     <div class="col-md-{{ config('lorekeeper.settings.allow_gallery_submissions_on_prompts') && !$isClaim ? '6' : '12' }}">
-        <div class="form-group">
+        <div class="mb-3">
             {!! Form::label('url', $isClaim ? 'URL (Optional)' : 'Submission URL ' . (config('lorekeeper.settings.allow_gallery_submissions_on_prompts') ? ' / Title' : '') . '(Optional)') !!}
             @if ($isClaim)
                 {!! add_help('Enter a URL relevant to your claim (for example, a comment proving you may make this claim).') !!}
@@ -41,7 +41,7 @@
     </div>
     @if (config('lorekeeper.settings.allow_gallery_submissions_on_prompts') && !$isClaim)
         <div class="col-md-6">
-            <div class="form-group">
+            <div class="mb-3">
                 {!! Form::label('gallery_submission_id', 'Gallery URL (Optional)') !!}
                 {!! add_help('Select the gallery submission this prompt is for.') !!}
                 {!! Form::select('gallery_submission_id', $userGallerySubmissions, $submission->data['gallery_submission_id'] ?? (old('gallery_submission_id') ?? Request::get('gallery_submission_id')), [
@@ -54,7 +54,7 @@
     @endif
 </div>
 
-<div class="form-group">
+<div class="mb-3">
     {!! Form::label('comments', 'Comments (Optional)') !!} {!! add_help('Enter a comment for your ' . ($isClaim ? 'claim' : 'submission') . ' (no HTML). This will be viewed by the mods when reviewing your ' . ($isClaim ? 'claim' : 'submission') . '.') !!}
     {!! Form::textarea('comments', isset($submission->comments) ? $submission->comments : old('comments') ?? Request::get('comments'), ['class' => 'form-control']) !!}
 </div>
@@ -106,7 +106,7 @@
 
 <div class="card mb-3">
     <div class="card-header h2">
-        <a href="#" class="btn btn-outline-info float-right" id="addCharacter">Add Character</a>
+        <a href="#" class="btn btn-outline-info float-end" id="addCharacter">Add Character</a>
         Characters
     </div>
     <div class="card-body" style="clear:both;">
@@ -162,14 +162,14 @@
 </div>
 
 @if ($submission->status == 'Draft')
-    <div class="text-right">
-        <a href="#" class="btn btn-danger mr-2" id="cancelButton">Delete Draft</a>
-        <a href="#" class="btn btn-secondary mr-2" id="draftButton">Save Draft</a>
+    <div class="text-end">
+        <a href="#" class="btn btn-danger me-2" id="cancelButton">Delete Draft</a>
+        <a href="#" class="btn btn-secondary me-2" id="draftButton">Save Draft</a>
         <a href="#" class="btn btn-primary" id="confirmButton">Submit</a>
     </div>
 @else
-    <div class="text-right">
-        <a href="#" class="btn btn-secondary mr-2" id="draftButton">Save Draft</a>
+    <div class="text-end">
+        <a href="#" class="btn btn-secondary me-2" id="draftButton">Save Draft</a>
         <a href="#" class="btn btn-primary" id="confirmButton">Submit</a>
     </div>
 @endif

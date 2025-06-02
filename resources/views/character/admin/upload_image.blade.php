@@ -15,14 +15,14 @@
 
     <h3>Validity</h3>
 
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::checkbox('is_valid', 1, 1, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
-        {!! Form::label('is_valid', 'Is Valid', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If this is turned off, the image will still be visible, but displayed with a note that the image is not a valid reference.') !!}
+        {!! Form::label('is_valid', 'Is Valid', ['class' => 'form-check-label ms-3']) !!} {!! add_help('If this is turned off, the image will still be visible, but displayed with a note that the image is not a valid reference.') !!}
     </div>
 
     <h3>Image Upload</h3>
 
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::label('Character Image') !!} {!! add_help('This is the full masterlist image. Note that the image is not protected in any way, so take precautions to avoid art/design theft.') !!}
         <div class="custom-file">
             {!! Form::label('image', 'Choose file...', ['class' => 'custom-file-label']) !!}
@@ -30,9 +30,9 @@
         </div>
     </div>
     @if (config('lorekeeper.settings.masterlist_image_automation') === 1)
-        <div class="form-group">
+        <div class="mb-3">
             {!! Form::checkbox('use_cropper', 1, 1, ['class' => 'form-check-input', 'data-toggle' => 'toggle', 'id' => 'useCropper']) !!}
-            {!! Form::label('use_cropper', 'Use Thumbnail Automation', ['class' => 'form-check-label ml-3']) !!} {!! add_help('A thumbnail is required for the upload (used for the masterlist). You can use the Thumbnail Automation, or upload a custom thumbnail.') !!}
+            {!! Form::label('use_cropper', 'Use Thumbnail Automation', ['class' => 'form-check-label ms-3']) !!} {!! add_help('A thumbnail is required for the upload (used for the masterlist). You can use the Thumbnail Automation, or upload a custom thumbnail.') !!}
         </div>
         <div class="card mb-3" id="thumbnailCrop">
             <div class="card-body">
@@ -44,9 +44,9 @@
             </div>
         </div>
     @else
-        <div class="form-group">
+        <div class="mb-3">
             {!! Form::checkbox('use_cropper', 1, 1, ['class' => 'form-check-input', 'data-toggle' => 'toggle', 'id' => 'useCropper']) !!}
-            {!! Form::label('use_cropper', 'Use Image Cropper', ['class' => 'form-check-label ml-3']) !!} {!! add_help('A thumbnail is required for the upload (used for the masterlist). You can use the image cropper (crop dimensions can be adjusted in the site code), or upload a custom thumbnail.') !!}
+            {!! Form::label('use_cropper', 'Use Image Cropper', ['class' => 'form-check-label ms-3']) !!} {!! add_help('A thumbnail is required for the upload (used for the masterlist). You can use the image cropper (crop dimensions can be adjusted in the site code), or upload a custom thumbnail.') !!}
         </div>
         <div class="card mb-3" id="thumbnailCrop">
             <div class="card-body">
@@ -72,84 +72,84 @@
     <p class="alert alert-info">
         This section is for crediting the image creators. The first box is for the designer or artist's on-site username (if any). The second is for a link to the designer or artist if they don't have an account on the site.
     </p>
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::label('Designer(s)') !!}
         <div id="designerList">
             <div class="mb-2 d-flex">
-                {!! Form::select('designer_id[]', $users, null, ['class' => 'form-control mr-2 selectize', 'placeholder' => 'Select a Designer']) !!}
-                {!! Form::text('designer_url[]', null, ['class' => 'form-control mr-2', 'placeholder' => 'Designer URL']) !!}
-                <a href="#" class="add-designer btn btn-link" data-toggle="tooltip" title="Add another designer">+</a>
+                {!! Form::select('designer_id[]', $users, null, ['class' => 'form-control me-2 selectize', 'placeholder' => 'Select a Designer']) !!}
+                {!! Form::text('designer_url[]', null, ['class' => 'form-control me-2', 'placeholder' => 'Designer URL']) !!}
+                <a href="#" class="add-designer btn btn-link" data-bs-toggle="tooltip" title="Add another designer">+</a>
             </div>
         </div>
         <div class="designer-row hide mb-2">
-            {!! Form::select('designer_id[]', $users, null, ['class' => 'form-control mr-2 designer-select', 'placeholder' => 'Select a Designer']) !!}
-            {!! Form::text('designer_url[]', null, ['class' => 'form-control mr-2', 'placeholder' => 'Designer URL']) !!}
-            <a href="#" class="add-designer btn btn-link" data-toggle="tooltip" title="Add another designer">+</a>
+            {!! Form::select('designer_id[]', $users, null, ['class' => 'form-control me-2 designer-select', 'placeholder' => 'Select a Designer']) !!}
+            {!! Form::text('designer_url[]', null, ['class' => 'form-control me-2', 'placeholder' => 'Designer URL']) !!}
+            <a href="#" class="add-designer btn btn-link" data-bs-toggle="tooltip" title="Add another designer">+</a>
         </div>
     </div>
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::label('Artist(s)') !!}
         <div id="artistList">
             <div class="mb-2 d-flex">
-                {!! Form::select('artist_id[]', $users, null, ['class' => 'form-control mr-2 selectize', 'placeholder' => 'Select an Artist']) !!}
-                {!! Form::text('artist_url[]', null, ['class' => 'form-control mr-2', 'placeholder' => 'Artist URL']) !!}
-                <a href="#" class="add-artist btn btn-link" data-toggle="tooltip" title="Add another artist">+</a>
+                {!! Form::select('artist_id[]', $users, null, ['class' => 'form-control me-2 selectize', 'placeholder' => 'Select an Artist']) !!}
+                {!! Form::text('artist_url[]', null, ['class' => 'form-control me-2', 'placeholder' => 'Artist URL']) !!}
+                <a href="#" class="add-artist btn btn-link" data-bs-toggle="tooltip" title="Add another artist">+</a>
             </div>
         </div>
         <div class="artist-row hide mb-2">
-            {!! Form::select('artist_id[]', $users, null, ['class' => 'form-control mr-2 artist-select', 'placeholder' => 'Select an Artist']) !!}
-            {!! Form::text('artist_url[]', null, ['class' => 'form-control mr-2', 'placeholder' => 'Artist URL']) !!}
-            <a href="#" class="add-artist btn btn-link mb-2" data-toggle="tooltip" title="Add another artist">+</a>
+            {!! Form::select('artist_id[]', $users, null, ['class' => 'form-control me-2 artist-select', 'placeholder' => 'Select an Artist']) !!}
+            {!! Form::text('artist_url[]', null, ['class' => 'form-control me-2', 'placeholder' => 'Artist URL']) !!}
+            <a href="#" class="add-artist btn btn-link mb-2" data-bs-toggle="tooltip" title="Add another artist">+</a>
         </div>
     </div>
 
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::label('Image Notes (Optional)') !!} {!! add_help('This section is for making additional notes about the image.') !!}
         {!! Form::textarea('image_description', old('image_description'), ['class' => 'form-control wysiwyg']) !!}
     </div>
 
     <h3>
-        {{-- <div class="float-right"><a href="#" class="btn btn-info btn-sm" data-toggle="tooltip" title="This will fill the below fields with the same data as the character's current image. Note that this will overwrite any changes made below.">Fill Data</a></div> --}}
+        {{-- <div class="float-end"><a href="#" class="btn btn-info btn-sm" data-bs-toggle="tooltip" title="This will fill the below fields with the same data as the character's current image. Note that this will overwrite any changes made below.">Fill Data</a></div> --}}
         Traits
     </h3>
 
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::label('Species') !!}
         {!! Form::select('species_id', $specieses, old('species_id') ?: $character->image->species_id, ['class' => 'form-control', 'id' => 'species']) !!}
     </div>
 
-    <div class="form-group" id="subtypes">
+    <div class="mb-3" id="subtypes">
         {!! Form::label('Subtypes (Optional)') !!}
         {!! Form::select('subtype_ids[]', $subtypes, old('subtype_ids') ?: $character->image->subtypes()?->pluck('subtype_id')->toArray(), ['class' => 'form-control', 'id' => 'subtype', 'multiple']) !!}
     </div>
 
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::label('Character Rarity') !!}
         {!! Form::select('rarity_id', $rarities, old('rarity_id') ?: $character->image->rarity_id, ['class' => 'form-control']) !!}
     </div>
 
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::label('Traits') !!}
         <div><a href="#" class="btn btn-primary mb-2" id="add-feature">Add Trait</a></div>
         <div id="featureList">
             @if (config('lorekeeper.extensions.autopopulate_image_features'))
                 @foreach ($character->image->features as $feature)
                     <div class="d-flex mb-2">
-                        {!! Form::select('feature_id[]', $features, $feature->feature_id, ['class' => 'form-control mr-2 feature-select original', 'placeholder' => 'Select Trait']) !!}
-                        {!! Form::text('feature_data[]', $feature->data, ['class' => 'form-control mr-2', 'placeholder' => 'Extra Info (Optional)']) !!}
-                        <a href="#" class="remove-feature btn btn-danger mb-2">×</a>
+                        {!! Form::select('feature_id[]', $features, $feature->feature_id, ['class' => 'form-control me-2 feature-select original', 'placeholder' => 'Select Trait']) !!}
+                        {!! Form::text('feature_data[]', $feature->data, ['class' => 'form-control me-2', 'placeholder' => 'Extra Info (Optional)']) !!}
+                        <a href="#" class="remove-feature btn btn-danger mb-2">�</a>
                     </div>
                 @endforeach
             @endif
         </div>
         <div class="feature-row hide mb-2">
-            {!! Form::select('feature_id[]', $features, null, ['class' => 'form-control mr-2 feature-select', 'placeholder' => 'Select Trait']) !!}
-            {!! Form::text('feature_data[]', null, ['class' => 'form-control mr-2', 'placeholder' => 'Extra Info (Optional)']) !!}
-            <a href="#" class="remove-feature btn btn-danger mb-2">×</a>
+            {!! Form::select('feature_id[]', $features, null, ['class' => 'form-control me-2 feature-select', 'placeholder' => 'Select Trait']) !!}
+            {!! Form::text('feature_data[]', null, ['class' => 'form-control me-2', 'placeholder' => 'Extra Info (Optional)']) !!}
+            <a href="#" class="remove-feature btn btn-danger mb-2">�</a>
         </div>
     </div>
 
-    <div class="text-right">
+    <div class="text-end">
         {!! Form::submit('Create Image', ['class' => 'btn btn-primary']) !!}
     </div>
     {!! Form::close() !!}

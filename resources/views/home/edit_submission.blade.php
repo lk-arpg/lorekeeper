@@ -36,7 +36,7 @@
                 <div class="modal-content hide" id="confirmContent">
                     <div class="modal-header">
                         <span class="modal-title h5 mb-0">Confirm {{ $isClaim ? 'Claim' : 'Submission' }}</span>
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal">&times;</button>
                     </div>
                     <div class="modal-body">
                         <p>
@@ -52,7 +52,7 @@
                                 @endif
                             </div>
                         @endif
-                        <div class="text-right">
+                        <div class="text-end">
                             <a href="#" id="confirmSubmit" class="btn btn-primary">Confirm</a>
                         </div>
                     </div>
@@ -61,14 +61,14 @@
                 <div class="modal-content hide" id="draftContent">
                     <div class="modal-header">
                         <span class="modal-title h5 mb-0">Save Draft</span>
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal">&times;</button>
                     </div>
                     <div class="modal-body">
                         <p>
                             This will edit the existing {{ $submission->prompt_id ? 'submission' : 'claim' }} draft.
                             Items and other attachments will be held, similar to in design update drafts.
                         </p>
-                        <div class="text-right">
+                        <div class="text-end">
                             <a href="#" id="draftSubmit" class="btn btn-success">Save Draft</a>
                         </div>
                     </div>
@@ -77,13 +77,13 @@
                 <div class="modal-content hide" id="cancelContent">
                     <div class="modal-header">
                         <span class="modal-title h5 mb-0">Delete Draft</span>
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal">&times;</button>
                     </div>
                     <div class="modal-body">
                         <p>
                             This will cancel the {{ $submission->prompt_id ? 'submission' : 'claim' }} draft and return any attachments to your inventories.
                         </p>
-                        <div class="text-right">
+                        <div class="text-end">
                             <a href="#" id="cancelSubmit" class="btn btn-danger">Delete Draft</a>
                         </div>
                     </div>

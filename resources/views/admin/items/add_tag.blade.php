@@ -13,12 +13,12 @@
 
     {!! Form::open(['url' => 'admin/data/items/tag/' . $item->id]) !!}
 
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::label('tag', 'Tag') !!}
         {!! Form::select('tag', [0 => 'Select a Tag'] + $tags, null, ['class' => 'form-control']) !!}
     </div>
 
-    <div class="text-right">
+    <div class="text-end">
         {!! Form::submit('Add Tag', ['class' => 'btn btn-primary']) !!}
     </div>
 

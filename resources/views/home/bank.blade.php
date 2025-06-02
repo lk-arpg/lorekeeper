@@ -23,7 +23,7 @@
                 @foreach ($currencies as $currency)
                     <li class="list-group-item">
                         <div class="row">
-                            <div class="col-lg-2 col-md-3 col-6 text-right">
+                            <div class="col-lg-2 col-md-3 col-6 text-end">
                                 <strong>
                                     <a href="{{ $currency->url }}">
                                         {{ $currency->name }}
@@ -44,7 +44,7 @@
             </ul>
         </div>
     @endforeach
-    <div class="text-right mb-4">
+    <div class="text-end mb-4">
         <a href="{{ url(Auth::user()->url . '/currency-logs') }}">View logs...</a>
     </div>
 
@@ -52,7 +52,7 @@
         <h3>Convert Currency</h3>
         <p>Converting currency is a way to exchange one currency for another. The conversion rates are set by the site administrators and may change over time.</p>
         {!! Form::open(['url' => 'bank/convert']) !!}
-        <div class="form-group">
+        <div class="mb-3">
             <div class="row">
                 <div class="col-md-6">
                     {!! Form::label('currency_id', 'Currency to Convert:') !!}
@@ -60,10 +60,10 @@
                 </div>
             </div>
         </div>
-        <div class="form-group" id="convert-currency-form">
+        <div class="mb-3" id="convert-currency-form">
         </div>
 
-        <div class="text-right">
+        <div class="text-end">
             {!! Form::submit('Convert', ['class' => 'btn btn-primary']) !!}
         </div>
 
@@ -76,11 +76,11 @@
         <h3>{!! !$canTransfer ? '[ADMIN] ' : '' !!} Transfer Currency</h3>
         <p>If you are transferring currency as part of a trade for on-site resources (items, currency, characters), using the <a href="{{ url('trades/open') }}">trade system</a> is recommended instead to protect yourself from being scammed.</p>
         {!! Form::open(['url' => 'bank/transfer']) !!}
-        <div class="form-group">
+        <div class="mb-3">
             {!! Form::label('user_id', 'Recipient') !!}
             {!! Form::select('user_id', $userOptions, null, ['class' => 'form-control']) !!}
         </div>
-        <div class="form-group">
+        <div class="mb-3">
             <div class="row">
                 <div class="col-md-6">
                     {!! Form::label('quantity', 'Quantity') !!}
@@ -92,7 +92,7 @@
                 </div>
             </div>
         </div>
-        <div class="text-right">
+        <div class="text-end">
             {!! Form::submit('Transfer', ['class' => 'btn btn-primary']) !!}
         </div>
         {!! Form::close() !!}

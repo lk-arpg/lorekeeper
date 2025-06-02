@@ -10,25 +10,25 @@
 
     <div>
         {!! Form::open(['method' => 'GET', 'class' => '']) !!}
-        <div class="form-inline justify-content-end">
-            <div class="form-group ml-3 mb-3">
+        <div class="d-flex align-items-center justify-content-end">
+            <div class="mb-3 ms-3 mb-3">
                 {!! Form::text('name', Request::get('name'), ['class' => 'form-control', 'placeholder' => 'Name']) !!}
             </div>
-            <div class="form-group ml-3 mb-3">
+            <div class="mb-3 ms-3 mb-3">
                 {!! Form::select('species_id', $specieses, Request::get('species_id'), ['class' => 'form-control']) !!}
             </div>
-            <div class="form-group ml-3 mb-3">
+            <div class="mb-3 ms-3 mb-3">
                 {!! Form::select('subtype_id', $subtypes, Request::get('subtype_id'), ['class' => 'form-control']) !!}
             </div>
-            <div class="form-group ml-3 mb-3">
+            <div class="mb-3 ms-3 mb-3">
                 {!! Form::select('rarity_id', $rarities, Request::get('rarity_id'), ['class' => 'form-control']) !!}
             </div>
-            <div class="form-group ml-3 mb-3">
+            <div class="mb-3 ms-3 mb-3">
                 {!! Form::select('feature_category_id', $categories, Request::get('feature_category_id'), ['class' => 'form-control']) !!}
             </div>
         </div>
-        <div class="form-inline justify-content-end">
-            <div class="form-group ml-3 mb-3">
+        <div class="d-flex align-items-center justify-content-end">
+            <div class="mb-3 ms-3 mb-3">
                 {!! Form::select(
                     'sort',
                     [
@@ -46,7 +46,7 @@
                     ['class' => 'form-control'],
                 ) !!}
             </div>
-            <div class="form-group ml-3 mb-3">
+            <div class="mb-3 ms-3 mb-3">
                 {!! Form::submit('Search', ['class' => 'btn btn-primary']) !!}
             </div>
         </div>

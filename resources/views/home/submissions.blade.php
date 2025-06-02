@@ -15,7 +15,7 @@
         {{ $isClaims ? 'Claims' : 'Prompt Submissions' }}
     </h1>
 
-    <div class="text-right">
+    <div class="text-end">
         @if (!$isClaims)
             <a href="{{ url('submissions/new') }}" class="btn btn-success">New Submission</a>
         @else
@@ -44,17 +44,17 @@
             <div class="logs-table-header">
                 <div class="row">
                     @if (!$isClaims)
-                        <div class="col-12 col-md-2 font-weight-bold">
+                        <div class="col-12 col-md-2 fw-bold">
                             <div class="logs-table-cell">Prompt</div>
                         </div>
                     @endif
-                    <div class="col-6 {{ !$isClaims ? 'col-md-3' : 'col-md-4' }} font-weight-bold">
+                    <div class="col-6 {{ !$isClaims ? 'col-md-3' : 'col-md-4' }} fw-bold">
                         <div class="logs-table-cell">Link</div>
                     </div>
-                    <div class="col-6 {{ !$isClaims ? 'col-md-5' : 'col-md-6' }} font-weight-bold">
+                    <div class="col-6 {{ !$isClaims ? 'col-md-5' : 'col-md-6' }} fw-bold">
                         <div class="logs-table-cell">Last Action</div>
                     </div>
-                    <div class="col-12 col-md-1 font-weight-bold">
+                    <div class="col-12 col-md-1 fw-bold">
                         <div class="logs-table-cell">Status</div>
                     </div>
                 </div>
@@ -76,7 +76,7 @@
                             <div class="col-6 {{ !$isClaims ? 'col-md-5' : 'col-md-6' }}">
                                 <div class="logs-table-cell">{!! pretty_date($submission->updated_at) !!}</div>
                             </div>
-                            <div class="col-6 col-md-1 text-right">
+                            <div class="col-6 col-md-1 text-end">
                                 <div class="logs-table-cell">
                                     <span class="btn btn-{{ $submission->status == 'Pending' ? 'secondary' : ($submission->status == 'Approved' ? 'success' : 'danger') }} btn-sm py-0 px-1">{{ $submission->status }}</span>
                                 </div>

@@ -15,7 +15,7 @@
                 <div class="card mb-3">
                     <div class="card-body">
                         <h5 class="card-title">Prompt Submissions @if ($submissionCount)
-                                <span class="badge badge-primary">{{ $submissionCount }}</span>
+                                <span class="badge text-bg-primary">{{ $submissionCount }}</span>
                             @endif
                         </h5>
                         <p class="card-text">
@@ -25,8 +25,8 @@
                                 The submission queue is clear. Hooray!
                             @endif
                         </p>
-                        <div class="text-right">
-                            <a href="{{ url('admin/submissions/pending') }}" class="card-link">View Queue <span class="fas fa-caret-right ml-1"></span></a>
+                        <div class="text-end">
+                            <a href="{{ url('admin/submissions/pending') }}" class="card-link">View Queue <span class="fas fa-caret-right ms-1"></span></a>
                         </div>
                     </div>
                 </div>
@@ -35,7 +35,7 @@
                 <div class="card mb-3">
                     <div class="card-body">
                         <h5 class="card-title">Claims @if ($claimCount)
-                                <span class="badge badge-primary">{{ $claimCount }}</span>
+                                <span class="badge text-bg-primary">{{ $claimCount }}</span>
                             @endif
                         </h5>
                         <p class="card-text">
@@ -45,8 +45,8 @@
                                 The claim queue is clear. Hooray!
                             @endif
                         </p>
-                        <div class="text-right">
-                            <a href="{{ url('admin/claims/pending') }}" class="card-link">View Queue <span class="fas fa-caret-right ml-1"></span></a>
+                        <div class="text-end">
+                            <a href="{{ url('admin/claims/pending') }}" class="card-link">View Queue <span class="fas fa-caret-right ms-1"></span></a>
                         </div>
                     </div>
                 </div>
@@ -57,7 +57,7 @@
                 <div class="card mb-3">
                     <div class="card-body">
                         <h5 class="card-title">Design Updates @if ($designCount)
-                                <span class="badge badge-primary">{{ $designCount }}</span>
+                                <span class="badge text-bg-primary">{{ $designCount }}</span>
                             @endif
                         </h5>
                         <p class="card-text">
@@ -67,8 +67,8 @@
                                 The design update approval queue is clear. Hooray!
                             @endif
                         </p>
-                        <div class="text-right">
-                            <a href="{{ url('admin/design-approvals/pending') }}" class="card-link">View Queue <span class="fas fa-caret-right ml-1"></span></a>
+                        <div class="text-end">
+                            <a href="{{ url('admin/design-approvals/pending') }}" class="card-link">View Queue <span class="fas fa-caret-right ms-1"></span></a>
                         </div>
                     </div>
                 </div>
@@ -77,7 +77,7 @@
                 <div class="card mb-3">
                     <div class="card-body">
                         <h5 class="card-title">MYO Approvals @if ($myoCount)
-                                <span class="badge badge-primary">{{ $myoCount }}</span>
+                                <span class="badge text-bg-primary">{{ $myoCount }}</span>
                             @endif
                         </h5>
                         <p class="card-text">
@@ -87,8 +87,8 @@
                                 The MYO slot approval queue is clear. Hooray!
                             @endif
                         </p>
-                        <div class="text-right">
-                            <a href="{{ url('admin/myo-approvals/pending') }}" class="card-link">View Queue <span class="fas fa-caret-right ml-1"></span></a>
+                        <div class="text-end">
+                            <a href="{{ url('admin/myo-approvals/pending') }}" class="card-link">View Queue <span class="fas fa-caret-right ms-1"></span></a>
                         </div>
                     </div>
                 </div>
@@ -98,7 +98,7 @@
                     <div class="card mb-3">
                         <div class="card-body">
                             <h5 class="card-title">Character Transfers @if ($transferCount + $tradeCount)
-                                    <span class="badge badge-primary">{{ $transferCount + $tradeCount }}</span>
+                                    <span class="badge text-bg-primary">{{ $transferCount + $tradeCount }}</span>
                                 @endif
                             </h5>
                             <p class="card-text">
@@ -108,8 +108,8 @@
                                     The character transfer/trade queue is clear. Hooray!
                                 @endif
                             </p>
-                            <div class="text-right">
-                                <a href="{{ url('admin/masterlist/transfers/incoming') }}" class="card-link">View Queue <span class="fas fa-caret-right ml-1"></span></a>
+                            <div class="text-end">
+                                <a href="{{ url('admin/masterlist/transfers/incoming') }}" class="card-link">View Queue <span class="fas fa-caret-right ms-1"></span></a>
                             </div>
                         </div>
                     </div>
@@ -121,7 +121,7 @@
                 <div class="card mb-3">
                     <div class="card-body">
                         <h5 class="card-title">Reports @if ($reportCount || $assignedReportCount)
-                                <span class="badge badge-primary">{{ $reportCount + $assignedReportCount }}</span>
+                                <span class="badge text-bg-primary">{{ $reportCount + $assignedReportCount }}</span>
                             @endif
                         </h5>
                         <p class="card-text">
@@ -137,8 +137,8 @@
                                 The report queue is clear. Hooray!
                             @endif
                         </p>
-                        <div class="text-right">
-                            <a href="{{ url('admin/reports/pending') }}" class="card-link">View Queue <span class="fas fa-caret-right ml-1"></span></a>
+                        <div class="text-end">
+                            <a href="{{ url('admin/reports/pending') }}" class="card-link">View Queue <span class="fas fa-caret-right ms-1"></span></a>
                         </div>
                     </div>
                 </div>
@@ -161,7 +161,7 @@
                     <div class="card mb-3">
                         <div class="card-body">
                             <h5 class="card-title">Gallery Submissions @if ($gallerySubmissionCount)
-                                    <span class="badge badge-primary">{{ $gallerySubmissionCount }}</span>
+                                    <span class="badge text-bg-primary">{{ $gallerySubmissionCount }}</span>
                                 @endif
                             </h5>
                             <p class="card-text">
@@ -171,8 +171,8 @@
                                     The gallery submission queue is clear. Hooray!
                                 @endif
                             </p>
-                            <div class="text-right">
-                                <a href="{{ url('admin/gallery/submissions/pending') }}" class="card-link">View Queue <span class="fas fa-caret-right ml-1"></span></a>
+                            <div class="text-end">
+                                <a href="{{ url('admin/gallery/submissions/pending') }}" class="card-link">View Queue <span class="fas fa-caret-right ms-1"></span></a>
                             </div>
                         </div>
                     </div>
@@ -183,7 +183,7 @@
                     <div class="card mb-3">
                         <div class="card-body">
                             <h5 class="card-title">Gallery Currency Awards @if ($galleryAwardCount)
-                                    <span class="badge badge-primary">{{ $galleryAwardCount }}</span>
+                                    <span class="badge text-bg-primary">{{ $galleryAwardCount }}</span>
                                 @endif
                             </h5>
                             <p class="card-text">
@@ -193,8 +193,8 @@
                                     The gallery currency award queue is clear. Hooray!
                                 @endif
                             </p>
-                            <div class="text-right">
-                                <a href="{{ url('admin/gallery/currency/pending') }}" class="card-link">View Queue <span class="fas fa-caret-right ml-1"></span></a>
+                            <div class="text-end">
+                                <a href="{{ url('admin/gallery/currency/pending') }}" class="card-link">View Queue <span class="fas fa-caret-right ms-1"></span></a>
                             </div>
                         </div>
                     </div>

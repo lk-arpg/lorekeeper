@@ -20,13 +20,13 @@
         </p>
         @if ($request->user_id == Auth::user()->id)
             @if ($request->isComplete)
-                <div class="text-right">
+                <div class="text-end">
                     <button class="btn btn-outline-danger delete-button">Delete Request</button>
                     <a href="#" class="btn btn-outline-primary submit-button">Submit Request</a>
                 </div>
             @else
                 <p class="text-danger">Not all sections have been completed yet. Please visit the necessary tab(s) and click Save to update them, even if no modifications to the information are needed.</p>
-                <div class="text-right">
+                <div class="text-end">
                     <button class="btn btn-outline-danger delete-button">Delete Request</button>
                     <button class="btn btn-outline-primary" disabled>Submit Request</button>
                 </div>
@@ -40,7 +40,7 @@
                 @if ($canCancel)
                     <div class="card mb-3">
                         <div class="card-body">
-                            <a href="#" class="btn btn-outline-secondary cancel-button btn-sm float-right" data-action="cancel">Cancel</a>
+                            <a href="#" class="btn btn-outline-secondary cancel-button btn-sm float-end" data-action="cancel">Cancel</a>
                             <strong class="text-secondary">Cancelling</strong> the request returns it to its draft status, allowing you to make further edits.
                         </div>
                     </div>
@@ -52,19 +52,19 @@
         @if (Auth::user()->hasPower('manage_characters'))
             <div class="card mb-3">
                 <div class="card-body">
-                    <a href="#" class="btn btn-outline-secondary process-button btn-sm float-right" data-action="cancel">Cancel</a>
+                    <a href="#" class="btn btn-outline-secondary process-button btn-sm float-end" data-action="cancel">Cancel</a>
                     <strong class="text-secondary">Cancelling</strong> the request returns it to its draft status, allowing the user to make further edits.
                 </div>
             </div>
             <div class="card mb-3">
                 <div class="card-body">
-                    <a href="#" class="btn btn-outline-success process-button btn-sm float-right" data-action="approve">Approve</a>
+                    <a href="#" class="btn btn-outline-success process-button btn-sm float-end" data-action="approve">Approve</a>
                     <strong class="text-success">Approving</strong> the request creates the update.
                 </div>
             </div>
             <div class="card">
                 <div class="card-body">
-                    <a href="#" class="btn btn-outline-danger process-button btn-sm float-right" data-action="reject">Reject</a>
+                    <a href="#" class="btn btn-outline-danger process-button btn-sm float-end" data-action="reject">Reject</a>
                     <strong class="text-danger">Rejecting</strong> the update returns any attached items and the user may not edit it any more.
                 </div>
             </div>

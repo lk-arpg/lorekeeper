@@ -13,7 +13,7 @@
     <p>The sorting order reflects the order in which rarities will be displayed on the world pages (e.g. rarity-sorted traits will appear in this order), as well as in select dropdown fields. <strong>Please note that the highest rarity should be at the
             <u>top</u> of the list.</strong></p>
 
-    <div class="text-right mb-3"><a class="btn btn-primary" href="{{ url('admin/data/rarities/create') }}"><i class="fas fa-plus"></i> Create New Rarity</a></div>
+    <div class="text-end mb-3"><a class="btn btn-primary" href="{{ url('admin/data/rarities/create') }}"><i class="fas fa-plus"></i> Create New Rarity</a></div>
     @if (!count($rarities))
         <p>No rarities found.</p>
     @else
@@ -22,10 +22,10 @@
                 @foreach ($rarities as $rarity)
                     <tr class="sort-item" data-id="{{ $rarity->id }}">
                         <td>
-                            <a class="fas fa-arrows-alt-v handle mr-3" href="#"></a>
+                            <a class="fas fa-arrows-alt-v handle me-3" href="#"></a>
                             {!! $rarity->displayName !!}
                         </td>
-                        <td class="text-right">
+                        <td class="text-end">
                             <a href="{{ url('admin/data/rarities/edit/' . $rarity->id) }}" class="btn btn-primary">Edit</a>
                         </td>
                     </tr>

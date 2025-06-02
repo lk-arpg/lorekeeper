@@ -25,7 +25,7 @@
                     <td>
                         <a href="/admin/logs/{{ $log }}">{{ $log }}</a>
                     </td>
-                    <td class="text-right">
+                    <td class="text-end">
                         <a href="/admin/logs/{{ $log }}" class="btn btn-outline-primary btn-sm move-log" data-name="{{ $log }} ">View</a>
                         <a href="#" class="btn btn-outline-danger btn-sm delete-log" data-name="{{ $log }}">Delete</a>
                     </td>
@@ -39,13 +39,13 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <span class="modal-title h5 mb-0">Delete Log</span>
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal">&times;</button>
                 </div>
                 <div class="modal-body">
                     {{-- Delete a file --}}
                     {!! Form::open(['url' => 'admin/logs/delete', 'id' => 'deleteForm', 'class' => 'file-form']) !!}
                     <p>This will permanently delete <strong id="deleteFilename"></strong>. Are you sure?</p>
-                    <div class="text-right">
+                    <div class="text-end">
                         {!! Form::submit('Delete', ['class' => 'btn btn-danger']) !!}
                     </div>
                     {!! Form::hidden('filename', '', ['class' => 'edit-filename']) !!}

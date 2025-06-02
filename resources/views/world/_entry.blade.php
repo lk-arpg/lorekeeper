@@ -1,7 +1,7 @@
 <div class="row world-entry">
     @if ($imageUrl)
         <div class="col-md-3 world-entry-image">
-            <a href="{{ $imageUrl }}" data-lightbox="entry" data-title="{{ $name }}">
+            <a href="{{ $imageUrl }}" data-lightbox="entry" data-bs-title="{{ $name }}">
                 <img src="{{ $imageUrl }}" class="world-entry-image" alt="{{ $name }}" />
             </a>
         </div>
@@ -12,7 +12,7 @@
         @endif
         <h3>
             @if (!$visible)
-                <i class="fas fa-eye-slash mr-1"></i>
+                <i class="fas fa-eye-slash me-1"></i>
             @endif
             {!! $name !!}
             @if (isset($searchUrl) && $searchUrl)

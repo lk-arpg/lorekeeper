@@ -31,7 +31,7 @@
                 <div class="modal-content hide" id="confirmContent">
                     <div class="modal-header">
                         <span class="modal-title h5 mb-0">Confirm {{ $isClaim ? 'Claim' : 'Submission' }}</span>
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal">&times;</button>
                     </div>
                     <div class="modal-body">
                         <p>
@@ -44,7 +44,7 @@
                             <div id="requirementsWarning">
                             </div>
                         @endif
-                        <div class="text-right">
+                        <div class="text-end">
                             <a href="#" id="confirmSubmit" class="btn btn-primary">Confirm</a>
                         </div>
                     </div>
@@ -53,14 +53,14 @@
                 <div class="modal-content hide" id="draftContent">
                     <div class="modal-header">
                         <span class="modal-title h5 mb-0">Create Draft</span>
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal">&times;</button>
                     </div>
                     <div class="modal-body">
                         <p>
                             This will place the {{ $submission->prompt_id ? 'submission' : 'claim' }} into your drafts.
                             Items and other attachments will be held, similar to in design update drafts.
                         </p>
-                        <div class="text-right">
+                        <div class="text-end">
                             <a href="#" id="draftSubmit" class="btn btn-success">Save as Draft</a>
                         </div>
                     </div>

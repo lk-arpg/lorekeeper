@@ -10,24 +10,24 @@
 
     <div>
         {!! Form::open(['method' => 'GET', 'class' => '']) !!}
-        <div class="form-inline justify-content-end">
-            <div class="form-group ml-3 mb-3">
+        <div class="d-flex align-items-center justify-content-end">
+            <div class="mb-3 ms-3 mb-3">
                 {!! Form::text('name', Request::get('name'), ['class' => 'form-control', 'placeholder' => 'Name']) !!}
             </div>
-            <div class="form-group ml-3 mb-3">
+            <div class="mb-3 ms-3 mb-3">
                 {!! Form::select('item_category_id', $categories, Request::get('item_category_id'), ['class' => 'form-control', 'placeholder' => 'Any Category']) !!}
             </div>
             @if (config('lorekeeper.extensions.item_entry_expansion.extra_fields'))
-                <div class="form-group ml-3 mb-3">
+                <div class="mb-3 ms-3 mb-3">
                     {!! Form::select('rarity_id', $rarities, Request::get('rarity_id'), ['class' => 'form-control', 'placeholder' => 'Any Rarity']) !!}
                 </div>
-                <div class="form-group ml-3 mb-3">
+                <div class="mb-3 ms-3 mb-3">
                     {!! Form::select('artist', $artists, Request::get('artist'), ['class' => 'form-control', 'placeholder' => 'Any Artist']) !!}
                 </div>
             @endif
         </div>
-        <div class="form-inline justify-content-end">
-            <div class="form-group ml-3 mb-3">
+        <div class="d-flex align-items-center justify-content-end">
+            <div class="mb-3 ms-3 mb-3">
                 {!! Form::select(
                     'sort',
                     [
@@ -41,7 +41,7 @@
                     ['class' => 'form-control'],
                 ) !!}
             </div>
-            <div class="form-group ml-3 mb-3">
+            <div class="mb-3 ms-3 mb-3">
                 {!! Form::submit('Search', ['class' => 'btn btn-primary']) !!}
             </div>
         </div>

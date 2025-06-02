@@ -15,8 +15,8 @@
             <span class="text-danger">{{ $line['line'] }}</span>
             <br>
             @if (isset($line['stacktrace']))
-                <div class="text-right mb-2">
-                    <a class="btn btn-secondary btn-sm ml-auto" data-toggle="collapse" href="#stacktrace-{{ $loop->index }}" role="button" aria-expanded="false">
+                <div class="text-end mb-2">
+                    <a class="btn btn-secondary btn-sm ms-auto" data-bs-toggle="collapse" href="#stacktrace-{{ $loop->index }}" role="button" aria-expanded="false">
                         View Stacktrace
                     </a>
                 </div>

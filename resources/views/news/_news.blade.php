@@ -3,7 +3,7 @@
         <x-admin-edit title="News Post" :object="$news" />
         <h2 class="card-title mb-0">
             @if (!$news->is_visible)
-                <i class="fas fa-eye-slash mr-1"></i>
+                <i class="fas fa-eye-slash me-1"></i>
             @endif
             {!! $news->displayName !!}
         </h2>
@@ -18,11 +18,11 @@
     </div>
     <?php $commentCount = App\Models\Comment\Comment::where('commentable_type', 'App\Models\News')->where('commentable_id', $news->id)->count(); ?>
     @if (!$page)
-        <div class="text-right mb-2 mr-2">
+        <div class="text-end mb-2 me-2">
             <a class="btn" href="{{ $news->url }}#comment-comments"><i class="fas fa-comment"></i> {{ $commentCount }} Comment{{ $commentCount != 1 ? 's' : '' }}</a>
         </div>
     @else
-        <div class="text-right mb-2 mr-2">
+        <div class="text-end mb-2 me-2">
             <a class="btn" href="#comment-comments"><i class="fas fa-comment"></i> {{ $commentCount }} Comment{{ $commentCount != 1 ? 's' : '' }}</a>
         </div>
     @endif

@@ -40,20 +40,20 @@
                         </div>
                         <div class="col-3">
                             <div class="logs-table-cell">
-                                <i class="{{ $alias->config['icon'] }} fa-fw mr-1"></i> {{ config('lorekeeper.sites.' . $alias->site . '.full_name') }}
+                                <i class="{{ $alias->config['icon'] }} fa-fw me-1"></i> {{ config('lorekeeper.sites.' . $alias->site . '.full_name') }}
                             </div>
                         </div>
                         <div class="col-1">
                             <div class="logs-table-cell">
                                 @if ($alias->is_primary_alias)
-                                    <span class="badge badge-success">Primary</span>
+                                    <span class="badge text-bg-success">Primary</span>
                                 @endif
                                 @if (!$alias->is_visible)
-                                    <i class="fas fa-eye-slash" data-toggle="tooltip" title="This alias is hidden from public view."></i>
+                                    <i class="fas fa-eye-slash" data-bs-toggle="tooltip" title="This alias is hidden from public view."></i>
                                 @endif
                             </div>
                         </div>
-                        <div class="col-5 text-right">
+                        <div class="col-5 text-end">
                             <div class="logs-table-cell">
                                 @if (!$alias->is_primary_alias || !config('lorekeeper.settings.require_alias'))
                                     @if (!$alias->is_primary_alias && config('lorekeeper.sites.' . $alias->site . '.primary_alias'))
@@ -78,11 +78,11 @@
     @foreach (config('lorekeeper.sites') as $provider => $site)
         @if (isset($site['auth']) && $site['auth'])
             <div class="d-flex mb-3">
-                <div class="d-flex justify-content-end align-items-center"><i class="{{ $site['icon'] }} fa-fw mr-3"></i></div>
+                <div class="d-flex justify-content-end align-items-center"><i class="{{ $site['icon'] }} fa-fw me-3"></i></div>
                 <div class="">
-                    <a href="{{ url('auth/redirect/' . $provider) }}" class="btn btn-outline-primary mr-3">Link <strong>{{ $site['full_name'] }}</strong> Account</a>
+                    <a href="{{ url('auth/redirect/' . $provider) }}" class="btn btn-outline-primary me-3">Link <strong>{{ $site['full_name'] }}</strong> Account</a>
                     @if (isset($site['primary_alias']) && $site['primary_alias'])
-                        <span class="badge badge-success">Primary</span>
+                        <span class="badge text-bg-success">Primary</span>
                     @endif
                 </div>
             </div>

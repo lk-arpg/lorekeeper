@@ -9,7 +9,7 @@
 
     <h1>{{ $subtype->id ? 'Edit' : 'Create' }} Subtype
         @if ($subtype->id)
-            <a href="#" class="btn btn-danger float-right delete-subtype-button">Delete Subtype</a>
+            <a href="#" class="btn btn-danger float-end delete-subtype-button">Delete Subtype</a>
         @endif
     </h1>
 
@@ -17,17 +17,17 @@
 
     <h3>Basic Information</h3>
 
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::label('Name') !!}
         {!! Form::text('name', $subtype->name, ['class' => 'form-control']) !!}
     </div>
 
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::label('Species') !!}
         {!! Form::select('species_id', $specieses, $subtype->species_id, ['class' => 'form-control']) !!}
     </div>
 
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::label('World Page Image (Optional)') !!} {!! add_help('This image is used only on the world information pages.') !!}
         <div class="custom-file">
             {!! Form::label('image', 'Choose file...', ['class' => 'custom-file-label']) !!}
@@ -42,16 +42,16 @@
         @endif
     </div>
 
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::label('Description (Optional)') !!}
         {!! Form::textarea('description', $subtype->description, ['class' => 'form-control wysiwyg']) !!}
     </div>
 
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::checkbox('is_visible', 1, $subtype->id ? $subtype->is_visible : 1, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
-        {!! Form::label('is_visible', 'Is Visible', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If turned off, the subtype will not be visible in the subtypes list or available for selection in search and design updates. Permissioned staff will still be able to add them to characters, however.') !!}
+        {!! Form::label('is_visible', 'Is Visible', ['class' => 'form-check-label ms-3']) !!} {!! add_help('If turned off, the subtype will not be visible in the subtypes list or available for selection in search and design updates. Permissioned staff will still be able to add them to characters, however.') !!}
     </div>
-    <div class="text-right">
+    <div class="text-end">
         {!! Form::submit($subtype->id ? 'Edit' : 'Create', ['class' => 'btn btn-primary']) !!}
     </div>
 

@@ -13,28 +13,28 @@
 
     <h3>Basic Information</h3>
 
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::label('names[]', 'Username(s)') !!} {!! add_help('You can select up to 10 users at once.') !!}
         {!! Form::select('names[]', $users, null, ['id' => 'usernameList', 'class' => 'form-control', 'multiple']) !!}
     </div>
 
     <div class="row">
-        <div class="col-md-6 form-group">
+        <div class="col-md-6 mb-3">
             {!! Form::label('currency_id', 'Currency') !!}
             {!! Form::select('currency_id', $userCurrencies, null, ['class' => 'form-control']) !!}
         </div>
-        <div class="col-md-6 form-group">
+        <div class="col-md-6 mb-3">
             {!! Form::label('quantity', 'Quantity') !!} {!! add_help('If the value given is less than 0, this will be deducted from the user(s).') !!}
             {!! Form::text('quantity', null, ['class' => 'form-control']) !!}
         </div>
     </div>
 
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::label('data', 'Reason (Optional)') !!} {!! add_help('A reason for the grant. This will be noted in the logs.') !!}
         {!! Form::text('data', null, ['class' => 'form-control']) !!}
     </div>
 
-    <div class="text-right">
+    <div class="text-end">
         {!! Form::submit('Submit', ['class' => 'btn btn-primary']) !!}
     </div>
 

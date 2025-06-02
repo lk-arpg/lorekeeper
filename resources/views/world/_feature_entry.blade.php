@@ -1,7 +1,7 @@
 <div class="row world-entry">
     @if ($feature->has_image)
         <div class="col-md-3 world-entry-image">
-            <a href="{{ $feature->imageUrl }}" data-lightbox="entry" data-title="{{ $feature->name }}">
+            <a href="{{ $feature->imageUrl }}" data-lightbox="entry" data-bs-title="{{ $feature->name }}">
                 <img src="{{ $feature->imageUrl }}" class="world-entry-image" alt="{{ $feature->name }}" />
             </a>
         </div>
@@ -10,7 +10,7 @@
         <x-admin-edit title="Trait" :object="$feature" />
         <h3>
             @if (!$feature->is_visible)
-                <i class="fas fa-eye-slash mr-1"></i>
+                <i class="fas fa-eye-slash me-1"></i>
             @endif
             {!! $feature->displayName !!}
             <a href="{{ $feature->searchUrl }}" class="world-entry-search text-muted">

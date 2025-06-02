@@ -9,7 +9,7 @@
 
     <h1>Dynamic Limits</h1>
 
-    <div class="text-right mb-3"><a class="btn btn-primary" href="{{ url('admin/data/limits/create') }}"><i class="fas fa-plus"></i> Create New Limit</a></div>
+    <div class="text-end mb-3"><a class="btn btn-primary" href="{{ url('admin/data/limits/create') }}"><i class="fas fa-plus"></i> Create New Limit</a></div>
     @if (!count($limits))
         <p>No limits found.</p>
     @else
@@ -23,7 +23,7 @@
                         <td>
                             {!! Str::limit($limit->description, 100) !!}
                         </td>
-                        <td class="text-right">
+                        <td class="text-end">
                             <a href="{{ url('admin/data/limits/edit/' . $limit->id) }}" class="btn btn-primary">Edit</a>
                         </td>
                     </tr>

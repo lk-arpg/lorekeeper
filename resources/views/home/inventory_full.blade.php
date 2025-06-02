@@ -17,7 +17,7 @@
         <div class="card mb-2">
             <h5 class="card-header">
                 {!! isset($categories[$categoryId]) ? '<a href="' . $categories[$categoryId]->searchUrl . '">' . $categories[$categoryId]->name . '</a>' : 'Miscellaneous' !!}
-                <a class="small inventory-collapse-toggle collapse-toggle" href="#categoryId_{!! isset($categories[$categoryId]) ? $categories[$categoryId]->id : 'miscellaneous' !!}" data-toggle="collapse">Show</a>
+                <a class="small inventory-collapse-toggle collapse-toggle" href="#categoryId_{!! isset($categories[$categoryId]) ? $categories[$categoryId]->id : 'miscellaneous' !!}" data-bs-toggle="collapse">Show</a>
             </h5>
             <div class="card-body p-2 collapse show row" id="categoryId_{!! isset($categories[$categoryId]) ? $categories[$categoryId]->id : 'miscellaneous' !!}">
                 @foreach ($categoryItems as $itemtype)
@@ -64,7 +64,7 @@
                                             {{ $charaname }}
                                         </a>'s inventory.
                                         @if ($canName && $stackName)
-                                            <span class="text-info m-0" style="font-size:95%; margin:5px;" data-toggle="tooltip" data-placement="top" title='Named stack:<br />"{{ $stackName }}"'>
+                                            <span class="text-info m-0" style="font-size:95%; margin:5px;" data-bs-toggle="tooltip" data-bs-placement="top" title='Named stack:<br />"{{ $stackName }}"'>
                                                 &nbsp;<i class="fas fa-tag"></i>
                                             </span>
                                         @endif

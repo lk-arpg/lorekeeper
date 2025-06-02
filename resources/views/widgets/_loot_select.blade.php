@@ -13,7 +13,7 @@
     }
 @endphp
 
-<div class="text-right mb-3">
+<div class="text-end mb-3">
     <a href="#" class="btn btn-outline-info" id="addLoot">Add Reward</a>
 </div>
 <table class="table table-sm" id="lootTable">
@@ -45,7 +45,7 @@
                         @endif
                     </td>
                     <td>{!! Form::text('quantity[]', $loot->quantity, ['class' => 'form-control']) !!}</td>
-                    <td class="text-right"><a href="#" class="btn btn-danger remove-loot-button">Remove</a></td>
+                    <td class="text-end"><a href="#" class="btn btn-danger remove-loot-button">Remove</a></td>
                 </tr>
             @endforeach
         @endif

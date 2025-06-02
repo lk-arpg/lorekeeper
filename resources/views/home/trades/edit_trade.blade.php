@@ -19,7 +19,7 @@
     {!! Form::open(['url' => 'trades/' . $trade->id . '/edit']) !!}
 
     @if (Auth::user()->id == $trade->sender_id)
-        <div class="form-group">
+        <div class="mb-3">
             {!! Form::label('comments', 'Comments (Optional)') !!} {!! add_help('This comment will be displayed on the trade index. You can write a helpful note here, for example to note down the purpose of the trade.') !!}
             {!! Form::textarea('comments', $trade->comments, ['class' => 'form-control']) !!}
         </div>
@@ -27,7 +27,7 @@
     @include('widgets._inventory_select', ['user' => Auth::user(), 'inventory' => $inventory, 'categories' => $categories, 'selected' => $trade->getInventory(Auth::user()), 'page' => $page])
     @include('widgets._my_character_select', ['readOnly' => true, 'categories' => $characterCategories, 'selected' => $trade->getCharacters(Auth::user())])
     @include('widgets._bank_select', ['owner' => Auth::user(), 'selected' => $trade->getCurrencies(Auth::user()), 'isTransferrable' => true])
-    <div class="text-right">{!! Form::submit('Edit Trade', ['class' => 'btn btn-primary']) !!}</div>
+    <div class="text-end">{!! Form::submit('Edit Trade', ['class' => 'btn btn-primary']) !!}</div>
     {!! Form::close() !!}
 @endsection
 @section('scripts')

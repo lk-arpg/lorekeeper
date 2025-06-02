@@ -11,7 +11,7 @@
 
     <p>Subtypes are optional categories that can be added to species. Characters require a species, but do not require a subtype. Note that the sort order here reflects the sort order under the species name as well.</p>
 
-    <div class="text-right mb-3"><a class="btn btn-primary" href="{{ url('admin/data/subtypes/create') }}"><i class="fas fa-plus"></i> Create New Subtype</a></div>
+    <div class="text-end mb-3"><a class="btn btn-primary" href="{{ url('admin/data/subtypes/create') }}"><i class="fas fa-plus"></i> Create New Subtype</a></div>
     @if (!count($subtypes))
         <p>No subtypes found.</p>
     @else
@@ -20,16 +20,16 @@
                 @foreach ($subtypes as $subtype)
                     <tr class="sort-item" data-id="{{ $subtype->id }}">
                         <td>
-                            <a class="fas fa-arrows-alt-v handle mr-3" href="#"></a>
+                            <a class="fas fa-arrows-alt-v handle me-3" href="#"></a>
                             @if (!$subtype->is_visible)
-                                <i class="fas fa-eye-slash mr-1"></i>
+                                <i class="fas fa-eye-slash me-1"></i>
                             @endif
                             {!! $subtype->displayName !!}
                         </td>
                         <td>
                             {!! $subtype->species->displayName !!}
                         </td>
-                        <td class="text-right">
+                        <td class="text-end">
                             <a href="{{ url('admin/data/subtypes/edit/' . $subtype->id) }}" class="btn btn-primary">Edit</a>
                         </td>
                     </tr>

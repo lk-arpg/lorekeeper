@@ -9,22 +9,22 @@
     <h1>
         User Index
         @if ($blacklistLink)
-            <a href="{{ url('blacklist') }}" class="btn btn-dark float-right ml-2">Blacklist</a>
+            <a href="{{ url('blacklist') }}" class="btn btn-dark float-end ms-2">Blacklist</a>
         @endif
         @if ($deactivatedLink || (Auth::check() && Auth::user()->isStaff))
-            <a href="{{ url('deactivated-list') }}" class="btn btn-dark float-right">Deactivated Accounts</a>
+            <a href="{{ url('deactivated-list') }}" class="btn btn-dark float-end">Deactivated Accounts</a>
         @endif
     </h1>
 
     <div>
         {!! Form::open(['method' => 'GET', 'class' => 'form-inline justify-content-end']) !!}
-        <div class="form-group mr-3 mb-3">
+        <div class="mb-3 me-3 mb-3">
             {!! Form::text('name', Request::get('name'), ['class' => 'form-control']) !!}
         </div>
-        <div class="form-group mr-3 mb-3">
+        <div class="mb-3 me-3 mb-3">
             {!! Form::select('rank_id', $ranks, Request::get('rank_id'), ['class' => 'form-control']) !!}
         </div>
-        <div class="form-group mr-3 mb-3">
+        <div class="mb-3 me-3 mb-3">
             {!! Form::select(
                 'sort',
                 [
@@ -40,7 +40,7 @@
                 ['class' => 'form-control'],
             ) !!}
         </div>
-        <div class="form-group mb-3">
+        <div class="mb-3 mb-3">
             {!! Form::submit('Search', ['class' => 'btn btn-primary']) !!}
         </div>
         {!! Form::close() !!}

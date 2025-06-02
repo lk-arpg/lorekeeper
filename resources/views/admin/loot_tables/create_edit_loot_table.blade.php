@@ -10,7 +10,7 @@
     <h1>
         {{ $table->id ? 'Edit' : 'Create' }} Loot Table
         @if ($table->id)
-            <a href="#" class="btn btn-danger float-right delete-table-button">Delete Loot Table</a>
+            <a href="#" class="btn btn-danger float-end delete-table-button">Delete Loot Table</a>
         @endif
     </h1>
 
@@ -18,12 +18,12 @@
 
     <h3>Basic Information</h3>
 
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::label('Name') !!} {!! add_help('This is the name you will use to identify this table internally. This name will not be shown to users and does not have to be unique, but a name that can be easily identified is recommended.') !!}
         {!! Form::text('name', $table->name, ['class' => 'form-control']) !!}
     </div>
 
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::label('Display Name') !!} {!! add_help('This is the name that will be shown to users, for example when displaying the rewards for doing a prompt. This is for display purposes and can be something more vague than the above, e.g. "A Random Rare Item"') !!}
         {!! Form::text('display_name', $table->getRawOriginal('display_name'), ['class' => 'form-control']) !!}
     </div>
@@ -36,7 +36,7 @@
     </p>
     <p>You can add any kind of currencies (both user- and character-attached), but be sure to keep track of which are being distributed! Character-only currencies cannot be given to users.</p>
 
-    <div class="text-right mb-3">
+    <div class="text-end mb-3">
         <a href="#" class="btn btn-info" id="addLoot">Add Loot</a>
     </div>
     <table class="table table-sm" id="lootTable">
@@ -89,14 +89,14 @@
                         <td>{!! Form::text('quantity[]', $loot->quantity, ['class' => 'form-control']) !!}</td>
                         <td class="loot-row-weight">{!! Form::text('weight[]', $loot->weight, ['class' => 'form-control loot-weight']) !!}</td>
                         <td class="loot-row-chance"></td>
-                        <td class="text-right"><a href="#" class="btn btn-danger remove-loot-button">Remove</a></td>
+                        <td class="text-end"><a href="#" class="btn btn-danger remove-loot-button">Remove</a></td>
                     </tr>
                 @endforeach
             @endif
         </tbody>
     </table>
 
-    <div class="text-right">
+    <div class="text-end">
         {!! Form::submit($table->id ? 'Edit' : 'Create', ['class' => 'btn btn-primary']) !!}
     </div>
 
@@ -118,7 +118,7 @@
                     <td>{!! Form::text('quantity[]', 1, ['class' => 'form-control']) !!}</td>
                     <td class="loot-row-weight">{!! Form::text('weight[]', 1, ['class' => 'form-control loot-weight']) !!}</td>
                     <td class="loot-row-chance"></td>
-                    <td class="text-right"><a href="#" class="btn btn-danger remove-loot-button">Remove</a></td>
+                    <td class="text-end"><a href="#" class="btn btn-danger remove-loot-button">Remove</a></td>
                 </tr>
             </tbody>
         </table>
@@ -143,11 +143,11 @@
         <p>If you have made any modifications to the loot table contents above, be sure to save it (click the Edit button) before testing.</p>
         <p>Please note that due to the nature of probability, as long as there is a chance, there will always be the possibility of rolling improbably good or bad results. <i>This is not indicative of the code being buggy or poor game balance.</i> Be
             cautious when adjusting values based on a small sample size, including but not limited to test rolls and a small amount of user reports.</p>
-        <div class="form-group">
+        <div class="mb-3">
             {!! Form::label('quantity', 'Number of Rolls') !!}
             {!! Form::text('quantity', 1, ['class' => 'form-control', 'id' => 'rollQuantity']) !!}
         </div>
-        <div class="text-right">
+        <div class="text-end">
             <a href="#" class="btn btn-primary" id="testRoll">Test Roll</a>
         </div>
     @endif

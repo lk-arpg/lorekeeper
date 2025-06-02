@@ -9,7 +9,7 @@
 
     <h1>{{ $sublist->id ? 'Edit' : 'Create' }} Sub Masterlist
         @if ($sublist->id)
-            <a href="#" class="btn btn-danger float-right delete-sublist-button">Delete Sub Masterlist</a>
+            <a href="#" class="btn btn-danger float-end delete-sublist-button">Delete Sub Masterlist</a>
         @endif
     </h1>
 
@@ -18,11 +18,11 @@
     <h3>Basic Information</h3>
 
     <div class="row">
-        <div class="col-md-6 form-group">
+        <div class="col-md-6 mb-3">
             {!! Form::label('Name') !!}
             {!! Form::text('name', $sublist->name, ['class' => 'form-control']) !!}
         </div>
-        <div class="col-md-6 form-group">
+        <div class="col-md-6 mb-3">
             {!! Form::label('Key') !!}
             {!! Form::text('key', $sublist->key, ['class' => 'form-control']) !!}
         </div>
@@ -32,22 +32,22 @@
     <p>Each category and species can only have ONE sublist. If you assign a sublist here, it will be removed from any other sublists. If you want a species shared across multiple lists, it is suggested you only use character categories. Likewise, if you
         want a category shared across multiple lists, it is suggested you only use species.</p>
 
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::label('categories[]', 'Categories') !!}
         {!! Form::select('categories[]', $categories, $subCategories, ['id' => 'categoryList', 'class' => 'form-control', 'multiple']) !!}
     </div>
 
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::label('species[]', 'Species') !!}
         {!! Form::select('species[]', $species, $subSpecies, ['id' => 'speciesList', 'class' => 'form-control', 'multiple']) !!}
     </div>
 
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::checkbox('show_main', 1, $sublist->id ? $sublist->show_main : 1, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
-        {!! Form::label('show_main', 'Show on Main', ['class' => 'form-check-label ml-3']) !!} {!! add_help('Turn on to include these characters in the main masterlist as well. Turn off to entirely seperate them into the sub masterlist.') !!}
+        {!! Form::label('show_main', 'Show on Main', ['class' => 'form-check-label ms-3']) !!} {!! add_help('Turn on to include these characters in the main masterlist as well. Turn off to entirely seperate them into the sub masterlist.') !!}
     </div>
 
-    <div class="text-right">
+    <div class="text-end">
         {!! Form::submit($sublist->id ? 'Edit' : 'Create', ['class' => 'btn btn-primary']) !!}
     </div>
 

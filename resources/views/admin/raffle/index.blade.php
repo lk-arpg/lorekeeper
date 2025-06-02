@@ -8,7 +8,7 @@
     {!! breadcrumbs(['Admin Panel' => 'admin', 'Raffle Index' => 'admin/raffles']) !!}
 
     <h1>Raffle Index</h1>
-    <div class="text-right form-group">
+    <div class="text-end mb-3">
         <a class="btn btn-success edit-group" href="#" data-id="">Create Raffle Group</a>
         <a class="btn btn-success edit-raffle" href="#" data-id="">Create Raffle</a>
     </div>
@@ -45,7 +45,7 @@
             </h3>
 
             @if ($raffle->is_active < 2)
-                <div class="float-right">
+                <div class="float-end">
                     <a href="#" class="roll-group btn btn-outline-danger btn-sm" data-id="{{ $groups[$raffle->group_id]->id }}">Roll Group</a>
                     <a href="#" class="edit-group btn btn-outline-primary btn-sm" data-id="{{ $groups[$raffle->group_id]->id }}">Edit Group</a>
                 </div>
@@ -55,10 +55,10 @@
             @endif
 
             <li class="list-group-item">
-                <i class="fas {{ $raffle->is_active ? 'fa-eye' : 'fa-eye-slash' }} mr-2"></i>
+                <i class="fas {{ $raffle->is_active ? 'fa-eye' : 'fa-eye-slash' }} me-2"></i>
                 <a href="{{ url('admin/raffles/view/' . $raffle->id) }}">{{ $raffle->name }}</a>
                 @if ($raffle->is_active < 2)
-                    <div class="float-right">
+                    <div class="float-end">
                         @if (!$raffle->group_id)
                             <a href="#" class="roll-raffle btn btn-outline-danger btn-xs p-2" data-id="{{ $raffle->id }}">Roll Raffle</a>
                         @endif

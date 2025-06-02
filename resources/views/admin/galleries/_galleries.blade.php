@@ -1,4 +1,4 @@
-<div class="{{ isset($gallery->parent_id) && $gallery->parent ? 'col-12 column mw-100 pr-0' : '' }} pt-2" style="flex-basis: 100%;">
+<div class="{{ isset($gallery->parent_id) && $gallery->parent ? 'col-12 column mw-100 pe-0' : '' }} pt-2" style="flex-basis: 100%;">
     <div class="row flex-wrap">
         <div class="col-6 col-md-1">
             <div class="logs-table-cell">
@@ -35,7 +35,7 @@
                 {!! $gallery->end_at ? pretty_date($gallery->end_at) : '-' !!}
             </div>
         </div>
-        <div class="col-6 col-md-2 text-right">
+        <div class="col-6 col-md-2 text-end">
             <div class="logs-table-cell">
                 <a href="{{ url('admin/data/galleries/edit/' . $gallery->id) }}" class="btn btn-primary">Edit</a>
             </div>

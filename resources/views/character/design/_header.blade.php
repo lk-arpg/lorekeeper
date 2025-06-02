@@ -1,6 +1,6 @@
 <h1>
     Request (#{{ $request->id }}): {!! $request->character ? $request->character->displayName : 'Deleted Character [#' . $request->character_id . ']' !!}
-    <span class="float-right badge badge-{{ $request->status == 'Draft' || $request->status == 'Pending' ? 'secondary' : ($request->status == 'Approved' ? 'success' : 'danger') }}">{{ $request->status }}
+    <span class="float-end badge badge-{{ $request->status == 'Draft' || $request->status == 'Pending' ? 'secondary' : ($request->status == 'Approved' ? 'success' : 'danger') }}">{{ $request->status }}
 </h1>
 
 @if (isset($request->staff_id))
@@ -17,9 +17,9 @@
 @if ($request->status != 'Draft' && Auth::user()->hasPower('manage_characters') && config('lorekeeper.extensions.design_update_voting'))
     <div class="card mb-3">
         <div class="card-body">
-            <h5 class="text-left">{{ $request->status == 'Pending' ? 'Vote' : 'Past Votes' }} on this {{ $request->update_type == 'MYO' ? 'MYO Submission' : 'Design Update' }}
+            <h5 class="text-start">{{ $request->status == 'Pending' ? 'Vote' : 'Past Votes' }} on this {{ $request->update_type == 'MYO' ? 'MYO Submission' : 'Design Update' }}
                 @if ($request->status == 'Pending')
-                    <span class="text-right float-right">
+                    <span class="text-end float-end">
                         <div class="row">
                             <div class="col-sm-6 text-center text-danger">
                                 {{ $request->getVoteData()['reject'] }}/{{ Settings::get('design_votes_needed') }}
@@ -79,24 +79,24 @@
     <li class="nav-item">
         <a class="nav-link {{ set_active('designs/' . $request->id) }}" href="{{ url('designs/' . $request->id) }}">
             @if ($request->is_complete)
-                <i class="text-success fas fa-check-circle fa-fw mr-2"></i>
+                <i class="text-success fas fa-check-circle fa-fw me-2"></i>
             @endif Status
         </a>
     </li>
     <li class="nav-item">
         <a class="nav-link {{ set_active('designs/' . $request->id . '/comments') }}" href="{{ url('designs/' . $request->id . '/comments') }}"><i
-                class="text-{{ $request->has_comments ? 'success far fa-circle' : 'danger fas fa-times' }} fa-fw mr-2"></i> Comments</a>
+                class="text-{{ $request->has_comments ? 'success far fa-circle' : 'danger fas fa-times' }} fa-fw me-2"></i> Comments</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link {{ set_active('designs/' . $request->id . '/image') }}" href="{{ url('designs/' . $request->id . '/image') }}"><i class="text-{{ $request->has_image ? 'success far fa-circle' : 'danger fas fa-times' }} fa-fw mr-2"></i>
+        <a class="nav-link {{ set_active('designs/' . $request->id . '/image') }}" href="{{ url('designs/' . $request->id . '/image') }}"><i class="text-{{ $request->has_image ? 'success far fa-circle' : 'danger fas fa-times' }} fa-fw me-2"></i>
             Masterlist Image</a>
     </li>
     <li class="nav-item">
         <a class="nav-link {{ set_active('designs/' . $request->id . '/addons') }}" href="{{ url('designs/' . $request->id . '/addons') }}"><i
-                class="text-{{ $request->has_addons ? 'success far fa-circle' : 'danger fas fa-times' }} fa-fw mr-2"></i> Add-ons</a>
+                class="text-{{ $request->has_addons ? 'success far fa-circle' : 'danger fas fa-times' }} fa-fw me-2"></i> Add-ons</a>
     </li>
     <li class="nav-item">
         <a class="nav-link {{ set_active('designs/' . $request->id . '/traits') }}" href="{{ url('designs/' . $request->id . '/traits') }}"><i
-                class="text-{{ $request->has_features ? 'success far fa-circle' : 'danger fas fa-times' }} fa-fw mr-2"></i> Traits</a>
+                class="text-{{ $request->has_features ? 'success far fa-circle' : 'danger fas fa-times' }} fa-fw me-2"></i> Traits</a>
     </li>
 </ul>

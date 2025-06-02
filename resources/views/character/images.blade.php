@@ -24,13 +24,13 @@
                     <div class="col-md-7">
                         <div class="text-center">
                             <a href="{{ $image->canViewFull(Auth::user() ?? null) && file_exists(public_path($image->imageDirectory . '/' . $image->fullsizeFileName)) ? $image->fullsizeUrl : $image->imageUrl }}" data-lightbox="entry"
-                                data-title="{{ $character->fullName }} [#{{ $image->id }}] {{ $image->canViewFull(Auth::user() ?? null) && file_exists(public_path($image->imageDirectory . '/' . $image->fullsizeFileName)) ? ' : Full-size Image' : '' }}">
+                                data-bs-title="{{ $character->fullName }} [#{{ $image->id }}] {{ $image->canViewFull(Auth::user() ?? null) && file_exists(public_path($image->imageDirectory . '/' . $image->fullsizeFileName)) ? ' : Full-size Image' : '' }}">
                                 <img src="{{ $image->canViewFull(Auth::user() ?? null) && file_exists(public_path($image->imageDirectory . '/' . $image->fullsizeFileName)) ? $image->fullsizeUrl : $image->imageUrl }}"
                                     class="image {{ $character->image->showContentWarnings(Auth::user() ?? null) ? 'content-warning' : '' }}" alt="{{ $image->character->fullName }}" />
                             </a>
                         </div>
                         @if ($image->canViewFull(Auth::user() ?? null) && file_exists(public_path($image->imageDirectory . '/' . $image->fullsizeFileName)))
-                            <div class="text-right">You are viewing the full-size image. <a href="{{ $image->imageUrl }}">View watermarked image</a>?</div>
+                            <div class="text-end">You are viewing the full-size image. <a href="{{ $image->imageUrl }}">View watermarked image</a>?</div>
                         @endif
                     </div>
                     @include('character._image_info', ['image' => $image])
@@ -42,27 +42,27 @@
     <h3>
         Images
         @if ($canManage)
-            <a href="{{ url('admin/character/' . $character->slug . '/image') }}" class="float-right btn btn-outline-info btn-sm"><i class="fas fa-plus"></i> Add Image</a>
+            <a href="{{ url('admin/character/' . $character->slug . '/image') }}" class="float-end btn btn-outline-info btn-sm"><i class="fas fa-plus"></i> Add Image</a>
         @endif
     </h3>
 
     <ul class="row nav image-nav mb-2" @if ($canManage) id="sortable" @endif>
         @foreach ($character->images($user)->get() as $image)
             <li class="col-md-3 col-6 text-center nav-item sort-item" data-id="{{ $image->id }}">
-                <a id="thumbnail-{{ $image->id }}" data-toggle="tab" href="#image-{{ $image->id }}" role="tab" class="{{ $image->id == $character->character_image_id ? 'active' : '' }}"><img src="{{ $image->thumbnailUrl }}"
+                <a id="thumbnail-{{ $image->id }}" data-bs-toggle="tab" href="#image-{{ $image->id }}" role="tab" class="{{ $image->id == $character->character_image_id ? 'active' : '' }}"><img src="{{ $image->thumbnailUrl }}"
                         class="img-thumbnail {{ $character->image->showContentWarnings(Auth::user() ?? null) ? 'content-warning' : '' }}" alt="Thumbnail for {{ $image->character->fullName }}" /></a>
             </li>
         @endforeach
     </ul>
     @if ($canManage)
-        {!! Form::open(['url' => 'admin/character/' . $character->slug . '/images/sort', 'class' => 'text-right']) !!}
+        {!! Form::open(['url' => 'admin/character/' . $character->slug . '/images/sort', 'class' => 'text-end']) !!}
         {!! Form::hidden('sort', '', ['id' => 'sortableOrder']) !!}
         {!! Form::submit('Save Order', ['class' => 'btn btn-primary']) !!}
         {!! Form::close() !!}
 
-        <div class="mobile-handle handle-clone badge badge-primary rounded-circle hide">
+        <div class="mobile-handle handle-clone badge text-bg-primary rounded-circle hide">
             <i class="fas fa-hand-point-up" aria-hidden="true"></i>
-            <span class="sr-only">Drag Handle</span>
+            <span class="visually-hidden">Drag Handle</span>
         </div>
     @endif
 @endsection

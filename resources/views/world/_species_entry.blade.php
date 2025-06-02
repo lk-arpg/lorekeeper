@@ -1,7 +1,7 @@
 <div class="row world-entry">
     @if ($species->speciesImageUrl)
         <div class="col-md-3 world-entry-image">
-            <a href="{{ $species->speciesImageUrl }}" data-lightbox="entry" data-title="{{ $species->name }}">
+            <a href="{{ $species->speciesImageUrl }}" data-lightbox="entry" data-bs-title="{{ $species->name }}">
                 <img src="{{ $species->speciesImageUrl }}" class="world-entry-image" alt="{{ $species->name }}" />
             </a>
         </div>
@@ -10,7 +10,7 @@
         <x-admin-edit title="Species" :object="$species" />
         <h3>
             @if (!$species->is_visible)
-                <i class="fas fa-eye-slash mr-1"></i>
+                <i class="fas fa-eye-slash me-1"></i>
             @endif
             {!! $species->displayName !!}
             <a href="{{ $species->searchUrl }}" class="world-entry-search text-muted">

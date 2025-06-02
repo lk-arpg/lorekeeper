@@ -14,16 +14,16 @@
     <div class="alert alert-warning">Please note that certain bug reports cannot be viewed until they are closed to prevent abuse.</div>
 
     @if (Auth::check())
-        <div class="text-right">
+        <div class="text-end">
             <a href="{{ url('reports/new') }}" class="btn btn-success">New Report</a>
         </div>
     @endif
     <br>
     {!! Form::open(['method' => 'GET', 'class' => 'form-inline justify-content-end']) !!}
-    <div class="form-group mr-3 mb-3">
+    <div class="mb-3 me-3 mb-3">
         {!! Form::text('url', Request::get('url'), ['class' => 'form-control', 'placeholder' => 'URL / Title']) !!}
     </div>
-    <div class="form-group mb-3">
+    <div class="mb-3 mb-3">
         {!! Form::submit('Search', ['class' => 'btn btn-primary']) !!}
     </div>
     {!! Form::close() !!}

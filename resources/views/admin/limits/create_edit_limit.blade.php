@@ -9,7 +9,7 @@
 
     <h1>{{ $limit->id ? 'Edit' : 'Create' }} Limit
         @if ($limit->id)
-            <a href="#" class="btn btn-danger float-right delete-limit-button">Delete Limit</a>
+            <a href="#" class="btn btn-danger float-end delete-limit-button">Delete Limit</a>
         @endif
     </h1>
 
@@ -17,12 +17,12 @@
 
     <h3>Basic Information</h3>
 
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::label('Name') !!}
         {!! Form::text('name', $limit->name, ['class' => 'form-control']) !!}
     </div>
 
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::label('Description (Optional)') !!}
         {!! Form::textarea('description', $limit->description, ['class' => 'form-control wysiwyg']) !!}
     </div>
@@ -36,7 +36,7 @@
 
     {!! Form::hidden('evaluation', $limit->evaluation, ['id' => 'evaluation']) !!}
 
-    <div class="text-right">
+    <div class="text-end">
         {!! Form::submit($limit->id ? 'Edit' : 'Create', ['class' => 'btn btn-primary', 'id' => 'submit']) !!}
     </div>
 

@@ -13,7 +13,7 @@
 
     <h1>{{ $category->id ? 'Edit' : 'Create' }} Item Category
         @if ($category->id)
-            <a href="#" class="btn btn-danger float-right delete-category-button">Delete Category</a>
+            <a href="#" class="btn btn-danger float-end delete-category-button">Delete Category</a>
         @endif
     </h1>
 
@@ -21,12 +21,12 @@
 
     <h3>Basic Information</h3>
 
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::label('Name') !!}
         {!! Form::text('name', $category->name, ['class' => 'form-control']) !!}
     </div>
 
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::label('World Page Image (Optional)') !!} {!! add_help('This image is used only on the world information pages.') !!}
         <div class="custom-file">
             {!! Form::label('image', 'Choose file...', ['class' => 'custom-file-label']) !!}
@@ -41,36 +41,36 @@
         @endif
     </div>
 
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::label('Description (Optional)') !!}
         {!! Form::textarea('description', $category->description, ['class' => 'form-control wysiwyg']) !!}
     </div>
 
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::checkbox('is_visible', 1, $category->id ? $category->is_visible : 1, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
-        {!! Form::label('is_visible', 'Is Visible', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If turned off, the category will not be visible in the category list or available for selection in search. Permissioned staff will still be able to add items to them, however.') !!}
+        {!! Form::label('is_visible', 'Is Visible', ['class' => 'form-check-label ms-3']) !!} {!! add_help('If turned off, the category will not be visible in the category list or available for selection in search. Permissioned staff will still be able to add items to them, however.') !!}
     </div>
 
     <div class="card mb-3" id="characterOptions">
         <div class="card-body">
             <div class="mb-2">
-                <div class="form-group">
+                <div class="mb-3">
                     {!! Form::checkbox('is_character_owned', 1, $category->is_character_owned, ['class' => 'form-check-input', 'data-toggle' => 'toggle', 'data-on' => 'Allow', 'data-off' => 'Disallow']) !!}
-                    {!! Form::label('is_character_owned', 'Can Be Owned by Characters', ['class' => 'form-check-label ml-3']) !!} {!! add_help('This will allow items in this category to be owned by characters.') !!}
+                    {!! Form::label('is_character_owned', 'Can Be Owned by Characters', ['class' => 'form-check-label ms-3']) !!} {!! add_help('This will allow items in this category to be owned by characters.') !!}
                 </div>
-                <div class="form-group">
+                <div class="mb-3">
                     {!! Form::label('character_limit', 'Character Hold Limit') !!} {!! add_help('This is the maximum amount of items from this category a character can possess. Set to 0 to allow infinite.') !!}
                     {!! Form::text('character_limit', $category ? $category->character_limit : 0, ['class' => 'form-control stock-field', 'data-name' => 'character_limit']) !!}
                 </div>
-                <div class="form-group">
+                <div class="mb-3">
                     {!! Form::checkbox('can_name', 1, $category->can_name, ['class' => 'form-check-input', 'data-toggle' => 'toggle', 'data-on' => 'Allow', 'data-off' => 'Disallow']) !!}
-                    {!! Form::label('can_name', 'Can be Named', ['class' => 'form-check-label ml-3']) !!} {!! add_help('This will set items in this category to be able to be named when in character inventories-- for instance, for pets. Works best in conjunction with a hold limit on the category.') !!}
+                    {!! Form::label('can_name', 'Can be Named', ['class' => 'form-check-label ms-3']) !!} {!! add_help('This will set items in this category to be able to be named when in character inventories-- for instance, for pets. Works best in conjunction with a hold limit on the category.') !!}
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="text-right">
+    <div class="text-end">
         {!! Form::submit($category->id ? 'Edit' : 'Create', ['class' => 'btn btn-primary']) !!}
     </div>
 

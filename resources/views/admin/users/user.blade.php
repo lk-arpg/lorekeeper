@@ -26,13 +26,13 @@
     <div class="card p-3 mb-2">
         <h3>Basic Info</h3>
         {!! Form::open(['url' => 'admin/users/' . $user->name . '/basic']) !!}
-        <div class="form-group row">
+        <div class="mb-3 row">
             <label class="col-md-2 col-form-label">Username</label>
             <div class="col-md-10">
                 {!! Form::text('name', $user->name, ['class' => 'form-control']) !!}
             </div>
         </div>
-        <div class="form-group row">
+        <div class="mb-3 row">
             <label class="col-md-2 col-form-label">Rank
                 @if ($user->isAdmin)
                     {!! add_help('The rank of the admin user cannot be edited.') !!}
@@ -48,7 +48,7 @@
                 @endif
             </div>
         </div>
-        <div class="text-right">
+        <div class="text-end">
             {!! Form::submit('Edit', ['class' => 'btn btn-primary']) !!}
         </div>
         {!! Form::close() !!}
@@ -57,19 +57,19 @@
     <div class="card p-3 mb-2">
         <h3>Account</h3>
         {!! Form::open(['url' => 'admin/users/' . $user->name . '/account']) !!}
-        <div class="form-group row">
+        <div class="mb-3 row">
             <label class="col-md-2 col-form-label">Email Address</label>
             <div class="col-md-10">
                 {!! Form::text('email', $user->email, ['class' => 'form-control', 'disabled']) !!}
             </div>
         </div>
-        <div class="form-group row">
+        <div class="mb-3 row">
             <label class="col-md-2 col-form-label">Join Date</label>
             <div class="col-md-10">
                 {!! Form::text('created_at', format_date($user->created_at, false), ['class' => 'form-control', 'disabled']) !!}
             </div>
         </div>
-        <div class="form-group row">
+        <div class="mb-3 row">
             <label class="col-md-2 col-form-label">Is an FTO {!! add_help(
                 'FTO (First Time Owner) means that they have no record of possessing a character from this world. This status is automatically updated when they earn their first character, but can be toggled manually in case off-record transfers have happened before.',
             ) !!}</label>
@@ -79,7 +79,7 @@
                 </div>
             </div>
         </div>
-        <div class="text-right">
+        <div class="text-end">
             {!! Form::submit('Edit', ['class' => 'btn btn-primary']) !!}
         </div>
         {!! Form::close() !!}
@@ -96,13 +96,13 @@
             <p class="text-danger">This user has not set their DOB.</p>
         @endif
         {!! Form::open(['url' => 'admin/users/' . $user->name . '/birthday']) !!}
-        <div class="form-group row">
+        <div class="mb-3 row">
             <label class="col-md-2 col-form-label">Date of Birth</label>
             <div class="col-md-10 row">
                 {!! Form::date('dob', null, ['class' => 'form-control']) !!}
             </div>
         </div>
-        <div class="text-right">
+        <div class="text-end">
             {!! Form::submit('Edit', ['class' => 'btn btn-primary']) !!}
         </div>
         {!! Form::close() !!}
@@ -114,7 +114,7 @@
             their new account. If the alias is the user's primary alias, their remaining aliases will be checked to see if they have a valid primary alias. If they do, it will become their new primary alias.</p>
         @if ($user->aliases->count())
             @foreach ($user->aliases as $alias)
-                <div class="form-group row">
+                <div class="mb-3 row">
                     <div class="col-2">
                         <label>Alias{{ $alias->is_primary_alias ? ' (Primary)' : '' }}</label>
                     </div>
@@ -122,7 +122,7 @@
                         <div class="d-flex">
                             {!! Form::text('alias', $alias->alias . '@' . $alias->siteDisplayName . (!$alias->is_visible ? ' (Hidden)' : ''), ['class' => 'form-control', 'disabled']) !!}
                             {!! Form::open(['url' => 'admin/users/' . $user->name . '/alias/' . $alias->id]) !!}
-                            <div class="text-right ml-2">{!! Form::submit('Clear Alias', ['class' => 'btn btn-danger']) !!}</div>
+                            <div class="text-end ms-2">{!! Form::submit('Clear Alias', ['class' => 'btn btn-danger']) !!}</div>
                         </div>
                     </div>
                     {!! Form::close() !!}

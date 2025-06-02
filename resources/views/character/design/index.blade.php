@@ -55,7 +55,7 @@
                                 <span class="badge badge-{{ $r->status == 'Pending' ? 'secondary' : ($r->status == 'Approved' ? 'success' : 'danger') }}">{{ $r->status }}</span>
                             </td>
                         @endif
-                        <td class="text-right"><a href="{{ $r->url }}" class="btn btn-primary btn-sm">Details</a></td>
+                        <td class="text-end"><a href="{{ $r->url }}" class="btn btn-primary btn-sm">Details</a></td>
                     </tr>
                 @endforeach
             </tbody>

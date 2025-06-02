@@ -22,7 +22,7 @@
         submissions have also been removed from the submission queue. </p>
 
     @if (Auth::user()->is_deactivated)
-        <div class="text-right">
+        <div class="text-end">
             <a href="#" class="btn btn-outline-danger reactivate-button">Reactivate Account</a>
         </div>
     @endif

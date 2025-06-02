@@ -9,7 +9,7 @@
     @if (!$alias->is_visible)
         <p class="text-danger">This alias is currently hidden from the public. Setting it as your primary alias will make it visible to everyone!</p>
     @endif
-    {!! Form::open(['url' => 'account/make-primary/' . $alias->id, 'class' => 'text-right']) !!}
+    {!! Form::open(['url' => 'account/make-primary/' . $alias->id, 'class' => 'text-end']) !!}
     {!! Form::submit('Make Primary Alias', ['class' => 'btn btn-primary']) !!}
     {!! Form::close() !!}
 @endif

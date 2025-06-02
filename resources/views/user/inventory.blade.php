@@ -11,31 +11,31 @@
         Inventory
     </h1>
 
-    <div class="text-right mb-3">
+    <div class="text-end mb-3">
         <div class="btn-group">
-            <button type="button" class="btn btn-secondary active def-view-button" data-toggle="tooltip" title="Default View" alt="Default View"><i class="fas fa-th"></i></button>
-            <button type="button" class="btn btn-secondary sum-view-button" data-toggle="tooltip" title="Summarized View" alt="Summarized View"><i class="fas fa-bars"></i></button>
+            <button type="button" class="btn btn-secondary active def-view-button" data-bs-toggle="tooltip" title="Default View" alt="Default View"><i class="fas fa-th"></i></button>
+            <button type="button" class="btn btn-secondary sum-view-button" data-bs-toggle="tooltip" title="Summarized View" alt="Summarized View"><i class="fas fa-bars"></i></button>
         </div>
     </div>
 
     <div>
         {!! Form::open(['method' => 'GET', 'class' => '']) !!}
-        <div class="form-inline justify-content-end">
-            <div class="form-group ml-3 mb-3">
+        <div class="d-flex align-items-center justify-content-end">
+            <div class="mb-3 ms-3 mb-3">
                 {!! Form::text('name', Request::get('name'), ['class' => 'form-control', 'placeholder' => 'Name']) !!}
             </div>
-            <div class="form-group ml-3 mb-3">
+            <div class="mb-3 ms-3 mb-3">
                 {!! Form::select('item_category_id', $categories->pluck('name', 'id'), Request::get('item_category_id'), ['class' => 'form-control', 'placeholder' => 'Any Category']) !!}
             </div>
             @if (config('lorekeeper.extensions.item_entry_expansion.extra_fields'))
-                <div class="form-group ml-3 mb-3">
+                <div class="mb-3 ms-3 mb-3">
                     {!! Form::select('rarity_id', $rarities, Request::get('rarity_id'), ['class' => 'form-control', 'placeholder' => 'Any Rarity']) !!}
                 </div>
-                <div class="form-group ml-3 mb-3">
+                <div class="mb-3 ms-3 mb-3">
                     {!! Form::select('artist', $artists, Request::get('artist'), ['class' => 'form-control', 'placeholder' => 'Any Artist']) !!}
                 </div>
             @endif
-            <div class="form-group ml-3 mb-3">
+            <div class="mb-3 ms-3 mb-3">
                 {!! Form::submit('Search', ['class' => 'btn btn-primary']) !!}
             </div>
         </div>
@@ -47,7 +47,7 @@
             <div class="card mb-3 inventory-category">
                 <h5 class="card-header inventory-header">
                     {!! isset($categories[$categoryId]) ? '<a href="' . $categories[$categoryId]->searchUrl . '">' . $categories[$categoryId]->name . '</a>' : 'Miscellaneous' !!}
-                    <a class="small inventory-collapse-toggle collapse-toggle" href="#categoryId_{!! isset($categories[$categoryId]) ? $categories[$categoryId]->id : 'miscellaneous' !!}" data-toggle="collapse">
+                    <a class="small inventory-collapse-toggle collapse-toggle" href="#categoryId_{!! isset($categories[$categoryId]) ? $categories[$categoryId]->id : 'miscellaneous' !!}" data-bs-toggle="collapse">
                         Show
                     </a>
                 </h5>
@@ -82,7 +82,7 @@
             <div class="card mb-2">
                 <h5 class="card-header">
                     {!! isset($categories[$categoryId]) ? '<a href="' . $categories[$categoryId]->searchUrl . '">' . $categories[$categoryId]->name . '</a>' : 'Miscellaneous' !!}
-                    <a class="small inventory-collapse-toggle collapse-toggle" href="#categoryId_{!! isset($categories[$categoryId]) ? $categories[$categoryId]->id : 'miscellaneous' !!}" data-toggle="collapse">
+                    <a class="small inventory-collapse-toggle collapse-toggle" href="#categoryId_{!! isset($categories[$categoryId]) ? $categories[$categoryId]->id : 'miscellaneous' !!}" data-bs-toggle="collapse">
                         Show
                     </a>
                 </h5>
@@ -141,7 +141,7 @@
         </div>
     </div>
 
-    <div class="text-right">
+    <div class="text-end">
         <a href="{{ url($user->url . '/item-logs') }}">View all...</a>
     </div>
 @endsection

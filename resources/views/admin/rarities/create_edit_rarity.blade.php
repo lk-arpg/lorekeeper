@@ -9,7 +9,7 @@
 
     <h1>{{ $rarity->id ? 'Edit' : 'Create' }} Rarity
         @if ($rarity->id)
-            <a href="#" class="btn btn-danger float-right delete-rarity-button">Delete Rarity</a>
+            <a href="#" class="btn btn-danger float-end delete-rarity-button">Delete Rarity</a>
         @endif
     </h1>
 
@@ -17,12 +17,12 @@
 
     <h3>Basic Information</h3>
 
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::label('Name') !!}
         {!! Form::text('name', $rarity->name, ['class' => 'form-control']) !!}
     </div>
 
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::label('Colour (Hex code; optional)') !!}
         <div class="input-group cp">
             {!! Form::text('color', $rarity->color, ['class' => 'form-control']) !!}
@@ -32,7 +32,7 @@
         </div>
     </div>
 
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::label('World Page Image (Optional)') !!} {!! add_help('This image is used only on the world information pages.') !!}
         <div class="custom-file">
             {!! Form::label('image', 'Choose file...', ['class' => 'custom-file-label']) !!}
@@ -47,12 +47,12 @@
         @endif
     </div>
 
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::label('Description (Optional)') !!}
         {!! Form::textarea('description', $rarity->description, ['class' => 'form-control wysiwyg']) !!}
     </div>
 
-    <div class="text-right">
+    <div class="text-end">
         {!! Form::submit($rarity->id ? 'Edit' : 'Create', ['class' => 'btn btn-primary']) !!}
     </div>
 

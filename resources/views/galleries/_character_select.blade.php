@@ -17,11 +17,11 @@
                 </div>
             </div>
             <div class="col-md-7">
-                <div class="form-group">
+                <div class="mb-3">
                     {!! Form::select('slug[]', $characters, null, ['class' => 'form-control character-code', 'placeholder' => 'Character Code (EX-001, for example)']) !!}
                 </div>
             </div>
-            <div class="col-md-1 text-right">
+            <div class="col-md-1 text-end">
                 <a href="#" class="remove-character text-muted"><i class="fas fa-times"></i></a>
             </div>
         </div>

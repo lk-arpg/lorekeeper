@@ -11,7 +11,7 @@
 
     <p>You can create new sales posts here. Creating a sales post alerts every user that there is a new post, unless the post is marked as not viewable (see the post creation page for details).</p>
 
-    <div class="text-right mb-3"><a class="btn btn-primary" href="{{ url('admin/sales/create') }}"><i class="fas fa-plus"></i> Create New Sales Post</a></div>
+    <div class="text-end mb-3"><a class="btn btn-primary" href="{{ url('admin/sales/create') }}"><i class="fas fa-plus"></i> Create New Sales Post</a></div>
     @if (!count($saleses))
         <p>No sales found.</p>
     @else
@@ -38,9 +38,9 @@
                                 <div class="logs-table-cell">
                                     @if (!$sales->is_visible)
                                         @if ($sales->post_at)
-                                            <i class="fas fa-clock mr-1" data-toggle="tooltip" title="This post is scheduled to be posted in the future."></i>
+                                            <i class="fas fa-clock me-1" data-bs-toggle="tooltip" title="This post is scheduled to be posted in the future."></i>
                                         @else
-                                            <i class="fas fa-eye-slash mr-1" data-toggle="tooltip" title="This post is hidden."></i>
+                                            <i class="fas fa-eye-slash me-1" data-bs-toggle="tooltip" title="This post is hidden."></i>
                                         @endif
                                     @endif
                                     <a href="{{ $sales->url }}">{{ $sales->title }}</a>
@@ -52,7 +52,7 @@
                             <div class="col-6 col-md-3">
                                 <div class="logs-table-cell">{!! pretty_date($sales->updated_at) !!}</div>
                             </div>
-                            <div class="col-12 col-md-1 text-right">
+                            <div class="col-12 col-md-1 text-end">
                                 <div class="logs-table-cell"><a href="{{ url('admin/sales/edit/' . $sales->id) }}" class="btn btn-primary py-0 px-2 w-100">Edit</a></div>
                             </div>
                         </div>

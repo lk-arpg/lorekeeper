@@ -12,7 +12,7 @@
     <p>This is a list of character categories that will be used to classify characters. Creating character categories is entirely optional, but recommended for organisational purposes.</p>
     <p>The sorting order reflects the order in which the character categories will be displayed on the world pages.</p>
 
-    <div class="text-right mb-3"><a class="btn btn-primary" href="{{ url('admin/data/character-categories/create') }}"><i class="fas fa-plus"></i> Create New Character Category</a></div>
+    <div class="text-end mb-3"><a class="btn btn-primary" href="{{ url('admin/data/character-categories/create') }}"><i class="fas fa-plus"></i> Create New Character Category</a></div>
     @if (!count($categories))
         <p>No character categories found.</p>
     @else
@@ -29,9 +29,9 @@
                 @foreach ($categories as $category)
                     <tr class="sort-item" data-id="{{ $category->id }}">
                         <td>
-                            <a class="fas fa-arrows-alt-v handle mr-3" href="#"></a>
+                            <a class="fas fa-arrows-alt-v handle me-3" href="#"></a>
                             @if (!$category->is_visible)
-                                <i class="fas fa-eye-slash mr-1"></i>
+                                <i class="fas fa-eye-slash me-1"></i>
                             @endif
                             {!! $category->displayName !!}
                         </td>
@@ -45,7 +45,7 @@
                                 --
                             @endif
                         </td>
-                        <td class="text-right">
+                        <td class="text-end">
                             <a href="{{ url('admin/data/character-categories/edit/' . $category->id) }}" class="btn btn-primary">Edit</a>
                         </td>
                     </tr>

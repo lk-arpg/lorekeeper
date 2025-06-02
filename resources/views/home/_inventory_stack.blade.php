@@ -66,7 +66,7 @@
                         @endif
                         <td class="col-1">
                             @if (!$itemRow->isTransferrable)
-                                <i class="fas fa-lock" data-toggle="tooltip" title="Account-bound items cannot be transferred{!! $item->is_deletable ? ', but can be deleted.' : '.' !!}"></i>
+                                <i class="fas fa-lock" data-bs-toggle="tooltip" title="Account-bound items cannot be transferred{!! $item->is_deletable ? ', but can be deleted.' : '.' !!}"></i>
                             @endif
                         </td>
                     </tr>
@@ -88,17 +88,17 @@
 
                 @if (isset($item->category) && $item->category->is_character_owned)
                     <li class="list-group-item">
-                        <a class="card-title h5 collapse-title" data-toggle="collapse" href="#characterTransferForm">
+                        <a class="card-title h5 collapse-title" data-bs-toggle="collapse" href="#characterTransferForm">
                             @if ($stack->first()->user_id != $user->id)
                                 [ADMIN]
                             @endif Transfer Item to Character
                         </a>
                         <div id="characterTransferForm" class="collapse">
                             <p>This will transfer this stack or stacks to this character's inventory.</p>
-                            <div class="form-group">
-                                {!! Form::select('character_id', $characterOptions, null, ['class' => 'form-control mr-2 default character-select', 'placeholder' => 'Select Character']) !!}
+                            <div class="mb-3">
+                                {!! Form::select('character_id', $characterOptions, null, ['class' => 'form-control me-2 default character-select', 'placeholder' => 'Select Character']) !!}
                             </div>
-                            <div class="text-right">
+                            <div class="text-end">
                                 {!! Form::button('Transfer', ['class' => 'btn btn-primary', 'name' => 'action', 'value' => 'characterTransfer', 'type' => 'submit']) !!}
                             </div>
                         </div>
@@ -106,14 +106,14 @@
                 @endif
                 @if (isset($item->data['resell']) && App\Models\Currency\Currency::where('id', $item->resell->flip()->pop())->first() && config('lorekeeper.extensions.item_entry_expansion.resale_function'))
                     <li class="list-group-item">
-                        <a class="card-title h5 collapse-title" data-toggle="collapse" href="#resellForm">
+                        <a class="card-title h5 collapse-title" data-bs-toggle="collapse" href="#resellForm">
                             @if ($stack->first()->user_id != $user->id)
                                 [ADMIN]
                             @endif Sell Item
                         </a>
                         <div id="resellForm" class="collapse">
                             <p>This item can be sold for <strong>{!! App\Models\Currency\Currency::find($item->resell->flip()->pop())->display($item->resell->pop()) !!}</strong>. This action is not reversible. Are you sure you want to sell this item?</p>
-                            <div class="text-right">
+                            <div class="text-end">
                                 {!! Form::button('Sell', ['class' => 'btn btn-danger', 'name' => 'action', 'value' => 'resell', 'type' => 'submit']) !!}
                             </div>
                         </div>
@@ -121,17 +121,17 @@
                 @endif
                 @if ($canTransfer || $user->hasPower('edit_inventories'))
                     <li class="list-group-item">
-                        <a class="card-title h5 collapse-title" data-toggle="collapse" href="#transferForm">
+                        <a class="card-title h5 collapse-title" data-bs-toggle="collapse" href="#transferForm">
                             @if ($stack->first()->user_id != $user->id || !$canTransfer)
                                 [ADMIN]
                             @endif Transfer Item
                         </a>
                         <div id="transferForm" class="collapse">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 {!! Form::label('user_id', 'Recipient') !!} {!! add_help('You can only transfer items to verified users.') !!}
                                 {!! Form::select('user_id', $userOptions, null, ['class' => 'form-control user-select']) !!}
                             </div>
-                            <div class="text-right">
+                            <div class="text-end">
                                 {!! Form::button('Transfer', ['class' => 'btn btn-primary', 'name' => 'action', 'value' => 'transfer', 'type' => 'submit']) !!}
                             </div>
                         </div>
@@ -139,14 +139,14 @@
                 @endif
                 @if ($item->is_deletable || $user->hasPower('edit_inventories'))
                     <li class="list-group-item">
-                        <a class="card-title h5 collapse-title" data-toggle="collapse" href="#deleteForm">
+                        <a class="card-title h5 collapse-title" data-bs-toggle="collapse" href="#deleteForm">
                             @if ($stack->first()->user_id != $user->id || !$item->is_deletable)
                                 [ADMIN]
                             @endif Delete Item
                         </a>
                         <div id="deleteForm" class="collapse">
                             <p>This action is not reversible. Are you sure you want to delete this item?</p>
-                            <div class="text-right">
+                            <div class="text-end">
                                 {!! Form::button('Delete', ['class' => 'btn btn-danger', 'name' => 'action', 'value' => 'delete', 'type' => 'submit']) !!}
                             </div>
                         </div>

@@ -5,7 +5,7 @@
         Note that you will lose your place in the queue if you do this.
     </p>
     <p>Are you sure you want to cancel this request?</p>
-    {!! Form::open(['url' => 'designs/' . $request->id . '/cancel', 'class' => 'text-right']) !!}
+    {!! Form::open(['url' => 'designs/' . $request->id . '/cancel', 'class' => 'text-end']) !!}
     {!! Form::submit('Cancel Request', ['class' => 'btn btn-primary']) !!}
 @else
     <div>You cannot cancel this request.</div>

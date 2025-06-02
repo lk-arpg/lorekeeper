@@ -34,8 +34,8 @@
                 <h5>Limits for {!! $limits->first()->object->displayName !!}</h5>
             @endif
             <div class="row">
-                <div class="col-md form-group">
-                    {!! Form::label('is_unlocked', 'Is Unlocked?', ['class' => 'form-label font-weight-bold']) !!}
+                <div class="col-md mb-3">
+                    {!! Form::label('is_unlocked', 'Is Unlocked?', ['class' => 'form-label fw-bold']) !!}
                     <p>
                         If this is set to "No", the object will continue to be locked until all requirements are met, every time the user attempts to interact with it.
                         <br />
@@ -43,8 +43,8 @@
                     </p>
                     {!! Form::select('is_unlocked', ['yes' => 'Yes', 'no' => 'No'], $limits?->first()->is_unlocked ? 'yes' : 'no', ['class' => 'form-control']) !!}
                 </div>
-                <div class="col-md form-group border-left">
-                    {!! Form::label('is_auto_unlocked', 'Automatically Unlock?', ['class' => 'form-label font-weight-bold']) !!} {!! add_help("This only affects objects with 'Is Unlocked?' set to 'Yes'.") !!}
+                <div class="col-md mb-3 border-start">
+                    {!! Form::label('is_auto_unlocked', 'Automatically Unlock?', ['class' => 'form-label fw-bold']) !!} {!! add_help("This only affects objects with 'Is Unlocked?' set to 'Yes'.") !!}
                     <p>
                         If this is set to "No", the user must manually unlock the object by interacting with it - ex. clicking on the "Unlock" button.
                         <br />
@@ -58,11 +58,11 @@
             @if ($limits)
                 @foreach ($limits as $limit)
                     <div class="row">
-                        <div class="col-md-3 form-group">
+                        <div class="col-md-3 mb-3">
                             {!! Form::label('Limit Type') !!}
                             {!! Form::select('limit_type[]', $limitTypes, $limit->limit_type, ['class' => 'form-control limit-selectize limit-type', 'placeholder' => 'Select Limit Type']) !!}
                         </div>
-                        <div class="col-md-4 form-group limit-select">
+                        <div class="col-md-4 mb-3 limit-select">
                             {!! Form::label('limit_id', 'Limit') !!}
                             @if ($limit->limit_type == 'prompt')
                                 {!! Form::select('limit_id[]', $prompts, $limit->limit_id, ['class' => 'form-control limit prompts', 'placeholder' => 'Select Limit']) !!}
@@ -75,11 +75,11 @@
                             @endif
                         </div>
                         <div class="col-md-4 quantity {{ $limit->limit_type == 'dynamic' ? 'hide' : '' }}">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 {!! Form::label('Quantity') !!}
                                 {!! Form::number('quantity[]', $limit->quantity, ['class' => 'form-control', 'placeholder' => 'Enter Quantity', 'min' => 0, 'step' => 1]) !!}
                             </div>
-                            <div class="form-group debit {{ $limit->limit_type == 'currency' || $limit->limit_type == 'item' ? '' : 'hide' }}">
+                            <div class="mb-3 debit {{ $limit->limit_type == 'currency' || $limit->limit_type == 'item' ? '' : 'hide' }}">
                                 {!! Form::label('Debit') !!}
                                 {!! Form::select('debit[]', ['yes' => 'Debit', 'no' => 'Don\'t Debit'], $limit->debit ? 'yes' : 'no', ['class' => 'form-control']) !!}
                             </div>
@@ -93,27 +93,27 @@
         </div>
         <div class="btn btn-secondary" id="add-limit">Add Limit</div>
         @if ($limits)
-            <i class="fas fa-trash text-danger float-right mt-2 mx-2 fa-2x" data-toggle="tooltip" title="To delete limits, simply remove all existing limits and click 'Edit Limits'"></i>
+            <i class="fas fa-trash text-danger float-end mt-2 mx-2 fa-2x" data-bs-toggle="tooltip" title="To delete limits, simply remove all existing limits and click 'Edit Limits'"></i>
         @endif
-        {!! Form::submit(($limits ? 'Edit' : 'Create') . ' Limits', ['class' => 'btn btn-primary float-right']) !!}
+        {!! Form::submit(($limits ? 'Edit' : 'Create') . ' Limits', ['class' => 'btn btn-primary float-end']) !!}
     </div>
     {!! Form::close() !!}
 </div>
 
 <div class="hide limit-row">
     <div class="row">
-        <div class="col-md-3 form-group">
+        <div class="col-md-3 mb-3">
             {!! Form::label('Limit Type') !!}
             {!! Form::select('limit_type[]', $limitTypes, null, ['class' => 'form-control limit-selectize limit-type', 'placeholder' => 'Select Limit Type']) !!}
         </div>
-        <div class="col-md-4 form-group limit-select">
+        <div class="col-md-4 mb-3 limit-select">
         </div>
         <div class="col-md-4 quantity hide">
-            <div class="form-group">
+            <div class="mb-3">
                 {!! Form::label('Quantity') !!}
                 {!! Form::number('quantity[]', 0, ['class' => 'form-control', 'placeholder' => 'Enter Quantity', 'min' => 0, 'step' => 1]) !!}
             </div>
-            <div class="form-group hide debit">
+            <div class="mb-3 hide debit">
                 {!! Form::label('Debit') !!}
                 {!! Form::select('debit[]', ['yes' => 'Debit', 'no' => 'Don\'t Debit'], 'no', ['class' => 'form-control']) !!}
             </div>

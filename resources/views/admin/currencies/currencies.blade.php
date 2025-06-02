@@ -15,7 +15,7 @@
 
     <p>The order of currencies as displayed on user and character profiles can be edited from the <strong><a href="{{ url('admin/data/currencies/sort') }}">Sort Currencies</a></strong> page.</p>
 
-    <div class="text-right mb-3">
+    <div class="text-end mb-3">
         <a class="btn btn-primary" href="{{ url('admin/data/currency-categories') }}"><i class="fas fa-folder"></i> Currency Categories</a>
         <a class="btn btn-primary" href="{{ url('admin/data/currencies/create') }}"><i class="fas fa-plus"></i> Create New Currency</a>
     </div>
@@ -45,7 +45,7 @@
                         <div class="col-12 col-md-3">
                             <div class="logs-table-cell">
                                 @if (!$currency->is_visible)
-                                    <i class="fas fa-eye-slash mr-1"></i>
+                                    <i class="fas fa-eye-slash me-1"></i>
                                 @endif
                                 {{ $currency->name }} @if ($currency->abbreviation)
                                     ({{ $currency->abbreviation }})

@@ -30,7 +30,7 @@
             <tbody>
                 @foreach ($limits as $limit)
                     <tr>
-                        <td data-toggle="tooltip" title="{{ config('lorekeeper.limits.limit_types')[$limit->limit_type]['description'] }}">
+                        <td data-bs-toggle="tooltip" title="{{ config('lorekeeper.limits.limit_types')[$limit->limit_type]['description'] }}">
                             <i class="fas fa-question-circle"></i>
                             {{ $limitTypes[$limit->limit_type] }}
                         </td>

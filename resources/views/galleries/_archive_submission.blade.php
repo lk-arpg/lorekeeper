@@ -5,7 +5,7 @@
         submission at any time. Archiving a submission hides it from view by other users, but not staff.</p>
     <p>Are you sure you want to {{ $submission->is_visible ? 'archive' : 'unarchive' }} <strong>{{ $submission->title }}</strong>?</p>
 
-    <div class="text-right">
+    <div class="text-end">
         {!! Form::submit(($submission->is_visible ? 'Archive' : 'Unarchive') . ' Submission', ['class' => 'btn btn-warning']) !!}
     </div>
 

@@ -11,7 +11,7 @@
 <div id="characterComponents" class="hide">
     <div class="submission-character mb-3 card">
         <div class="card-body">
-            <div class="text-right"><a href="#" class="remove-character text-muted"><i class="fas fa-times"></i></a></div>
+            <div class="text-end"><a href="#" class="remove-character text-muted"><i class="fas fa-times"></i></a></div>
             <div class="row">
                 <div class="col-md-2 align-items-stretch d-flex">
                     <div class="d-flex text-center align-items-center">
@@ -20,7 +20,7 @@
                     </div>
                 </div>
                 <div class="col-md-10">
-                    <div class="form-group">
+                    <div class="mb-3">
                         {!! Form::label('slug[]', 'Character Code') !!}
                         {!! Form::select('slug[]', $characters, null, ['class' => 'form-control character-code', 'placeholder' => 'Select Character']) !!}
                     </div>
@@ -41,7 +41,7 @@
                             <tbody class="character-rewards">
                             </tbody>
                         </table>
-                        <div class="text-right">
+                        <div class="text-end">
                             <a href="#" class="btn btn-outline-primary btn-sm add-reward">Add Reward</a>
                         </div>
                     </div>
@@ -74,7 +74,7 @@
             @endif
 
             <td class="d-flex align-items-center">
-                {!! Form::number('character_rewardable_quantity[]', 1, ['class' => 'form-control mr-2 character-rewardable-quantity']) !!}
+                {!! Form::number('character_rewardable_quantity[]', 1, ['class' => 'form-control me-2 character-rewardable-quantity']) !!}
                 <a href="#" class="remove-reward d-block"><i class="fas fa-times text-muted"></i></a>
             </td>
         </tr>

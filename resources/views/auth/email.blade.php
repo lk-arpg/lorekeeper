@@ -15,7 +15,7 @@
 
     {!! Form::open(['url' => 'email', 'method' => 'POST']) !!}
 
-    <div class="form-group row">
+    <div class="mb-3 row">
         {!! Form::label('email', 'Email Address', ['class' => 'col-md-4 col-form-label text-md-right']) !!}
         <div class="col-md-6">
             {!! Form::email('email', old('email'), ['class' => 'form-control' . ($errors->has('email') ? ' is-invalid' : ''), 'required']) !!}
@@ -27,7 +27,7 @@
         </div>
     </div>
 
-    <div class="form-group row">
+    <div class="mb-3 row">
         <div class="col-md-6 offset-md-4">
             {!! Form::submit('Add Email Address', ['class' => 'btn btn-primary']) !!}
         </div>

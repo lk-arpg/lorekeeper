@@ -22,10 +22,10 @@
             <p class="text-danger">Incorrect key entered.</p>
         @endif
         {!! Form::open(['method' => 'GET', 'class' => 'form-inline']) !!}
-        <div class="form-group mr-3 mb-3">
+        <div class="mb-3 me-3 mb-3">
             {!! Form::text('key', null, ['class' => 'form-control']) !!}
         </div>
-        <div class="form-group mb-3">
+        <div class="mb-3 mb-3">
             {!! Form::submit('Submit', ['class' => 'btn btn-primary']) !!}
         </div>
         {!! Form::close() !!}
@@ -34,12 +34,12 @@
     @endif
 @else
     {!! $users->render() !!}
-    <div class="row ml-md-2">
+    <div class="row ms-md-2">
         <div class="d-flex row flex-wrap col-12 pb-1 px-0 ubt-bottom">
-            <div class="col-12 col-md-4 font-weight-bold">Username</div>
-            <div class="col-4 col-md-2 font-weight-bold">Primary Alias</div>
-            <div class="col-4 col-md-3 font-weight-bold">Deactivated by</div>
-            <div class="col-4 col-md-2 font-weight-bold">Deactivated at</div>
+            <div class="col-12 col-md-4 fw-bold">Username</div>
+            <div class="col-4 col-md-2 fw-bold">Primary Alias</div>
+            <div class="col-4 col-md-3 fw-bold">Deactivated by</div>
+            <div class="col-4 col-md-2 fw-bold">Deactivated at</div>
         </div>
         @foreach ($users as $user)
             <div class="d-flex row flex-wrap col-12 mt-1 pt-1 px-0 ubt-top">

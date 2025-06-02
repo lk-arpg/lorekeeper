@@ -9,7 +9,7 @@
     {!! breadcrumbs([$page->title => $page->url]) !!}
     <h1>
         @if (!$page->is_visible)
-            <i class="fas fa-eye-slash mr-1"></i>
+            <i class="fas fa-eye-slash me-1"></i>
         @endif
         {{ $page->title }}
     </h1>

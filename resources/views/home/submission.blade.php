@@ -13,8 +13,8 @@
         @if ($submission->user_id == Auth::user()->id && $submission->status == 'Pending')
             {!! Form::open(['url' => url()->current(), 'id' => 'submissionForm']) !!}
             @if ($isClaim || !count(getLimits($submission->prompt)))
-                <div class="text-right">
-                    <a href="#" class="btn btn-danger mr-2" id="cancellationButton">Cancel {{ $submission->prompt_id ? 'submission' : 'claim' }}</a>
+                <div class="text-end">
+                    <a href="#" class="btn btn-danger me-2" id="cancellationButton">Cancel {{ $submission->prompt_id ? 'submission' : 'claim' }}</a>
                 </div>
             @else
                 <div class="alert alert-warning">
@@ -26,14 +26,14 @@
                     <div class="modal-content hide" id="cancellationContent">
                         <div class="modal-header">
                             <span class="modal-title h5 mb-0">Confirm Cancellation</span>
-                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal">&times;</button>
                         </div>
                         <div class="modal-body">
                             <p>
                                 Make a mistake?
                                 This will cancel this {{ $submission->prompt_id ? 'submission' : 'claim' }} and return it to your drafts.
                             </p>
-                            <div class="text-right">
+                            <div class="text-end">
                                 <a href="#" id="cancellationSubmit" class="btn btn-danger">Cancel</a>
                             </div>
                         </div>

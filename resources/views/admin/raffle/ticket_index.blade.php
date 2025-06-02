@@ -17,7 +17,7 @@
                 This raffle has a cap of {{ $raffle->ticket_cap }} tickets per individual.
             @endif
         </p>
-        <div class="text-right form-group">
+        <div class="text-end mb-3">
             <a class="btn btn-success edit-tickets" href="#" data-id="">Add Tickets</a>
         </div>
     @elseif($raffle->is_active == 1)
@@ -27,7 +27,7 @@
                 This raffle has a cap of {{ $raffle->ticket_cap }} tickets per individual.
             @endif
         </p>
-        <div class="text-right form-group">
+        <div class="text-end mb-3">
             <a class="btn btn-success edit-tickets" href="#" data-id="">Add Tickets</a>
         </div>
     @elseif($raffle->is_active == 2)
@@ -42,7 +42,7 @@
                                 <div class="logs-table-cell text-center">#</div>
                             </div>
                             <div class="col-11">
-                                <div class="logs-table-cell text-left">User</div>
+                                <div class="logs-table-cell text-start">User</div>
                             </div>
                         </div>
                     </div>
@@ -54,7 +54,7 @@
                                         <div class="logs-table-cell text-center">{{ $winner->position }}</div>
                                     </div>
                                     <div class="col-11">
-                                        <div class="logs-table-cell text-left">{!! $winner->displayHolderName !!}</div>
+                                        <div class="logs-table-cell text-start">{!! $winner->displayHolderName !!}</div>
                                     </div>
                                 </div>
                             </div>
@@ -67,7 +67,7 @@
 
     <h3>Tickets</h3>
 
-    <div class="text-right">{!! $tickets->render() !!}</div>
+    <div class="text-end">{!! $tickets->render() !!}</div>
     <div class="table-responsive">
         <div class="mb-4 logs-table">
             <div class="logs-table-header">
@@ -76,7 +76,7 @@
                         <div class="logs-table-cell text-center">#</div>
                     </div>
                     <div class="col-8 col-md-3">
-                        <div class="logs-table-cell text-left">User</div>
+                        <div class="logs-table-cell text-start">User</div>
                     </div>
                     @if ($raffle->is_active < 2)
                         <div class="col-3">
@@ -93,11 +93,11 @@
                                 <div class="logs-table-cell text-center">{{ $page * 200 + $count + 1 }}</div>
                             </div>
                             <div class="col-8 col-md-3">
-                                <div class="logs-table-cell text-left">{!! $ticket->displayHolderName !!}</div>
+                                <div class="logs-table-cell text-start">{!! $ticket->displayHolderName !!}</div>
                             </div>
                             @if ($raffle->is_active < 2)
                                 <div class="col-3">
-                                    <div class="logs-table-cell text-right">{!! Form::open(['url' => 'admin/raffles/view/ticket/delete/' . $ticket->id]) !!}{!! Form::submit('Delete', ['class' => 'btn btn-danger btn-sm']) !!}{!! Form::close() !!}</div>
+                                    <div class="logs-table-cell text-end">{!! Form::open(['url' => 'admin/raffles/view/ticket/delete/' . $ticket->id]) !!}{!! Form::submit('Delete', ['class' => 'btn btn-danger btn-sm']) !!}{!! Form::close() !!}</div>
                                 </div>
                             @endif
                         </div>
@@ -106,14 +106,14 @@
             </div>
         </div>
     </div>
-    <div class="text-right">{!! $tickets->render() !!}</div>
+    <div class="text-end">{!! $tickets->render() !!}</div>
 
     <div class="modal fade" id="raffle-modal" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <span class="modal-title h5 mb-0">Add Tickets</span>
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal">&times;</button>
                 </div>
                 <div class="modal-body">
                     <p>Select an on-site user or enter an off-site username, as well as the number of tickets to create for them. Any created tickets are in addition to any pre-existing tickets for the user(s).</p>
@@ -121,15 +121,15 @@
                     <div id="ticketList">
                     </div>
                     <div><a href="#" class="btn btn-primary" id="add-ticket">Add Ticket</a></div>
-                    <div class="text-right">
+                    <div class="text-end">
                         {!! Form::submit('Add', ['class' => 'btn btn-primary']) !!}
                     </div>
                     {!! Form::close() !!}
                     <div class="ticket-row hide mb-2">
-                        {!! Form::select('user_id[]', $users, null, ['class' => 'form-control mr-2 user-select', 'placeholder' => 'Select User']) !!}
-                        {!! Form::text('alias[]', null, ['class' => 'form-control mr-2', 'placeholder' => 'OR Enter Alias']) !!}
-                        {!! Form::number('ticket_count[]', null, ['class' => 'form-control mr-2', 'placeholder' => 'Ticket Count']) !!}
-                        <a href="#" class="remove-ticket btn btn-danger mb-2">×</a>
+                        {!! Form::select('user_id[]', $users, null, ['class' => 'form-control me-2 user-select', 'placeholder' => 'Select User']) !!}
+                        {!! Form::text('alias[]', null, ['class' => 'form-control me-2', 'placeholder' => 'OR Enter Alias']) !!}
+                        {!! Form::number('ticket_count[]', null, ['class' => 'form-control me-2', 'placeholder' => 'Ticket Count']) !!}
+                        <a href="#" class="remove-ticket btn btn-danger mb-2">�</a>
                     </div>
                 </div>
             </div>

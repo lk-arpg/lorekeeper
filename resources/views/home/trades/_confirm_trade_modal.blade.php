@@ -9,7 +9,7 @@
                 @endif
             </p>
             {!! Form::open(['url' => 'trades/' . $trade->id . '/confirm-trade']) !!}
-            <div class="text-right">
+            <div class="text-end">
                 {!! Form::submit('Confirm', ['class' => 'btn btn-primary']) !!}
             </div>
             {!! Form::close() !!}
@@ -30,7 +30,7 @@
                 @endif
             </p>
             {!! Form::open(['url' => 'trades/' . $trade->id . '/confirm-trade']) !!}
-            <div class="text-right">
+            <div class="text-end">
                 {!! Form::submit('Confirm', ['class' => 'btn btn-primary']) !!}
             </div>
             {!! Form::close() !!}

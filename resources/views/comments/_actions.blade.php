@@ -1,28 +1,28 @@
 {{-- Action buttons --}}
 @if (Auth::check())
-    <div class="my-1 row justify-content-between no-gutters">
+    <div class="my-1 row justify-content-between g-0">
         <div class="col-auto">
             @can('reply-to-comment', $comment)
-                <button data-toggle="modal" data-target="#reply-modal-{{ $comment->getKey() }}" class="btn btn-sm px-3 py-2 px-sm-2 py-sm-1 btn-faded text-uppercase"><i class="fas fa-comment"></i><span
-                        class="ml-2 d-none d-sm-inline-block">Reply</span></button>
+                <button data-bs-toggle="modal" data-bs-target="#reply-modal-{{ $comment->getKey() }}" class="btn btn-sm px-3 py-2 px-sm-2 py-sm-1 btn-faded text-uppercase"><i class="fas fa-comment"></i><span
+                        class="ms-2 d-none d-sm-inline-block">Reply</span></button>
             @endcan
             @can('edit-comment', $comment)
-                <button data-toggle="modal" data-target="#comment-modal-{{ $comment->getKey() }}" class="btn btn-sm px-3 py-2 px-sm-2 py-sm-1 btn-faded text-uppercase"><i class="fas fa-edit"></i><span
-                        class="ml-2 d-none d-sm-inline-block">Edit</span></button>
+                <button data-bs-toggle="modal" data-bs-target="#comment-modal-{{ $comment->getKey() }}" class="btn btn-sm px-3 py-2 px-sm-2 py-sm-1 btn-faded text-uppercase"><i class="fas fa-edit"></i><span
+                        class="ms-2 d-none d-sm-inline-block">Edit</span></button>
             @endcan
             @if (((Auth::user()->id == $comment->commentable_id && $comment->commentable_type == 'App\Models\User\UserProfile') || Auth::user()->isStaff) && (isset($compact) && !$compact))
-                <button data-toggle="modal" data-target="#feature-modal-{{ $comment->getKey() }}" class="btn btn-sm px-3 py-2 px-sm-2 py-sm-1 btn-faded text-success text-uppercase"><i class="fas fa-star"></i><span
-                        class="ml-2 d-none d-sm-inline-block">{{ $comment->is_featured ? 'Unf' : 'F' }}eature Comment</span></button>
+                <button data-bs-toggle="modal" data-bs-target="#feature-modal-{{ $comment->getKey() }}" class="btn btn-sm px-3 py-2 px-sm-2 py-sm-1 btn-faded text-success text-uppercase"><i class="fas fa-star"></i><span
+                        class="ms-2 d-none d-sm-inline-block">{{ $comment->is_featured ? 'Unf' : 'F' }}eature Comment</span></button>
             @endif
             @can('delete-comment', $comment)
-                <button data-toggle="modal" data-target="#delete-modal-{{ $comment->getKey() }}" class="btn btn-sm px-3 py-2 px-sm-2 py-sm-1 btn-outline-danger text-uppercase"><i class="fas fa-minus-circle"></i><span
-                        class="ml-2 d-none d-sm-inline-block">Delete</span></button>
+                <button data-bs-toggle="modal" data-bs-target="#delete-modal-{{ $comment->getKey() }}" class="btn btn-sm px-3 py-2 px-sm-2 py-sm-1 btn-outline-danger text-uppercase"><i class="fas fa-minus-circle"></i><span
+                        class="ms-2 d-none d-sm-inline-block">Delete</span></button>
             @endcan
         </div>
-        <div class="col-auto text-right">
+        <div class="col-auto text-end">
             {{-- Likes Section --}}
-            <a href="#" data-toggle="modal" data-target="#show-likes-{{ $comment->id }}">
-                <button href="#" data-toggle="tooltip" title="Click to View" class="btn btn-sm px-3 py-2 px-sm-2 py-sm-1 btn-faded">
+            <a href="#" data-bs-toggle="modal" data-bs-target="#show-likes-{{ $comment->id }}">
+                <button href="#" data-bs-toggle="tooltip" title="Click to View" class="btn btn-sm px-3 py-2 px-sm-2 py-sm-1 btn-faded">
                     {{ $comment->likes()->where('is_like', 1)->count() - $comment->likes()->where('is_like', 0)->count() }}
                     {{ $comment->likes()->where('is_like', 1)->count() - $comment->likes()->where('is_like', 0)->count() != 1 ? 'Likes' : 'Like' }}
                 </button>
@@ -63,19 +63,19 @@
                 {{ Form::model($comment, ['route' => ['comments.update', $comment->getKey()]]) }}
                 <div class="modal-header">
                     <h5 class="modal-title">Edit Comment</h5>
-                    <button type="button" class="close" data-dismiss="modal">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal">
                         <span>&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <div class="form-group">
+                    <div class="mb-3">
                         {!! Form::label('message', 'Update your message here:') !!}
                         {!! Form::textarea('message', $comment->comment, ['class' => 'form-control ' . (config('lorekeeper.settings.wysiwyg_comments') ? 'comment-wysiwyg' : ''), 'rows' => 3, config('lorekeeper.settings.wysiwyg_comments') ? '' : 'required']) !!}
                         <small class="form-text text-muted"><a target="_blank" href="https://help.github.com/articles/basic-writing-and-formatting-syntax">Markdown</a> cheatsheet.</small>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-sm btn-outline-secondary text-uppercase" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary text-uppercase" data-bs-dismiss="modal">Cancel</button>
                     {!! Form::submit('Update', ['class' => 'btn btn-sm btn-outline-success text-uppercase']) !!}
                 </div>
                 </form>
@@ -91,19 +91,19 @@
                 {{ Form::open(['route' => ['comments.reply', $comment->getKey()]]) }}
                 <div class="modal-header">
                     <h5 class="modal-title">Reply to Comment</h5>
-                    <button type="button" class="close" data-dismiss="modal">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal">
                         <span>&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <div class="form-group">
+                    <div class="mb-3">
                         {!! Form::label('message', 'Enter your message here:') !!}
                         {!! Form::textarea('message', null, ['class' => 'form-control ' . (config('lorekeeper.settings.wysiwyg_comments') ? 'comment-wysiwyg' : ''), 'rows' => 3, config('lorekeeper.settings.wysiwyg_comments') ? '' : 'required']) !!}
                         <small class="form-text text-muted"><a target="_blank" href="https://help.github.com/articles/basic-writing-and-formatting-syntax">Markdown</a> cheatsheet.</small>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-sm btn-outline-secondary text-uppercase" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary text-uppercase" data-bs-dismiss="modal">Cancel</button>
                     {!! Form::submit('Reply', ['class' => 'btn btn-sm btn-outline-success text-uppercase']) !!}
                 </div>
                 </form>
@@ -118,17 +118,17 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Delete Comment</h5>
-                    <button type="button" class="close" data-dismiss="modal">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal">
                         <span>&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <div class="form-group">Are you sure you want to delete this comment?</div>
+                    <div class="mb-3">Are you sure you want to delete this comment?</div>
                     <div class="alert alert-warning">
                         <strong>Comments can be restored in the database.</strong>
                         <br> Deleting a comment does not delete the comment record.
                     </div>
-                    <div class="text-right">
+                    <div class="text-end">
                         <a href="{{ route('comments.destroy', $comment->getKey()) }}" onclick="event.preventDefault();document.getElementById('comment-delete-form-{{ $comment->getKey() }}').submit();" class="btn btn-danger text-uppercase">Delete</a>
                         <form id="comment-delete-form-{{ $comment->getKey() }}" action="{{ route('comments.destroy', $comment->getKey()) }}" method="POST" style="display: none;">
                             @method('DELETE')
@@ -146,12 +146,12 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">{{ $comment->is_featured ? 'Unf' : 'F' }}eature Comment</h5>
-                <button type="button" class="close" data-dismiss="modal">
+                <button type="button" class="btn-close" data-bs-dismiss="modal">
                     <span>&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <div class="form-group">Are you sure you want to {{ $comment->is_featured ? 'un' : '' }}feature this comment?</div>
+                <div class="mb-3">Are you sure you want to {{ $comment->is_featured ? 'un' : '' }}feature this comment?</div>
             </div>
             <div class="alert alert-warning">Comments can be unfeatured.</div>
             {!! Form::open(['url' => 'comments/' . $comment->id . '/feature']) !!}
@@ -170,7 +170,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Likes</h5>
-                <button type="button" class="close" data-dismiss="modal">
+                <button type="button" class="btn-close" data-bs-dismiss="modal">
                     <span>&times;</span>
                 </button>
             </div>
@@ -200,7 +200,7 @@
                                         <div class="col-12 col-md-4">
                                             <div class="logs-table-cell">{!! $like->user->displayName !!}</div>
                                         </div>
-                                        <div class="col-4 col-md-4 text-right">
+                                        <div class="col-4 col-md-4 text-end">
                                             <div class="logs-table-cell">{!! $like->is_like ? '<i class="fas fa-thumbs-up"></i>' : '<i class="fas fa-thumbs-down"></i>' !!}</div>
                                         </div>
                                     </div>
@@ -224,7 +224,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Edit History</h5>
-                    <button type="button" class="close" data-dismiss="modal">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal">
                         <span>&times;</span>
                     </button>
                 </div>
@@ -255,14 +255,14 @@
                                             </div>
                                             <div class="col-12 col-md-4">
                                                 <div class="logs-table-cell">
-                                                    <span data-toggle="tooltip" title="{{ $edit->data['old_comment'] }}">
+                                                    <span data-bs-toggle="tooltip" title="{{ $edit->data['old_comment'] }}">
                                                         {{ Str::limit($edit->data['old_comment'], 50) }}
                                                     </span>
                                                 </div>
                                             </div>
                                             <div class="col-12 col-md-4">
                                                 <div class="logs-table-cell">
-                                                    <span data-toggle="tooltip" title="{{ $edit->data['new_comment'] }}">
+                                                    <span data-bs-toggle="tooltip" title="{{ $edit->data['new_comment'] }}">
                                                         {{ Str::limit($edit->data['new_comment'], 50) }}
                                                     </span>
                                                 </div>

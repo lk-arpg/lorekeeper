@@ -1,5 +1,5 @@
 {!! Form::open(['url' => 'admin/character/image/' . $image->id . '/reupload', 'files' => true]) !!}
-<div class="form-group">
+<div class="mb-3">
     {!! Form::label('Character Image') !!} {!! add_help('This is the full masterlist image. Note that the image is not protected in any way, so take precautions to avoid art/design theft.') !!}
     <div class="custom-file">
         {!! Form::label('image', 'Choose file...', ['class' => 'custom-file-label']) !!}
@@ -7,9 +7,9 @@
     </div>
 </div>
 @if (config('lorekeeper.settings.masterlist_image_automation') === 1)
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::checkbox('use_cropper', 1, 1, ['class' => 'form-check-input', 'data-toggle' => 'toggle', 'id' => 'useCropper']) !!}
-        {!! Form::label('use_cropper', 'Use Thumbnail Automation', ['class' => 'form-check-label ml-3']) !!} {!! add_help('A thumbnail is required for the upload (used for the masterlist). You can use the Thumbnail Automation, or upload a custom thumbnail.') !!}
+        {!! Form::label('use_cropper', 'Use Thumbnail Automation', ['class' => 'form-check-label ms-3']) !!} {!! add_help('A thumbnail is required for the upload (used for the masterlist). You can use the Thumbnail Automation, or upload a custom thumbnail.') !!}
     </div>
     <div class="card mb-3" id="thumbnailCrop">
         <div class="card-body">
@@ -21,9 +21,9 @@
         </div>
     </div>
 @else
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::checkbox('use_cropper', 1, 1, ['class' => 'form-check-input', 'data-toggle' => 'toggle', 'id' => 'useCropper']) !!}
-        {!! Form::label('use_cropper', 'Use Image Cropper', ['class' => 'form-check-label ml-3']) !!} {!! add_help('A thumbnail is required for the upload (used for the masterlist). You can use the image cropper (crop dimensions can be adjusted in the site code), or upload a custom thumbnail.') !!}
+        {!! Form::label('use_cropper', 'Use Image Cropper', ['class' => 'form-check-label ms-3']) !!} {!! add_help('A thumbnail is required for the upload (used for the masterlist). You can use the image cropper (crop dimensions can be adjusted in the site code), or upload a custom thumbnail.') !!}
     </div>
     <div class="card mb-3" id="thumbnailCrop">
         <div class="card-body">
@@ -47,7 +47,7 @@
     </div>
 </div>
 
-<div class="text-right">
+<div class="text-end">
     {!! Form::submit('Edit', ['class' => 'btn btn-primary']) !!}
 </div>
 {!! Form::close() !!}

@@ -9,7 +9,7 @@
 
     <h1>{{ $feature->id ? 'Edit' : 'Create' }} Trait
         @if ($feature->id)
-            <a href="#" class="btn btn-danger float-right delete-feature-button">Delete Trait</a>
+            <a href="#" class="btn btn-danger float-end delete-feature-button">Delete Trait</a>
         @endif
     </h1>
 
@@ -18,17 +18,17 @@
     <h3>Basic Information</h3>
 
     <div class="row">
-        <div class="col-md-6 form-group">
+        <div class="col-md-6 mb-3">
             {!! Form::label('Name') !!}
             {!! Form::text('name', $feature->name, ['class' => 'form-control']) !!}
         </div>
-        <div class="col-md-6 form-group">
+        <div class="col-md-6 mb-3">
             {!! Form::label('Rarity') !!}
             {!! Form::select('rarity_id', $rarities, $feature->rarity_id, ['class' => 'form-control']) !!}
         </div>
     </div>
 
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::label('World Page Image (Optional)') !!} {!! add_help('This image is used only on the world information pages.') !!}
         <div class="custom-file">
             {!! Form::label('image', 'Choose file...', ['class' => 'custom-file-label']) !!}
@@ -44,30 +44,30 @@
     </div>
 
     <div class="row">
-        <div class="col-md-4 form-group">
+        <div class="col-md-4 mb-3">
             {!! Form::label('Trait Category (Optional)') !!}
             {!! Form::select('feature_category_id', $categories, $feature->feature_category_id, ['class' => 'form-control']) !!}
         </div>
-        <div class="col-md-4 form-group">
+        <div class="col-md-4 mb-3">
             {!! Form::label('Species Restriction (Optional)') !!}
             {!! Form::select('species_id', $specieses, $feature->species_id, ['class' => 'form-control', 'id' => 'species']) !!}
         </div>
-        <div class="col-md-4 form-group" id="subtypes">
+        <div class="col-md-4 mb-3" id="subtypes">
             {!! Form::label('Subtype (Optional)') !!} {!! add_help('This is cosmetic and does not limit choice of traits in selections.') !!}
             {!! Form::select('subtype_id', $subtypes, $feature->subtype_id, ['class' => 'form-control', 'id' => 'subtype']) !!}
         </div>
     </div>
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::label('Description (Optional)') !!}
         {!! Form::textarea('description', $feature->description, ['class' => 'form-control wysiwyg']) !!}
     </div>
 
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::checkbox('is_visible', 1, $feature->id ? $feature->is_visible : 1, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
-        {!! Form::label('is_visible', 'Is Visible', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If turned off, the trait will not be visible in the trait list or available for selection in search and design updates. Permissioned staff will still be able to add them to characters, however.') !!}
+        {!! Form::label('is_visible', 'Is Visible', ['class' => 'form-check-label ms-3']) !!} {!! add_help('If turned off, the trait will not be visible in the trait list or available for selection in search and design updates. Permissioned staff will still be able to add them to characters, however.') !!}
     </div>
 
-    <div class="text-right">
+    <div class="text-end">
         {!! Form::submit($feature->id ? 'Edit' : 'Create', ['class' => 'btn btn-primary']) !!}
     </div>
 

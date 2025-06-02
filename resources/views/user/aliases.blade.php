@@ -33,15 +33,15 @@
                             <div class="logs-table-cell">{!! $alias->displayAlias !!}</div>
                         </div>
                         <div class="col-3">
-                            <div class="logs-table-cell"><i class="{{ $alias->config['icon'] }} fa-fw mr-1"></i> {{ $alias->config['full_name'] }}</div>
+                            <div class="logs-table-cell"><i class="{{ $alias->config['icon'] }} fa-fw me-1"></i> {{ $alias->config['full_name'] }}</div>
                         </div>
                         <div class="col-5">
                             <div class="logs-table-cell">
                                 @if ($alias->is_primary_alias)
-                                    <span class="badge badge-success">Primary</span>
+                                    <span class="badge text-bg-success">Primary</span>
                                 @endif
                                 @if (!$alias->is_visible)
-                                    <i class="fas fa-eye-slash" data-toggle="tooltip" title="This alias is hidden from public view."></i>
+                                    <i class="fas fa-eye-slash" data-bs-toggle="tooltip" title="This alias is hidden from public view."></i>
                                 @endif
                             </div>
                         </div>

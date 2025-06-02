@@ -5,7 +5,7 @@
         the post.</p>
     <p>Are you sure you want to delete <strong>{{ $sales->title }}</strong>?</p>
 
-    <div class="text-right">
+    <div class="text-end">
         {!! Form::submit('Delete Post', ['class' => 'btn btn-danger']) !!}
     </div>
 

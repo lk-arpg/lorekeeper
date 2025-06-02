@@ -48,7 +48,7 @@
                 @php
                     $visible = '';
                     if (isset($categoryItems->first()->category) && method_exists($categoryItems->first()->category, 'is_visible') && !$categoryItems->first()->category->is_visible) {
-                        $visible = '<i class="fas fa-eye-slash mr-1"></i>';
+                        $visible = '<i class="fas fa-eye-slash me-1"></i>';
                     }
                 @endphp
                 <div class="card mb-3 inventory-category">

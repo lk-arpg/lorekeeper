@@ -22,7 +22,7 @@
             @include('widgets._bank_select', ['owner' => $request->character, 'selected' => $request->characterBank])
         @endif
 
-        <div class="text-right">
+        <div class="text-end">
             {!! Form::submit('Save', ['class' => 'btn btn-primary']) !!}
         </div>
         {!! Form::close() !!}

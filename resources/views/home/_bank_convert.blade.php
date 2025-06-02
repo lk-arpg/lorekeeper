@@ -1,4 +1,4 @@
-<div class="form-group">
+<div class="mb-3">
     <div class="row">
         <div class="col-md-6">
             {!! Form::label('conversion_id', 'Convert to:') !!}

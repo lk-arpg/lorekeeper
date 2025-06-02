@@ -9,13 +9,13 @@
         'object' => $prompt,
         'hideUnlock' => true,
     ])
-    <div class="form-group float-right">
+    <div class="mb-3 float-end">
         {!! Form::label('confirm', 'I understand that I will not be able to edit this submission after it has been made.', ['class' => 'alert alert-info']) !!}
         {!! Form::checkbox('confirm', '1', false, ['class' => 'form-check-input', 'id' => 'confirm', 'required', 'data-on' => 'Yes', 'data-off' => 'No']) !!}
     </div>
 
     <script>
         $('.form-check-input').attr('data-toggle', 'toggle').bootstrapToggle();
-        $('[data-toggle="tooltip"]').tooltip();
+        $('[data-bs-toggle="tooltip"]').tooltip();
     </script>
 @endif

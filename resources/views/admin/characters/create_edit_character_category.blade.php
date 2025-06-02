@@ -13,7 +13,7 @@
 
     <h1>{{ $category->id ? 'Edit' : 'Create' }} Character Category
         @if ($category->id)
-            <a href="#" class="btn btn-danger float-right delete-category-button">Delete Category</a>
+            <a href="#" class="btn btn-danger float-end delete-category-button">Delete Category</a>
         @endif
     </h1>
 
@@ -21,22 +21,22 @@
 
     <h3>Basic Information</h3>
 
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::label('Name') !!}
         {!! Form::text('name', $category->name, ['class' => 'form-control']) !!}
     </div>
 
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::label('Code') !!} {!! add_help('This is used in generating the codename for the character. Choose a short unique identifier, e.g. MYO, GUEST, etc.') !!}
         {!! Form::text('code', $category->code, ['class' => 'form-control']) !!}
     </div>
 
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::label('Sub Masterlist (Optional)') !!} {!! add_help('This puts it onto a sub masterlist.') !!}
         {!! Form::select('masterlist_sub_id', $sublists, $category->masterlist_sub_id, ['class' => 'form-control']) !!}
     </div>
 
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::label('World Page Image (Optional)') !!} {!! add_help('This image is used only on the world information pages.') !!}
         <div class="custom-file">
             {!! Form::label('image', 'Choose file...', ['class' => 'custom-file-label']) !!}
@@ -51,17 +51,17 @@
         @endif
     </div>
 
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::label('Description (Optional)') !!}
         {!! Form::textarea('description', $category->description, ['class' => 'form-control wysiwyg']) !!}
     </div>
 
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::checkbox('is_visible', 1, $category->id ? $category->is_visible : 1, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
-        {!! Form::label('is_visible', 'Is Visible', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If turned off, the category will not be visible in the category list or available for selection in search. Permissioned staff will still be able to add characters to them, however.') !!}
+        {!! Form::label('is_visible', 'Is Visible', ['class' => 'form-check-label ms-3']) !!} {!! add_help('If turned off, the category will not be visible in the category list or available for selection in search. Permissioned staff will still be able to add characters to them, however.') !!}
     </div>
 
-    <div class="text-right">
+    <div class="text-end">
         {!! Form::submit($category->id ? 'Edit' : 'Create', ['class' => 'btn btn-primary']) !!}
     </div>
 

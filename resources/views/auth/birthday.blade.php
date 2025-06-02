@@ -13,14 +13,14 @@
     <p><strong>Please make sure you enter the correct date.</strong></p>
 
     {!! Form::open(['url' => '/birthday']) !!}
-    <div class="form-group row">
+    <div class="mb-3 row">
         {{ Form::label('dob', 'Date of Birth', ['class' => 'col-md-4 col-form-label text-md-right']) }}
         <div class="col-md-6">
             <div class="col-md row">
                 {!! Form::date('dob', null, ['class' => 'form-control']) !!}
             </div>
         </div>
-        <div class="text-right">
+        <div class="text-end">
             {!! Form::submit('Submit', ['class' => 'btn btn-primary']) !!}
         </div>
     </div>

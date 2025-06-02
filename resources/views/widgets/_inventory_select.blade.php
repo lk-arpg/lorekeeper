@@ -10,23 +10,23 @@
     }
 @endphp
 <h3 class="{{ isset($customHeaderClass) ? $customHeaderClass : '' }}">
-    Your Inventory <a class="small inventory-collapse-toggle collapse-toggle collapsed" href="#userInventory" data-toggle="collapse">Show</a>
+    Your Inventory <a class="small inventory-collapse-toggle collapse-toggle collapsed" href="#userInventory" data-bs-toggle="collapse">Show</a>
 </h3>
 <hr>
 <div class="{{ isset($selected) && count($selected) ? '' : 'collapse' }}" id="userInventory">
     <div class="card mb-3">
         <div class="card-body">
-            <div class="text-left mb-3">
-                <div class="form-group d-flex align-items-center">
-                    {!! Form::label('item_id_filter', 'Item:', ['class' => 'mr-2']) !!}
-                    {!! Form::select('item_id_filter', $item_filter, null, ['id' => 'itemIdFilter', 'class' => 'form-control mr-2 default item-select', 'placeholder' => 'Start typing to find an item']) !!}
+            <div class="text-start mb-3">
+                <div class="mb-3 d-flex align-items-center">
+                    {!! Form::label('item_id_filter', 'Item:', ['class' => 'me-2']) !!}
+                    {!! Form::select('item_id_filter', $item_filter, null, ['id' => 'itemIdFilter', 'class' => 'form-control me-2 default item-select', 'placeholder' => 'Start typing to find an item']) !!}
                     <a href="#" class="clear-item-filter btn btn-primary mb-2">Clear Item Filter</a>
                 </div>
             </div>
-            <div class="text-right mb-3">
+            <div class="text-end mb-3">
                 <div class="d-inline-block mb-3">
-                    {!! Form::label('item_category_id', 'Filter:', ['class' => 'mr-2']) !!}
-                    <select class="form-control d-inline-block w-auto" id="userItemCategory">
+                    {!! Form::label('item_category_id', 'Filter:', ['class' => 'me-2']) !!}
+                    <select class="form-select d-inline-block w-auto" id="userItemCategory">
                         <option value="all">All Categories</option>
                         <option value="selected">Selected Items</option>
                         <option disabled>&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;</option>
@@ -37,7 +37,7 @@
                     </select>
                 </div>
                 <div class="d-inline-block">
-                    {!! Form::label('item_category_id', 'Action:', ['class' => 'ml-2 mr-2']) !!}
+                    {!! Form::label('item_category_id', 'Action:', ['class' => 'ms-2 me-2']) !!}
                     <a href="#" class="btn btn-primary inventory-select-all">Select All Visible</a>
                     <a href="#" class="btn btn-primary inventory-clear-selection">Clear Visible Selection</a>
                 </div>

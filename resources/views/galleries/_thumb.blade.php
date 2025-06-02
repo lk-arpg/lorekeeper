@@ -47,8 +47,8 @@
             @else
                 ・
             @endif
-            {{ $submission->favorites_count }} <i class="fas fa-star" data-toggle="tooltip" title="Favorites"></i> ・
-            {{ $submission->comments->where('type', 'User-User')->count() }} <i class="fas fa-comment" data-toggle="tooltip" title="Comments"></i>
+            {{ $submission->favorites_count }} <i class="fas fa-star" data-bs-toggle="tooltip" title="Favorites"></i> ・
+            {{ $submission->comments->where('type', 'User-User')->count() }} <i class="fas fa-comment" data-bs-toggle="tooltip" title="Comments"></i>
         @endif
     </div>
 </div>

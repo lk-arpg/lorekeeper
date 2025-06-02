@@ -10,16 +10,16 @@
 
     <div>
         {!! Form::open(['method' => 'GET', 'class' => '']) !!}
-        <div class="form-inline justify-content-end">
-            <div class="form-group ml-3 mb-3">
+        <div class="d-flex align-items-center justify-content-end">
+            <div class="mb-3 ms-3 mb-3">
                 {!! Form::text('title', Request::get('title'), ['class' => 'form-control', 'placeholder' => 'Name']) !!}
             </div>
-            <div class="form-group ml-3 mb-3">
+            <div class="mb-3 ms-3 mb-3">
                 {!! Form::select('is_open', ['1' => 'Open', '0' => 'Closed'], Request::get('is_open'), ['class' => 'form-control', 'placeholder' => 'Status']) !!}
             </div>
         </div>
-        <div class="form-inline justify-content-end">
-            <div class="form-group ml-3 mb-3">
+        <div class="d-flex align-items-center justify-content-end">
+            <div class="mb-3 ms-3 mb-3">
                 {!! Form::select(
                     'sort',
                     [
@@ -34,7 +34,7 @@
                     ['class' => 'form-control'],
                 ) !!}
             </div>
-            <div class="form-group ml-3 mb-3">
+            <div class="mb-3 ms-3 mb-3">
                 {!! Form::submit('Search', ['class' => 'btn btn-primary']) !!}
             </div>
         </div>

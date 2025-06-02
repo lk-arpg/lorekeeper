@@ -13,11 +13,11 @@
         will be stated and all held locations will be linked.</p>
 
     {!! Form::open(['method' => 'GET', 'class' => '']) !!}
-    <div class="form-inline justify-content-end">
-        <div class="form-group ml-3 mb-3">
+    <div class="d-flex align-items-center justify-content-end">
+        <div class="mb-3 ms-3 mb-3">
             {!! Form::select('item_id', $items, Request::get('item_id'), ['class' => 'form-control selectize', 'placeholder' => 'Select an Item', 'style' => 'width: 25em; max-width: 100%;']) !!}
         </div>
-        <div class="form-group ml-3 mb-3">
+        <div class="mb-3 ms-3 mb-3">
             {!! Form::submit('Search', ['class' => 'btn btn-primary']) !!}
         </div>
     </div>

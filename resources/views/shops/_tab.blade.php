@@ -3,7 +3,7 @@
         <ul class="nav nav-tabs card-header-tabs">
             @foreach ($stock as $categoryId => $categoryItems)
                 <li class="nav-item">
-                    <a class="nav-link {{ $loop->first ? 'active' : '' }}" id="categoryTab-{{ isset($categoryItems->first()->category) ? $categoryItems->first()->category->id : 'misc' }}" data-toggle="tab"
+                    <a class="nav-link {{ $loop->first ? 'active' : '' }}" id="categoryTab-{{ isset($categoryItems->first()->category) ? $categoryItems->first()->category->id : 'misc' }}" data-bs-toggle="tab"
                         href="#category-{{ isset($categoryItems->first()->category) ? $categoryItems->first()->category->id : 'misc' }}" role="tab">
                         {!! isset($categoryItems->first()->category) ? $categoryItems->first()->category->name : 'Miscellaneous' !!}
                     </a>

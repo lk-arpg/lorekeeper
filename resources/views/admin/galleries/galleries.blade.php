@@ -11,7 +11,7 @@
 
     <p>This is a list of galleries that art and literature can be submitted to.</p>
 
-    <div class="text-right mb-3"><a class="btn btn-primary" href="{{ url('admin/data/galleries/create') }}"><i class="fas fa-plus"></i> Create New Gallery</a></div>
+    <div class="text-end mb-3"><a class="btn btn-primary" href="{{ url('admin/data/galleries/create') }}"><i class="fas fa-plus"></i> Create New Gallery</a></div>
 
     @if (!count($galleries))
         <p>No galleries found.</p>

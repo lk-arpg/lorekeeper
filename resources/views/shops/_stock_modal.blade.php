@@ -24,7 +24,7 @@
 
     @if ($stock->item->parsed_description)
         <div class="mb-2">
-            <a data-toggle="collapse" href="#itemDescription" class="h5">Description <i class="fas fa-caret-down"></i></a>
+            <a data-bs-toggle="collapse" href="#itemDescription" class="h5">Description <i class="fas fa-caret-down"></i></a>
             <div class="card collapse show mt-1" id="itemDescription">
                 <div class="card-body">
                     {!! $stock->item->parsed_description !!}
@@ -55,7 +55,7 @@
         @if (($stock->is_fto && Auth::user()->settings->is_fto) || !$stock->is_fto)
             <h5>
                 Purchase
-                <span class="float-right">
+                <span class="float-end">
                     In Inventory: {{ $userOwned }}
                 </span>
             </h5>
@@ -82,7 +82,7 @@
                 {!! Form::hidden('stock_id', $stock->id) !!}
 
                 @if ($stock->costs()->get()->pluck('group')->unique()->count() > 1)
-                    <div class="form-group">
+                    <div class="mb-3">
                         {!! Form::label('cost_group', 'Choose Purchase Method:') !!}
                         {!! Form::select('cost_group', $stock->costForm(), null, ['class' => 'form-control mb-3']) !!}
                     </div>
@@ -98,16 +98,16 @@
                             Note: Only currencies are taken from character banks. Items and other costs are taken from user banks.
                         </strong>
                     </p>
-                    <div class="form-group">
+                    <div class="mb-3">
                         <div>
-                            <label class="h5">{{ Form::radio('bank', 'user', true, ['class' => 'bank-select mr-1']) }} User Bank</label>
+                            <label class="h5">{{ Form::radio('bank', 'user', true, ['class' => 'bank-select me-1']) }} User Bank</label>
                         </div>
                         <div>
-                            <label class="h5">{{ Form::radio('bank', 'character', false, ['class' => 'bank-select mr-1']) }} Character Bank</label>
+                            <label class="h5">{{ Form::radio('bank', 'character', false, ['class' => 'bank-select me-1']) }} Character Bank</label>
                             <div class="card use-character-bank hide">
                                 <div class="card-body">
                                     <p>Enter the code of the character you would like to use to purchase the item.</p>
-                                    <div class="form-group">
+                                    <div class="mb-3">
                                         {!! Form::label('slug', 'Character Code') !!}
                                         {!! Form::select('slug', Auth::user()->characters()->get()->pluck('fullName', 'id'), ['class' => 'form-control']) !!}
                                     </div>
@@ -127,7 +127,7 @@
                         </strong>
                     </p>
                     {!! Form::hidden('bank', 'character') !!}
-                    <div class="form-group">
+                    <div class="mb-3">
                         {!! Form::label('slug', 'Character Code') !!}
                         {!! Form::text('slug', null, ['class' => 'form-control']) !!}
                     </div>
@@ -148,17 +148,17 @@
                     @if (Settings::get('limited_stock_coupon_settings') == 0)
                         <p class="text-danger">Note that coupons cannot be used on limited stock items.</p>
                     @endif
-                    <div class="form-group">
+                    <div class="mb-3">
                         {!! Form::checkbox('use_coupon', 1, 0, ['class' => 'is-coupon-class form-control', 'data-toggle' => 'toggle']) !!}
-                        {!! Form::label('use_coupon', 'Do you want to use a coupon?', ['class' => 'form-check-label  ml-3 mb-2']) !!}
+                        {!! Form::label('use_coupon', 'Do you want to use a coupon?', ['class' => 'form-check-label  ms-3 mb-2']) !!}
                     </div>
-                    <div class="br-form-group" style="display: none">
+                    <div class="br-mb-3" style="display: none">
                         {!! Form::select('coupon', $userCoupons, null, ['class' => 'form-control mb-2', 'placeholder' => 'Select a Coupon to Use']) !!}
                     </div>
                 @elseif($stock->shop->use_coupons && $userCoupons == null)
                     <div class="alert alert-danger">You do not own any coupons.</div>
                 @endif
-                <div class="text-right">
+                <div class="text-end">
                     {!! Form::submit('Purchase', ['class' => 'btn btn-primary']) !!}
                 </div>
                 {!! Form::close() !!}

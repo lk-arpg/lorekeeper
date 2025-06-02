@@ -9,7 +9,7 @@
 
     <h1>
         Edit Tag Settings - {!! $tag->displayTag !!}
-        <a href="#" class="btn btn-outline-danger float-right delete-tag-button">Delete Tag</a>
+        <a href="#" class="btn btn-outline-danger float-end delete-tag-button">Delete Tag</a>
     </h1>
 
     <p>Edit the parameters for this item tag on this item. Note that for the item tag to take effect (e.g. become a usable item), you will need to turn on the Active toggle. (Conversely, you can turn it off to prevent users from using it while preserving
@@ -25,9 +25,9 @@
     @endif
 
     {!! Form::checkbox('is_active', 1, $tag->is_active, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
-    {!! Form::label('is_active', 'Active', ['class' => 'form-check-label ml-3']) !!}
+    {!! Form::label('is_active', 'Active', ['class' => 'form-check-label ms-3']) !!}
 
-    <div class="text-right">
+    <div class="text-end">
         {!! Form::submit('Edit Tag Settings', ['class' => 'btn btn-primary']) !!}
     </div>
 

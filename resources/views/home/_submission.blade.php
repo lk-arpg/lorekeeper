@@ -7,5 +7,5 @@
     <td>
         <span class="badge badge-{{ $submission->status == 'Pending' ? 'secondary' : ($submission->status == 'Approved' ? 'success' : 'danger') }}">{{ $submission->status }}</span>
     </td>
-    <td class="text-right"><a href="{{ $submission->viewUrl }}" class="btn btn-primary btn-sm">Details</a></td>
+    <td class="text-end"><a href="{{ $submission->viewUrl }}" class="btn btn-primary btn-sm">Details</a></td>
 </tr>

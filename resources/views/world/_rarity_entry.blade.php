@@ -1,7 +1,7 @@
 <div class="row world-entry">
     @if ($imageUrl)
         <div class="col-md-3 world-entry-image">
-            <a href="{{ $imageUrl }}" data-lightbox="entry" data-title="{{ $name }}">
+            <a href="{{ $imageUrl }}" data-lightbox="entry" data-bs-title="{{ $name }}">
                 <img src="{{ $imageUrl }}" class="world-entry-image" alt="{{ $name }}" />
             </a>
         </div>
@@ -10,15 +10,15 @@
         <x-admin-edit title="{{ $edit['title'] }}" :object="$edit['object']" />
         <h3>
             {!! $name !!}
-            <div class="float-right small">
+            <div class="float-end small">
                 @if (isset($searchItemsUrl) && $searchItemsUrl)
                     <a href="{{ $searchItemsUrl }}" class="world-entry-search text-muted small"><i class="fas fa-search"></i> Items</a>
                 @endif
                 @if (isset($searchFeaturesUrl) && $searchFeaturesUrl)
-                    <a href="{{ $searchFeaturesUrl }}" class="world-entry-search text-muted small ml-3"><i class="fas fa-search"></i> Traits</a>
+                    <a href="{{ $searchFeaturesUrl }}" class="world-entry-search text-muted small ms-3"><i class="fas fa-search"></i> Traits</a>
                 @endif
                 @if (isset($searchCharactersUrl) && $searchCharactersUrl)
-                    <a href="{{ $searchCharactersUrl }}" class="world-entry-search text-muted small ml-3 mr-2"><i class="fas fa-search"></i> Characters</a>
+                    <a href="{{ $searchCharactersUrl }}" class="world-entry-search text-muted small ms-3 me-2"><i class="fas fa-search"></i> Characters</a>
                 @endif
             </div>
 

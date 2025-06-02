@@ -50,6 +50,6 @@
     @endif
 
     @isset($perPage)
-        <div class="ml-auto mt-2">{{ $grouped_comments->links() }}</div>
+        <div class="ms-auto mt-2">{{ $grouped_comments->links() }}</div>
     @endisset
 </div>

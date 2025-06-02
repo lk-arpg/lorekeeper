@@ -22,10 +22,10 @@
             <p class="text-danger">Incorrect key entered.</p>
         @endif
         {!! Form::open(['method' => 'GET', 'class' => 'form-inline']) !!}
-        <div class="form-group mr-3 mb-3">
+        <div class="mb-3 me-3 mb-3">
             {!! Form::text('key', null, ['class' => 'form-control']) !!}
         </div>
-        <div class="form-group mb-3">
+        <div class="mb-3 mb-3">
             {!! Form::submit('Submit', ['class' => 'btn btn-primary']) !!}
         </div>
         {!! Form::close() !!}

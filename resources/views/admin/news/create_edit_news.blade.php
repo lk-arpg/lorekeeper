@@ -9,9 +9,9 @@
 
     <h1>{{ $news->id ? 'Edit' : 'Create' }} News Post
         @if ($news->id)
-            <a href="#" class="btn btn-danger float-right delete-news-button">Delete Post</a>
-            <a href="#" class="btn btn-secondary float-right regen-news-button mr-md-2">Regenerate Post</a>
-            <a href="{{ $news->url }}" class="btn btn-info float-right mr-md-2">View Post</a>
+            <a href="#" class="btn btn-danger float-end delete-news-button">Delete Post</a>
+            <a href="#" class="btn btn-secondary float-end regen-news-button me-md-2">Regenerate Post</a>
+            <a href="{{ $news->url }}" class="btn btn-info float-end me-md-2">View Post</a>
         @endif
     </h1>
 
@@ -20,36 +20,36 @@
     <h3>Basic Information</h3>
 
     <div class="row">
-        <div class="col-md-6 form-group">
+        <div class="col-md-6 mb-3">
             {!! Form::label('Title') !!}
             {!! Form::text('title', $news->title, ['class' => 'form-control']) !!}
         </div>
 
-        <div class="col-md-6 form-group">
+        <div class="col-md-6 mb-3">
             {!! Form::label('Post Time (Optional)') !!} {!! add_help('This is the time that the news post should be posted. Make sure the Is Viewable switch is off.') !!}
             {!! Form::text('post_at', $news->post_at, ['class' => 'form-control datepicker']) !!}
         </div>
     </div>
 
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::label('Post Content') !!}
         {!! Form::textarea('text', $news->text, ['class' => 'form-control wysiwyg']) !!}
     </div>
 
     <div class="row">
-        <div class="col-md form-group">
+        <div class="col-md mb-3">
             {!! Form::checkbox('is_visible', 1, $news->id ? $news->is_visible : 1, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
-            {!! Form::label('is_visible', 'Is Viewable', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If this is turned off, the post will not be visible. If the post time is set, it will automatically become visible at/after the given post time, so make sure the post time is empty if you want it to be completely hidden.') !!}
+            {!! Form::label('is_visible', 'Is Viewable', ['class' => 'form-check-label ms-3']) !!} {!! add_help('If this is turned off, the post will not be visible. If the post time is set, it will automatically become visible at/after the given post time, so make sure the post time is empty if you want it to be completely hidden.') !!}
         </div>
         @if ($news->id && $news->is_visible)
-            <div class="col-md form-group">
+            <div class="col-md mb-3">
                 {!! Form::checkbox('bump', 1, null, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
-                {!! Form::label('bump', 'Bump News', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If toggled on, this will alert users that there is new news. Best in conjunction with a clear notification of changes!') !!}
+                {!! Form::label('bump', 'Bump News', ['class' => 'form-check-label ms-3']) !!} {!! add_help('If toggled on, this will alert users that there is new news. Best in conjunction with a clear notification of changes!') !!}
             </div>
         @endif
     </div>
 
-    <div class="text-right">
+    <div class="text-end">
         {!! Form::submit($news->id ? 'Edit' : 'Create', ['class' => 'btn btn-primary']) !!}
     </div>
 

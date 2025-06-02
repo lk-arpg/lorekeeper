@@ -12,7 +12,7 @@
     <p>Sub masterlists are additional masterlists which can be separate or alternative to the main masterlist. This can be used to divide a masterlist up between species, player versus non-player-character, characters vs pets/mounts, etc.</p>
     <p>Both categories and species can be assigned to sublists, but each can only be assigned to ONE sublist.</p>
 
-    <div class="text-right mb-3"><a class="btn btn-primary" href="{{ url('admin/data/sublists/create') }}"><i class="fas fa-plus"></i> Create New Sub Masterlist</a></div>
+    <div class="text-end mb-3"><a class="btn btn-primary" href="{{ url('admin/data/sublists/create') }}"><i class="fas fa-plus"></i> Create New Sub Masterlist</a></div>
 
     @if (!count($sublists))
         <p>No sub masterlists found.</p>
@@ -30,12 +30,12 @@
                 @foreach ($sublists as $sublist)
                     <tr class="sort-item" data-id="{{ $sublist->id }}">
                         <td>
-                            <a class="fas fa-arrows-alt-v handle mr-3" href="#"></a>
+                            <a class="fas fa-arrows-alt-v handle me-3" href="#"></a>
                             {{ $sublist->name }}
                         </td>
                         <td>{!! $sublist->show_main ? '<i class="text-success fas fa-check"></i>' : '' !!}</td>
                         <td>{!! $sublist->key !!}</td>
-                        <td class="text-right">
+                        <td class="text-end">
                             <a href="{{ url('admin/data/sublists/edit/' . $sublist->id) }}" class="btn btn-primary">Edit</a>
                         </td>
                     </tr>

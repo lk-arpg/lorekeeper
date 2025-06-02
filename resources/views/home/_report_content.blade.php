@@ -1,6 +1,6 @@
 <h1>
     Report (#{{ $report->id }})
-    <span class="float-right badge badge-{{ $report->status == 'Pending' ? 'secondary' : ($report->status == 'Closed' ? 'success' : 'danger') }}">{{ $report->status }}</span>
+    <span class="float-end badge badge-{{ $report->status == 'Pending' ? 'secondary' : ($report->status == 'Closed' ? 'success' : 'danger') }}">{{ $report->status }}</span>
 </h1>
 <div class="mb-1">
     <div class="row">

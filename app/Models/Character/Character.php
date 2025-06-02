@@ -334,7 +334,7 @@ class Character extends Model {
      */
     public function getWarningsAttribute() {
         if (config('lorekeeper.settings.enable_character_content_warnings') && $this->image->content_warnings) {
-            return '<i class="fa fa-exclamation-triangle text-danger" data-toggle="tooltip" title="'.implode(', ', $this->image->content_warnings).'"></i> ';
+            return '<i class="fa fa-exclamation-triangle text-danger" data-bs-toggle="tooltip" title="'.implode(', ', $this->image->content_warnings).'"></i> ';
         }
 
         return null;
@@ -388,7 +388,7 @@ class Character extends Model {
             $nonMyoSection = "<span class='badge ".$artCode."'><i class='fas fa-pencil-ruler'></i></span> <span class='badge ".$writingCode."'><i class='fas fa-file-alt'></i></span> ";
         }
 
-        return ' ・ <i class="fas fa-info-circle help-icon m-0" data-toggle="tooltip" data-html="true" title="'.$nonMyoSection.$tradingSection.'"></i>';
+        return ' ・ <i class="fas fa-info-circle help-icon m-0" data-bs-toggle="tooltip" data-html="true" title="'.$nonMyoSection.$tradingSection.'"></i>';
     }
 
     /**********************************************************************************************

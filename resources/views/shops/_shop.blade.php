@@ -6,12 +6,12 @@
     @endif
     <div class="shop-name mt-1">
         <a href="{{ $shop->url }}" class="h5 mb-0">
-            {!! $shop->is_staff ? '<i class="fas fa-crown mr-1"></i>' : '' !!}
+            {!! $shop->is_staff ? '<i class="fas fa-crown me-1"></i>' : '' !!}
             {{ $shop->name }}
         </a>
         @include('widgets._limits', ['object' => $shop, 'compact' => true])
         @if ($shop->is_fto)
-            <span class="badge badge-pill badge-success">FTO Shop</span>
+            <span class="badge rounded-pill text-bg-success">FTO Shop</span>
         @endif
     </div>
 </div>

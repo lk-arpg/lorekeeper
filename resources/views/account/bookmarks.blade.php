@@ -13,9 +13,9 @@
         characters you have bookmarked that are transferred to you will preserve the bookmarks until you delete them. Bookmarks on characters you own will not give you notifications.</p>
 
     {!! Form::open(['method' => 'GET']) !!}
-    <div class="form-inline justify-content-end mb-3">
-        <div class="form-group mr-3">
-            {!! Form::label('sort', 'Sort: ', ['class' => 'mr-2']) !!}
+    <div class="d-flex align-items-center justify-content-end mb-3">
+        <div class="mb-3 me-3">
+            {!! Form::label('sort', 'Sort: ', ['class' => 'me-2']) !!}
             {!! Form::select(
                 'sort',
                 [
@@ -42,10 +42,10 @@
     </div>
     {!! Form::close() !!}
 
-    <div class="text-right mb-3">
+    <div class="text-end mb-3">
         <div class="btn-group">
-            <button type="button" class="btn btn-secondary active thumb-view-button" data-toggle="tooltip" title="Thumbnail View" alt="Grid View"><i class="fas fa-th-list"></i></button>
-            <button type="button" class="btn btn-secondary list-view-button" data-toggle="tooltip" title="Compact View" alt="List View"><i class="fas fa-bars"></i></button>
+            <button type="button" class="btn btn-secondary active thumb-view-button" data-bs-toggle="tooltip" title="Thumbnail View" alt="Grid View"><i class="fas fa-th-list"></i></button>
+            <button type="button" class="btn btn-secondary list-view-button" data-bs-toggle="tooltip" title="Compact View" alt="List View"><i class="fas fa-bars"></i></button>
         </div>
     </div>
 
@@ -74,29 +74,29 @@
                             {!! $bookmark->character->image->species_id ? $bookmark->character->image->species->displayName : 'No Species' !!} ・ {!! $bookmark->character->image->rarity_id ? $bookmark->character->image->rarity->displayName : 'No Rarity' !!} ・ {!! $bookmark->character->displayOwner !!}
 
                             @if ($bookmark->character->is_gift_art_allowed > 0 && !$bookmark->character->is_myo_slot)
-                                <div><i class="{{ $bookmark->character->is_gift_art_allowed == 1 ? 'text-success' : 'text-warning' }} far fa-circle fa-fw mr-2"></i>
+                                <div><i class="{{ $bookmark->character->is_gift_art_allowed == 1 ? 'text-success' : 'text-warning' }} far fa-circle fa-fw me-2"></i>
                                     {{ $bookmark->character->is_gift_art_allowed == 1 ? 'Gift art is allowed' : 'Ask First before gift art' }}</div>
                             @endif
                             @if ($bookmark->character->is_gift_writing_allowed > 0 && !$bookmark->character->is_myo_slot)
-                                <div><i class="{{ $bookmark->character->is_gift_writing_allowed == 1 ? 'text-success' : 'text-warning' }} far fa-circle fa-fw mr-2"></i>
+                                <div><i class="{{ $bookmark->character->is_gift_writing_allowed == 1 ? 'text-success' : 'text-warning' }} far fa-circle fa-fw me-2"></i>
                                     {{ $bookmark->character->is_gift_writing_allowed == 1 ? 'Gift writing is allowed' : 'Ask First before gift writing' }}</div>
                             @endif
                             @if ($bookmark->character->is_trading)
-                                <div><i class="text-success far fa-circle fa-fw mr-2"></i> Open for trades</div>
+                                <div><i class="text-success far fa-circle fa-fw me-2"></i> Open for trades</div>
                             @endif
                         </td>
                         <td>
                             {!! nl2br(htmlentities($bookmark->comment)) !!}
                         </td>
                         <td>
-                            <i class="fas fa-exchange-alt fa-lg fa-fw mr-2 {{ $bookmark->notify_on_trade_status ? 'text-success' : 'text-danger' }}" data-toggle="tooltip" title="Open For Trade status changes"></i>
-                            <i class="fas fa-gift fa-lg fa-fw mr-2 {{ $bookmark->notify_on_gift_art_status ? 'text-success' : 'text-danger' }}" data-toggle="tooltip" title="Gift Art Allowed status changes"></i>
-                            <i class="fas fa-pen-square fa-lg fa-fw mr-2 {{ $bookmark->notify_on_gift_writing_status ? 'text-success' : 'text-danger' }}" data-toggle="tooltip" title="Gift Writing Allowed status changes"></i>
-                            <i class="fas fa-user fa-lg fa-fw mr-2 {{ $bookmark->notify_on_transfer ? 'text-success' : 'text-danger' }}" data-toggle="tooltip" title="Character's owner changes"></i>
-                            <i class="far fa-image fa-lg fa-fw mr-2 {{ $bookmark->notify_on_image ? 'text-success' : 'text-danger' }}" data-toggle="tooltip" title="A new image is uploaded"></i>
+                            <i class="fas fa-exchange-alt fa-lg fa-fw me-2 {{ $bookmark->notify_on_trade_status ? 'text-success' : 'text-danger' }}" data-bs-toggle="tooltip" title="Open For Trade status changes"></i>
+                            <i class="fas fa-gift fa-lg fa-fw me-2 {{ $bookmark->notify_on_gift_art_status ? 'text-success' : 'text-danger' }}" data-bs-toggle="tooltip" title="Gift Art Allowed status changes"></i>
+                            <i class="fas fa-pen-square fa-lg fa-fw me-2 {{ $bookmark->notify_on_gift_writing_status ? 'text-success' : 'text-danger' }}" data-bs-toggle="tooltip" title="Gift Writing Allowed status changes"></i>
+                            <i class="fas fa-user fa-lg fa-fw me-2 {{ $bookmark->notify_on_transfer ? 'text-success' : 'text-danger' }}" data-bs-toggle="tooltip" title="Character's owner changes"></i>
+                            <i class="far fa-image fa-lg fa-fw me-2 {{ $bookmark->notify_on_image ? 'text-success' : 'text-danger' }}" data-bs-toggle="tooltip" title="A new image is uploaded"></i>
 
                         </td>
-                        <td class="text-right">
+                        <td class="text-end">
                             <a href="#" class="btn btn-outline-primary btn-sm edit-bookmark-button" data-id="{{ Auth::user()->bookmarks()->where('character_id', $bookmark->character_id)->first()->id }}">Edit</a>
                             <a href="#" class="btn btn-outline-danger btn-sm delete-bookmark-button" data-id="{{ Auth::user()->bookmarks()->where('character_id', $bookmark->character_id)->first()->id }}">Delete</a>
                         </td>

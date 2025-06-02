@@ -13,7 +13,7 @@
     <p>You can create and edit ranks to assign to users here. Ranks can have powers attached, which allows users with the rank to view and edit data on certain parts of the site. To assign a rank to a user, find their admin page from the <a
             href="{{ url('admin/users') }}">User Index</a> and change their rank there.</p>
 
-    <div class="text-right mb-3"><a class="btn btn-primary create-rank-button" href="#"><i class="fas fa-plus"></i> Add New Rank</a></div>
+    <div class="text-end mb-3"><a class="btn btn-primary create-rank-button" href="#"><i class="fas fa-plus"></i> Add New Rank</a></div>
     <table class="table table-sm ranks-table">
         <thead>
             <tr>
@@ -32,7 +32,7 @@
                             <a class="fas fa-arrows-alt-v handle" href="#"></a>
                         @endif
                     </td>
-                    <td><i class="{!! $rank->icon ? $rank->icon . ' mr-2' : '' !!} "></i>{!! $rank->displayName !!}</td>
+                    <td><i class="{!! $rank->icon ? $rank->icon . ' me-2' : '' !!} "></i>{!! $rank->displayName !!}</td>
                     <td>{!! $rank->parsed_description !!}</td>
                     <td>
                         @foreach ($rank->getPowers() as $power)

@@ -9,7 +9,7 @@
 
     <h1>
         Trade with {!! $partner->displayName !!} (#{{ $trade->id }})
-        <span class="float-right badge badge-{{ $trade->status == 'Pending' || $trade->status == 'Open' || $trade->status == 'Canceled' ? 'secondary' : ($trade->status == 'Completed' ? 'success' : 'danger') }}">{{ $trade->status }}</span>
+        <span class="float-end badge badge-{{ $trade->status == 'Pending' || $trade->status == 'Open' || $trade->status == 'Canceled' ? 'secondary' : ($trade->status == 'Completed' ? 'success' : 'danger') }}">{{ $trade->status }}</span>
     </h1>
 
 
@@ -75,7 +75,7 @@
     @include('home.trades._offer', ['user' => $trade->recipient, 'data' => $recipientData, 'trade' => $trade, 'type' => 'recipient'])
 
     @if ((Auth::user()->id == $trade->sender_id || Auth::user()->id == $trade->recipient_id) && $trade->status == 'Open')
-        <div class="text-right">
+        <div class="text-end">
             @if (!$trade->isConfirmable)
                 {!! add_help('Both parties must confirm their offers before you can confirm this trade.') !!}
                 <a href="#" class="btn btn-outline-primary disabled">Confirm Trade</a>

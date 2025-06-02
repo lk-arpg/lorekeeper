@@ -3,7 +3,7 @@
         <div class="card mb-3 inventory-category">
             <h5 class="card-header inventory-header">
                 @if (isset($categories[$categoryId]) && !$categories[$categoryId]->is_visible)
-                    <i class="fas fa-eye-slash mr-1"></i>
+                    <i class="fas fa-eye-slash me-1"></i>
                 @endif
                 {!! isset($categories[$categoryId]) ? '<a href="' . $categories[$categoryId]->searchUrl . '">' . $categories[$categoryId]->name . '</a>' : 'Miscellaneous' !!}
             </h5>
@@ -19,7 +19,7 @@
                                 @endif
                                 <p>
                                     @if (!$feature->first()->is_visible)
-                                        <i class="fas fa-eye-slash mr-1"></i>
+                                        <i class="fas fa-eye-slash me-1"></i>
                                     @endif
                                     {!! $feature->first()->displayName !!}
                                     @if ($showSubtype && $feature->first()->subtype)

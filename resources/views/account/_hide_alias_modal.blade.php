@@ -9,7 +9,7 @@
     @else
         <p>Logged-out users and logged-in users will be able to view a list of your aliases from your profile page.</p>
     @endif
-    {!! Form::open(['url' => 'account/hide-alias/' . $alias->id, 'class' => 'text-right']) !!}
+    {!! Form::open(['url' => 'account/hide-alias/' . $alias->id, 'class' => 'text-end']) !!}
     {!! Form::submit((!$alias->is_visible ? 'Unhide' : 'Hide') . ' Alias', ['class' => 'btn btn-secondary']) !!}
     {!! Form::close() !!}
 @endif

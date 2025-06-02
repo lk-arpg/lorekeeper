@@ -9,7 +9,7 @@
 
     <h1>Log Details
         <span
-            class="float-right badge badge-{{ $submission->status == 'Pending' ? 'secondary' : ($submission->status == 'Accepted' ? 'success' : 'danger') }}">{{ $submission->collaboratorApproval ? $submission->status : 'Pending Collaborator Approval' }}</span>
+            class="float-end badge badge-{{ $submission->status == 'Pending' ? 'secondary' : ($submission->status == 'Accepted' ? 'success' : 'danger') }}">{{ $submission->collaboratorApproval ? $submission->status : 'Pending Collaborator Approval' }}</span>
     </h1>
 
     @include('galleries._queue_submission', ['key' => 0])
@@ -19,7 +19,7 @@
             @if (Settings::get('gallery_submissions_reward_currency') && $submission->gallery->currency_enabled)
                 <div class="card mb-4">
                     <div class="card-header">
-                        <h5>{!! $currency->displayName !!} Award Info <a class="small inventory-collapse-toggle collapse-toggle {{ $submission->status == 'Accepted' ? '' : 'collapsed' }}" href="#currencyForm" data-toggle="collapse">Show</a></h5>
+                        <h5>{!! $currency->displayName !!} Award Info <a class="small inventory-collapse-toggle collapse-toggle {{ $submission->status == 'Accepted' ? '' : 'collapsed' }}" href="#currencyForm" data-bs-toggle="collapse">Show</a></h5>
                     </div>
                     <div class="card-body collapse {{ $submission->status == 'Accepted' ? 'show' : '' }}" id="currencyForm">
                         @if ($submission->status == 'Accepted')
@@ -30,7 +30,7 @@
                                     </p>
                                     {!! Form::open(['url' => 'admin/gallery/edit/' . $submission->id . '/value']) !!}
                                     @if (!$submission->collaborators->count() || $submission->collaborators->where('user_id', $submission->user_id)->first() == null)
-                                        <div class="form-group">
+                                        <div class="mb-3">
                                             {!! Form::label($submission->user->name) !!}:
                                             {!! Form::number(
                                                 'value[submitted][' . $submission->user->id . ']',
@@ -43,7 +43,7 @@
                                     @endif
                                     @if ($submission->collaborators->count())
                                         @foreach ($submission->collaborators as $key => $collaborator)
-                                            <div class="form-group">
+                                            <div class="mb-3">
                                                 {!! Form::label($collaborator->user->name . ' (' . $collaborator->data . ')') !!}:
                                                 {!! Form::number(
                                                     'value[collaborator][' . $collaborator->user->id . ']',
@@ -57,7 +57,7 @@
                                     @endif
                                     @if ($submission->participants->count())
                                         @foreach ($submission->participants as $key => $participant)
-                                            <div class="form-group">
+                                            <div class="mb-3">
                                                 {!! Form::label($participant->user->name . ' (' . $participant->displayType . ')') !!}:
                                                 {!! Form::number(
                                                     'value[participant][' . $participant->user->id . ']',
@@ -71,11 +71,11 @@
                                             </div>
                                         @endforeach
                                     @endif
-                                    <div class="form-group">
+                                    <div class="mb-3">
                                         {!! Form::checkbox('ineligible', 1, false, ['class' => 'form-check-input', 'data-toggle' => 'toggle', 'data-onstyle' => 'danger']) !!}
-                                        {!! Form::label('ineligible', 'Inelegible/Award No Currency', ['class' => 'form-check-label ml-3']) !!} {!! add_help('When on, this will mark the submission as valued, but will not award currency to any of the users listed.') !!}
+                                        {!! Form::label('ineligible', 'Inelegible/Award No Currency', ['class' => 'form-check-label ms-3']) !!} {!! add_help('When on, this will mark the submission as valued, but will not award currency to any of the users listed.') !!}
                                     </div>
-                                    <div class="text-right">
+                                    <div class="text-end">
                                         {!! Form::submit('Submit', ['class' => 'btn btn-primary']) !!}
                                     </div>
                                     {!! Form::close() !!}

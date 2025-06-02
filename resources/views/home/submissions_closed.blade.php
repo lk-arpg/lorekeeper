@@ -21,12 +21,12 @@
 
     {!! Form::open(['url' => $isClaim ? 'claims/new' : 'submissions/new', 'id' => 'submissionForm']) !!}
     @if (!$isClaim)
-        <div class="form-group">
+        <div class="mb-3">
             {!! Form::label('prompt_id', 'Prompt') !!}
             {!! Form::select('prompt_id', $prompts, null, ['class' => 'form-control selectize', 'id' => 'prompt', 'placeholder' => '']) !!}
         </div>
     @endif
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::label('url', $isClaim ? 'URL' : 'Submission URL') !!}
         @if ($isClaim)
             {!! add_help('Enter a URL relevant to your claim (for example, a comment proving you may make this claim). This field cannot be left blank.') !!}
@@ -35,7 +35,7 @@
         @endif
         {!! Form::text('url', null, ['class' => 'form-control', 'required']) !!}
     </div>
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::label('comments', 'Comments (Optional)') !!} {!! add_help('Enter a comment for your ' . ($isClaim ? 'claim' : 'submission') . ' (no HTML). This will be viewed by the mods when reviewing your ' . ($isClaim ? 'claim' : 'submission') . '.') !!}
         {!! Form::textarea('comments', null, ['class' => 'form-control']) !!}
     </div>
@@ -57,11 +57,11 @@
     @endif
     <div id="characters" class="mb-3">
     </div>
-    <div class="text-right mb-3">
+    <div class="text-end mb-3">
         <a href="#" class="btn btn-outline-info" id="addCharacter">Add Character</a>
     </div>
 
-    <div class="text-right">
+    <div class="text-end">
         <a href="#" class="btn btn-primary" id="submitButton">Submit</a>
     </div>
     {!! Form::close() !!}
@@ -77,12 +77,12 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <span class="modal-title h5 mb-0">Confirm {{ $isClaim ? 'Claim' : 'Submission' }}</span>
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal">&times;</button>
                 </div>
                 <div class="modal-body">
                     <p>This will submit the form and put it into the {{ $isClaim ? 'claims' : 'prompt' }} approval queue. You will not be able to edit the contents after the {{ $isClaim ? 'claim' : 'submission' }} has been made. Click the Confirm
                         button to complete the {{ $isClaim ? 'claim' : 'submission' }}.</p>
-                    <div class="text-right">
+                    <div class="text-end">
                         <a href="#" id="formSubmit" class="btn btn-primary">Confirm</a>
                     </div>
                 </div>

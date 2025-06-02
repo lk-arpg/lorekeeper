@@ -1,6 +1,6 @@
 <div class="row world-entry">
     @if ($prompt->has_image)
-        <div class="col-md-3 world-entry-image"><a href="{{ $prompt->imageUrl }}" data-lightbox="entry" data-title="{{ $prompt->name }}"><img src="{{ $prompt->imageUrl }}" class="world-entry-image" alt="{{ $prompt->name }}" /></a></div>
+        <div class="col-md-3 world-entry-image"><a href="{{ $prompt->imageUrl }}" data-lightbox="entry" data-bs-title="{{ $prompt->name }}"><img src="{{ $prompt->imageUrl }}" class="world-entry-image" alt="{{ $prompt->name }}" /></a></div>
     @endif
     <div class="{{ $prompt->has_image ? 'col-md-9' : 'col-12' }}">
         <x-admin-edit title="Prompt" :object="$prompt" />
@@ -22,7 +22,7 @@
         </div>
         <div class="world-entry-text">
             <p>{{ $prompt->summary }}</p>
-            <h3 class="mb-3"><a data-toggle="collapse" href="#prompt-{{ $prompt->id }}" @if (isset($isPage)) aria-expanded="true" @endif>Details <i class="fas fa-angle-down"></i></a></h3>
+            <h3 class="mb-3"><a data-bs-toggle="collapse" href="#prompt-{{ $prompt->id }}" @if (isset($isPage)) aria-expanded="true" @endif>Details <i class="fas fa-angle-down"></i></a></h3>
             <div class="collapse @if (isset($isPage)) show @endif" id="prompt-{{ $prompt->id }}">
                 @if ($prompt->parsed_description)
                     {!! $prompt->parsed_description !!}
@@ -64,7 +64,7 @@
                 ])
             @endif
         </div>
-        <div class="text-right">
+        <div class="text-end">
             @if ($prompt->end_at && $prompt->end_at->isPast())
                 <span class="text-secondary">This prompt has ended.</span>
             @elseif($prompt->start_at && $prompt->start_at->isFuture())

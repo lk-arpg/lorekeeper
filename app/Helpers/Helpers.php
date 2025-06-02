@@ -29,7 +29,7 @@ function set_active($path, $class = 'active') {
  * @return string
  */
 function add_help($text) {
-    return '<i class="fas fa-question-circle help-icon" data-toggle="tooltip" title="'.$text.'"></i>';
+    return '<i class="fas fa-question-circle help-icon" data-bs-toggle="tooltip" title="'.$text.'"></i>';
 }
 
 /**
@@ -78,11 +78,11 @@ function breadcrumbs($links) {
  * @return string
  */
 function format_date($timestamp, $showTime = true) {
-    return $timestamp->format('j F Y'.($showTime ? ', H:i:s' : '')).($showTime ? ' <abbr data-toggle="tooltip" title="UTC'.$timestamp->timezone->toOffsetName().'">'.strtoupper($timestamp->timezone->getAbbreviatedName($timestamp->isDST())).'</abbr>' : '');
+    return $timestamp->format('j F Y'.($showTime ? ', H:i:s' : '')).($showTime ? ' <abbr data-bs-toggle="tooltip" title="UTC'.$timestamp->timezone->toOffsetName().'">'.strtoupper($timestamp->timezone->getAbbreviatedName($timestamp->isDST())).'</abbr>' : '');
 }
 
 function pretty_date($timestamp, $showTime = true) {
-    return '<abbr data-toggle="tooltip" title="'.$timestamp->format('F j Y'.($showTime ? ', H:i:s' : '')).' '.strtoupper($timestamp->timezone->getAbbreviatedName($timestamp->isDST())).'">'.$timestamp->diffForHumans().'</abbr>';
+    return '<abbr data-bs-toggle="tooltip" title="'.$timestamp->format('F j Y'.($showTime ? ', H:i:s' : '')).' '.strtoupper($timestamp->timezone->getAbbreviatedName($timestamp->isDST())).'">'.$timestamp->diffForHumans().'</abbr>';
 }
 
 /**
@@ -119,7 +119,7 @@ function parse($text, &$pings = null) {
     $config->set('HTML.DefinitionRev', 2);
     if ($def = $config->maybeGetRawHTMLDefinition()) {
         $def->addElement('include', 'Block', 'Empty', 'Common', ['file*' => 'URI', 'height' => 'Text', 'width' => 'Text']);
-        $def->addAttribute('a', 'data-toggle', 'Enum#collapse,tab');
+        $def->addAttribute('a', 'data-bs-toggle', 'Enum#collapse,tab');
         $def->addAttribute('a', 'aria-expanded', 'Enum#true,false');
         $def->addAttribute('a', 'data-target', 'Text');
         $def->addAttribute('div', 'data-parent', 'Text');
@@ -297,7 +297,7 @@ function parseCharacterThumbs($text, &$characters) {
             $character = App\Models\Character\Character::where('slug', $match)->first();
             if ($character) {
                 $characters[] = $character;
-                $text = preg_replace('/\[charthumb='.$match.'\]/', '<a href="'.$character->url.'"><img class="img-thumbnail" alt="Thumbnail of '.$character->fullName.'" data-toggle="tooltip" title="'.$character->fullName.'" src="'.$character->image->thumbnailUrl.'"></a>', $text);
+                $text = preg_replace('/\[charthumb='.$match.'\]/', '<a href="'.$character->url.'"><img class="img-thumbnail" alt="Thumbnail of '.$character->fullName.'" data-bs-toggle="tooltip" title="'.$character->fullName.'" src="'.$character->image->thumbnailUrl.'"></a>', $text);
             }
         }
     }
@@ -324,7 +324,7 @@ function parseGalleryThumbs($text, &$submissions) {
             $submission = App\Models\Gallery\GallerySubmission::where('id', $match)->first();
             if ($submission) {
                 $submissions[] = $submission;
-                $text = preg_replace('/\[thumb='.$match.'\]/', '<a href="'.$submission->url.'" data-toggle="tooltip" title="'.$submission->displayTitle.' by '.nl2br(htmlentities($submission->creditsPlain)).(isset($submission->content_warning) ? '<br/><strong>Content Warning:</strong> '.nl2br(htmlentities($submission->content_warning)) : '').'">'.view('widgets._gallery_thumb', ['submission' => $submission]).'</a>', $text);
+                $text = preg_replace('/\[thumb='.$match.'\]/', '<a href="'.$submission->url.'" data-bs-toggle="tooltip" title="'.$submission->displayTitle.' by '.nl2br(htmlentities($submission->creditsPlain)).(isset($submission->content_warning) ? '<br/><strong>Content Warning:</strong> '.nl2br(htmlentities($submission->content_warning)) : '').'">'.view('widgets._gallery_thumb', ['submission' => $submission]).'</a>', $text);
             }
         }
     }

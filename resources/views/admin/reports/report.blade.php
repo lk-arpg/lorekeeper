@@ -16,7 +16,7 @@
 
         <h1>
             Report (#{{ $report->id }})
-            <span class="float-right badge badge-{{ $report->status == 'Pending' ? 'secondary' : ($report->status == 'Closed' ? 'success' : 'danger') }}">{{ $report->status }}</span>
+            <span class="float-end badge badge-{{ $report->status == 'Pending' ? 'secondary' : ($report->status == 'Closed' ? 'success' : 'danger') }}">{{ $report->status }}</span>
         </h1>
         <div class="mb-1">
             <div class="row">
@@ -83,14 +83,14 @@
             @if (Auth::user()->hasPower('manage_reports'))
                 <div class="alert alert-warning">Please include a small paragraph on the solution and as many important details as you deem necessary, as the user will no longer be able to view the comments after the report is closed.</div>
             @endif
-            <div class="form-group">
+            <div class="mb-3">
                 {!! Form::label('staff_comments', 'Staff Comments (Optional)') !!}
                 {!! Form::textarea('staff_comments', $report->staffComments, ['class' => 'form-control wysiwyg']) !!}
             </div>
         @endif
-        <div class="text-right">
+        <div class="text-end">
             @if ($report->staff_id == null)
-                <a href="#" class="btn btn-danger mr-2" id="assignButton">Assign</a>
+                <a href="#" class="btn btn-danger me-2" id="assignButton">Assign</a>
             @endif
             @if ($report->status == 'Assigned' && Auth::user()->id == $report->staff_id)
                 <a href="#" class="btn btn-success" id="closalButton">Close</a>
@@ -103,11 +103,11 @@
                 <div class="modal-content hide" id="closalContent">
                     <div class="modal-header">
                         <span class="modal-title h5 mb-0">Confirm Closal</span>
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal">&times;</button>
                     </div>
                     <div class="modal-body">
                         <p>This will close the report.</p>
-                        <div class="text-right">
+                        <div class="text-end">
                             <a href="#" id="closalSubmit" class="btn btn-success">Close</a>
                         </div>
                     </div>
@@ -115,11 +115,11 @@
                 <div class="modal-content hide" id="assignContent">
                     <div class="modal-header">
                         <span class="modal-title h5 mb-0">Confirm Assignment</span>
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal">&times;</button>
                     </div>
                     <div class="modal-body">
-                        <p class="text-left">This will assign yourself to the report.</p>
-                        <div class="text-right">
+                        <p class="text-start">This will assign yourself to the report.</p>
+                        <div class="text-end">
                             <a href="#" id="assignSubmit" class="btn btn-danger">Assign</a>
                         </div>
                     </div>

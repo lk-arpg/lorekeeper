@@ -28,11 +28,11 @@
                 @foreach ($currencies as $currency)
                     <li class="list-group-item">
                         <div class="row">
-                            <div class="col-lg-2 col-md-3 col-6 text-right">
+                            <div class="col-lg-2 col-md-3 col-6 text-end">
                                 <strong>
                                     <a href="{{ $currency->url }}">
                                         @if (!$currency->is_visible)
-                                            <i class="fas fa-eye-slash mr-1"></i>
+                                            <i class="fas fa-eye-slash me-1"></i>
                                         @endif
                                         {{ $currency->name }}
                                         @if ($currency->abbreviation)
@@ -82,7 +82,7 @@
             @endforeach
         </div>
     </div>
-    <div class="text-right">
+    <div class="text-end">
         <a href="{{ url($user->url . '/currency-logs') }}">View all...</a>
     </div>
 @endsection

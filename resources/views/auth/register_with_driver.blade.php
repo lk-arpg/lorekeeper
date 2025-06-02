@@ -15,8 +15,8 @@
             @csrf
             {!! Form::hidden('token', $token ?? old('token')) !!}
 
-            <div class="form-group row">
-                <label for="name" class="col-md-4 col-form-label text-md-right">Username</label>
+            <div class="mb-3 row">
+                <label for="name" class="col-md-4 col-form-label text-md-end">Username</label>
 
                 <div class="col-md-6">
                     <input id="name" type="text" class="form-control{{ $errors->has('name') ? ' is-invalid' : '' }}" name="name" value="{{ old('name') ?? $user }}" required autofocus>
@@ -30,8 +30,8 @@
             </div>
 
             @if (!Settings::get('is_registration_open'))
-                <div class="form-group row">
-                    <label for="name" class="col-md-4 col-form-label text-md-right">Invitation Key {!! add_help('Registration is currently closed. An invitation key is required to create an account.') !!}</label>
+                <div class="mb-3 row">
+                    <label for="name" class="col-md-4 col-form-label text-md-end">Invitation Key {!! add_help('Registration is currently closed. An invitation key is required to create an account.') !!}</label>
 
                     <div class="col-md-6">
                         <input id="code" type="text" class="form-control{{ $errors->has('code') ? ' is-invalid' : '' }}" name="code" value="{{ old('code') }}" required autofocus>
@@ -45,7 +45,7 @@
                 </div>
             @endif
 
-            <div class="form-group row">
+            <div class="mb-3 row">
                 {{ Form::label('dob', 'Date of Birth', ['class' => 'col-md-4 col-form-label text-md-right']) }}
                 <div class="col-md-6">
                     {!! Form::date('dob', null, ['class' => 'form-control']) !!}
@@ -57,7 +57,7 @@
                 @endif
             </div>
 
-            <div class="form-group row">
+            <div class="mb-3 row">
                 <div class="col-md-6 offset-md-4">
                     <div class="form-check">
                         <label class="form-check-label">
@@ -68,7 +68,7 @@
                 </div>
             </div>
 
-            <div class="form-group row mb-0">
+            <div class="mb-3 row mb-0">
                 <div class="col-md-6 offset-md-4">
                     <button type="submit" class="btn btn-primary">
                         {{ __('Register') }}

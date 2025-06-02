@@ -11,7 +11,7 @@
     <h1>
         {{ $gallery->name }}
         @if (Auth::check() && $gallery->canSubmit(Settings::get('gallery_submissions_open'), Auth::user()))
-            <a href="{{ url('gallery/submit/' . $gallery->id) }}" class="btn btn-primary float-right"><i class="fas fa-plus mr-1"></i> Submit</a>
+            <a href="{{ url('gallery/submit/' . $gallery->id) }}" class="btn btn-primary float-end"><i class="fas fa-plus me-1"></i> Submit</a>
         @endif
     </h1>
     @if (isset($gallery->start_at) || isset($gallery->end_at))
@@ -32,13 +32,13 @@
 
     <div>
         {!! Form::open(['method' => 'GET', 'class' => 'form-inline justify-content-end']) !!}
-        <div class="form-group mr-3 mb-3">
+        <div class="mb-3 me-3 mb-3">
             {!! Form::text('title', Request::get('title'), ['class' => 'form-control', 'placeholder' => 'Title']) !!}
         </div>
-        <div class="form-group mr-3 mb-3">
+        <div class="mb-3 me-3 mb-3">
             {!! Form::select('prompt_id', $prompts, Request::get('prompt_id'), ['class' => 'form-control']) !!}
         </div>
-        <div class="form-group mr-3 mb-3">
+        <div class="mb-3 me-3 mb-3">
             {!! Form::select(
                 'sort',
                 [
@@ -53,7 +53,7 @@
                 ['class' => 'form-control'],
             ) !!}
         </div>
-        <div class="form-group mb-3">
+        <div class="mb-3 mb-3">
             {!! Form::submit('Search', ['class' => 'btn btn-primary']) !!}
         </div>
         {!! Form::close() !!}

@@ -1,44 +1,44 @@
 <h1>
     {{ $submission->prompt_id ? 'Submission' : 'Claim' }} (#{{ $submission->id }})
     @if (Auth::check() && $submission->user_id == Auth::user()->id && $submission->status == 'Draft')
-        <a href="{{ url(($isClaim ? 'claims' : 'submissions') . '/draft/' . $submission->id) }}" class="btn btn-sm btn-outline-secondary ml-3">Edit Draft <i class="fas fa-pen ml-2"></i></a>
+        <a href="{{ url(($isClaim ? 'claims' : 'submissions') . '/draft/' . $submission->id) }}" class="btn btn-sm btn-outline-secondary ms-3">Edit Draft <i class="fas fa-pen ms-2"></i></a>
     @endif
-    <span class="float-right badge badge-{{ $submission->status == 'Pending' || $submission->status == 'Draft' ? 'secondary' : ($submission->status == 'Approved' ? 'success' : 'danger') }}">{{ $submission->status }}</span>
+    <span class="float-end badge badge-{{ $submission->status == 'Pending' || $submission->status == 'Draft' ? 'secondary' : ($submission->status == 'Approved' ? 'success' : 'danger') }}">{{ $submission->status }}</span>
 
 </h1>
 
 
 <div class="card mb-3" style="clear:both;">
     <div class="card-body">
-        <div class="row mb-2 no-gutters">
+        <div class="row mb-2 g-0">
             <div class="col-md-2">
                 <h5 class="mb-0">User</h5>
             </div>
             <div class="col-md-10">{!! $submission->user->displayName !!}</div>
         </div>
         @if ($submission->prompt_id)
-            <div class="row mb-2 no-gutters">
+            <div class="row mb-2 g-0">
                 <div class="col-md-2">
                     <h5 class="mb-0">Prompt</h5>
                 </div>
                 <div class="col-md-10">{!! $submission->prompt->displayName !!}</div>
             </div>
         @endif
-        <div class="row mb-2 no-gutters">
+        <div class="row mb-2 g-0">
             <div class="col-md-2">
                 <h5 class="mb-0">URL</h5>
             </div>
             <div class="col-md-10"><a href="{{ $submission->url }}">{{ $submission->url }}</a></div>
         </div>
         @if (config('lorekeeper.settings.allow_gallery_submissions_on_prompts') && $submission->data['gallery_submission_id'])
-            <div class="row mb-2 no-gutters">
+            <div class="row mb-2 g-0">
                 <div class="col-md-2">
                     <h5 class="mb-0">Gallery Submission</h5>
                 </div>
                 <div class="col-md-10"><a href="{{ $submission->gallerySubmission->url }}">{{ $submission->gallerySubmission->title }}</a></div>
             </div>
         @endif
-        <div class="row mb-2 no-gutters">
+        <div class="row mb-2 g-0">
             <div class="col-md-2">
                 <h5 class="mb-0">Submitted</h5>
             </div>
@@ -47,7 +47,7 @@
             </div>
         </div>
         @if ($submission->status != 'Pending' && $submission->status != 'Draft')
-            <div class="row mb-2 no-gutters">
+            <div class="row mb-2 g-0">
                 <div class="col-md-2">
                     <h5 class="mb-0">Processed</h5>
                 </div>
@@ -116,7 +116,7 @@
                 <div class="submission-character-thumbnail">
                     <a href="{{ $character->character->url }}"><img src="{{ $character->character->image->thumbnailUrl }}" class="img-thumbnail" alt="Thumbnail for {{ $character->character->fullName }}" /></a>
                 </div>
-                <div class="submission-character-info card ml-2">
+                <div class="submission-character-info card ms-2">
                     <div class="card-body">
                         <div class="submission-character-info-content">
                             <h3 class="mb-2 submission-character-info-header"><a href="{{ $character->character->url }}">{{ $character->character->fullName }}</a></h3>

@@ -19,7 +19,7 @@
 
     <h3>
         @if (Auth::check() && Auth::user()->hasPower('edit_inventories'))
-            <a href="#" class="float-right btn btn-outline-info btn-sm" id="grantButton" data-toggle="modal" data-target="#grantModal"><i class="fas fa-cog"></i> Admin</a>
+            <a href="#" class="float-end btn btn-outline-info btn-sm" id="grantButton" data-bs-toggle="modal" data-bs-target="#grantModal"><i class="fas fa-cog"></i> Admin</a>
         @endif
         Currencies
     </h3>
@@ -30,7 +30,7 @@
                 @foreach ($currencies as $currency)
                     <li class="list-group-item">
                         <div class="row">
-                            <div class="col-lg-2 col-md-3 col-6 text-right">
+                            <div class="col-lg-2 col-md-3 col-6 text-end">
                                 <strong>
                                     <a href="{{ $currency->url }}">
                                         {{ $currency->name }}
@@ -63,7 +63,7 @@
             Take/Give Currency
         </h3>
         {!! Form::open(['url' => 'character/' . $character->slug . '/bank/transfer']) !!}
-        <div class="form-group">
+        <div class="mb-3">
             <div class="row">
                 <div class="col-md-6">
                     <label>{{ Form::radio('action', 'take', true, ['class' => 'take-button']) }} Take from Character</label>
@@ -73,7 +73,7 @@
                 </div>
             </div>
         </div>
-        <div class="form-group">
+        <div class="mb-3">
             <div class="row">
                 <div class="col-md-6">
                     {!! Form::label('quantity', 'Quantity') !!}
@@ -89,7 +89,7 @@
                 </div>
             </div>
         </div>
-        <div class="text-right">
+        <div class="text-end">
             {!! Form::submit('Transfer', ['class' => 'btn btn-primary']) !!}
         </div>
         {!! Form::close() !!}
@@ -124,7 +124,7 @@
             @endforeach
         </div>
     </div>
-    <div class="text-right">
+    <div class="text-end">
         <a href="{{ url($character->url . '/currency-logs') }}">View all...</a>
     </div>
 
@@ -134,30 +134,30 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <span class="modal-title h5 mb-0">[ADMIN] Grant/remove currency</span>
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal">&times;</button>
                     </div>
                     <div class="modal-body">
                         {!! Form::open(['url' => 'admin/character/' . $character->slug . '/grant']) !!}
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     {!! Form::label('currency_id', 'Currency') !!}
                                     {!! Form::select('currency_id', $currencyOptions, null, ['class' => 'form-control']) !!}
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     {!! Form::label('quantity', 'Quantity') !!} {!! add_help('If the value given is less than 0, this will be deducted from the character.') !!}
                                     {!! Form::text('quantity', null, ['class' => 'form-control']) !!}
                                 </div>
                             </div>
                         </div>
 
-                        <div class="form-group">
+                        <div class="mb-3">
                             {!! Form::label('data', 'Reason (Optional)') !!} {!! add_help('A reason for the grant. This will be noted in the logs.') !!}
                             {!! Form::text('data', null, ['class' => 'form-control']) !!}
                         </div>
-                        <div class="text-right">
+                        <div class="text-end">
                             {!! Form::submit('Submit', ['class' => 'btn btn-primary']) !!}
                         </div>
                         {!! Form::close() !!}

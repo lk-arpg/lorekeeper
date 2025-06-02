@@ -14,7 +14,7 @@
             </p>
         @endif
         {!! Form::open(['url' => 'trades/' . $trade->id . '/confirm-offer']) !!}
-        <div class="text-right">
+        <div class="text-end">
             {!! Form::submit($trade->is_sender_confirmed ? 'Unconfirm' : 'Confirm', ['class' => 'btn btn-' . ($trade->is_sender_confirmed ? 'danger' : 'primary')]) !!}
         </div>
         {!! Form::close() !!}
@@ -33,7 +33,7 @@
             </p>
         @endif
         {!! Form::open(['url' => 'trades/' . $trade->id . '/confirm-offer']) !!}
-        <div class="text-right">
+        <div class="text-end">
             {!! Form::submit($trade->is_recipient_confirmed ? 'Unconfirm' : 'Confirm', ['class' => 'btn btn-' . ($trade->is_recipient_confirmed ? 'danger' : 'primary')]) !!}
         </div>
         {!! Form::close() !!}

@@ -1,17 +1,17 @@
 @if ($rank)
     {!! Form::open(['url' => $rank->id ? 'admin/users/ranks/edit/' . $rank->id : 'admin/users/ranks/create']) !!}
 
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::label('Rank Name') !!}
         {!! Form::text('name', $rank->name, ['class' => 'form-control']) !!}
     </div>
 
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::label('Description (optional)') !!}
         {!! Form::textarea('description', $rank->description, ['class' => 'form-control']) !!}
     </div>
 
-    <div class="form-group">
+    <div class="mb-3">
         {!! Form::label('Colour (Hex code; optional)') !!}
         <div class="input-group cp">
             {!! Form::text('color', $rank->color, ['class' => 'form-control']) !!}
@@ -21,11 +21,11 @@
         </div>
     </div>
 
-    <div class="form-group row px-0 mx-0">
+    <div class="mb-3 row px-0 mx-0">
         <div class="col-5 align-self-center">
             {!! Form::label('Icon (Font-awesome code; optional)') !!}
         </div>
-        <div class="col-1 align-self-center text-right p-0">
+        <div class="col-1 align-self-center text-end p-0">
             <i id="rankitem" class="{{ $rank->icon }}"></i>
         </div>
         <div class="input-group col-6">
@@ -35,7 +35,7 @@
 
     @if ($editable != 2)
         {{-- Powers --}}
-        <div class="form-group">
+        <div class="mb-3">
             <div class="row">
                 @foreach ($powers as $key => $power)
                     <div class="col-md-6 form-check">
@@ -52,7 +52,7 @@
         </div>
     @endif
 
-    <div class="text-right">
+    <div class="text-end">
         {!! Form::submit($rank->id ? 'Edit' : 'Create', ['class' => 'btn btn-primary']) !!}
     </div>
 

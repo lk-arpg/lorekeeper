@@ -25,14 +25,14 @@
             </div>
         @endforeach
     </div>
-    {!! Form::open(['url' => 'characters/sort', 'class' => 'text-right']) !!}
+    {!! Form::open(['url' => 'characters/sort', 'class' => 'text-end']) !!}
     {!! Form::hidden('sort', null, ['id' => 'sortableOrder']) !!}
     {!! Form::submit('Save Order', ['class' => 'btn btn-primary']) !!}
     {!! Form::close() !!}
 
-    <div class="mobile-handle handle-clone badge badge-primary rounded-circle hide">
+    <div class="mobile-handle handle-clone badge text-bg-primary rounded-circle hide">
         <i class="fas fa-hand-point-up" aria-hidden="true"></i>
-        <span class="sr-only">Drag Handle</span>
+        <span class="visually-hidden">Drag Handle</span>
     </div>
 @endsection
 @section('scripts')

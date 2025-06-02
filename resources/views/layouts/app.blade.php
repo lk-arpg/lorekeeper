@@ -67,13 +67,12 @@
     <link defer href="{{ asset('css/jquery-ui.min.css') }}" rel="stylesheet">
 
     {{-- Bootstrap Toggle --}}
-    <link defer href="{{ asset('css/bootstrap4-toggle.min.css') }}" rel="stylesheet">
-
+    <link defer href="{{ asset('css/bootstrap5-toggle.min.css') }}" rel="stylesheet">
     <link defer href="{{ asset('css/lightbox.min.css') }}" rel="stylesheet">
     <link defer href="{{ asset('css/bootstrap-colorpicker.min.css') }}" rel="stylesheet">
     <link defer href="{{ asset('css/jquery-ui-timepicker-addon.css') }}" rel="stylesheet">
     <link defer href="{{ asset('css/croppie.css') }}" rel="stylesheet">
-    <link defer href="{{ asset('css/selectize.bootstrap4.css') }}" rel="stylesheet">
+    <link defer href="{{ asset('css/selectize.bootstrap5.css') }}" rel="stylesheet">
 
     @if (file_exists(public_path() . '/css/custom.css'))
         <link href="{{ asset('css/custom.css') . '?v=' . filemtime(public_path('css/lorekeeper.css')) }}" rel="stylesheet">
@@ -89,7 +88,7 @@
         <div class="site-header-image" id="header" style="background-image: url('{{ asset('images/header.png') }}');"></div>
         @include('layouts._nav')
         @if (View::hasSection('sidebar'))
-            <div class="site-mobile-header bg-secondary"><a href="#" class="btn btn-sm btn-outline-light" id="mobileMenuButton">Menu <i class="fas fa-caret-right ml-1"></i></a></div>
+            <div class="site-mobile-header bg-secondary"><a href="#" class="btn btn-sm btn-outline-light" id="mobileMenuButton">Menu <i class="fas fa-caret-right ms-1"></i></a></div>
         @endif
 
         <main class="container-fluid">
@@ -134,7 +133,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <span class="modal-title h5 mb-0"></span>
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal">&times;</button>
                     </div>
                     <div class="modal-body">
                     </div>
@@ -152,8 +151,17 @@
             });
 
             $(document).ready(function() {
-                $('[data-toggle="tooltip"]').tooltip({
+                $('[data-bs-toggle="tooltip"]').tooltip({
                     html: true
+                });
+                // Listener to re-render the toggle
+                $('[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+                    var $tabPane = $(this.getAttribute('href'));
+                    $tabPane.find('[data-toggle="toggle"]').bootstrapToggle();
+                });
+                $('[data-bs-toggle="tab"]').on('hidden.bs.tab', function (e) {
+                    var $tabPane = $(this.getAttribute('href'));
+                    $tabPane.find('[data-toggle="toggle"]').bootstrapToggle('destroy');
                 });
                 $('.cp').colorpicker();
 

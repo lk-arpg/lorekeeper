@@ -21,7 +21,7 @@
                 @foreach ($userCurrencies as $currency)
                     <tr class="sort-item" data-id="{{ $currency->id }}">
                         <td>
-                            <a class="fas fa-arrows-alt-v handle mr-3" href="#"></a>
+                            <a class="fas fa-arrows-alt-v handle me-3" href="#"></a>
                             {{ $currency->name }} @if ($currency->abbreviation)
                                 ({{ $currency->abbreviation }})
                             @endif {!! $currency->displayIcon !!}
@@ -49,7 +49,7 @@
                 @foreach ($characterCurrencies as $currency)
                     <tr class="sort-item" data-id="{{ $currency->id }}">
                         <td>
-                            <a class="fas fa-arrows-alt-v handle mr-3" href="#"></a>
+                            <a class="fas fa-arrows-alt-v handle me-3" href="#"></a>
                             {{ $currency->name }} @if ($currency->abbreviation)
                                 ({{ $currency->abbreviation }})
                             @endif {!! $currency->displayIcon !!}

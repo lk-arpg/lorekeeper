@@ -16,7 +16,7 @@
 
     <h4 class="mb-0">Core Extensions</h4>
     <p class="mb-2">These extensions were coded by the Lorekeeper community and are now a part of core Lorekeeper.</p>
-    <div class="extensions row no-gutters">
+    <div class="extensions row g-0">
         <p class="mb-0 col-md-4">
             <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:Admin_Edit_Button"><strong>Admin Edit Buttons</strong></a> by <a href="https://github.com/preimpression/">Preimpression</a>
         </p>
@@ -203,7 +203,7 @@
     <p class="mb-2">These extensions have been added to this site.</p>
 
     @if ($extensions->count())
-        <div class="extensions row no-gutters">
+        <div class="extensions row g-0">
             @foreach ($extensions as $extension)
                 <p class="mb-0 col-md-4">
                     <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:{{ $extension->wiki_key }}">

@@ -30,7 +30,7 @@
                         @foreach ($raffle->tickets()->winners()->get() as $winner)
                             <tr>
                                 <td class="text-center">{{ $winner->position }}</td>
-                                <td class="text-left">{!! $winner->displayHolderName !!}</td>
+                                <td class="text-start">{!! $winner->displayHolderName !!}</td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -47,15 +47,15 @@
         <p class="text-center"> That's a <strong>{{ $chance }}%</strong> chance! </p>
     @endif
 
-    <div class="text-right">{!! $tickets->render() !!}</div>
+    <div class="text-end">{!! $tickets->render() !!}</div>
 
     <div class="mb-4 logs-table">
         <div class="logs-table-header">
             <div class="row">
-                <div class="col-2 col-md-1 font-weight-bold">
+                <div class="col-2 col-md-1 fw-bold">
                     <div class="logs-table-cell">#</div>
                 </div>
-                <div class="col-10 col-md-11 font-weight-bold">
+                <div class="col-10 col-md-11 fw-bold">
                     <div class="logs-table-cell">User</div>
                 </div>
             </div>
@@ -68,7 +68,7 @@
                             <div class="logs-table-cell">
                                 {{ $page * 100 + $count + 1 }}
                                 @if (Auth::check() && $ticket->user_id && $ticket->user->name == Auth::user()->name)
-                                    <i class="fas fa-ticket-alt ml-2"></i>
+                                    <i class="fas fa-ticket-alt ms-2"></i>
                                 @endif
                             </div>
                         </div>
@@ -81,5 +81,5 @@
         </div>
     </div>
 
-    <div class="text-right">{!! $tickets->render() !!}</div>
+    <div class="text-end">{!! $tickets->render() !!}</div>
 @endsection

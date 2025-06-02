@@ -5,7 +5,7 @@
         instead.</p>
     <p>Are you sure you want to delete <strong>{{ $tag->getName() }}</strong>?</p>
 
-    <div class="text-right">
+    <div class="text-end">
         {!! Form::submit('Delete Tag', ['class' => 'btn btn-danger']) !!}
     </div>
 

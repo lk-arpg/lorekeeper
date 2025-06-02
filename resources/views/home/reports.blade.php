@@ -10,7 +10,7 @@
         My Reports
     </h1>
 
-    <div class="text-right">
+    <div class="text-end">
         <a href="{{ url('reports/new') }}" class="btn btn-success">New Report</a>
     </div>
 

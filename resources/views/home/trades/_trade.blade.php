@@ -1,7 +1,7 @@
 <div class="card mb-3">
     <div class="card-header">
         <h2 class="mb-0">
-            <span class="float-right badge badge-{{ $trade->status == 'Pending' || $trade->status == 'Open' || $trade->status == 'Canceled' ? 'secondary' : ($trade->status == 'Completed' ? 'success' : 'danger') }}">{{ $trade->status }}</span>
+            <span class="float-end badge badge-{{ $trade->status == 'Pending' || $trade->status == 'Open' || $trade->status == 'Canceled' ? 'secondary' : ($trade->status == 'Completed' ? 'success' : 'danger') }}">{{ $trade->status }}</span>
             <a href="{{ $trade->url }} ">Trade (#{{ $trade->id }})</a>
         </h2>
         @if ($trade->staff)
@@ -17,7 +17,7 @@
             <div class="col-md-6">
                 <h3 class="card-heading">
                     {!! $trade->sender->id == Auth::user()->id ? 'Your Offer' : $trade->sender->displayName . '\'s Offer' !!}
-                    <span class="float-right">
+                    <span class="float-end">
                         @if ($trade->{'is_sender_confirmed'})
                             @if ($trade->{'is_sender_trade_confirmed'})
                                 <small class="text-success">Trade Confirmed</small>
@@ -39,7 +39,7 @@
             <div class="col-md-6">
                 <h3 class="card-heading">
                     {!! $trade->recipient->id == Auth::user()->id ? 'Your Offer' : $trade->recipient->displayName . '\'s Offer' !!}
-                    <span class="float-right">
+                    <span class="float-end">
                         @if ($trade->{'is_recipient_confirmed'})
                             @if ($trade->{'is_recipient_trade_confirmed'})
                                 <small class="text-success">Trade Confirmed</small>
@@ -60,7 +60,7 @@
             </div>
         </div>
         <hr />
-        <div class="text-right">
+        <div class="text-end">
             <a href="{{ $trade->url }}" class="btn btn-outline-primary">View Details</a>
             @if (isset($queueView) && $trade->status == 'Pending')
                 @if (!$trade->is_approved)

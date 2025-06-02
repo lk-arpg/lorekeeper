@@ -4,7 +4,7 @@
     <p>You are about to delete the stock <strong>{{ $stock->item?->name ?? 'deleted ' . $stock->stock_type }}</strong>.</p>
     <p>Are you sure you want to delete <strong>{{ $stock->item->name ?? 'deleted ' . $stock->stock_type }}</strong>?</p>
 
-    <div class="text-right">
+    <div class="text-end">
         {!! Form::submit('Delete Stock', ['class' => 'btn btn-danger']) !!}
     </div>
 

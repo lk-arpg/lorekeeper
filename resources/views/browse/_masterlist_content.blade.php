@@ -1,30 +1,30 @@
 <div>
     {!! Form::open(['method' => 'GET']) !!}
-    <div class="form-inline justify-content-end">
-        <div class="form-group mr-3 mb-3">
-            {!! Form::label('name', 'Character Name/Code: ', ['class' => 'mr-2']) !!}
+    <div class="d-flex align-items-center justify-content-end">
+        <div class="mb-3 me-3 mb-3">
+            {!! Form::label('name', 'Character Name/Code: ', ['class' => 'me-2']) !!}
             {!! Form::text('name', Request::get('name'), ['class' => 'form-control']) !!}
         </div>
-        <div class="form-group mb-3 mr-1">
-            {!! Form::select('rarity_id', $rarities, Request::get('rarity_id'), ['class' => 'form-control mr-2']) !!}
+        <div class="mb-3 mb-3 me-1">
+            {!! Form::select('rarity_id', $rarities, Request::get('rarity_id'), ['class' => 'form-control me-2']) !!}
         </div>
-        <div class="form-group mb-3">
+        <div class="mb-3 mb-3">
             {!! Form::select('species_id', $specieses, Request::get('species_id'), ['class' => 'form-control']) !!}
         </div>
     </div>
-    <div class="text-right mb-3"><a href="#advancedSearch" class="btn btn-sm btn-outline-info" data-toggle="collapse">Show Advanced Search Options <i class="fas fa-caret-down"></i></a></div>
+    <div class="text-end mb-3"><a href="#advancedSearch" class="btn btn-sm btn-outline-info" data-bs-toggle="collapse">Show Advanced Search Options <i class="fas fa-caret-down"></i></a></div>
     <div class="card bg-light mb-3 collapse" id="advancedSearch">
         <div class="card-body masterlist-advanced-search">
             @if (!$isMyo)
                 <div class="row">
                     <div class="col-md-6">
-                        <div class="form-group">
+                        <div class="mb-3">
                             {!! Form::label('character_category_id', 'Category: ') !!}
                             {!! Form::select('character_category_id', $categories, Request::get('character_category_id'), ['class' => 'form-control']) !!}
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="form-group">
+                        <div class="mb-3">
                             {!! Form::label('subtype_ids[]', 'Species Subtype: ') !!}
                             {!! add_help('Search for characters that have <strong>' . (config('lorekeeper.extensions.exclusionary_search') ? 'all' : 'any') . '</strong> of the selected subtypes.') !!}
                             {!! Form::select('subtype_ids[]', $subtypes, Request::get('subtype_ids'), ['class' => 'form-control userselectize', 'multiple']) !!}
@@ -35,37 +35,37 @@
             @endif
             <div class="masterlist-search-field">
                 {!! Form::label('owner', 'Owner Username: ') !!}
-                {!! Form::select('owner', $userOptions, Request::get('owner'), ['class' => 'form-control mr-2 userselectize', 'style' => 'width: 250px', 'placeholder' => 'Select a User']) !!}
+                {!! Form::select('owner', $userOptions, Request::get('owner'), ['class' => 'form-control me-2 userselectize', 'style' => 'width: 250px', 'placeholder' => 'Select a User']) !!}
             </div>
             <div class="masterlist-search-field">
                 {!! Form::label('artist', 'Artist: ') !!}
-                {!! Form::select('artist', $userOptions, Request::get('artist'), ['class' => 'form-control mr-2 userselectize', 'style' => 'width: 250px', 'placeholder' => 'Select a User']) !!}
+                {!! Form::select('artist', $userOptions, Request::get('artist'), ['class' => 'form-control me-2 userselectize', 'style' => 'width: 250px', 'placeholder' => 'Select a User']) !!}
             </div>
             <div class="masterlist-search-field">
                 {!! Form::label('designer', 'Designer: ') !!}
-                {!! Form::select('designer', $userOptions, Request::get('designer'), ['class' => 'form-control mr-2 userselectize', 'style' => 'width: 250px', 'placeholder' => 'Select a User']) !!}
+                {!! Form::select('designer', $userOptions, Request::get('designer'), ['class' => 'form-control me-2 userselectize', 'style' => 'width: 250px', 'placeholder' => 'Select a User']) !!}
             </div>
             <hr />
             <div class="masterlist-search-field">
                 {!! Form::label('owner_url', 'Owner URL / Username: ') !!} {!! add_help('Example: https://deviantart.com/username OR username') !!}
-                {!! Form::text('owner_url', Request::get('owner_url'), ['class' => 'form-control mr-2', 'style' => 'width: 250px', 'placeholder' => 'Type a Username']) !!}
+                {!! Form::text('owner_url', Request::get('owner_url'), ['class' => 'form-control me-2', 'style' => 'width: 250px', 'placeholder' => 'Type a Username']) !!}
             </div>
             <div class="masterlist-search-field">
                 {!! Form::label('artist_url', 'Artist URL / Username: ') !!} {!! add_help('Example: https://deviantart.com/username OR username') !!}
-                {!! Form::text('artist_url', Request::get('artist_url'), ['class' => 'form-control mr-2', 'style' => 'width: 250px', 'placeholder' => 'Type a Username']) !!}
+                {!! Form::text('artist_url', Request::get('artist_url'), ['class' => 'form-control me-2', 'style' => 'width: 250px', 'placeholder' => 'Type a Username']) !!}
             </div>
             <div class="masterlist-search-field">
                 {!! Form::label('designer_url', 'Designer URL / Username: ') !!} {!! add_help('Example: https://deviantart.com/username OR username') !!}
-                {!! Form::text('designer_url', Request::get('designer_url'), ['class' => 'form-control mr-2', 'style' => 'width: 250px', 'placeholder' => 'Type a Username']) !!}
+                {!! Form::text('designer_url', Request::get('designer_url'), ['class' => 'form-control me-2', 'style' => 'width: 250px', 'placeholder' => 'Type a Username']) !!}
             </div>
             <hr />
             <div class="masterlist-search-field">
                 {!! Form::label('sale_value_min', 'Resale Minimum ($): ') !!}
-                {!! Form::text('sale_value_min', Request::get('sale_value_min'), ['class' => 'form-control mr-2', 'style' => 'width: 250px']) !!}
+                {!! Form::text('sale_value_min', Request::get('sale_value_min'), ['class' => 'form-control me-2', 'style' => 'width: 250px']) !!}
             </div>
             <div class="masterlist-search-field">
                 {!! Form::label('sale_value_max', 'Resale Maximum ($): ') !!}
-                {!! Form::text('sale_value_max', Request::get('sale_value_max'), ['class' => 'form-control mr-2', 'style' => 'width: 250px']) !!}
+                {!! Form::text('sale_value_max', Request::get('sale_value_max'), ['class' => 'form-control me-2', 'style' => 'width: 250px']) !!}
             </div>
             @if (!$isMyo)
                 <div class="masterlist-search-field">
@@ -92,35 +92,35 @@
                 {!! Form::checkbox('is_giftable', 1, Request::get('is_giftable'), ['class' => 'form-check-input', 'data-toggle' => 'toggle', 'data-on' => 'Can Be Gifted', 'data-off' => 'Any Giftable Status', 'data-width' => '202', 'data-height' => '46']) !!}
             </div>
             <hr />
-            <div class="form-group">
+            <div class="mb-3">
                 {!! Form::label('Has Traits: ') !!} {!! add_help('This will narrow the search to characters that have ALL of the selected traits at the same time.') !!}
                 {!! Form::select('feature_ids[]', $features, Request::get('feature_ids'), ['class' => 'form-control feature-select userselectize', 'placeholder' => 'Select Traits', 'multiple']) !!}
             </div>
             @if (!$isMyo)
                 <div class="row">
-                    <div class="col-md-6 form-group">
+                    <div class="col-md-6 mb-3">
                         {!! Form::label('Exclude Selected Tags: ') !!} {!! add_help('This will exclude characters that have ANY of the selected tags.') !!}
                         {!! Form::select('excluded_tags[]', ['all' => 'Exclude All'] + $contentWarnings, Request::get('excluded_tags'), ['class' => 'form-control feature-select userselectize', 'placeholder' => 'Select Tags', 'multiple']) !!}
                     </div>
-                    <div class="col-md-6 form-group">
+                    <div class="col-md-6 mb-3">
                         {!! Form::label('Include Selected Tags: ') !!} {!! add_help('This will include characters that have ANY of the selected tags.') !!}
                         {!! Form::select('included_tags[]', ['all' => 'Include All'] + $contentWarnings, Request::get('included_tags'), ['class' => 'form-control feature-select userselectize', 'placeholder' => 'Select Tags', 'multiple']) !!}
                     </div>
                 </div>
             @endif
             <hr />
-            <div class="form-group">
+            <div class="mb-3">
                 {!! Form::checkbox('search_images', 1, Request::get('search_images'), ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
-                {!! Form::label('search_images', 'Include all character images in search', ['class' => 'form-check-label ml-3']) !!} {!! add_help(
+                {!! Form::label('search_images', 'Include all character images in search', ['class' => 'form-check-label ms-3']) !!} {!! add_help(
                     'Each character can have multiple images for each updated version of the character, which captures the traits on that character at that point in time. By default the search will only search on the most up-to-date image, but this option will retrieve characters that match the criteria on older images - you may get results that are outdated.',
                 ) !!}
             </div>
         </div>
 
     </div>
-    <div class="form-inline justify-content-end mb-3">
-        <div class="form-group mr-3">
-            {!! Form::label('sort', 'Sort: ', ['class' => 'mr-2']) !!}
+    <div class="d-flex align-items-center justify-content-end mb-3">
+        <div class="mb-3 me-3">
+            {!! Form::label('sort', 'Sort: ', ['class' => 'me-2']) !!}
             @if (!$isMyo)
                 {!! Form::select(
                     'sort',
@@ -136,10 +136,10 @@
     </div>
     {!! Form::close() !!}
 </div>
-<div class="text-right mb-3">
+<div class="text-end mb-3">
     <div class="btn-group">
-        <button type="button" class="btn btn-secondary active grid-view-button" data-toggle="tooltip" title="Grid View" alt="Grid View"><i class="fas fa-th"></i></button>
-        <button type="button" class="btn btn-secondary list-view-button" data-toggle="tooltip" title="List View" alt="List View"><i class="fas fa-bars"></i></button>
+        <button type="button" class="btn btn-secondary active grid-view-button" data-bs-toggle="tooltip" title="Grid View" alt="Grid View"><i class="fas fa-th"></i></button>
+        <button type="button" class="btn btn-secondary list-view-button" data-bs-toggle="tooltip" title="List View" alt="List View"><i class="fas fa-bars"></i></button>
     </div>
 </div>
 
@@ -164,7 +164,7 @@
                     <div class="small">
                         {!! $character->image->species_id ? $character->image->species->displayName : 'No Species' !!} ・ {!! $character->image->rarity_id ? $character->image->rarity->displayName : 'No Rarity' !!} ・ {!! $character->displayOwner !!}
                         @if (count($character->image->content_warnings ?? []) && (!Auth::check() || (Auth::check() && Auth::user()->settings->content_warning_visibility < 2)))
-                            <p class="mb-0"><span class="text-danger mr-1"><strong>Character Warning:</strong></span> {{ implode(', ', $character->image->content_warnings) }}</p>
+                            <p class="mb-0"><span class="text-danger me-1"><strong>Character Warning:</strong></span> {{ implode(', ', $character->image->content_warnings) }}</p>
                         @endif
                     </div>
                 </div>

@@ -12,13 +12,13 @@
 
     <hr>
 
-    <h4 class="mb-0"><a href="{{ url('feeds/news') }}"><i class="fas fa-rss-square"></i> News Feed</a> <i data-toggle="tooltip" title="Click to Copy the URL" data-copy="{{ url('feeds/news') }}" class="far fa-copy text-small"></i></h4>
+    <h4 class="mb-0"><a href="{{ url('feeds/news') }}"><i class="fas fa-rss-square"></i> News Feed</a> <i data-bs-toggle="tooltip" title="Click to Copy the URL" data-copy="{{ url('feeds/news') }}" class="far fa-copy text-small"></i></h4>
     <p class="mb-2">Updates with recent News posts on this site.</p>
     <p class="mb-2"><code>{{ url('feeds/news') }}</code></p>
 
     <br>
 
-    <h4 class="mb-0"><a href="{{ url('feeds/sales') }}"><i class="fas fa-rss-square"></i> Sales Feed</a> <i data-toggle="tooltip" title="Click to Copy the URL" data-copy="{{ url('feeds/sales') }}" class="far fa-copy text-small"></i></h4>
+    <h4 class="mb-0"><a href="{{ url('feeds/sales') }}"><i class="fas fa-rss-square"></i> Sales Feed</a> <i data-bs-toggle="tooltip" title="Click to Copy the URL" data-copy="{{ url('feeds/sales') }}" class="far fa-copy text-small"></i></h4>
     <p class="mb-2">Updates with recent Sales posts on this site.</p>
     <p class="mb-2"><code>{{ url('feeds/sales') }}</code></p>
 @endsection

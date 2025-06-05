@@ -1,4 +1,3 @@
-
 // Body
 $body-bg: #f8fafc;
 
@@ -8,6 +7,19 @@ $font-size-base: 0.9rem;
 $line-height-base: 1.6;
 
 // Colors
+// Grayscales and theme colors included here
+$white: #fff;
+$gray-100: #f8f9fa;
+$gray-200: #e9ecef;
+$gray-300: #dee2e6;
+$gray-400: #ced4da;
+$gray-500: #adb5bd;
+$gray-600: #6c757d;
+$gray-700: #495057;
+$gray-800: #343a40;
+$gray-900: #212529;
+$black: #000;
+
 $blue: #3490dc;
 $indigo: #6574cd;
 $purple: #9561e2;
@@ -18,3 +30,12 @@ $yellow: #ffed4a;
 $green: #38c172;
 $teal: #4dc0b5;
 $cyan: #6cb2eb;
+
+$primary: $blue;
+$secondary: $gray-600;
+$success: $green;
+$info: $cyan;
+$warning: $yellow;
+$danger: $red;
+$light: $gray-100;
+$dark: $gray-800;

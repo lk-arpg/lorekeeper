@@ -1,0 +1,207 @@
+// Original BS4 value for dark
+$dark: $gray-800;
+
+// Color contrast in BS5; no longer uses yiq
+// See https://www.w3.org/TR/WCAG20/#visual-audio-contrast-contrast
+$min-contrast-ratio: 3;
+
+// Dark text color contrast
+$color-contrast-dark: $gray-900;
+$color-contrast-light: $white;
+
+// Links
+$link-color: rgba(0,0,0,0.7);
+$link-decoration: none;
+$link-shade-percentage: 15%;
+$link-hover-color: rgba(0,0,0,1);
+$link-hover-decoration: underline;
+
+// Grid columns
+$grid-gutter-width: 30px;
+
+// Typography
+$font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+// Headings
+$display-font-sizes: (
+    1: 6rem,
+    2: 5.5rem,
+    3: 4.5rem,
+    4: 3.5rem,
+    5: 3rem,
+    6: 2.5rem
+);
+
+$hr-opacity: .1;
+$component-active-color: $white;
+
+// Tables
+$table-cell-padding-y: .75rem;
+$table-cell-padding-x: .75rem;
+$table-cell-padding-y-sm: .3rem;
+$table-cell-padding-x-sm: .3rem;
+$table-accent-bg: rgba($black, .05);
+$table-active-bg-factor: .075;
+
+// Buttons + Forms
+$input-btn-focus-width: .2rem;
+
+// Buttons
+$btn-link-color: inherit;
+$btn-link-hover-color: inherit;
+$btn-box-shadow: inset 0 1px 0 rgba($white, .15), 0 1px 1px rgba($black, .075);
+
+$btn-hover-bg-shade-amount: 7.5%;
+$btn-hover-bg-tint-amount: 7.5%;
+$btn-hover-border-shade-amount: 10%;
+$btn-hover-border-tint-amount: 10%;
+$btn-active-bg-shade-amount: 10%;
+$btn-active-bg-tint-amount: 10%;
+$btn-active-border-shade-amount: 12.5%;
+$btn-active-border-tint-amount: 12.5%;
+
+// Forms
+$input-bg: $white;
+$input-box-shadow: inset 0 1px 1px rgba($black, .075);
+$input-focus-border-color: tint-color($primary, 25%);
+
+$form-check-padding-start: .25rem;
+$form-check-margin-bottom: .3rem;
+$form-check-label-color: null;
+$form-check-transition: background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+$form-check-input-active-filter: brightness(35%);
+
+$form-switch-color: null;
+$form-switch-width: 1rem * 1.75;
+$form-switch-padding-start: $form-switch-width + .5rem;
+$form-switch-border-radius: 1rem + .5rem;
+$form-switch-checked-color: $white;
+
+$form-select-indicator-padding: 1rem;
+$form-select-disabled-color: $gray-600;
+$form-select-bg-size: 8px 10px;
+
+$form-select-feedback-icon-padding-end: add(1em * .75, (2 * .375rem * .75) + .75rem + $form-select-indicator-padding);
+$form-select-feedback-icon-position: center right (.75rem + $form-select-indicator-padding);
+
+$form-range-track-box-shadow: inset 0 .25rem .25rem rgba($black, .1);
+$form-range-thumb-active-bg: tint-color($primary, 35%);
+
+$form-file-button-hover-bg: shade-color($gray-200, 7.5%);
+
+// Navs
+$nav-link-transition: none;
+
+// Navbar
+$navbar-toggler-transition: none;
+$navbar-dark-color: rgba($white, .5);
+$navbar-light-color: rgba($black, .5);
+
+// Dropdowns
+$dropdown-bg: $white;
+$dropdown-border-color: rgba($black, .15);
+$dropdown-divider-bg: $gray-200;
+$dropdown-box-shadow: 0 .5rem 1rem rgba($black, .175);
+$dropdown-link-hover-color: shade-color($gray-900, 5%);
+$dropdown-item-padding-y: 0.25rem;
+$dropdown-item-padding-x: 1.5rem;
+
+// Pagination
+$pagination-padding-y: .5rem;
+$pagination-bg: $white;
+$pagination-focus-color: inherit;
+$pagination-focus-bg: inherit;
+$pagination-transition: none;
+
+// Cards
+$card-spacer-y: 1.25rem;
+$card-spacer-x: 1.25rem;
+$card-title-spacer-y: .75rem;
+$card-cap-padding-y: .75rem;
+$card-bg: $white;
+$card-img-overlay-padding: 1.25rem;
+
+// Accordion
+$accordion-padding-y: .75rem;
+$accordion-color: null;
+$accordion-bg: $white;
+$accordion-transition: height .35s ease;
+$accordion-button-active-bg: tint-color($primary, 35%);
+$accordion-button-active-color: $primary;
+
+// Tooltips
+$tooltip-color: $white;
+$tooltip-padding-y: .25rem;
+$tooltip-padding-x: .5rem;
+$form-feedback-tooltip-line-height: 1.5;
+
+// Popovers
+$popover-bg: $white;
+$popover-box-shadow: 0 .25rem .5rem rgba($black, .2);
+$popover-header-bg: shade-color($white, 3%);
+$popover-header-padding-x: .75rem;
+$popover-body-padding-y: .5rem;
+$popover-body-padding-x: .75rem;
+
+// Toasts
+$toast-box-shadow: 0 .25rem .75rem rgba($black, .1);
+
+// Badges
+$badge-font-size: 75%;
+$badge-color: $white;
+$badge-padding-y: .25em;
+$badge-padding-x: .4em;
+
+// Modals
+$modal-content-bg: $white;
+$modal-content-box-shadow-xs: 0 .25rem .5rem rgba($black, .5);
+$modal-content-box-shadow-sm-up: 0 .5rem 1rem rgba($black, .5);
+
+// Alerts
+$alert-padding-y: .75rem;
+$alert-padding-x: 1.25rem;
+$alert-bg-scale: -80%;
+$alert-border-scale: -70%;
+$alert-color-scale: 40%;
+
+// Progress bars
+$progress-box-shadow: inset 0 .1rem .1rem rgba($black, .1);
+$progress-bar-color: $white;
+
+// List group
+$list-group-color: null;
+$list-group-bg: $white;
+$list-group-item-padding-y: .75rem;
+$list-group-item-padding-x: 1.25rem;
+$list-group-item-bg-scale: -80%;
+$list-group-item-color-scale: 40%;
+
+// Image thumbnails
+$thumbnail-box-shadow: 0 1px 2px rgba($black, .075);
+
+// Figures
+$figure-caption-font-size: 90%;
+
+// Breadcrumbs
+$breadcrumb-padding-y: .75rem;
+$breadcrumb-padding-x: 1rem;
+$breadcrumb-bg: $gray-200;
+$breadcrumb-border-radius: .25rem;
+
+// Carousel
+$carousel-control-color: $white;
+$carousel-indicator-active-opacity: 0.9;
+$carousel-indicator-active-bg: $white;
+$carousel-caption-color: $white;
+$carousel-control-icon-width: 20px;
+
+// Close
+$btn-close-width: 1rem * 1.5;
+$btn-close-padding-x: 0;
+$btn-close-focus-shadow: 0 1px 0 $white;
+$btn-close-disabled-opacity: .5;
+
+// Code
+$code-font-size: 87.5%;
+$kbd-color: $white;
+$pre-color: $gray-900;

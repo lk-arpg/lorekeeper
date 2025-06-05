@@ -155,11 +155,11 @@
                     html: true
                 });
                 // Listener to re-render the toggle
-                $('[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+                $('[data-bs-toggle="tab"]').on('shown.bs.tab', function(e) {
                     var $tabPane = $(this.getAttribute('href'));
                     $tabPane.find('[data-toggle="toggle"]').bootstrapToggle();
                 });
-                $('[data-bs-toggle="tab"]').on('hidden.bs.tab', function (e) {
+                $('[data-bs-toggle="tab"]').on('hidden.bs.tab', function(e) {
                     var $tabPane = $(this.getAttribute('href'));
                     $tabPane.find('[data-toggle="toggle"]').bootstrapToggle('destroy');
                 });

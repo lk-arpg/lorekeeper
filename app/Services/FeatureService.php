@@ -236,6 +236,10 @@ class FeatureService extends Service {
 
             $feature = Feature::create($data);
 
+            foreach ($data['subtype_ids'] as $subtypeId) {
+                $feature->subtypes()->attach($subtypeId);
+            }
+
             if (!$this->logAdminAction($user, 'Created Feature', 'Created '.$feature->displayName)) {
                 throw new \Exception('Failed to log admin action.');
             }

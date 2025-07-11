@@ -286,6 +286,8 @@ class Feature extends Model {
 
     /**
      * Displays the trait's subtypes as an imploded string.
+     *
+     * @param mixed|null $user
      */
     public function displaySubtypes($user = null) {
         if (!count($this->subtypes()->visible($user)->get())) {

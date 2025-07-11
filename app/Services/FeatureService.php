@@ -219,7 +219,7 @@ class FeatureService extends Service {
                     }
                 }
             } else {
-                $data['subtype_ids'] = null;
+                $data['subtype_ids'] = [];
             }
 
             $data = $this->populateData($data);
@@ -299,7 +299,7 @@ class FeatureService extends Service {
                     }
                 }
             } else {
-                $data['subtype_ids'] = null;
+                $data['subtype_ids'] = [];
             }
 
             $data = $this->populateData($data);

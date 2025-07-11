@@ -361,7 +361,7 @@ class FeatureController extends Controller {
         }
 
         return view('admin.features._create_edit_feature_subtype', [
-            'subtypes'   => Subtype::where('species_id', '=', $species)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'subtypes'    => Subtype::where('species_id', '=', $species)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'subtype_ids' => $subtype_ids,
         ]);
     }

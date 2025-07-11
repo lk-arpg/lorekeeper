@@ -2,7 +2,6 @@
 
 namespace App\Models\Feature;
 
-use App\Models\Feature\FeatureSubtype;
 use App\Models\Model;
 use App\Models\Rarity;
 use App\Models\Species\Species;
@@ -285,7 +284,7 @@ class Feature extends Model {
 
     **********************************************************************************************/
 
-     /**
+    /**
      * Displays the trait's subtypes as an imploded string.
      */
     public function displaySubtypes() {
@@ -299,7 +298,7 @@ class Feature extends Model {
 
         return implode(', ', $subtypes);
     }
-    
+
     public static function getDropdownItems($withHidden = 0) {
         $visibleOnly = 1;
         if ($withHidden) {

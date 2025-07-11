@@ -212,7 +212,7 @@ class FeatureService extends Service {
                 if (!(isset($data['species_id']) && $data['species_id'])) {
                     throw new \Exception('Species must be selected to select a subtype.');
                 }
-                
+
                 foreach ($data['subtype_ids'] as $subtypeId) {
                     $subtype = Subtype::find($subtypeId);
                     if (!$subtype || $subtype->species_id != $data['species_id']) {
@@ -288,7 +288,7 @@ class FeatureService extends Service {
                 if (!(isset($data['species_id']) && $data['species_id'])) {
                     throw new \Exception('Species must be selected to select a subtype.');
                 }
-                
+
                 foreach ($data['subtype_ids'] as $subtypeId) {
                     $subtype = Subtype::find($subtypeId);
                     if (!$subtype || $subtype->species_id != $data['species_id']) {
@@ -306,7 +306,7 @@ class FeatureService extends Service {
             if (isset($data['subtype_ids']) && $data['subtype_ids']) {
                 foreach ($data['subtype_ids'] as $subtypeId) {
                     FeatureSubtype::create([
-                        'feature_id' => $feature->id,
+                        'feature_id'         => $feature->id,
                         'subtype_id'         => $subtypeId,
                     ]);
                 }

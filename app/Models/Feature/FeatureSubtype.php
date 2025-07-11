@@ -2,19 +2,17 @@
 
 namespace App\Models\Feature;
 
-use App\Models\Feature\Feature;
 use App\Models\Model;
 use App\Models\Species\Subtype;
 
-class FeatureSubtype extends Model
-{
+class FeatureSubtype extends Model {
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'feature_id', 'subtype_id'
+        'feature_id', 'subtype_id',
     ];
 
     /**

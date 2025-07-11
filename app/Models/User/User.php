@@ -7,12 +7,14 @@ use App\Models\Character\CharacterBookmark;
 use App\Models\Character\CharacterImageCreator;
 use App\Models\Comment\CommentLike;
 use App\Models\Currency\Currency;
+use App\Models\Currency\CurrencyCategory;
 use App\Models\Currency\CurrencyLog;
 use App\Models\Gallery\GalleryCollaborator;
 use App\Models\Gallery\GalleryFavorite;
 use App\Models\Gallery\GallerySubmission;
 use App\Models\Item\Item;
 use App\Models\Item\ItemLog;
+use App\Models\Limit\UserUnlockedLimit;
 use App\Models\Notification;
 use App\Models\Rank\Rank;
 use App\Models\Rank\RankPower;
@@ -36,7 +38,7 @@ class User extends Authenticatable implements MustVerifyEmail {
      */
     protected $fillable = [
         'name', 'alias', 'rank_id', 'email', 'email_verified_at', 'password', 'is_news_unread', 'is_banned', 'has_alias', 'avatar', 'is_sales_unread', 'birthday',
-        'is_deactivated', 'deactivater_id',
+        'is_deactivated', 'deactivater_id', 'content_warning_visibility',
     ];
 
     /**
@@ -205,6 +207,13 @@ class User extends Authenticatable implements MustVerifyEmail {
         return $this->hasMany(CommentLike::class);
     }
 
+    /**
+     * Gets all of the user's unlocked limits.
+     */
+    public function unlockedLimits() {
+        return $this->hasMany(UserUnlockedLimit::class);
+    }
+
     /**********************************************************************************************
 
         SCOPES
@@ -272,6 +281,19 @@ class User extends Authenticatable implements MustVerifyEmail {
         }
 
         return $this->attributes['has_alias'];
+    }
+
+    /**
+     * Checks if the user has an email.
+     *
+     * @return bool
+     */
+    public function getHasEmailAttribute() {
+        if (!config('lorekeeper.settings.require_email')) {
+            return true;
+        }
+
+        return $this->attributes['email'] && $this->attributes['email_verified_at'];
     }
 
     /**
@@ -457,7 +479,7 @@ class User extends Authenticatable implements MustVerifyEmail {
      */
     public function getcheckBirthdayAttribute() {
         $bday = $this->birthday;
-        if (!$bday || $bday->diffInYears(carbon::now()) < 13) {
+        if (!$bday || $bday->diffInYears(Carbon::now()) < 13) {
             return false;
         } else {
             return true;
@@ -483,22 +505,37 @@ class User extends Authenticatable implements MustVerifyEmail {
     /**
      * Get the user's held currencies.
      *
-     * @param bool $showAll
+     * @param bool       $showAll
+     * @param mixed|null $user
+     * @param mixed      $showCategories
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCurrencies($showAll = false) {
+    public function getCurrencies($showAll = false, $showCategories = false, $user = null) {
         // Get a list of currencies that need to be displayed
         // On profile: only ones marked is_displayed
         // In bank: ones marked is_displayed + the ones the user has
 
         $owned = UserCurrency::where('user_id', $this->id)->pluck('quantity', 'currency_id')->toArray();
 
-        $currencies = Currency::where('is_user_owned', 1);
+        $currencies = Currency::where('is_user_owned', 1)
+            ->whereHas('category', function ($query) use ($user) {
+                $query->visible($user);
+            })
+            ->orWhereNull('currency_category_id')
+            ->visible($user);
         if ($showAll) {
             $currencies->where(function ($query) use ($owned) {
                 $query->where('is_displayed', 1)->orWhereIn('id', array_keys($owned));
             });
+
+            if ($showCategories) {
+                $categories = CurrencyCategory::visible()->orderBy('sort', 'DESC')->get();
+
+                if ($categories->count()) {
+                    $currencies->orderByRaw('FIELD(currency_category_id,'.implode(',', $categories->pluck('id')->toArray()).')');
+                }
+            }
         } else {
             $currencies = $currencies->where('is_displayed', 1);
         }
@@ -507,6 +544,16 @@ class User extends Authenticatable implements MustVerifyEmail {
 
         foreach ($currencies as $currency) {
             $currency->quantity = $owned[$currency->id] ?? 0;
+        }
+
+        if ($showAll && $showCategories) {
+            $currencies = $currencies->groupBy(function ($currency) use ($categories) {
+                if (!$currency->category) {
+                    return 'Miscellaneous';
+                }
+
+                return $categories->where('id', $currency->currency_category_id)->first()->name;
+            });
         }
 
         return $currencies;
@@ -669,7 +716,7 @@ class User extends Authenticatable implements MustVerifyEmail {
      * @return \Illuminate\Pagination\LengthAwarePaginator
      */
     public function getSubmissions($user = null) {
-        return Submission::with('user')->with('prompt')->viewable($user ? $user : null)->where('user_id', $this->id)->orderBy('id', 'DESC')->paginate(30);
+        return Submission::with('user')->with('prompt')->viewable($user ? $user : null)->where('user_id', $this->id)->orderBy('id', 'DESC');
     }
 
     /**
@@ -678,7 +725,7 @@ class User extends Authenticatable implements MustVerifyEmail {
      *
      * @param mixed $character
      *
-     * @return \App\Models\Character\CharacterBookmark
+     * @return CharacterBookmark
      */
     public function hasBookmarked($character) {
         return CharacterBookmark::where('user_id', $this->id)->where('character_id', $character->id)->first();

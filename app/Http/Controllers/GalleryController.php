@@ -61,7 +61,7 @@ class GalleryController extends Controller {
             abort(404);
         }
 
-        $query = GallerySubmission::where('gallery_id', $gallery->id)->visible(Auth::check() ? Auth::user() : null);
+        $query = GallerySubmission::where('gallery_id', $gallery->id)->visible(Auth::user() ?? null);
         $sort = $request->only(['sort']);
 
         if ($request->get('title')) {
@@ -118,7 +118,7 @@ class GalleryController extends Controller {
             abort(404);
         }
 
-        $query = GallerySubmission::visible(Auth::check() ? Auth::user() : null)->accepted();
+        $query = GallerySubmission::visible(Auth::user() ?? null)->accepted();
         $sort = $request->only(['sort']);
 
         if ($request->get('title')) {

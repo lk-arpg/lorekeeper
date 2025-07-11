@@ -29,7 +29,8 @@
         "socialiteproviders/tumblr": "^4.1",
         "socialiteproviders/twitch": "^5.3",
         "spatie/laravel-feed": "^4.1",
-        "spatie/laravel-honeypot": "^4.1"
+        "spatie/laravel-honeypot": "^4.1",
+        "spatie/laravel-html": "^3.5"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

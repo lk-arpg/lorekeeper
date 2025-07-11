@@ -22,6 +22,17 @@ class CharacterLog extends Model {
      * @var string
      */
     protected $table = 'character_log';
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'data'       => 'array',
+        'change_log' => 'array',
+    ];
+
     /**
      * Whether the model contains timestamps to be saved and updated.
      *
@@ -73,14 +84,5 @@ class CharacterLog extends Model {
         } else {
             return '---';
         }
-    }
-
-    /**
-     * Retrieves the changed data as an associative array.
-     *
-     * @return array
-     */
-    public function getChangedDataAttribute() {
-        return json_decode($this->change_log, true);
     }
 }

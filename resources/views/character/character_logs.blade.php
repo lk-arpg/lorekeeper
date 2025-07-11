@@ -5,7 +5,7 @@
 @endsection
 
 @section('meta-img')
-    {{ $character->image->thumbnailUrl }}
+    {{ $character->image->content_warnings ? asset('images/content-warning.png') : $character->image->thumbnailUrl }}
 @endsection
 
 @section('profile-content')

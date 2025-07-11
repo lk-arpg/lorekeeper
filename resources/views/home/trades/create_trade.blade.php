@@ -36,8 +36,8 @@
     @parent
     @include('widgets._bank_select_row', ['owners' => [Auth::user()], 'isTransferrable' => true])
     @include('widgets._bank_select_js', [])
-    @include('widgets._inventory_select_js', ['readOnly' => true])
-    @include('widgets._my_character_select_js', ['readOnly' => true])
+    @include('widgets._inventory_select_js')
+    @include('widgets._my_character_select_js')
     <script>
         $('.user-select').selectize();
     </script>

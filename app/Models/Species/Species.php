@@ -78,6 +78,42 @@ class Species extends Model {
     **********************************************************************************************/
 
     /**
+     * Scope a query to sort species in default order.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param bool                                  $reverse
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeSortStandard($query, $reverse = false) {
+        return $query->orderBy('sort', $reverse ? 'ASC' : 'DESC')->orderBy('id');
+    }
+
+    /**
+     * Scope a query to sort species in alphabetical order.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param bool                                  $reverse
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeSortAlphabetical($query, $reverse = false) {
+        return $query->orderBy('name', $reverse ? 'DESC' : 'ASC');
+    }
+
+    /**
+     * Scope a query to sort species by newest first.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param mixed                                 $reverse
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeSortNewest($query, $reverse = false) {
+        return $query->orderBy('id', $reverse ? 'ASC' : 'DESC');
+    }
+
+    /**
      * Scope a query to show only visible species.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
@@ -123,7 +159,7 @@ class Species extends Model {
      * @return string
      */
     public function getSpeciesImageFileNameAttribute() {
-        return $this->hash.$this->id.'-image.png';
+        return $this->id.'-'.$this->hash.'-image.png';
     }
 
     /**

@@ -38,12 +38,10 @@
         <div class="form-group">
             <div class="row">
                 @foreach ($powers as $key => $power)
-                    <div class="col-md-6">
-                        <div class="form-check">
-                            {!! Form::checkbox('powers[' . $key . ']', $key, $rankPowers ? isset($rankPowers[$key]) : false, ['class' => 'form-check-input', 'id' => 'powers[' . $key . ']']) !!}
-                            {!! Form::label('powers[' . $key . ']', $power['name'], ['class' => 'form-check-label']) !!}
-                            {!! add_help($power['description']) !!}
-                        </div>
+                    <div class="col-md-6 form-check">
+                        {!! Form::checkbox('powers[' . $key . ']', $key, $rankPowers ? isset($rankPowers[$key]) : false, ['class' => 'form-check-input', 'id' => 'powers[' . $key . ']']) !!}
+                        {!! Form::label('powers[' . $key . ']', $power['name'], ['class' => 'form-check-label']) !!}
+                        {!! add_help($power['description']) !!}
                     </div>
                 @endforeach
             </div>

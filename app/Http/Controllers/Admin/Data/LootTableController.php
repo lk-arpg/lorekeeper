@@ -7,6 +7,7 @@ use App\Models\Currency\Currency;
 use App\Models\Item\Item;
 use App\Models\Item\ItemCategory;
 use App\Models\Loot\LootTable;
+use App\Models\Rarity;
 use App\Services\LootService;
 use Illuminate\Http\Request;
 
@@ -25,9 +26,15 @@ class LootTableController extends Controller {
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getIndex() {
+    public function getIndex(Request $request) {
+        $query = LootTable::query();
+
+        if ($request->get('name')) {
+            $query->where('name', 'LIKE', '%'.$request->get('name').'%');
+        }
+
         return view('admin.loot_tables.loot_tables', [
-            'tables' => LootTable::paginate(20),
+            'tables' => $query->paginate(20)->appends($request->query()),
         ]);
     }
 
@@ -37,16 +44,13 @@ class LootTableController extends Controller {
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getCreateLootTable() {
-        $rarities = Item::whereNotNull('data')->get()->pluck('rarity')->unique()->toArray();
-        sort($rarities);
-
         return view('admin.loot_tables.create_edit_loot_table', [
             'table'      => new LootTable,
             'items'      => Item::orderBy('name')->pluck('name', 'id'),
             'categories' => ItemCategory::orderBy('sort', 'DESC')->pluck('name', 'id'),
             'currencies' => Currency::orderBy('name')->pluck('name', 'id'),
             'tables'     => LootTable::orderBy('name')->pluck('name', 'id'),
-            'rarities'   => array_filter($rarities),
+            'rarities'   => Rarity::orderBy('sort')->pluck('name', 'id')->toArray(),
         ]);
     }
 
@@ -63,16 +67,13 @@ class LootTableController extends Controller {
             abort(404);
         }
 
-        $rarities = Item::whereNotNull('data')->get()->pluck('rarity')->unique()->toArray();
-        sort($rarities);
-
         return view('admin.loot_tables.create_edit_loot_table', [
             'table'      => $table,
             'items'      => Item::orderBy('name')->pluck('name', 'id'),
             'categories' => ItemCategory::orderBy('sort', 'DESC')->pluck('name', 'id'),
             'currencies' => Currency::orderBy('name')->pluck('name', 'id'),
             'tables'     => LootTable::orderBy('name')->pluck('name', 'id'),
-            'rarities'   => array_filter($rarities),
+            'rarities'   => Rarity::orderBy('sort')->pluck('name', 'id')->toArray(),
         ]);
     }
 

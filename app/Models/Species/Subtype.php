@@ -2,6 +2,7 @@
 
 namespace App\Models\Species;
 
+use App\Models\Feature\Feature;
 use App\Models\Model;
 
 class Subtype extends Model {
@@ -67,11 +68,67 @@ class Subtype extends Model {
         return $this->belongsTo(Species::class, 'species_id');
     }
 
+    /**
+     * Get the features associated with this subtype.
+     */
+    public function features() {
+        return $this->hasMany(Feature::class);
+    }
+
     /**********************************************************************************************
 
             SCOPES
 
     **********************************************************************************************/
+
+    /**
+     * Scope a query to sort species in default order.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param bool                                  $reverse
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeSortStandard($query, $reverse = false) {
+        return $query->orderBy('sort', $reverse ? 'ASC' : 'DESC')->orderBy('id');
+    }
+
+    /**
+     * Scope a query to sort subtypes in alphabetical order.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param bool                                  $reverse
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeSortAlphabetical($query, $reverse = false) {
+        return $query->orderBy('name', $reverse ? 'DESC' : 'ASC');
+    }
+
+    /**
+     * Scope a query to sort subtypes in species order.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeSortSpecies($query) {
+        $ids = Species::orderBy('sort', 'DESC')->pluck('id')->toArray();
+
+        return count($ids) ? $query->orderBy(DB::raw('FIELD(species_id, '.implode(',', $ids).')')) : $query;
+    }
+
+    /**
+     * Scope a query to sort subtypes by newest first.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param mixed                                 $reverse
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeSortNewest($query, $reverse = false) {
+        return $query->orderBy('id', $reverse ? 'ASC' : 'DESC');
+    }
 
     /**
      * Scope a query to show only visible subtypes.
@@ -128,7 +185,7 @@ class Subtype extends Model {
      * @return string
      */
     public function getSubtypeImageFileNameAttribute() {
-        return $this->hash.$this->id.'-image.png';
+        return $this->id.'-'.$this->hash.'-image.png';
     }
 
     /**
@@ -168,7 +225,16 @@ class Subtype extends Model {
      * @return string
      */
     public function getSearchUrlAttribute() {
-        return url('masterlist?subtype_id='.$this->id);
+        return url('masterlist?subtype_ids[]='.$this->id);
+    }
+
+    /**
+     * Gets the URL the visual index of this subtype's traits.
+     *
+     * @return string
+     */
+    public function getVisualTraitsUrlAttribute() {
+        return url('/world/subtypes/'.$this->id.'/traits');
     }
 
     /**

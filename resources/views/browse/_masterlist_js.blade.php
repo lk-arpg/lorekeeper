@@ -43,49 +43,5 @@
                 window.localStorage.setItem('lorekeeper_masterlist_view', 'list');
             }
         }
-
-        var $featureBody = $('#featureBody');
-        var $featureSelect = $('#featureContent .feature-block');
-        var $addFeatureButton = $('.add-feature-button');
-
-        // handle the ones that were already there
-        var $existingFeatures = $('#featureBody .feature-block');
-        @if (config('lorekeeper.extensions.organised_traits_dropdown'))
-            $existingFeatures.find('.selectize').selectize({
-                render: {
-                    item: featureSelectedRender
-                }
-            });
-        @else
-            $existingFeatures.find('.selectize').selectize();
-        @endif
-        addRemoveListener($existingFeatures);
-
-        $addFeatureButton.on('click', function(e) {
-            e.preventDefault();
-            var $clone = $featureSelect.clone();
-            $featureBody.append($clone);
-            @if (config('lorekeeper.extensions.organised_traits_dropdown'))
-                $clone.find('.selectize').selectize({
-                    render: {
-                        item: featureSelectedRender
-                    }
-                });
-            @else
-                $clone.find('.selectize').selectize();
-            @endif
-            addRemoveListener($clone);
-        });
-
-        function featureSelectedRender(item, escape) {
-            return '<div><span>' + escape(item["text"].trim()) + ' (' + escape(item["optgroup"].trim()) + ')' + '</span></div>';
-        }
-
-        function addRemoveListener($node) {
-            $node.find('.feature-remove').on('click', function(e) {
-                e.preventDefault();
-                $(this).parent().parent().parent().remove();
-            });
-        }
     });
 </script>

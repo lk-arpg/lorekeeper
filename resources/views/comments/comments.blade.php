@@ -1,71 +1,63 @@
 @php
-    if (isset($approved) and $approved == true) {
-        if (isset($type) && $type != null) {
+    if (isset($approved) && $approved) {
+        if (isset($type)) {
             $comments = $model->approvedComments->where('type', $type);
         } else {
             $comments = $model->approvedComments->where('type', 'User-User');
         }
     } else {
-        if (isset($type) && $type != null) {
+        if (isset($type)) {
             $comments = $model->commentz->where('type', $type);
         } else {
             $comments = $model->commentz->where('type', 'User-User');
         }
     }
+
+    if (!isset($commentType)) {
+        $commentType = 'comment';
+    }
 @endphp
 
-@if (!isset($type) || $type == 'User-User')
-    <h2>Comments</h2>
-@endif
-<div class="d-flex mw-100 row mx-0" style="overflow:hidden;">
-    @php
-        $comments = $comments->sortByDesc('created_at');
+<div class="row">
+    <div class="{{ !isset($type) || $type == 'User-User' ? 'h2' : 'hide' }}">
+        Comments
+    </div>
 
-        if (isset($perPage)) {
-            $page = request()->query('page', 1) - 1;
-
-            $parentComments = $comments->where('child_id', '');
-
-            $slicedParentComments = $parentComments->slice($page * $perPage, $perPage);
-
-            $m = config('comments.model'); // This has to be done like this, otherwise it will complain.
-            $modelKeyName = (new $m())->getKeyName(); // This defaults to 'id' if not changed.
-
-            $slicedParentCommentsIds = $slicedParentComments->pluck($modelKeyName)->toArray();
-
-            // Remove parent Comments from comments.
-            $comments = $comments->where('child_id', '!=', '');
-
-            $grouped_comments = new \Illuminate\Pagination\LengthAwarePaginator($slicedParentComments->merge($comments)->groupBy('child_id'), $parentComments->count(), $perPage);
-
-            $grouped_comments->withPath(request()->url());
-        } else {
-            $grouped_comments = $comments->groupBy('child_id');
-        }
-    @endphp
-    @foreach ($grouped_comments as $comment_id => $comments)
-        {{-- Process parent nodes --}}
-        @if ($comment_id == '')
-            @foreach ($comments as $comment)
-                @include('comments::_comment', [
-                    'comment' => $comment,
-                    'grouped_comments' => $grouped_comments,
-                    'limit' => 0,
-                    'compact' => $comment->type == 'Staff-Staff' ? true : false,
-                    'allow_dislikes' => isset($allow_dislikes) ? $allow_dislikes : false,
-                ])
-            @endforeach
-        @endif
-    @endforeach
+    <div class="ml-auto">
+        <div class="form-inline justify-content-end">
+            <div class="form-group ml-3 mb-3">
+                {!! Form::select(
+                    'sort',
+                    [
+                        'newest' => 'Newest First',
+                        'oldest' => 'Oldest First',
+                    ],
+                    Request::get($commentType . '-sort') ?: 'newest',
+                    ['class' => 'form-control', 'id' => $commentType . '-sort'],
+                ) !!}
+            </div>
+            <div class="form-group ml-3 mb-3">
+                {!! Form::select(
+                    'perPage',
+                    [
+                        5 => '5 Per Page',
+                        10 => '10 Per Page',
+                        25 => '25 Per Page',
+                        50 => '50 Per Page',
+                        100 => '100 Per Page',
+                    ],
+                    Request::get($commentType . '-perPage') ?: 5,
+                    ['class' => 'form-control', 'id' => $commentType . '-perPage'],
+                ) !!}
+            </div>
+        </div>
+    </div>
 </div>
-
-@if ($comments->count() < 1)
-    <div class="alert alert-warning">There are no comments yet.</div>
-@endif
-
-@isset($perPage)
-    <div class="ml-auto mt-2">{{ $grouped_comments->links() }}</div>
-@endisset
+<div id="{{ $commentType }}-comments">
+    <div class="justify-content-center text-center mb-2">
+        <i class="fas fa-spinner fa-spin fa-2x"></i>
+    </div>
+</div>
 
 @auth
     @include('comments._form', [
@@ -85,24 +77,48 @@
     @parent
     <script>
         $(document).ready(function() {
-            tinymce.init({
-                selector: '.comment-wysiwyg',
-                height: 250,
-                menubar: false,
-                convert_urls: false,
-                plugins: [
-                    'advlist autolink lists link image charmap print preview anchor',
-                    'searchreplace visualblocks code fullscreen spoiler',
-                    'insertdatetime media table paste code help wordcount'
-                ],
-                toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | spoiler-add spoiler-remove | removeformat | code',
-                content_css: [
-                    '{{ asset('css/app.css') }}',
-                    '{{ asset('css/lorekeeper.css') }}'
-                ],
-                spoiler_caption: 'Toggle Spoiler',
-                target_list: false
+            function sortComments() {
+                $('#{{ $commentType }}-comments').fadeOut();
+                $.ajax({
+                    url: "{{ url('sort-comments/' . base64_encode(urlencode(get_class($model))) . '/' . $model->getKey()) }}",
+                    type: 'GET',
+                    data: {
+                        url: '{{ url()->current() }}',
+                        allow_dislikes: '{{ isset($allow_dislikes) ? $allow_dislikes : false }}',
+                        approved: '{{ isset($approved) ? $approved : false }}',
+                        type: '{{ isset($type) ? $type : null }}',
+                        sort: $('#{{ $commentType }}-sort').val(),
+                        perPage: $('#{{ $commentType }}-perPage').val(),
+                        page: '{{ request()->query('page') }}',
+                    },
+                    success: function(data) {
+                        $('#{{ $commentType }}-comments').html(data);
+                        // update current url to reflect sort change
+                        if (
+                            ($('#{{ $commentType }}-sort').val() != 'newest' || $('#{{ $commentType }}-perPage').val() != 5) ||
+                            (window.location.href.indexOf('{{ $commentType }}-sort') != -1 || window.location.href.indexOf('{{ $commentType }}-perPage') != -1)
+                        ) { // don't add to url if default
+                            var url = new URL(window.location.href);
+                            url.searchParams.set('{{ $commentType }}-sort', $('#{{ $commentType }}-sort').val());
+                            url.searchParams.set('{{ $commentType }}-perPage', $('#{{ $commentType }}-perPage').val());
+
+                            window.history.pushState({}, '', url);
+                        }
+                        $('#{{ $commentType }}-comments').fadeIn();
+                        @include('js._tinymce_wysiwyg', ['tinymceSelector' => '.comment-wysiwyg', 'tinymceHeight' => '250', 'tinymceScript' => false])
+                    }
+                });
+            }
+
+            $('#{{ $commentType }}-sort').change(function() {
+                sortComments();
             });
+
+            $('#{{ $commentType }}-perPage').change(function() {
+                sortComments();
+            });
+
+            sortComments(); // initial sort
         });
     </script>
 @endsection

@@ -70,20 +70,6 @@
         <div class="logs-table-body">
             @foreach ($requests as $r)
                 <div class="logs-table-row">
-                    @if (config('lorekeeper.extensions.design_update_voting'))
-                        <?php
-                        $rejectSum = 0;
-                        $approveSum = 0;
-                        foreach ($r->voteData as $voter => $vote) {
-                            if ($vote == 1) {
-                                $rejectSum += 1;
-                            }
-                            if ($vote == 2) {
-                                $approveSum += 1;
-                            }
-                        }
-                        ?>
-                    @endif
                     <div class="row flex-wrap">
                         <div class="col-md-3">
                             <div class="logs-table-cell">{!! $r->character ? $r->character->displayName : 'Deleted Character [#' . $r->character_id . ']' !!}</div>
@@ -98,8 +84,8 @@
                             <div class="col-2 col-md-2">
                                 <div class="logs-table-cell">
                                     <strong>
-                                        <span class="text-danger">{{ $rejectSum }}/{{ Settings::get('design_votes_needed') }}</span> :
-                                        <span class="text-success">{{ $approveSum }}/{{ Settings::get('design_votes_needed') }}</span>
+                                        <span class="text-danger">{{ $r->getVoteData()['reject'] }}/{{ Settings::get('design_votes_needed') }}</span> :
+                                        <span class="text-success">{{ $r->getVoteData()['approve'] }}/{{ Settings::get('design_votes_needed') }}</span>
                                     </strong>
                                 </div>
                             </div>

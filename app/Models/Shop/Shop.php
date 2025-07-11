@@ -4,6 +4,7 @@ namespace App\Models\Shop;
 
 use App\Models\Item\Item;
 use App\Models\Model;
+use Carbon\Carbon;
 
 class Shop extends Model {
     /**
@@ -12,7 +13,8 @@ class Shop extends Model {
      * @var array
      */
     protected $fillable = [
-        'name', 'sort', 'has_image', 'description', 'parsed_description', 'is_active', 'hash',
+        'name', 'sort', 'has_image', 'description', 'parsed_description', 'is_active', 'hash', 'is_staff', 'use_coupons', 'is_fto', 'allowed_coupons', 'is_timed_shop', 'start_at', 'end_at',
+        'is_hidden', 'data',
     ];
 
     /**
@@ -21,6 +23,19 @@ class Shop extends Model {
      * @var string
      */
     protected $table = 'shops';
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'data'            => 'array',
+        'allowed_coupons' => 'array',
+        'end_at'          => 'datetime',
+        'start_at'        => 'datetime',
+    ];
+
     /**
      * Validation rules for creation.
      *
@@ -58,9 +73,30 @@ class Shop extends Model {
 
     /**
      * Get the shop stock as items for display purposes.
+     *
+     * @param mixed|null $model
+     * @param mixed|null $type
      */
-    public function displayStock() {
-        return $this->belongsToMany(Item::class, 'shop_stock')->withPivot('item_id', 'currency_id', 'cost', 'use_user_bank', 'use_character_bank', 'is_limited_stock', 'quantity', 'purchase_limit', 'id');
+    public function displayStock($model = null, $type = null) {
+        if (!$model || !$type) {
+            return $this->belongsToMany(Item::class, 'shop_stock')->where('stock_type', 'Item')->withPivot('item_id', 'use_user_bank', 'use_character_bank', 'is_limited_stock', 'quantity', 'purchase_limit', 'id', 'is_timed_stock')
+                ->wherePivot('is_visible', 1)->where(function ($query) {
+                    $query->whereNull('shop_stock.start_at')
+                        ->orWhere('shop_stock.start_at', '<', Carbon::now());
+                })->where(function ($query) {
+                    $query->whereNull('shop_stock.end_at')
+                        ->orWhere('shop_stock.end_at', '>', Carbon::now());
+                });
+        }
+
+        return $this->belongsToMany($model, 'shop_stock', 'shop_id', 'item_id')->where('stock_type', $type)->withPivot('item_id', 'use_user_bank', 'use_character_bank', 'is_limited_stock', 'quantity', 'purchase_limit', 'id', 'is_timed_stock')
+            ->wherePivot('is_visible', 1)->where(function ($query) {
+                $query->whereNull('shop_stock.start_at')
+                    ->orWhere('shop_stock.start_at', '<', Carbon::now());
+            })->where(function ($query) {
+                $query->whereNull('shop_stock.end_at')
+                    ->orWhere('shop_stock.end_at', '>', Carbon::now());
+            });
     }
 
     /**********************************************************************************************
@@ -75,7 +111,7 @@ class Shop extends Model {
      * @return string
      */
     public function getDisplayNameAttribute() {
-        return '<a href="'.$this->url.'" class="display-shop">'.$this->name.'</a>';
+        return '<a href="'.$this->url.'" class="display-shop">'.(!$this->isActive ? '<i class="fas fa-eye-slash"></i> ' : '').$this->name.'</a>';
     }
 
     /**
@@ -93,7 +129,7 @@ class Shop extends Model {
      * @return string
      */
     public function getShopImageFileNameAttribute() {
-        return $this->hash.$this->id.'-image.png';
+        return $this->id.'-'.$this->hash.'-image.png';
     }
 
     /**
@@ -143,5 +179,71 @@ class Shop extends Model {
      */
     public function getAdminPowerAttribute() {
         return 'edit_data';
+    }
+
+    /**
+     * Returns the days the shop is available, if set.
+     */
+    public function getDaysAttribute() {
+        return $this->data['shop_days'] ?? null;
+    }
+
+    /**
+     * Returns the months the shop is available, if set.
+     */
+    public function getMonthsAttribute() {
+        return $this->data['shop_months'] ?? null;
+    }
+
+    /**
+     * Returns if this shop should be active or not.
+     * We dont account for is_visible here, as this is used for checking both visible and invisible shop.
+     */
+    public function getIsActiveAttribute() {
+        if ($this->start_at && $this->start_at > Carbon::now()) {
+            return false;
+        }
+
+        if ($this->end_at && $this->end_at < Carbon::now()) {
+            return false;
+        }
+
+        if ($this->days && !in_array(Carbon::now()->format('l'), $this->days)) {
+            return false;
+        }
+
+        if ($this->months && !in_array(Carbon::now()->format('F'), $this->months)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**********************************************************************************************
+
+        OTHER FUNCTIONS
+
+    **********************************************************************************************/
+
+    /**
+     * Gets all the coupons useable in the shop.
+     */
+    public function getAllAllowedCouponsAttribute() {
+        if (!$this->use_coupons || !$this->allowed_coupons) {
+            return;
+        }
+        // Get the coupons from the id in allowed_coupons
+        $coupons = Item::whereIn('id', $this->allowed_coupons)->get();
+
+        return $coupons;
+    }
+
+    /**
+     * Gets the shop's stock costs.
+     *
+     * @param mixed $id
+     */
+    public function displayStockCosts($id) {
+        return $this->stock()->where('id', $id)->first()->displayCosts();
     }
 }

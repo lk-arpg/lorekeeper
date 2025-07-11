@@ -32,9 +32,7 @@
             @foreach ($users as $user)
                 <li>
                     {!! $user->displayName !!} has {{ $userItems->where('user_id', $user->id)->pluck('count')->sum() }}
-                    @if (
-                        $userItems->where('user_id', $user->id)->pluck('count')->sum() >
-                            $userItems->where('user_id', $user->id)->pluck('availableQuantity')->sum())
+                    @if ($userItems->where('user_id', $user->id)->pluck('count')->sum() > $userItems->where('user_id', $user->id)->pluck('availableQuantity')->sum())
                         ({{ $userItems->where('user_id', $user->id)->pluck('availableQuantity')->sum() }} Available)
                         <ul>
                             @foreach ($userItems->where('user_id', $user->id) as $item)

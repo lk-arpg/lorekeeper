@@ -22,6 +22,15 @@ class Notification extends Model {
     protected $table = 'notifications';
 
     /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'data' => 'array',
+    ];
+
+    /**
      * Whether the model contains timestamps to be saved and updated.
      *
      * @var string
@@ -46,15 +55,6 @@ class Notification extends Model {
         ACCESSORS
 
     **********************************************************************************************/
-
-    /**
-     * Get the data attribute as an associative array.
-     *
-     * @return array
-     */
-    public function getDataAttribute() {
-        return json_decode($this->attributes['data'], true);
-    }
 
     /**
      * Get the notification message using the stored data.

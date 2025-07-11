@@ -13,6 +13,7 @@ class Rank extends Model {
      */
     protected $fillable = [
         'name', 'description', 'parsed_description', 'sort', 'color', 'icon',
+        'is_admin',
     ];
 
     /**
@@ -21,6 +22,7 @@ class Rank extends Model {
      * @var string
      */
     protected $table = 'ranks';
+
     /**
      * Validation rules for ranks.
      *
@@ -71,11 +73,7 @@ class Rank extends Model {
      * @return bool
      */
     public function getIsAdminAttribute() {
-        if ($this->id == self::orderBy('sort', 'DESC')->first()->id) {
-            return true;
-        }
-
-        return false;
+        return $this->attributes['is_admin'];
     }
 
     /**********************************************************************************************
@@ -87,7 +85,7 @@ class Rank extends Model {
     /**
      * Checks if the current rank is high enough to edit a given rank.
      *
-     * @param \App\Models\Rank\Rank $rank
+     * @param Rank $rank
      *
      * @return int
      */
@@ -114,7 +112,7 @@ class Rank extends Model {
     /**
      * Checks if the rank has a given power.
      *
-     * @param \App\Models\Rank\RankPower $power
+     * @param RankPower $power
      *
      * @return bool
      */

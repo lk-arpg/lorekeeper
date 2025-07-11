@@ -91,7 +91,7 @@ abstract class Service {
      * Empty the errors MessageBag.
      */
     public function resetErrors() {
-        $this->errors = new MessageBag();
+        $this->errors = new MessageBag;
     }
 
     public function remember($key = null, $fn = null) {

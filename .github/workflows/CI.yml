@@ -1,0 +1,27 @@
+name: Lint & Build Mix Assets
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+    types:
+      - opened
+      - edited
+      - synchronize
+      - reopened
+
+jobs:
+  lint:
+    uses: itinerare/github-actions/.github/workflows/lint.yml@main
+    with:
+      php-version: '8.1'
+    concurrency:
+      group: ci-${{ github.head_ref || github.ref_name }}
+
+  rebuild-mix-assets:
+    uses: itinerare/github-actions/.github/workflows/mix_build.yml@main
+    concurrency:
+      group: ci-${{ github.head_ref }}

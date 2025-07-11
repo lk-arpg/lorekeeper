@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Users;
 
+use App\Facades\Settings;
 use App\Http\Controllers\Controller;
 use App\Models\Character\Character;
 use App\Models\Character\CharacterDesignUpdate;
 use App\Models\Character\CharacterItem;
 use App\Models\Item\Item;
 use App\Models\Item\ItemCategory;
+use App\Models\Rarity;
 use App\Models\Submission\Submission;
 use App\Models\Trade;
 use App\Models\User\User;
@@ -31,10 +33,30 @@ class InventoryController extends Controller {
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getIndex() {
-        $categories = ItemCategory::visible(Auth::check() ? Auth::user() : null)->orderBy('sort', 'DESC')->get();
+    public function getIndex(Request $request) {
+        $categories = ItemCategory::visible(Auth::user() ?? null)->orderBy('sort', 'DESC')->get();
+        $query = Item::query();
+        $data = $request->only(['item_category_id', 'name', 'artist', 'rarity_id']);
+        if (isset($data['item_category_id'])) {
+            $query->where('item_category_id', $data['item_category_id']);
+        }
+        if (isset($data['name'])) {
+            $query->where('name', 'LIKE', '%'.$data['name'].'%');
+        }
+        if (isset($data['artist'])) {
+            $query->where('artist_id', $data['artist']);
+        }
+        if (isset($data['rarity_id'])) {
+            if ($data['rarity_id'] == 'withoutOption') {
+                $query->whereNull('data->rarity_id');
+            } else {
+                $query->where('data->rarity_id', $data['rarity_id']);
+            }
+        }
+
         $items = count($categories) ?
             Auth::user()->items()
+                ->whereIn('items.id', $query->pluck('id')->toArray())
                 ->where('count', '>', 0)
                 ->orderByRaw('FIELD(item_category_id,'.implode(',', $categories->pluck('id')->toArray()).')')
                 ->orderBy('name')
@@ -42,6 +64,7 @@ class InventoryController extends Controller {
                 ->get()
                 ->groupBy(['item_category_id', 'id']) :
             Auth::user()->items()
+                ->whereIn('items.id', $query->pluck('id')->toArray())
                 ->where('count', '>', 0)
                 ->orderBy('name')
                 ->orderBy('updated_at')
@@ -53,6 +76,8 @@ class InventoryController extends Controller {
             'items'       => $items,
             'userOptions' => User::visible()->where('id', '!=', Auth::user()->id)->orderBy('name')->pluck('name', 'id')->toArray(),
             'user'        => Auth::user(),
+            'artists'     => User::whereIn('id', Item::whereNotNull('artist_id')->pluck('artist_id')->toArray())->pluck('name', 'id')->toArray(),
+            'rarities'    => ['withoutOption' => 'Without Rarity'] + Rarity::orderBy('rarities.sort', 'DESC')->pluck('name', 'id')->toArray(),
         ]);
     }
 
@@ -76,6 +101,7 @@ class InventoryController extends Controller {
             'userOptions'      => ['' => 'Select User'] + User::visible()->where('id', '!=', $first_instance ? $first_instance->user_id : 0)->orderBy('name')->get()->pluck('verified_name', 'id')->toArray(),
             'readOnly'         => $readOnly,
             'characterOptions' => Character::visible()->myo(0)->where('user_id', optional(Auth::user())->id)->orderBy('sort', 'DESC')->get()->pluck('fullName', 'id')->toArray(),
+            'canTransfer'      => Settings::get('can_transfer_items_directly'),
         ]);
     }
 
@@ -214,7 +240,7 @@ class InventoryController extends Controller {
         }
 
         // Set up Categories
-        $categories = ItemCategory::visible(Auth::check() ? Auth::user() : null)->orderBy('sort', 'DESC')->get();
+        $categories = ItemCategory::visible(Auth::user() ?? null)->orderBy('sort', 'DESC')->get();
 
         if (count($categories)) {
             $items =

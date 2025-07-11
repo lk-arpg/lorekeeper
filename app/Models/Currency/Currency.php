@@ -11,10 +11,10 @@ class Currency extends Model {
      * @var array
      */
     protected $fillable = [
-        'is_user_owned', 'is_character_owned',
+        'is_user_owned', 'is_character_owned', 'currency_category_id',
         'name', 'abbreviation', 'description', 'parsed_description', 'sort_user', 'sort_character',
         'is_displayed', 'allow_user_to_user', 'allow_user_to_character', 'allow_character_to_user',
-        'has_icon', 'has_image', 'hash',
+        'has_icon', 'has_image', 'hash', 'is_visible',
     ];
 
     /**
@@ -51,6 +51,93 @@ class Currency extends Model {
 
     /**********************************************************************************************
 
+        RELATIONSHIPS
+
+    **********************************************************************************************/
+
+    /**
+     * Get the category the currency belongs to.
+     */
+    public function category() {
+        return $this->belongsTo(CurrencyCategory::class, 'currency_category_id');
+    }
+
+    /**********************************************************************************************
+
+        SCOPES
+
+    **********************************************************************************************/
+
+    /**
+     * Scope a query to sort currencies in alphabetical order.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param bool                                  $reverse
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeSortAlphabetical($query, $reverse = false) {
+        return $query->orderBy('name', $reverse ? 'DESC' : 'ASC');
+    }
+
+    /**
+     * Scope a query to sort currencies in category order.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeSortCategory($query) {
+        if (CurrencyCategory::all()->count()) {
+            return $query->orderBy(CurrencyCategory::select('sort')->whereColumn('currencies.currency_category_id', 'currency_categories.id'), 'DESC');
+        }
+
+        return $query;
+    }
+
+    /**
+     * Scope a query to sort currencies by newest first.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param mixed                                 $reverse
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeSortNewest($query, $reverse = false) {
+        return $query->orderBy('id', $reverse ? 'ASC' : 'DESC');
+    }
+
+    /**
+     * Scope a query to show only visible currencies.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param mixed|null                            $user
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeVisible($query, $user = null) {
+        if ($user && $user->hasPower('edit_data')) {
+            return $query;
+        }
+
+        return $query->where('is_visible', 1);
+    }
+
+    /**********************************************************************************************
+
+        RELATIONSHIPS
+
+    **********************************************************************************************/
+
+    /**
+     * Get the conversion options for the currency.
+     */
+    public function conversions() {
+        return $this->hasMany(CurrencyConversion::class, 'currency_id');
+    }
+
+    /**********************************************************************************************
+
         ACCESSORS
 
     **********************************************************************************************/
@@ -79,7 +166,7 @@ class Currency extends Model {
      * @return string
      */
     public function getCurrencyImageFileNameAttribute() {
-        return $this->hash.$this->id.'-image.png';
+        return $this->id.'-'.$this->hash.'-image.png';
     }
 
     /**
@@ -88,7 +175,7 @@ class Currency extends Model {
      * @return string
      */
     public function getCurrencyIconFileNameAttribute() {
-        return $this->hash.$this->id.'-icon.png';
+        return $this->id.'-'.$this->hash.'-icon.png';
     }
 
     /**

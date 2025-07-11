@@ -27,7 +27,7 @@ class ShopService extends Service {
      * @param array                 $data
      * @param \App\Models\User\User $user
      *
-     * @return \App\Models\Shop\Shop|bool
+     * @return bool|Shop
      */
     public function createShop($data, $user) {
         DB::beginTransaction();
@@ -44,6 +44,8 @@ class ShopService extends Service {
             } else {
                 $data['has_image'] = 0;
             }
+
+            $data['is_timed_shop'] = isset($data['is_timed_shop']);
 
             $shop = Shop::create($data);
 
@@ -62,11 +64,11 @@ class ShopService extends Service {
     /**
      * Updates a shop.
      *
-     * @param \App\Models\Shop\Shop $shop
+     * @param Shop                  $shop
      * @param array                 $data
      * @param \App\Models\User\User $user
      *
-     * @return \App\Models\Shop\Shop|bool
+     * @return bool|Shop
      */
     public function updateShop($shop, $data, $user) {
         DB::beginTransaction();
@@ -87,6 +89,8 @@ class ShopService extends Service {
                 unset($data['image']);
             }
 
+            $data['is_timed_shop'] = isset($data['is_timed_shop']);
+
             $shop->update($data);
 
             if ($shop) {
@@ -102,47 +106,95 @@ class ShopService extends Service {
     }
 
     /**
-     * Updates shop stock.
+     * Creates shop stock.
      *
-     * @param \App\Models\Shop\Shop $shop
+     * @param Shop                  $shop
      * @param array                 $data
      * @param \App\Models\User\User $user
      *
-     * @return \App\Models\Shop\Shop|bool
+     * @return bool|Shop
      */
-    public function updateShopStock($shop, $data, $user) {
+    public function createShopStock($shop, $data, $user) {
         DB::beginTransaction();
 
         try {
-            if (isset($data['item_id'])) {
-                foreach ($data['item_id'] as $key => $itemId) {
-                    if ($data['cost'][$key] == null) {
-                        throw new \Exception('One or more of the items is missing a cost.');
-                    }
-                    if ($data['cost'][$key] < 0) {
-                        throw new \Exception('One or more of the items has a negative cost.');
-                    }
+            if (!$data['stock_type']) {
+                throw new \Exception('Please select a stock type.');
+            }
+            if (!$data['item_id']) {
+                throw new \Exception('You must select an item.');
+            }
+
+            $is_random = false;
+            $is_category = false;
+            $categoryId = null;
+            // if the id is not numeric, it's a random item
+            if (!is_numeric($data['item_id'])) {
+                $is_random = true;
+
+                $type = $data['stock_type'];
+                $model = getAssetModelString(strtolower($type));
+                if ($data['item_id'] != 'random') {
+                    // this means its a category, extract the id from the string
+                    $categoryId = explode('-', $data['item_id'])[0];
+                    $is_category = true;
                 }
 
-                // Clear the existing shop stock
-                $shop->stock()->delete();
+                // check if "visible" method exists, if it does only get visible items
+                // also check for "released" method, if it exists only get released items
+                if (method_exists($model, 'visible')) {
+                    $data['item_id'] = $categoryId ?
+                        $model::visible()->where(strtolower($type).'_category_id', $categoryId)->inRandomOrder()->first()->id :
+                        $model::visible()->inRandomOrder()->first()->id;
+                } elseif (method_exists($model, 'released')) {
+                    $data['item_id'] = $categoryId ?
+                        $model::released()->where(strtolower($type).'_category_id', $categoryId)->inRandomOrder()->first()->id :
+                        $model::released()->inRandomOrder()->first()->id;
+                } else {
+                    $data['item_id'] = $categoryId ?
+                        $model::where(strtolower($type).'_category_id', $categoryId)->inRandomOrder()->first()->id :
+                        $model::inRandomOrder()->first()->id;
+                }
+            }
 
-                foreach ($data['item_id'] as $key => $itemId) {
-                    $shop->stock()->create([
-                        'shop_id'               => $shop->id,
-                        'item_id'               => $data['item_id'][$key],
-                        'currency_id'           => $data['currency_id'][$key],
-                        'cost'                  => $data['cost'][$key],
-                        'use_user_bank'         => isset($data['use_user_bank'][$key]),
-                        'use_character_bank'    => isset($data['use_character_bank'][$key]),
-                        'is_limited_stock'      => isset($data['is_limited_stock'][$key]),
-                        'quantity'              => isset($data['is_limited_stock'][$key]) ? $data['quantity'][$key] : 0,
-                        'purchase_limit'        => $data['purchase_limit'][$key],
+            $stock = $shop->stock()->create([
+                'shop_id'                  => $shop->id,
+                'item_id'                  => $data['item_id'],
+                'use_user_bank'            => isset($data['use_user_bank']),
+                'use_character_bank'       => isset($data['use_character_bank']),
+                'is_fto'                   => isset($data['is_fto']),
+                'is_limited_stock'         => isset($data['is_limited_stock']),
+                'quantity'                 => isset($data['is_limited_stock']) ? $data['quantity'] : 0,
+                'purchase_limit'           => $data['purchase_limit'] ?? 0,
+                'purchase_limit_timeframe' => isset($data['purchase_limit']) ? $data['purchase_limit_timeframe'] : null,
+                'stock_type'               => $data['stock_type'],
+                'is_visible'               => $data['is_visible'] ?? 0,
+                'restock'                  => $data['restock'] ?? 0,
+                'restock_quantity'         => isset($data['restock']) && isset($data['quantity']) ? $data['quantity'] : 1,
+                'restock_interval'         => $data['restock_interval'] ?? 2,
+                'range'                    => $data['range'] ?? 0,
+                'disallow_transfer'        => $data['disallow_transfer'] ?? 0,
+                'is_timed_stock'           => isset($data['is_timed_stock']),
+                'start_at'                 => $data['stock_start_at'],
+                'end_at'                   => $data['stock_end_at'],
+                'data'                     => [
+                    'is_random'    => $is_random,
+                    'is_category'  => $is_category,
+                    'category_id'  => $categoryId,
+                    'stock_days'   => $data['stock_days'] ?? null,
+                    'stock_months' => $data['stock_months'] ?? null,
+                ],
+            ]);
+
+            if (isset($data['cost_type']) && isset($data['cost_quantity'])) {
+                foreach ($data['cost_type'] as $key => $costType) {
+                    $stock->costs()->create([
+                        'cost_type' => $costType,
+                        'cost_id'   => $data['cost_id'][$key],
+                        'quantity'  => $data['cost_quantity'][$key],
+                        'group'     => $data['group'][$key] ?? 1,
                     ]);
                 }
-            } else {
-                // Clear the existing shop stock
-                $shop->stock()->delete();
             }
 
             return $this->commitReturn($shop);
@@ -154,9 +206,139 @@ class ShopService extends Service {
     }
 
     /**
+     * Updates shop stock.
+     *
+     * @param array                 $data
+     * @param \App\Models\User\User $user
+     * @param mixed                 $stock
+     *
+     * @return bool|Shop
+     */
+    public function editShopStock($stock, $data, $user) {
+        DB::beginTransaction();
+
+        try {
+            if (!$data['stock_type']) {
+                throw new \Exception('Please select a stock type.');
+            }
+            if (!$data['item_id']) {
+                throw new \Exception('You must select an item.');
+            }
+
+            $is_random = false;
+            $is_category = false;
+            $categoryId = null;
+            // if the id is not numeric, it's a random item
+            if (!is_numeric($data['item_id'])) {
+                $is_random = true;
+
+                $type = $data['stock_type'];
+                $model = getAssetModelString(strtolower($type));
+                if ($data['item_id'] != 'random') {
+                    // this means its a category, extract the id from the string
+                    $categoryId = explode('-', $data['item_id'])[0];
+                    $is_category = true;
+                }
+
+                // check if "visible" method exists, if it does only get visible items
+                // also check for "released" method, if it exists only get released items
+                if (method_exists($model, 'visible')) {
+                    $data['item_id'] = $categoryId ?
+                        $model::visible()->where(strtolower($type).'_category_id', $categoryId)->inRandomOrder()->first()->id :
+                        $model::visible()->inRandomOrder()->first()->id;
+                } elseif (method_exists($model, 'released')) {
+                    $data['item_id'] = $categoryId ?
+                        $model::released()->where(strtolower($type).'_category_id', $categoryId)->inRandomOrder()->first()->id :
+                        $model::released()->inRandomOrder()->first()->id;
+                } else {
+                    $data['item_id'] = $categoryId ?
+                        $model::where(strtolower($type).'_category_id', $categoryId)->inRandomOrder()->first()->id :
+                        $model::inRandomOrder()->first()->id;
+                }
+            }
+
+            $stock->update([
+                'shop_id'                  => $stock->shop->id,
+                'item_id'                  => $data['item_id'],
+                'use_user_bank'            => isset($data['use_user_bank']),
+                'use_character_bank'       => isset($data['use_character_bank']),
+                'is_fto'                   => isset($data['is_fto']),
+                'is_limited_stock'         => isset($data['is_limited_stock']),
+                'quantity'                 => isset($data['is_limited_stock']) ? $data['quantity'] : 0,
+                'purchase_limit'           => $data['purchase_limit'] ?? 0,
+                'purchase_limit_timeframe' => $data['purchase_limit_timeframe'] ?? null,
+                'stock_type'               => $data['stock_type'],
+                'is_visible'               => $data['is_visible'] ?? 0,
+                'restock'                  => $data['restock'] ?? 0,
+                'restock_quantity'         => isset($data['restock']) && isset($data['quantity']) ? $data['quantity'] : 1,
+                'restock_interval'         => $data['restock_interval'] ?? 2,
+                'range'                    => $data['range'] ?? 0,
+                'disallow_transfer'        => $data['disallow_transfer'] ?? 0,
+                'is_timed_stock'           => isset($data['is_timed_stock']),
+                'start_at'                 => $data['stock_start_at'],
+                'end_at'                   => $data['stock_end_at'],
+            ]);
+
+            $stock->costs()->delete();
+
+            if (isset($data['cost_type']) && isset($data['cost_quantity'])) {
+                foreach ($data['cost_type'] as $key => $costType) {
+                    $stock->costs()->create([
+                        'cost_type' => $costType,
+                        'cost_id'   => $data['cost_id'][$key],
+                        'quantity'  => $data['cost_quantity'][$key],
+                        'group'     => $data['group'][$key] ?? 1,
+                    ]);
+                }
+            }
+
+            // add coupon usage based on groups
+            $stockData = [
+                'is_random'            => $is_random,
+                'is_category'          => $is_category,
+                'category_id'          => $categoryId,
+                'stock_days'           => $data['stock_days'] ?? null,
+                'stock_months'         => $data['stock_months'] ?? null,
+                'can_group_use_coupon' => [],
+            ];
+            if (isset($data['can_group_use_coupon'])) {
+                foreach ($data['can_group_use_coupon'] as $group => $canUseCoupon) {
+                    // check if the group exists in the costs, since it may have been removed
+                    if ($stock->costs()->where('group', $group)->exists() && $canUseCoupon) {
+                        $stockData['can_group_use_coupon'][] = $group;
+                    }
+                }
+            }
+            $stock->update([
+                'data' => $stockData,
+            ]);
+
+            return $this->commitReturn($stock);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
+    }
+
+    public function deleteStock($stock) {
+        DB::beginTransaction();
+
+        try {
+            $stock->delete();
+
+            return $this->commitReturn(true);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
+    }
+
+    /**
      * Deletes a shop.
      *
-     * @param \App\Models\Shop\Shop $shop
+     * @param Shop $shop
      *
      * @return bool
      */
@@ -209,18 +391,26 @@ class ShopService extends Service {
     /**
      * Processes user input for creating/updating a shop.
      *
-     * @param array                 $data
-     * @param \App\Models\Shop\Shop $shop
+     * @param array $data
+     * @param Shop  $shop
      *
      * @return array
      */
     private function populateShopData($data, $shop = null) {
         if (isset($data['description']) && $data['description']) {
             $data['parsed_description'] = parse($data['description']);
-        } else {
-            $data['parsed_description'] = null;
         }
         $data['is_active'] = isset($data['is_active']);
+        $data['is_hidden'] = isset($data['is_hidden']);
+        $data['is_staff'] = isset($data['is_staff']);
+        $data['is_fto'] = isset($data['is_fto']);
+        $data['use_coupons'] = isset($data['use_coupons']);
+        $data['allowed_coupons'] ??= null;
+        $data['data'] = [
+            'shop_days'   => $data['shop_days'] ?? null,
+            'shop_months' => $data['shop_months'] ?? null,
+        ];
+        unset($data['shop_days'], $data['shop_months']);
 
         if (isset($data['remove_image'])) {
             if ($shop && $shop->has_image && $data['remove_image']) {

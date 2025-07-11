@@ -11,11 +11,14 @@
         <h3>
             {!! $name !!}
             <div class="float-right small">
+                @if (isset($searchItemsUrl) && $searchItemsUrl)
+                    <a href="{{ $searchItemsUrl }}" class="world-entry-search text-muted small"><i class="fas fa-search"></i> Items</a>
+                @endif
                 @if (isset($searchFeaturesUrl) && $searchFeaturesUrl)
-                    <a href="{{ $searchFeaturesUrl }}" class="world-entry-search text-muted small"><i class="fas fa-search"></i> Traits</a>
+                    <a href="{{ $searchFeaturesUrl }}" class="world-entry-search text-muted small ml-3"><i class="fas fa-search"></i> Traits</a>
                 @endif
                 @if (isset($searchCharactersUrl) && $searchCharactersUrl)
-                    <a href="{{ $searchCharactersUrl }}" class="world-entry-search text-muted small ml-4"><i class="fas fa-search"></i> Characters</a>
+                    <a href="{{ $searchCharactersUrl }}" class="world-entry-search text-muted small ml-3 mr-2"><i class="fas fa-search"></i> Characters</a>
                 @endif
             </div>
 

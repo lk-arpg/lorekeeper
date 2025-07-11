@@ -20,6 +20,7 @@ class Sales extends Model implements Feedable {
     protected $fillable = [
         'user_id', 'text', 'parsed_text', 'title', 'is_visible', 'post_at',
         'is_open', 'comments_open_at',
+        'has_image', 'hash',
     ];
 
     /**
@@ -54,6 +55,7 @@ class Sales extends Model implements Feedable {
     public static $createRules = [
         'title' => 'required|between:3,100',
         'text'  => 'required',
+        'image' => 'mimes:png',
     ];
 
     /**
@@ -64,6 +66,7 @@ class Sales extends Model implements Feedable {
     public static $updateRules = [
         'title' => 'required|between:3,100',
         'text'  => 'required',
+        'image' => 'mimes:png',
     ];
 
     /**********************************************************************************************
@@ -96,10 +99,15 @@ class Sales extends Model implements Feedable {
      * Scope a query to only include visible posts.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param mixed|null                            $user
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeVisible($query) {
+    public function scopeVisible($query, $user = null) {
+        if ($user && $user->hasPower('manage_sales')) {
+            return $query;
+        }
+
         return $query->where('is_visible', 1);
     }
 
@@ -130,22 +138,12 @@ class Sales extends Model implements Feedable {
      * Scope a query to sort sales by newest first.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param mixed                                 $reverse
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeSortNewest($query) {
-        return $query->orderBy('id', 'DESC');
-    }
-
-    /**
-     * Scope a query to sort sales oldest first.
-     *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     *
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public function scopeSortOldest($query) {
-        return $query->orderBy('id');
+    public function scopeSortNewest($query, $reverse = false) {
+        return $query->orderBy('id', $reverse ? 'ASC' : 'DESC');
     }
 
     /**
@@ -182,6 +180,46 @@ class Sales extends Model implements Feedable {
      */
     public function getDisplayNameAttribute() {
         return '<a href="'.$this->url.'"> ['.($this->is_open ? (isset($this->comments_open_at) && $this->comments_open_at > Carbon::now() ? 'Preview' : 'Open') : 'Closed').'] '.$this->title.'</a>';
+    }
+
+    /**
+     * Gets the file directory containing the model's image.
+     *
+     * @return string
+     */
+    public function getImageDirectoryAttribute() {
+        return 'images/data/sales';
+    }
+
+    /**
+     * Gets the file name of the model's image.
+     *
+     * @return string
+     */
+    public function getImageFileNameAttribute() {
+        return $this->id.'-'.$this->hash.'-image.png';
+    }
+
+    /**
+     * Gets the path to the file directory containing the model's image.
+     *
+     * @return string
+     */
+    public function getImagePathAttribute() {
+        return public_path($this->imageDirectory);
+    }
+
+    /**
+     * Gets the URL of the model's image.
+     *
+     * @return string
+     */
+    public function getImageUrlAttribute() {
+        if (!$this->has_image) {
+            return null;
+        }
+
+        return asset($this->imageDirectory.'/'.$this->imageFileName);
     }
 
     /**

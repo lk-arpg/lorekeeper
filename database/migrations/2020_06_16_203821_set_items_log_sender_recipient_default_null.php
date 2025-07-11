@@ -9,12 +9,12 @@ class SetItemsLogSenderRecipientDefaultNull extends Migration {
      * Run the migrations.
      */
     public function up() {
-        //Change default to null going forward
+        // Change default to null going forward
         DB::statement("ALTER TABLE items_log CHANGE COLUMN sender_type sender_type ENUM('User', 'Character') DEFAULT NULL");
         DB::statement("ALTER TABLE items_log CHANGE COLUMN recipient_type recipient_type ENUM('User', 'Character') DEFAULT NULL");
 
         Schema::table('items_log', function (Blueprint $table) {
-            //Actually drop them this time, please. Also drop the item_id column
+            // Actually drop them this time, please. Also drop the item_id column
             $table->dropForeign('inventory_log_sender_id_foreign');
             $table->dropForeign('inventory_log_recipient_id_foreign');
             $table->dropForeign('user_items_log_stack_id_foreign');

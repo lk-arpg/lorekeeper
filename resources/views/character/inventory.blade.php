@@ -31,6 +31,30 @@
         </div>
     </div>
 
+    <div>
+        {!! Form::open(['method' => 'GET', 'class' => '']) !!}
+        <div class="form-inline justify-content-end">
+            <div class="form-group ml-3 mb-3">
+                {!! Form::text('name', Request::get('name'), ['class' => 'form-control', 'placeholder' => 'Name']) !!}
+            </div>
+            <div class="form-group ml-3 mb-3">
+                {!! Form::select('item_category_id', $categories->pluck('name', 'id'), Request::get('item_category_id'), ['class' => 'form-control', 'placeholder' => 'Any Category']) !!}
+            </div>
+            @if (config('lorekeeper.extensions.item_entry_expansion.extra_fields'))
+                <div class="form-group ml-3 mb-3">
+                    {!! Form::select('rarity_id', $rarities, Request::get('rarity_id'), ['class' => 'form-control', 'placeholder' => 'Any Rarity']) !!}
+                </div>
+                <div class="form-group ml-3 mb-3">
+                    {!! Form::select('artist', $artists, Request::get('artist'), ['class' => 'form-control', 'placeholder' => 'Any Artist']) !!}
+                </div>
+            @endif
+            <div class="form-group ml-3 mb-3">
+                {!! Form::submit('Search', ['class' => 'btn btn-primary']) !!}
+            </div>
+        </div>
+        {!! Form::close() !!}
+    </div>
+
     <div id="defView" class="hide">
         @foreach ($items as $categoryId => $categoryItems)
             <div class="card mb-3 inventory-category">
@@ -46,10 +70,7 @@
                             @foreach ($chunk as $itemId => $stack)
                                 <?php
                                 $canName = $stack->first()->category->can_name;
-                                $stackName = $stack
-                                    ->first()
-                                    ->pivot->pluck('stack_name', 'id')
-                                    ->toArray()[$stack->first()->pivot->id];
+                                $stackName = $stack->first()->pivot->pluck('stack_name', 'id')->toArray()[$stack->first()->pivot->id];
                                 $stackNameClean = htmlentities($stackName);
                                 ?>
                                 <div class="col-sm-3 col-6 text-center inventory-item" data-id="{{ $stack->first()->pivot->id }}"
@@ -177,7 +198,7 @@
                                     <a href="#" class="remove-item btn btn-danger mb-2 disabled">×</a>
                                 </div>
                             </div>
-                            <div><a href="#" class="btn btn-primary" id="add-item">Add Item</a></div>
+                            <div class="mb-2"><a href="#" class="btn btn-primary" id="add-item">Add Item</a></div>
                             <div class="item-row hide mb-2">
                                 {!! Form::select('item_ids[]', $itemOptions, null, ['class' => 'form-control mr-2 item-select', 'placeholder' => 'Select Item']) !!}
                                 {!! Form::text('quantities[]', 1, ['class' => 'form-control mr-2', 'placeholder' => 'Quantity']) !!}
@@ -215,7 +236,7 @@
 @endsection
 
 @section('scripts')
-    @include('widgets._inventory_select_js', ['readOnly' => true])
+    @include('widgets._inventory_select_js')
     @include('widgets._inventory_view_js')
     <script>
         $(document).ready(function() {

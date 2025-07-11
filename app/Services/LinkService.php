@@ -78,7 +78,7 @@ class LinkService extends Service {
             $user->has_alias = 1;
             $user->save();
 
-            UserUpdateLog::create(['user_id' => $user->id, 'data' => json_encode(['alias' => $result->nickname, 'site' => $provider]), 'type' => 'Alias Added']);
+            UserUpdateLog::create(['user_id' => $user->id, 'data' => ['alias' => $result->nickname, 'site' => $provider], 'type' => 'Alias Added']);
 
             return $this->commitReturn(true);
         } catch (\Exception $e) {
@@ -115,7 +115,7 @@ class LinkService extends Service {
             $alias->is_primary_alias = 1;
             $alias->save();
 
-            UserUpdateLog::create(['user_id' => $user->id, 'data' => json_encode(['alias' => $alias->alias, 'site' => $alias->site]), 'type' => 'Primary Alias Changed']);
+            UserUpdateLog::create(['user_id' => $user->id, 'data' => ['alias' => $alias->alias, 'site' => $alias->site], 'type' => 'Primary Alias Changed']);
 
             return $this->commitReturn(true);
         } catch (\Exception $e) {
@@ -150,7 +150,7 @@ class LinkService extends Service {
             $alias->is_visible = !$alias->is_visible;
             $alias->save();
 
-            UserUpdateLog::create(['user_id' => $user->id, 'data' => json_encode(['alias' => $alias->alias, 'site' => $alias->site]), 'type' => 'Alias Visibility Changed']);
+            UserUpdateLog::create(['user_id' => $user->id, 'data' => ['alias' => $alias->alias, 'site' => $alias->site], 'type' => 'Alias Visibility Changed']);
 
             return $this->commitReturn(true);
         } catch (\Exception $e) {
@@ -181,7 +181,7 @@ class LinkService extends Service {
                 throw new \Exception('Invalid alias selected.');
             }
 
-            UserUpdateLog::create(['user_id' => $user->id, 'data' => json_encode(['alias' => $alias->alias, 'site' => $alias->site]), 'type' => 'Alias Deleted']);
+            UserUpdateLog::create(['user_id' => $user->id, 'data' => ['alias' => $alias->alias, 'site' => $alias->site], 'type' => 'Alias Deleted']);
 
             // Delete the alias
             $alias->delete();

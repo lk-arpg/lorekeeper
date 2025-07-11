@@ -86,7 +86,10 @@ class AccountController extends Controller {
      * @return \Illuminate\Http\RedirectResponse
      */
     public function postAvatar(Request $request, UserService $service) {
-        if ($service->updateAvatar($request->file('avatar'), Auth::user())) {
+        $data = $request->only([
+            'avatar', 'x0', 'x1', 'y0', 'y1',
+        ]);
+        if ($service->updateAvatar($data, Auth::user())) {
             flash('Avatar updated successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
@@ -266,6 +269,44 @@ class AccountController extends Controller {
         ]);
         if ($service->disableTwoFactor($request->only(['code']), Auth::user())) {
             flash('2FA disabled succesfully.')->success();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
+        }
+
+        return redirect()->back();
+    }
+
+    /**
+     * Changes user character warning visibility setting.
+     *
+     * @param App\Services\UserService $service
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postWarningVisibility(Request $request, UserService $service) {
+        if ($service->updateContentWarningVisibility($request->input('content_warning_visibility'), Auth::user())) {
+            flash('Setting updated successfully.')->success();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
+        }
+
+        return redirect()->back();
+    }
+
+    /**
+     * Changes user profile comment visibility setting.
+     *
+     * @param App\Services\UserService $service
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postProfileComments(Request $request, UserService $service) {
+        if ($service->updateProfileCommentSetting($request->input('allow_profile_comments'), Auth::user())) {
+            flash('Setting updated successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();

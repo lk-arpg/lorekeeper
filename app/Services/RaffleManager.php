@@ -21,8 +21,8 @@ class RaffleManager extends Service {
     /**
      * Adds tickets to a raffle.
      *
-     * @param \App\Models\Raffle\Raffle $raffle
-     * @param array                     $data
+     * @param Raffle $raffle
+     * @param array  $data
      *
      * @return int
      */
@@ -46,9 +46,9 @@ class RaffleManager extends Service {
     /**
      * Adds one or more tickets to a single user for a raffle.
      *
-     * @param \App\Models\User\User     $user
-     * @param \App\Models\Raffle\Raffle $raffle
-     * @param int                       $count
+     * @param User   $user
+     * @param Raffle $raffle
+     * @param int    $count
      *
      * @return int
      */
@@ -80,7 +80,7 @@ class RaffleManager extends Service {
     /**
      * Removes a single ticket.
      *
-     * @param \App\Models\Raffle\RaffleTicket $ticket
+     * @param RaffleTicket $ticket
      *
      * @return bool
      */
@@ -130,8 +130,8 @@ class RaffleManager extends Service {
      * If the $updateGroup flag is true, winners will be removed
      * from other raffles in the group.
      *
-     * @param \App\Models\Raffle\Raffle $raffle
-     * @param bool                      $updateGroup
+     * @param Raffle $raffle
+     * @param bool   $updateGroup
      *
      * @return bool
      */
@@ -165,7 +165,7 @@ class RaffleManager extends Service {
     /**
      * Rolls the winners of a raffle.
      *
-     * @param \App\Models\Raffle\Raffle $raffle
+     * @param Raffle $raffle
      *
      * @return array
      */
@@ -215,7 +215,7 @@ class RaffleManager extends Service {
      *
      * @param array                          $winners
      * @param \App\Models\Raffle\RaffleGroup $raffleGroup
-     * @param \App\Models\Raffle\Raffle      $raffle
+     * @param Raffle                         $raffle
      *
      * @return bool
      */

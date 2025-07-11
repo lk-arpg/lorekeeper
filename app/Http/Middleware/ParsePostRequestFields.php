@@ -9,13 +9,13 @@ class ParsePostRequestFields {
     /**
      * Handle an incoming request.
      *
-     * @param \Closure(\Illuminate\Http\Request): (\Illuminate\Http\RedirectResponse|\Illuminate\Http\Response) $next
+     * @param Closure(Request): (\Illuminate\Http\RedirectResponse|\Illuminate\Http\Response) $next
      *
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\Response
      */
     public function handle(Request $request, Closure $next) {
         if ($request->isMethod('post')) {
-            $excludedFields = ['_token', 'password', 'email', 'description', 'text', 'criteria'];
+            $excludedFields = ['_token', 'password', 'email', 'description', 'text', 'evaluation', 'criteria'];
             $strippedFields = ['name', 'title'];
 
             $parsedFields = [];

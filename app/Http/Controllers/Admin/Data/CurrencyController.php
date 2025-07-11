@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Data;
 
 use App\Http\Controllers\Controller;
 use App\Models\Currency\Currency;
+use App\Models\Currency\CurrencyCategory;
 use App\Services\CurrencyService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,16 +15,150 @@ class CurrencyController extends Controller {
     | Admin / Currency Controller
     |--------------------------------------------------------------------------
     |
-    | Handles creation/editing of currencies.
+    | Handles creation/editing of currency categories and currencies.
     |
     */
+
+    /**********************************************************************************************
+
+        CURRENCY CATEGORIES
+
+    **********************************************************************************************/
+
+    /**
+     * Shows the currency category index.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getIndex() {
+        return view('admin.currencies.currency_categories', [
+            'categories' => CurrencyCategory::orderBy('sort', 'DESC')->get(),
+        ]);
+    }
+
+    /**
+     * Shows the create currency category page.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getCreateCurrencyCategory() {
+        return view('admin.currencies.create_edit_currency_category', [
+            'category' => new CurrencyCategory,
+        ]);
+    }
+
+    /**
+     * Shows the edit currency category page.
+     *
+     * @param int $id
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getEditCurrencyCategory($id) {
+        $category = CurrencyCategory::find($id);
+        if (!$category) {
+            abort(404);
+        }
+
+        return view('admin.currencies.create_edit_currency_category', [
+            'category' => $category,
+        ]);
+    }
+
+    /**
+     * Creates or edits a currency category.
+     *
+     * @param App\Services\CurrencyService $service
+     * @param int|null                     $id
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postCreateEditCurrencyCategory(Request $request, CurrencyService $service, $id = null) {
+        $id ? $request->validate(CurrencyCategory::$updateRules) : $request->validate(CurrencyCategory::$createRules);
+        $data = $request->only([
+            'name', 'description', 'image', 'remove_image', 'is_visible',
+        ]);
+        if ($id && $service->updateCurrencyCategory(CurrencyCategory::find($id), $data, Auth::user())) {
+            flash('Category updated successfully.')->success();
+        } elseif (!$id && $category = $service->createCurrencyCategory($data, Auth::user())) {
+            flash('Category created successfully.')->success();
+
+            return redirect()->to('admin/data/currency-categories/edit/'.$category->id);
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
+        }
+
+        return redirect()->back();
+    }
+
+    /**
+     * Gets the currency category deletion modal.
+     *
+     * @param int $id
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getDeleteCurrencyCategory($id) {
+        $category = CurrencyCategory::find($id);
+
+        return view('admin.currencies._delete_currency_category', [
+            'category' => $category,
+        ]);
+    }
+
+    /**
+     * Deletes a currency category.
+     *
+     * @param App\Services\CurrencyService $service
+     * @param int                          $id
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postDeleteCurrencyCategory(Request $request, CurrencyService $service, $id) {
+        if ($id && $service->deleteCurrencyCategory(CurrencyCategory::find($id), Auth::user())) {
+            flash('Category deleted successfully.')->success();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
+        }
+
+        return redirect()->to('admin/data/currency-categories');
+    }
+
+    /**
+     * Sorts currency categories.
+     *
+     * @param App\Services\CurrencyService $service
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postSortCurrencyCategory(Request $request, CurrencyService $service) {
+        if ($service->sortCurrencyCategory($request->get('sort'))) {
+            flash('Category order updated successfully.')->success();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
+        }
+
+        return redirect()->back();
+    }
+
+    /**********************************************************************************************
+
+        CURRENCIES
+
+    **********************************************************************************************/
 
     /**
      * Shows the currency index.
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getIndex() {
+    public function getCurrencyIndex() {
         return view('admin.currencies.currencies', [
             'currencies' => Currency::paginate(30),
         ]);
@@ -36,7 +171,8 @@ class CurrencyController extends Controller {
      */
     public function getCreateCurrency() {
         return view('admin.currencies.create_edit_currency', [
-            'currency' => new Currency,
+            'currency'   => new Currency,
+            'categories' => CurrencyCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
         ]);
     }
 
@@ -54,7 +190,9 @@ class CurrencyController extends Controller {
         }
 
         return view('admin.currencies.create_edit_currency', [
-            'currency' => $currency,
+            'currency'   => $currency,
+            'categories' => CurrencyCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'currencies' => Currency::where('id', '!=', $id)->get()->sortBy('name')->pluck('name', 'id'),
         ]);
     }
 
@@ -70,9 +208,10 @@ class CurrencyController extends Controller {
         $id ? $request->validate(Currency::$updateRules) : $request->validate(Currency::$createRules);
         $data = $request->only([
             'is_user_owned', 'is_character_owned',
-            'name', 'abbreviation', 'description',
+            'name', 'abbreviation', 'description', 'currency_category_id',
             'is_displayed', 'allow_user_to_user', 'allow_user_to_character', 'allow_character_to_user',
             'icon', 'image', 'remove_icon', 'remove_image',
+            'conversion_id', 'rate', 'is_visible',
         ]);
         if ($id && $service->updateCurrency(Currency::find($id), $data, Auth::user())) {
             flash('Currency updated successfully.')->success();

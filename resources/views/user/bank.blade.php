@@ -12,32 +12,46 @@
     </h1>
 
     <h3>Currencies</h3>
-    <div class="card mb-4">
-        <ul class="list-group list-group-flush">
-
-            @foreach ($user->getCurrencies(true) as $currency)
-                <li class="list-group-item">
-                    <div class="row">
-                        <div class="col-lg-2 col-md-3 col-6 text-right">
-                            <strong>
-                                <a href="{{ $currency->url }}">
-                                    {{ $currency->name }}
-                                    @if ($currency->abbreviation)
-                                        ({{ $currency->abbreviation }})
-                                    @endif
-                                </a>
-                            </strong>
+    @foreach ($user->getCurrencies(true, true, Auth::user() ?? null) as $category => $currencies)
+        <div class="card mb-2">
+            @if ($currencies->first()->category)
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        @if (!$currencies->first()->category->is_visible)
+                            <i class="fas fa-eye-slash mx-1 text-danger"></i>
+                        @endif
+                        {!! $currencies->first()->category->displayName !!}
+                    </h5>
+                </div>
+            @endif
+            <ul class="list-group list-group-flush">
+                @foreach ($currencies as $currency)
+                    <li class="list-group-item">
+                        <div class="row">
+                            <div class="col-lg-2 col-md-3 col-6 text-right">
+                                <strong>
+                                    <a href="{{ $currency->url }}">
+                                        @if (!$currency->is_visible)
+                                            <i class="fas fa-eye-slash mr-1"></i>
+                                        @endif
+                                        {{ $currency->name }}
+                                        @if ($currency->abbreviation)
+                                            ({{ $currency->abbreviation }})
+                                        @endif
+                                    </a>
+                                </strong>
+                            </div>
+                            <div class="col-lg-10 col-md-9 col-6">
+                                {{ $currency->quantity }} @if ($currency->has_icon)
+                                    {!! $currency->displayIcon !!}
+                                @endif
+                            </div>
                         </div>
-                        <div class="col-lg-10 col-md-9 col-6">
-                            {{ $currency->quantity }} @if ($currency->has_icon)
-                                {!! $currency->displayIcon !!}
-                            @endif
-                        </div>
-                    </div>
-                </li>
-            @endforeach
-        </ul>
-    </div>
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+    @endforeach
 
     <h3>Latest Activity</h3>
     <div class="mb-4 logs-table">

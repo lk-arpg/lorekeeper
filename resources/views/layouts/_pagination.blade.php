@@ -16,14 +16,7 @@
             @foreach ($elements as $element)
                 {{-- "Three Dots" Separator --}}
                 @if (is_string($element))
-                    <li class="page-item pageSelectPopover" data-container="body" data-toggle="popover" data-placement="top" data-title="Jump to Page" data-html="true"
-                        data-content='
-                        <div class="pagination-popover d-flex align-items-center" style="gap: 10px;">
-                            <input type="range" class="form-control-range custom-range paginationPageRange" min="1" max="{{ $paginator->lastPage() }}" value="{{ $paginator->currentPage() }}" oninput="this.nextElementSibling.value = this.value">
-                            <input type="number" style="flex: 1 0 35px; height: 24px;" class="paginationPageText form-control form-control-sm py-0 px-1" min="1" max="{{ $paginator->lastPage() }}" value="{{ $paginator->currentPage() }}" oninput="this.previousElementSibling.value = this.value">
-                            <span class="badge badge-primary paginator-btn p-1 px-2" style="cursor: pointer; font-size: 14px">Go</span>
-                        </div>
-                    '>
+                    <li class="page-item pageSelectPopover" data-container="body" data-toggle="popover" data-placement="top" data-title="Jump to Page" data-html="true" data-content="<div class='paginationPopoverContent'></div>">
                         <span class="page-link">{{ $element }}</span>
                     </li>
                 @endif
@@ -52,4 +45,13 @@
             @endif
         </ul>
     </nav>
+
+    @once
+        <div class="pagination-popover-origin d-flex align-items-center hide" style="gap: 10px;">
+            <input type="range" class="form-control-range custom-range paginationPageRange" min="1" max="{{ $paginator->lastPage() }}" value="{{ $paginator->currentPage() }}" oninput="this.nextElementSibling.value = this.value">
+            <input type="number" style="flex: 1 0 35px; height: 24px;" class="paginationPageText form-control form-control-sm py-0 px-1" min="1" max="{{ $paginator->lastPage() }}" value="{{ $paginator->currentPage() }}"
+                oninput="this.previousElementSibling.value = this.value">
+            <span class="badge badge-primary paginator-btn p-1 px-2" style="cursor: pointer; font-size: 14px">Go</span>
+        </div>
+    @endonce
 @endif

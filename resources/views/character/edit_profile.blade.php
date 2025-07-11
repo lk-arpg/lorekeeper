@@ -5,7 +5,7 @@
 @endsection
 
 @section('meta-img')
-    {{ $character->image->thumbnailUrl }}
+    {{ $character->image->content_warnings ? asset('images/content-warning.png') : $character->image->thumbnailUrl }}
 @endsection
 
 @section('profile-content')
@@ -80,4 +80,9 @@
     </div>
     {!! Form::close() !!}
 
+@endsection
+
+@section('scripts')
+    @parent
+    @include('js._tinymce_wysiwyg')
 @endsection

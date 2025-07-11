@@ -10,7 +10,7 @@ class AddSenderRecipientTypeToCharacterItemsLog extends Migration {
      */
     public function up() {
         Schema::table('character_items_log', function (Blueprint $table) {
-            //Add sender and recipient type
+            // Add sender and recipient type
             $table->enum('sender_type', ['User', 'Character'])->nullable()->default(null);
             $table->enum('recipient_type', ['User', 'Character'])->nullable()->default(null);
         });

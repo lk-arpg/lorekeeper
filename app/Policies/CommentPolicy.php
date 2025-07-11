@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Facades\Settings;
 use App\Models\Comment\Comment;
 use Illuminate\Support\Facades\Auth;
 
@@ -22,6 +23,8 @@ class CommentPolicy {
      */
     public function delete($user, Comment $comment): bool {
         if (Auth::user()->isStaff) {
+            return true;
+        } elseif ($comment->commentable_type == 'App\Models\User\UserProfile' && $comment->commentable_id == $user->id && Settings::get('allow_users_to_delete_profile_comments')) {
             return true;
         } else {
             return false;

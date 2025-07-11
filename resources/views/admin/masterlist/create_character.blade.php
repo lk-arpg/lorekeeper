@@ -30,49 +30,52 @@
         </div>
 
         <div class="row">
-            <div class="col-md-6">
-                <div class="form-group">
-                    {!! Form::label('Owner') !!}
-                    {!! Form::select('user_id', $userOptions, old('user_id'), ['class' => 'form-control', 'placeholder' => 'Select User', 'id' => 'userSelect']) !!}
-                </div>
+            <div class="col-md-6 form-group">
+                {!! Form::label('Owner') !!}
+                {!! Form::select('user_id', $userOptions, old('user_id'), ['class' => 'form-control', 'placeholder' => 'Select User', 'id' => 'userSelect']) !!}
             </div>
-            <div class="col-md-6">
-                <div class="form-group">
-                    {!! Form::label('Owner URL (Optional)') !!}
-                    {!! Form::text('owner_url', old('owner_url'), ['class' => 'form-control']) !!}
-                </div>
+            <div class="col-md-6 form-group">
+                {!! Form::label('Owner URL (Optional)') !!}
+                {!! Form::text('owner_url', old('owner_url'), ['class' => 'form-control']) !!}
             </div>
         </div>
 
         @if (!$isMyo)
             <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        {!! Form::label('Character Category') !!}
-                        <select name="character_category_id" id="category" class="form-control" placeholder="Select Category">
-                            <option value="" data-code="">Select Category</option>
-                            @foreach ($categories as $category)
-                                <option value="{{ $category->id }}" data-code="{{ $category->code }}" {{ old('character_category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }} ({{ $category->code }})</option>
-                            @endforeach
-                        </select>
-                    </div>
+                <div class="col-md-6 form-group">
+                    {!! Form::label('Character Category') !!}
+                    <select name="character_category_id" id="category" class="form-control" placeholder="Select Category">
+                        <option value="" data-code="">Select Category</option>
+                        @foreach ($categories as $category)
+                            <option value="{{ $category->id }}" data-code="{{ $category->code }}" {{ old('character_category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }} ({{ $category->code }})</option>
+                        @endforeach
+                    </select>
                 </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        {!! Form::label('Number') !!} {!! add_help('This number helps to identify the character and should preferably be unique either within the category, or among all characters.') !!}
-                        <div class="d-flex">
-                            {!! Form::text('number', old('number'), ['class' => 'form-control mr-2', 'id' => 'number']) !!}
-                            <a href="#" id="pull-number" class="btn btn-primary" data-toggle="tooltip"
-                                title="This will find the highest number assigned to a character currently and add 1 to it. It can be adjusted to pull the highest number in the category or the highest overall number - this setting is in the code.">Pull
-                                Next Number</a>
-                        </div>
+                <div class="col-md-6 form-group">
+                    {!! Form::label('Number') !!} {!! add_help('This number helps to identify the character and should preferably be unique either within the category, or among all characters.') !!}
+                    <div class="d-flex">
+                        {!! Form::text('number', old('number'), ['class' => 'form-control mr-2', 'id' => 'number']) !!}
+                        <a href="#" id="pull-number" class="btn btn-primary" data-toggle="tooltip"
+                            title="This will find the highest number assigned to a character currently and add 1 to it. It can be adjusted to pull the highest number in the category or the highest overall number - this setting is in the code.">Pull
+                            Next Number</a>
                     </div>
                 </div>
             </div>
-
-            <div class="form-group">
-                {!! Form::label('Character Code') !!} {!! add_help('This code identifies the character itself. You don\'t have to use the automatically generated code, but this must be unique among all characters (as it\'s used to generate the character\'s page URL).') !!}
-                {!! Form::text('slug', old('slug'), ['class' => 'form-control', 'id' => 'code']) !!}
+            <div class="row">
+                <div class="col-md-{{ config('lorekeeper.settings.enable_character_content_warnings') ? 6 : 12 }}">
+                    <div class="form-group">
+                        {!! Form::label('Character Code') !!} {!! add_help('This code identifies the character itself. You don\'t have to use the automatically generated code, but this must be unique among all characters (as it\'s used to generate the character\'s page URL).') !!}
+                        {!! Form::text('slug', old('slug'), ['class' => 'form-control', 'id' => 'code']) !!}
+                    </div>
+                </div>
+                @if (config('lorekeeper.settings.enable_character_content_warnings'))
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            {!! Form::label('Content Warnings') !!} {!! add_help('These warnings will be displayed on the character\'s page. They are not required, but are recommended if the character contains sensitive content.') !!}
+                            {!! Form::text('content_warnings', old('content_warnings'), ['class' => 'form-control', 'id' => 'warningList']) !!}
+                        </div>
+                    </div>
+                @endif
             </div>
         @endif
 
@@ -229,12 +232,12 @@
         </div>
 
         <div class="form-group" id="subtypes">
-            {!! Form::label('Subtype (Optional)') !!} @if ($isMyo)
+            {!! Form::label('Subtypes (Optional)') !!} @if ($isMyo)
                 {!! add_help(
                     'This will lock the slot into a particular subtype. Leave it blank if you would like to give the user a choice, or not select a subtype. The subtype must match the species selected above, and if no species is specified, the subtype will not be applied.',
                 ) !!}
             @endif
-            {!! Form::select('subtype_id', $subtypes, old('subtype_id'), ['class' => 'form-control disabled', 'id' => 'subtype']) !!}
+            {!! Form::select('subtype_ids[]', $subtypes, old('subtype_ids'), ['class' => 'form-control disabled', 'id' => 'subtype', 'multiple', 'placeholder' => 'Pick a Species First']) !!}
         </div>
 
         <div class="form-group">
@@ -273,10 +276,11 @@
     @include('widgets._character_create_options_js')
     @include('widgets._image_upload_js')
     @include('widgets._datetimepicker_js')
+    @include('widgets._character_warning_js')
     @if (!$isMyo)
         @include('widgets._character_code_js')
     @endif
-
+    @include('js._tinymce_wysiwyg')
     <script>
         $("#species").change(function() {
             var species = $('#species').val();
@@ -287,9 +291,16 @@
                 dataType: "text"
             }).done(function(res) {
                 $("#subtypes").html(res);
+                $("#subtype").selectize({
+                    maxItems: {{ config('lorekeeper.extensions.multiple_subtype_limit') }},
+                });
             }).fail(function(jqXHR, textStatus, errorThrown) {
                 alert("AJAX call failed: " + textStatus + ", " + errorThrown);
             });
+        });
+
+        $("#subtype").selectize({
+            maxItems: {{ config('lorekeeper.extensions.multiple_subtype_limit') }},
         });
     </script>
 @endsection

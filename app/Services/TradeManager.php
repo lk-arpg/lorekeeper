@@ -25,10 +25,10 @@ class TradeManager extends Service {
     /**
      * Creates a new trade.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $user
+     * @param array $data
+     * @param User  $user
      *
-     * @return \App\Models\Trade|bool
+     * @return bool|Trade
      */
     public function createTrade($data, $user) {
         DB::beginTransaction();
@@ -56,7 +56,9 @@ class TradeManager extends Service {
             ]);
 
             if ($assetData = $this->handleTradeAssets($trade, $data, $user)) {
-                $trade->data = json_encode(['sender' => getDataReadyAssets($assetData['sender'])]);
+                $trade->data = [
+                    'sender' => getDataReadyAssets($assetData['sender']),
+                ];
                 $trade->save();
 
                 // send a notification
@@ -78,10 +80,10 @@ class TradeManager extends Service {
     /**
      * Edits a user's side of a trade.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $user
+     * @param array $data
+     * @param User  $user
      *
-     * @return \App\Models\Trade|bool
+     * @return bool|Trade
      */
     public function editTrade($data, $user) {
         DB::beginTransaction();
@@ -103,7 +105,7 @@ class TradeManager extends Service {
                 $tradeData = $trade->data;
                 $isSender = ($trade->sender_id == $user->id);
                 $tradeData[$isSender ? 'sender' : 'recipient'] = getDataReadyAssets($assetData[$isSender ? 'sender' : 'recipient']);
-                $trade->data = json_encode($tradeData);
+                $trade->data = $tradeData;
                 $trade->{'is_'.($isSender ? 'sender' : 'recipient').'_confirmed'} = 0;
                 $trade->{'is_'.($isSender ? 'recipient' : 'sender').'_trade_confirmed'} = 0;
                 $trade->save();
@@ -120,10 +122,10 @@ class TradeManager extends Service {
     /**
      * Cancels a trade.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $user
+     * @param array $data
+     * @param User  $user
      *
-     * @return \App\Models\Trade|bool
+     * @return bool|Trade
      */
     public function cancelTrade($data, $user) {
         DB::beginTransaction();
@@ -165,10 +167,10 @@ class TradeManager extends Service {
     /**
      * Confirms the user's offer.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $user
+     * @param array $data
+     * @param User  $user
      *
-     * @return \App\Models\Trade|bool
+     * @return bool|Trade
      */
     public function confirmOffer($data, $user) {
         DB::beginTransaction();
@@ -231,10 +233,10 @@ class TradeManager extends Service {
     /**
      * Confirms the trade for a user.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $user
+     * @param array $data
+     * @param User  $user
      *
-     * @return \App\Models\Trade|bool
+     * @return bool|Trade
      */
     public function confirmTrade($data, $user) {
         DB::beginTransaction();
@@ -309,10 +311,10 @@ class TradeManager extends Service {
     /**
      * Approves a trade in the admin panel.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $user
+     * @param array $data
+     * @param User  $user
      *
-     * @return \App\Models\Trade|bool
+     * @return bool|Trade
      */
     public function approveTrade($data, $user) {
         DB::beginTransaction();
@@ -359,10 +361,10 @@ class TradeManager extends Service {
     /**
      * Rejects a trade in the admin panel.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $user
+     * @param array $data
+     * @param User  $user
      *
-     * @return \App\Models\Trade|bool
+     * @return bool|Trade
      */
     public function rejectTrade($data, $user) {
         DB::beginTransaction();
@@ -408,9 +410,9 @@ class TradeManager extends Service {
     /**
      * Handles modification of assets on the user's side of a trade.
      *
-     * @param \App\Models\Trade     $trade
-     * @param array                 $data
-     * @param \App\Models\User\User $user
+     * @param Trade $trade
+     * @param array $data
+     * @param User  $user
      *
      * @return array|bool
      */
@@ -487,7 +489,7 @@ class TradeManager extends Service {
                 if ($user->id != $trade->sender_id && $user->id != $trade->recipient_id) {
                     throw new \Exception('Error attaching currencies to this trade.');
                 }
-                //dd([$data['currency_id'], $data['currency_quantity']]);
+                // dd([$data['currency_id'], $data['currency_quantity']]);
                 $data['currency_id'] = $data['currency_id']['user-'.$user->id];
                 $data['currency_quantity'] = $data['currency_quantity']['user-'.$user->id];
                 foreach ($data['currency_id'] as $key=> $currencyId) {
@@ -552,7 +554,7 @@ class TradeManager extends Service {
     /**
      * Returns trade attachments to their owners.
      *
-     * @param \App\Models\Trade $trade
+     * @param Trade $trade
      *
      * @return bool
      */
@@ -607,8 +609,8 @@ class TradeManager extends Service {
     /**
      * Credits trade attachments to their new owners.
      *
-     * @param \App\Models\Trade $trade
-     * @param array             $data
+     * @param Trade $trade
+     * @param array $data
      *
      * @return bool
      */

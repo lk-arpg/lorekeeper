@@ -11,5 +11,5 @@
         {!! $user->displayName !!}'s MYO Slots
     </h1>
 
-    @include('user._characters', ['characters' => $myos, 'myo' => true])
+    @include('user._characters', ['characters' => $myos, 'myo' => true, 'owner' => true, 'userpage_exts' => true])
 @endsection

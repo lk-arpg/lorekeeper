@@ -63,7 +63,7 @@ class ReportController extends Controller {
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getReport($id) {
-        $report = Report::viewable(Auth::check() ? Auth::user() : null)->where('id', $id)->first();
+        $report = Report::viewable(Auth::user() ?? null)->where('id', $id)->first();
         if (!$report) {
             abort(404);
         }

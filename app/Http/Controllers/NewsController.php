@@ -45,7 +45,7 @@ class NewsController extends Controller {
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getNews($id, $slug = null) {
-        $news = News::where('id', $id)->where('is_visible', 1)->first();
+        $news = News::where('id', $id)->visible(Auth::user() ?? null)->first();
         if (!$news) {
             abort(404);
         }

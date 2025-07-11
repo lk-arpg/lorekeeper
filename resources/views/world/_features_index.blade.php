@@ -23,7 +23,7 @@
                                     @endif
                                     {!! $feature->first()->displayName !!}
                                     @if ($showSubtype && count($feature->first()->subtypes))
-                                        <br />(Subtype{{ count($feature->first()->subtypes) > 1 ? 's' : '' }}: {!! $feature->first()->displaySubtypes() !!})
+                                        <br />(Subtype{{ count($feature->first()->subtypes) > 1 ? 's' : '' }}: {!! $feature->first()->displaySubtypes(Auth::User() ?? null) !!})
                                     @endif
                                 </p>
                             </div>

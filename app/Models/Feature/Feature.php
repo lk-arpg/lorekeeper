@@ -287,12 +287,12 @@ class Feature extends Model {
     /**
      * Displays the trait's subtypes as an imploded string.
      */
-    public function displaySubtypes() {
-        if ($this->subtypes->isEmpty()) {
+    public function displaySubtypes($user = null) {
+        if (!count($this->subtypes()->visible($user)->get())) {
             return 'None';
         }
         $subtypes = [];
-        foreach ($this->subtypes as $subtype) {
+        foreach ($this->subtypes()->visible($user)->get() as $subtype) {
             $subtypes[] = $subtype->displayName;
         }
 

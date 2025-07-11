@@ -26,7 +26,7 @@
             <div>
                 <strong>Species:</strong> {!! $feature->species->displayName !!}
                 @if (!$feature->subtypes->isEmpty())
-                    ({!! $feature->displaySubtypes() !!})
+                    ({!! $feature->displaySubtypes(Auth::User() ?? null) !!})
                 @endif
             </div>
         @endif

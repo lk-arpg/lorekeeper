@@ -370,9 +370,7 @@ class WorldController extends Controller {
             ->orderBy('has_image', 'DESC')
             ->orderBy('name')
             ->get()->filter(function ($feature) {
-                return $feature::whereHas('subtypes', function ($query) {
-                    $query->whereNot('is_visible', 0);
-                });
+                return !$feature->subtypes->where('is_visible', true)->isEmpty();
             })
             ->groupBy(['feature_category_id', 'id']);
 

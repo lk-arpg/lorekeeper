@@ -359,7 +359,7 @@ class FeatureService extends Service {
                 throw new \Exception('Failed to log admin action.');
             }
 
-            $feature->subtypes->detach();
+            $feature->subtypes()->detach();
 
             if ($feature->has_image) {
                 $this->deleteImage($feature->imagePath, $feature->imageFileName);

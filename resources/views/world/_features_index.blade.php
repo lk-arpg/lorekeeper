@@ -21,7 +21,7 @@
                                     @if (!$feature->first()->is_visible)
                                         <i class="fas fa-eye-slash mr-1"></i>
                                     @endif
-                                    {!! $feature->first()-> !!}
+                                    {!! $feature->first()->displayName !!}
                                     @if ($showSubtype && count($feature->first()->subtypes))
                                         <br />(Subtype{{ count($feature->first()->subtypes) > 1 ? 's' : '' }}: {!! $feature->first()->displaySubtypes() !!})
                                     @endif

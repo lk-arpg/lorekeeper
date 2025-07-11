@@ -419,9 +419,7 @@ class WorldController extends Controller {
         } else {
             $features = $features
                 ->filter(function ($feature) use ($subtype) {
-                    return !($feature->subtypes && !$feature::whereHas('subtypes', function ($query) use ($subtype) {
-                        $query->where('subtype_id', $subtype->id);
-                    }));
+                    return ($feature->subtypes->isEmpty() || !$feature->subtypes->where('id', $subtype->id)->isEmpty());
                 })
                 ->groupBy(['feature_category_id', 'id']);
         }

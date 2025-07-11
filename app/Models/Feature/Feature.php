@@ -83,7 +83,7 @@ class Feature extends Model {
      * Get the subtypes of this feature.
      */
     public function subtypes() {
-        return $this->hasMany(FeatureSubtype::class, 'feature_id');
+        return $this->belongsToMany(Subtype::class, 'feature_subtypes');
     }
 
     /**********************************************************************************************
@@ -293,7 +293,7 @@ class Feature extends Model {
         }
         $subtypes = [];
         foreach ($this->subtypes as $subtype) {
-            $subtypes[] = $subtype->subtype->displayName;
+            $subtypes[] = $subtype->displayName;
         }
 
         return implode(', ', $subtypes);

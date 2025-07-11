@@ -302,13 +302,10 @@ class FeatureService extends Service {
             $data = $this->populateData($data);
 
             // remove old subtypes
-            $feature->subtypes()->delete();
+            $feature->subtypes()->detach();
             if (isset($data['subtype_ids']) && $data['subtype_ids']) {
                 foreach ($data['subtype_ids'] as $subtypeId) {
-                    FeatureSubtype::create([
-                        'feature_id'         => $feature->id,
-                        'subtype_id'         => $subtypeId,
-                    ]);
+                    $feature->subtypes()->attach($subtypeId);
                 }
             }
 
@@ -359,7 +356,7 @@ class FeatureService extends Service {
                 throw new \Exception('Failed to log admin action.');
             }
 
-            $feature->subtypes->delete;
+            $feature->subtypes->detach();
 
             if ($feature->has_image) {
                 $this->deleteImage($feature->imagePath, $feature->imageFileName);

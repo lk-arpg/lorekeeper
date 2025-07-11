@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\Feature\Feature;
 use App\Models\Feature\FeatureCategory;
-use App\Models\Feature\FeatureSubtype;
 use App\Models\Species\Species;
 use App\Models\Species\Subtype;
 use Illuminate\Support\Facades\DB;

@@ -4,7 +4,6 @@ namespace App\Models\Species;
 
 use App\Models\Feature\Feature;
 use App\Models\Model;
-use App\Models\Feature\Feature;
 
 class Subtype extends Model {
     /**

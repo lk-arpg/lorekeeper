@@ -369,8 +369,12 @@ class WorldController extends Controller {
         $features = $features->orderByRaw('FIELD(rarity_id,'.implode(',', $rarities->pluck('id')->toArray()).')')
             ->orderBy('has_image', 'DESC')
             ->orderBy('name')
-            ->get()->filter(function ($feature) {
-                return !$feature->subtypes->where('is_visible', true)->isEmpty();
+            ->get()
+            ->filter(function ($feature) {
+                if (!$feature->subtypes->isEmpty()) {
+                    return !$feature->subtypes->where('is_visible', true)->isEmpty();
+                }
+                return true;
             })
             ->groupBy(['feature_category_id', 'id']);
 

@@ -374,6 +374,7 @@ class WorldController extends Controller {
                 if (!$feature->subtypes->isEmpty()) {
                     return !$feature->subtypes->where('is_visible', true)->isEmpty();
                 }
+
                 return true;
             })
             ->groupBy(['feature_category_id', 'id']);

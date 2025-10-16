@@ -24,6 +24,7 @@ use App\Models\Gallery\GallerySubmission;
 use App\Models\Gallery\GalleryCollaborator;
 use App\Models\Gallery\GalleryFavorite;
 use App\Traits\Commenter;
+use App\Models\Queue\QueueSubmission;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -564,5 +565,16 @@ class User extends Authenticatable implements MustVerifyEmail
     public function hasBookmarked($character)
     {
         return CharacterBookmark::where('user_id', $this->id)->where('character_id', $character->id)->first();
+    }
+
+     /**
+     * Get the user's submissions.
+     *
+     * @param mixed|null $user
+     *
+     * @return \Illuminate\Pagination\LengthAwarePaginator
+     */
+    public function getQueueSubmissions($user = null) {
+        return QueueSubmission::with('user')->with('prompt')->viewable($user ? $user : null)->where('user_id', $this->id)->orderBy('id', 'DESC');
     }
 }

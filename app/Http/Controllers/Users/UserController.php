@@ -339,4 +339,27 @@ class UserController extends Controller
             'sublists' => Sublist::orderBy('sort', 'DESC')->get()
         ]);
     }
+
+        /**
+     * Shows a user's submissions.
+     *
+     * @param string $name
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getUserQueueSubmissions(Request $request, $name) {
+        $logs = $this->user->getQueueSubmissions(Auth::user() ?? null);
+        if ($request->get('queue_ids')) {
+            $logs->whereIn('queue_ids', $request->get('queue_ids'));
+        }
+        if ($request->get('sort')) {
+            $logs->orderBy('created_at', $request->get('sort') == 'newest' ? 'DESC' : 'ASC');
+        }
+
+        return view('user.queue_logs', [
+            'user'    => $this->user,
+            'logs'    => $logs->paginate(30)->appends($request->query()),
+            'prompts' => Queue::active()->pluck('name', 'id'),
+        ]);
+    }
 }

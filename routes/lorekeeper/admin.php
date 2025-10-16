@@ -226,6 +226,25 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     Route::post('prompts/create', 'PromptController@postCreateEditPrompt');
     Route::post('prompts/edit/{id?}', 'PromptController@postCreateEditPrompt');
     Route::post('prompts/delete/{id}', 'PromptController@postDeletePrompt');
+
+    // QUEUES
+    Route::get('queue-categories', 'QueueController@getIndex');
+    Route::get('queue-categories/create', 'QueueController@getCreateQueueCategory');
+    Route::get('queue-categories/edit/{id}', 'QueueController@getEditQueueCategory');
+    Route::get('queue-categories/delete/{id}', 'QueueController@getDeleteQueueCategory');
+    Route::post('queue-categories/create', 'QueueController@postCreateEditQueueCategory');
+    Route::post('queue-categories/edit/{id?}', 'QueueController@postCreateEditQueueCategory');
+    Route::post('queue-categories/delete/{id}', 'QueueController@postDeleteQueueCategory');
+    Route::post('queue-categories/sort', 'QueueController@postSortQueueCategory');
+
+    Route::get('queues', 'QueueController@getQueueIndex');
+    Route::get('queues/create', 'QueueController@getCreateQueue');
+    Route::get('queues/edit/{id}', 'QueueController@getEditQueue');
+    Route::get('queues/delete/{id}', 'QueueController@getDeleteQueue');
+    Route::post('queues/create', 'QueueController@postCreateEditQueue');
+    Route::post('queues/edit/{id?}', 'QueueController@postCreateEditQueue');
+    Route::post('queues/delete/{id}', 'QueueController@postDeleteQueue');
+    Route::post('queues/types/{id}', 'QueueController@postEditType');
 });
 
 
@@ -437,3 +456,12 @@ Route::group(['prefix' => 'designs', 'middleware' => 'power:manage_characters'],
     Route::post('vote/{id}/{action}', 'DesignController@postVote')->where('action', 'approve|reject');
 });
 Route::get('{type}/{status}', 'DesignController@getDesignIndex')->where('type', 'myo-approvals|design-approvals')->where('status', 'pending|approved|rejected');
+
+
+# SUBMISSIONS
+Route::group(['prefix' => 'queue-submissions', 'middleware' => 'power:manage_submissions'], function() {
+    Route::get('/', 'QueueSubmissionController@getSubmissionIndex');
+    Route::get('/{status}', 'QueueSubmissionController@getSubmissionIndex')->where('status', 'pending|approved|rejected');
+    Route::get('edit/{id}', 'QueueSubmissionController@getSubmission');
+    Route::post('edit/{id}/{action}', 'QueueSubmissionController@postSubmission')->where('action', 'approve|reject');
+});

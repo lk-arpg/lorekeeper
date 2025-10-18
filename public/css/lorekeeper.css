@@ -1,6 +1,6 @@
 /**************************************************************************************************
-    
-    Font definitions 
+
+    Font definitions
 
 **************************************************************************************************/
 
@@ -14,15 +14,15 @@
 }
 
 /**************************************************************************************************
-    
+
     Base styles
-    
+
 **************************************************************************************************/
 
 h1, h2, h3, h4, h5,
 .h1, .h2, .h3, .h4, .h5 {
     text-transform: uppercase;
-    font-family: Roboto Condensed, serif; 
+    font-family: Roboto Condensed, serif;
     font-weight: bold;
 }
 
@@ -46,20 +46,22 @@ a:hover {
 
 body {
     background-color: transparent;
-    font-family: Lato, sans-serif; 
+    font-family: Lato, sans-serif;
     min-height: 100vh;
     font-size: 80%;
 }
 
 /**************************************************************************************************
-    
+
     Helpers
-    
+
 **************************************************************************************************/
 
 .hide {
     display: none !important;
 }
+
+.grecaptcha-badge { visibility: hidden !important; }
 
 .parsed-text img {
     max-width: 100% !important;
@@ -67,9 +69,9 @@ body {
 }
 
 /**************************************************************************************************
-    
+
     Layout
-    
+
 **************************************************************************************************/
 
 #app {
@@ -105,7 +107,7 @@ main > .row {
 
 .navbar .navbar-brand, .navbar .nav-item {
     text-transform: uppercase;
-    font-family: Roboto Condensed, serif; 
+    font-family: Roboto Condensed, serif;
 }
 
 .navbar .row { width: 100%; }
@@ -129,14 +131,14 @@ main > .row {
     border-bottom-left-radius: .25rem;
     margin-bottom: 1em;
     padding: 0.4em 0;
-    
+
     box-shadow: 0px 0px 6px 3px rgba(0,0,0,0.1);
 }
 
 .sidebar .sidebar-header,
 .sidebar .sidebar-section .sidebar-section-header {
     text-transform: uppercase;
-    font-family: Roboto Condensed, serif; 
+    font-family: Roboto Condensed, serif;
     font-weight: bold;
 }
 
@@ -186,7 +188,7 @@ main > .row {
 	.site-mobile-header {
 		top: 54px !important;
     }
-    
+
     .timestamp {
 		margin-left: 1rem!important;
 		margin-right: 1rem!important;
@@ -234,7 +236,7 @@ main > .row {
     }
     .sidebar.active {
         left: 0%;
-    } 
+    }
 
     .sidebar > ul {
         padding-top: 0px;
@@ -252,19 +254,19 @@ main > .row {
         border-radius: 0;
         margin-bottom: 1em;
         padding: 0.4em 0;
-        
+
         box-shadow: none;
     }
-	
+
 	/*fix for screen being over-wide on mobile*/
 	.row {
 		margin:0; max-width:100%;
 	}
-    
+
 	.container-fluid {
 		padding:0px;
 	}
-    
+
 	.site-footer .navbar .navbar-nav {
 		flex-wrap: wrap; justify-content: center;
 	}
@@ -297,9 +299,9 @@ main > .row {
 }
 
 /**************************************************************************************************
-    
+
     Content
-    
+
 **************************************************************************************************/
 .modal-header {
     border-bottom: 0px;
@@ -309,7 +311,7 @@ main > .row {
 }
 
 .tooltip-inner {
-    max-width: 350px !important; 
+    max-width: 350px !important;
 }
 
 .nav-tabs .nav-link.active {
@@ -374,6 +376,18 @@ main > .row {
     flex-wrap: wrap;
 }
 
+/* Chrome, Safari, Edge, Opera */
+.pagination-popover input::-webkit-outer-spin-button,
+.pagination-popover input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+.pagination-popover input[type=number] {
+  -moz-appearance: textfield;
+}
+
 .spoiler {
     border: 1px solid rgba(0,0,0,0.1);
     border-radius: 5px;
@@ -414,6 +428,11 @@ main > .row {
 
 .world-entry-image {
     text-align: center;
+}
+
+.world-entry img {
+    max-width: 100%;
+    height: auto;
 }
 
 .world-entry-image img {
@@ -457,6 +476,37 @@ tr.inflow {
 }
 tr.outflow {
     background-color: #fffafa;
+}
+
+/* These are not truly tables, but divs styled to look like tables */
+.logs-table .logs-table-header {
+    border-top: 1px solid #dee2e6;
+    border-bottom: 2px solid #dee2e6;
+    font-weight: bold;
+    padding: 0px;
+    flex-wrap: wrap;
+}
+.logs-table .logs-table-header .logs-table-cell,
+.logs-table .logs-table-body .logs-table-cell {
+    padding: .3rem;
+}
+.logs-table .logs-table-body > .logs-table-row:first-of-type {
+    border-top-width: 0;
+}
+.logs-table .logs-table-body > .logs-table-row,
+.logs-table-row .logs-table-row {
+    border-top: 1px solid #dee2e6;
+}
+.logs-table .logs-table-body .logs-table-cell .inflow,
+.logs-table .logs-table-body .logs-table-cell .outflow {
+    width: 33px;
+    line-height: 33px;
+    text-align: center;
+    position: relative;
+    top: -.3rem;
+    margin-bottom: -.6rem;
+    vertical-align: middle;
+    color: #fff;
 }
 
 
@@ -504,6 +554,65 @@ tr.accountbound {
 }
 .image-nav .nav-item a.active {
     border: 5px solid #ddd;
+}
+
+@keyframes copy-to-check {
+    from {
+        opacity: 1;
+        content: '\f0c5';
+        font-weight: 400;
+    }
+    50% {
+        opacity: 0;
+        content: '\f0c5';
+        font-weight: 400;
+    }
+    51% {
+        opacity: 0;
+        content: '\f00c';
+        font-weight: 900;
+    }
+    to {
+        opacity: 1;
+        content: '\f00c';
+        font-weight: 900;
+    }
+}
+
+@keyframes check-to-copy {
+    from {
+        opacity: 1;
+        content: '\f00c';
+        font-weight: 900;
+    }
+    50% {
+        opacity: 0;
+        content: '\f00c';
+        font-weight: 900;
+    }
+    51% {
+        opacity: 0;
+        content: '\f0c5';
+        font-weight: 400;
+    }
+    to {
+        opacity: 1;
+        content: '\f0c5';
+        font-weight: 400;
+    }
+}
+
+.toCheck::before {
+    animation-name: copy-to-check;
+    animation-iteration-count: 1;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+}
+
+.toCopy::before {
+    animation-name: check-to-copy;
+    animation-iteration-count: 1;
+    animation-duration: 1s;
 }
 
 /* TRANSFERS *************************************************************************************/
@@ -629,7 +738,12 @@ tr.accountbound {
         padding-left: 3rem;
         border-left-width: 2px!important;
     }
-    
+
+.comment>p>img {
+        max-width: 100%;
+        height: auto;
+    }
+
 @media only screen and (max-width: 600px) {
     .comment_replies { padding-left:1rem;}
 }

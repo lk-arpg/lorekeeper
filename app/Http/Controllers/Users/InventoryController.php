@@ -18,6 +18,7 @@ use App\Services\InventoryManager;
 use App\Models\Trade;
 use App\Models\Character\CharacterDesignUpdate;
 use App\Models\Submission\Submission;
+use App\Models\Queue\QueueSubmission;
 
 use App\Http\Controllers\Controller;
 
@@ -282,6 +283,7 @@ class InventoryController extends Controller
             $designUpdates = CharacterDesignUpdate::where('user_id', $user->id)->whereNotNull('data')->get();
             $trades = Trade::where('sender_id', $user->id)->orWhere('recipient_id', $user->id)->get();
             $submissions = Submission::where('user_id', $user->id)->whereNotNull('data')->get();
+            $queuesubmissions = QueueSubmission::where('user_id', $user->id)->whereNotNull('data')->get();
         }
 
         return view('home.account_search', [
@@ -293,6 +295,7 @@ class InventoryController extends Controller
             'designUpdates' => $item ? $designUpdates :null,
             'trades' => $item ? $trades : null,
             'submissions' => $item ? $submissions : null,
+            'queuesubmissions' => $item ? $queuesubmissions : null,
         ]);
     }
 }

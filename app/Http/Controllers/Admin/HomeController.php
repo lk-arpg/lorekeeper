@@ -15,6 +15,7 @@ use App\Models\Trade;
 use App\Models\Report\Report;
 
 use App\Http\Controllers\Controller;
+use App\Models\Queue\QueueSubmission;
 
 class HomeController extends Controller
 {
@@ -41,7 +42,8 @@ class HomeController extends Controller
             'galleryRequireApproval' => $galleryRequireApproval,
             'galleryCurrencyAwards' => $galleryCurrencyAwards,
             'gallerySubmissionCount' => GallerySubmission::collaboratorApproved()->where('status', 'Pending')->count(),
-            'galleryAwardCount' => GallerySubmission::requiresAward()->where('is_valued', 0)->count()
+            'galleryAwardCount' => GallerySubmission::requiresAward()->where('is_valued', 0)->count(),
+            'queueCount'        => QueueSubmission::where('status', 'Pending')->whereNotNull('queue_id')->count(),
         ]);
     }
 }

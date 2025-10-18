@@ -69,6 +69,9 @@
                             <a class="dropdown-item" href="{{ url('trades/open') }}">
                                 Trades
                             </a>
+                            <a class="dropdown-item" href="{{ url('queue-submissions') }}">
+                                Queue Submissions
+                            </a>
                         </div>
                     </li>
                 @endif
@@ -142,7 +145,7 @@
                             <a class="nav-link btn btn-secondary btn-sm" href="{{ url('notifications') }}"><span class="fas fa-envelope"></span> {{ Auth::user()->notifications_unread }}</a>
                         </li>
                     @endif
-                    
+
                     <li class="nav-item dropdown">
                         <a id="browseDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                             Submit
@@ -160,7 +163,7 @@
                             </a>
                         </div>
                     </li>
-                    
+
                     <li class="nav-item dropdown">
                         <a id="navbarDropdown" class="nav-link dropdown-toggle" href="{{ Auth::user()->url }}" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                             {{ Auth::user()->name }} <span class="caret"></span>

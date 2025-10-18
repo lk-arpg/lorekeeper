@@ -99,6 +99,7 @@ Route::group(['prefix' => 'character', 'namespace' => 'Characters'], function() 
 
     Route::post('{slug}/approval', 'CharacterController@postCharacterApproval');
     Route::get('{slug}/approval', 'CharacterController@getCharacterApproval');
+    Route::post('{slug}/icon', 'CharacterController@postIcon');
 });
 Route::group(['prefix' => 'myo', 'namespace' => 'Characters'], function() {
     Route::get('{id}/profile/edit', 'MyoController@getEditCharacterProfile');
@@ -178,6 +179,21 @@ Route::group(['prefix' => 'designs', 'namespace' => 'Characters'], function() {
     Route::get('{id}/delete', 'DesignController@getDelete');
     Route::post('{id}/delete', 'DesignController@postDelete');
 });
+
+Route::group(['prefix' => 'queue-submissions', 'namespace' => 'Users'], function () {
+    Route::get('/', 'QueueSubmissionController@getIndex');
+    Route::get('new/{id}', 'QueueSubmissionController@getNewSubmission')->where(['id' => '[0-9]+']);
+    Route::get('new/character/{slug}', 'QueueSubmissionController@getCharacterInfo');
+    Route::post('new/{id}', 'QueueSubmissionController@postNewSubmission');
+    Route::post('new/{id}/{draft}', 'QueueSubmissionController@postNewSubmission')->where('draft', 'draft');
+    Route::get('draft/{id}', 'QueueSubmissionController@getEditSubmission');
+    Route::post('draft/{id}', 'QueueSubmissionController@postEditSubmission');
+    Route::post('draft/{id}/{submit}', 'QueueSubmissionController@postEditSubmission')->where('submit', 'submit');
+    Route::post('draft/{id}/delete', 'QueueSubmissionController@postDeleteSubmission');
+    Route::post('draft/{id}/cancel', 'QueueSubmissionController@postCancelSubmission');
+});
+
+
 
 /**************************************************************************************************
     Shops

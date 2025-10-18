@@ -1,9 +1,8 @@
 <?php
-
 namespace App\Models;
 
-use Config;
 use App\Models\Model;
+use Config;
 
 class Notification extends Model
 {
@@ -13,7 +12,7 @@ class Notification extends Model
      * @var array
      */
     protected $fillable = [
-        'user_id', 'notification_type_id', 'is_unread', 'data'
+        'user_id', 'notification_type_id', 'is_unread', 'data',
     ];
 
     /**
@@ -30,23 +29,22 @@ class Notification extends Model
      */
     public $timestamps = true;
 
-
     /**********************************************************************************************
-    
+
         RELATIONS
 
     **********************************************************************************************/
-    
+
     /**
      * Get the user who owns notification.
      */
-    public function user() 
+    public function user()
     {
         return $this->belongsTo('App\Models\User\User');
     }
 
     /**********************************************************************************************
-    
+
         ACCESSORS
 
     **********************************************************************************************/
@@ -68,18 +66,18 @@ class Notification extends Model
      */
     public function getMessageAttribute()
     {
-        $notification = Config::get('lorekeeper.notifications.'.$this->notification_type_id);
+        $notification = Config::get('lorekeeper.notifications.' . $this->notification_type_id);
 
         $message = $notification['message'];
 
-        // Replace the URL... 
+        // Replace the URL...
         $message = str_replace('{url}', url($notification['url']), $message);
 
-        // Replace any variables in data... 
+        // Replace any variables in data...
         $data = $this->data;
-        if($data && count($data)) {
-            foreach($data as $key => $value) {
-                $message = str_replace('{'.$key.'}', $value, $message);
+        if ($data && count($data)) {
+            foreach ($data as $key => $value) {
+                $message = str_replace('{' . $key . '}', $value, $message);
             }
         }
 
@@ -93,11 +91,11 @@ class Notification extends Model
      */
     public static function getNotificationId($type)
     {
-        return constant('self::'. $type);
+        return constant('self::' . $type);
     }
 
     /**********************************************************************************************
-    
+
         CONSTANTS
 
     **********************************************************************************************/
@@ -159,4 +157,7 @@ class Notification extends Model
     const GALLERY_SUBMISSION_STAFF_COMMENTS = 513;
     const GALLERY_SUBMISSION_EDITED         = 514;
     const GALLERY_SUBMISSION_PARTICIPANT    = 515;
+    const QUEUE_SUBMISSION_APPROVED         = 1116;
+    const QUEUE_SUBMISSION_REJECTED         = 1117;
+    const QUEUE_SUBMISSION_CANCELLED        = 1118;
 }

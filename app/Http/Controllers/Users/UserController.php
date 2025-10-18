@@ -65,7 +65,7 @@ class UserController extends Controller
     {
         $characters = $this->user->characters();
         if(!Auth::check() || !(Auth::check() && Auth::user()->hasPower('manage_characters'))) $characters->visible();
-        
+
         return view('user.profile', [
             'user' => $this->user,
             'items' => $this->user->items()->where('count', '>', 0)->orderBy('user_items.updated_at', 'DESC')->take(4)->get(),
@@ -84,7 +84,7 @@ class UserController extends Controller
     {
         $aliases = $this->user->aliases();
         if(!Auth::check() || !(Auth::check() && Auth::user()->hasPower('edit_user_info'))) $aliases->visible();
-        
+
         return view('user.aliases', [
             'user' => $this->user,
             'aliases' => $aliases->orderBy('is_primary_alias', 'DESC')->orderBy('site')->get(),
@@ -299,7 +299,7 @@ class UserController extends Controller
     {
         return view('user.gallery', [
             'user' => $this->user,
-            'submissions' => $this->user->gallerySubmissions()->paginate(20),
+            'submissions' => $this->user->gallerySubmissions()->visible(Auth::user() ?? null)->paginate(20),
             'sublists' => Sublist::orderBy('sort', 'DESC')->get()
         ]);
     }
@@ -315,7 +315,7 @@ class UserController extends Controller
         return view('user.favorites', [
             'user' => $this->user,
             'characters' => false,
-            'favorites' => GallerySubmission::whereIn('id', $this->user->galleryFavorites()->pluck('gallery_submission_id')->toArray())->visible(Auth::check() ? Auth::user() : null)->accepted()->orderBy('created_at', 'DESC')->paginate(20),
+            'favorites' => GallerySubmission::whereIn('id', $this->user->galleryFavorites()->pluck('gallery_submission_id')->toArray())->visible(Auth::user() ?? null)->orderBy('created_at', 'DESC')->paginate(20),
             'sublists' => Sublist::orderBy('sort', 'DESC')->get()
         ]);
     }
@@ -335,8 +335,31 @@ class UserController extends Controller
         return view('user.favorites', [
             'user' => $this->user,
             'characters' => true,
-            'favorites' => $this->user->characters->count() ? GallerySubmission::whereIn('id', $userFavorites)->whereIn('id', GalleryCharacter::whereIn('character_id', $userCharacters)->pluck('gallery_submission_id')->toArray())->visible(Auth::check() ? Auth::user() : null)->accepted()->orderBy('created_at', 'DESC')->paginate(20) : null,
+            'favorites' => $this->user->characters->count() ? GallerySubmission::whereIn('id', $userFavorites)->whereIn('id', GalleryCharacter::whereIn('character_id', $userCharacters)->pluck('gallery_submission_id')->toArray())->visible(Auth::user() ?? null)->orderBy('created_at', 'DESC')->paginate(20) : null,
             'sublists' => Sublist::orderBy('sort', 'DESC')->get()
+        ]);
+    }
+
+        /**
+     * Shows a user's submissions.
+     *
+     * @param string $name
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getUserQueueSubmissions(Request $request, $name) {
+        $logs = $this->user->getQueueSubmissions(Auth::user() ?? null);
+        if ($request->get('queue_ids')) {
+            $logs->whereIn('queue_ids', $request->get('queue_ids'));
+        }
+        if ($request->get('sort')) {
+            $logs->orderBy('created_at', $request->get('sort') == 'newest' ? 'DESC' : 'ASC');
+        }
+
+        return view('user.queue_logs', [
+            'user'    => $this->user,
+            'logs'    => $logs->paginate(30)->appends($request->query()),
+            'prompts' => Queue::active()->pluck('name', 'id'),
         ]);
     }
 }

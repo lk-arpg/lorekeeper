@@ -1,3 +1,7 @@
+:root {
+    --btn-faded : transparent;
+}
+
 /**************************************************************************************************
 
     Font definitions
@@ -376,6 +380,35 @@ main > .row {
 .btn.disabled {
     opacity: 0.5;
     cursor: not-allowed;
+}
+
+.btn-faded,
+.btn-faded.disabled,
+.btn-faded:disabled {
+    color: inherit;
+	background-color: var(--btn-faded);
+	border-color: color-mix(in srgb,var(--btn-faded),#000 15%);
+}
+
+.btn-faded:hover,
+.btn-faded:not(:disabled):not(.disabled):active,
+.btn-faded:not(:disabled):not(.disabled).active,
+.show>.btn-faded.dropdown-toggle  {
+	background-color: color-mix(in srgb,var(--btn-faded),#000 10%);
+	border-color: color-mix(in srgb,var(--btn-faded),#000 10%);
+}
+
+.btn-faded:focus,
+.btn-faded.focus {
+	border-color: color-mix(in srgb,var(--btn-faded),#000 20%);
+}
+
+.btn-faded:not(:disabled):not(.disabled):active:focus,
+.btn-faded:not(:disabled):not(.disabled).active:focus,
+.show>.btn-faded.dropdown-toggle:focus,
+.btn-faded:focus,
+.btn-faded.focus  {
+	box-shadow: 0 0 0 0.2rem color-mix(in srgb,var(--btn-faded),#000 10%);
 }
 
 .pagination {

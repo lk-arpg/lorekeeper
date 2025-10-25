@@ -78,7 +78,7 @@
                             </div>
                         @endif
                         @foreach ($submission->characters()->whereRelation('character', 'deleted_at', null)->get() as $character)
-                            @include('home.queues.types.characters.' . $queue->queue_type . '_select_entry')
+                            @include('home.queues.types.characters.' . $queue->queue_type . '_select_entry', ['data' => $character->data])
                         @endforeach
                     </div>
                     <div class="text-right mb-3">

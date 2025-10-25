@@ -82,11 +82,10 @@ class QueueSubmissionManager extends Service
             $service = $queue->service;
 
             if ($queue->configSet('character_submit')) {
-                if (! $this->createCharacterAttachments($submission, $data, $service)) {
+                if (! $this->createCharacterAttachments($submission, $data, $service, $user)) {
                     throw new \Exception("Failed to handle submission characters.");
                 }
             }
-
             if (method_exists($queue->service, 'submit')) {
                 if (! $service->submit($queue, $data, $user, $submission)) {
                     foreach ($service->errors()->getMessages()['error'] as $error) {
@@ -94,14 +93,12 @@ class QueueSubmissionManager extends Service
                     }
                     throw new \Exception("Failed to handle submission.");
                 }
-
-                $queuedata = method_exists($queue->service, 'processSubmit') ? $submission->data['queue'] : null;
             }
 
             $submission->update([
                 'data' => [
                     'user'  => $queue->configSet('item_consume') ? Arr::only(getDataReadyAssets($userAssets), ['user_items', 'currencies']) : null,
-                    'queue' => method_exists($queue->service, 'processSubmit') ? $queue->service->processSubmit($queue, $queuedata, $user, $submission) : null,
+                    'queue' => method_exists($queue->service, 'processSubmit') ? $queue->service->processSubmit($queue, $data, $user, $submission) : null,
                 ],
             ]);
 
@@ -162,7 +159,7 @@ class QueueSubmissionManager extends Service
             $service = $queue->service;
 
             if ($queue->configSet('character_submit')) {
-                if (! $this->createCharacterAttachments($submission, $data, $service)) {
+                if (! $this->createCharacterAttachments($submission, $data, $service, $user)) {
                     throw new \Exception("Failed to handle submission characters.");
                 }
             }
@@ -173,8 +170,6 @@ class QueueSubmissionManager extends Service
                     }
                     throw new \Exception("Failed to handle submission.");
                 }
-
-                $queuedata = method_exists($queue->service, 'processSubmit') ? $submission->data['queue'] : null;
             }
 
             if (isset($data['comments']) && $data['comments']) {
@@ -191,7 +186,7 @@ class QueueSubmissionManager extends Service
                 'queue_id'        => $queue->id,
                 'data'            => [
                     'user'  => $queue->configSet('item_consume') ? Arr::only(getDataReadyAssets($userAssets), ['user_items', 'currencies']) : null,
-                    'queue' => method_exists($queue->service, 'processSubmit') ? $queue->service->processSubmit($queue, $queuedata, $user, $submission) : null,
+                    'queue' => method_exists($queue->service, 'processSubmit') ? $queue->service->processSubmit($queue, $data, $user, $submission) : null,
                 ],
             ]);
 
@@ -474,7 +469,7 @@ class QueueSubmissionManager extends Service
                     QueueSubmissionCharacter::create([
                         'character_id'        => $c->id,
                         'queue_submission_id' => $submission->id,
-                        'data'                => method_exists($service, 'finalizeCharacterAttachments') ? $service->finalizeCharacterAttachments($submission->queue, $data + ['character_id' => $c->id], $submission) : null,
+                        'data'                => method_exists($service, 'finalizeCharacterAttachments') ? $service->finalizeCharacterAttachments($submission->queue, $data + ['character_id' => $c->id], $submission, $user) : null,
                     ]);
                 }
             }
@@ -486,8 +481,7 @@ class QueueSubmissionManager extends Service
             }
 
 
-            //carry out the initial processes when submitting the queue's form
-            $queuedata = method_exists($queue->service, 'approve') ? $queue->service->approve($queue, $data, $user, $submission) : null;
+            //carry out approval
 
             if (method_exists($queue->service, 'approve')) {
                 if (! $service->approve($queue, $data, $user, $submission)) {
@@ -496,9 +490,11 @@ class QueueSubmissionManager extends Service
                     }
                     throw new \Exception("Failed to handle submission.");
                 }
-
-                $queuedata = method_exists($queue->service, 'processSubmit') ? $submission->data['queue'] : null;
             }
+
+            //back up the data cus i realized it gets nuked on approval
+            $savedData = $submission->data['queue'];
+
             // Finally, set:
             // 1. staff comments
             // 2. staff ID
@@ -511,7 +507,7 @@ class QueueSubmissionManager extends Service
                 'status'                => 'Approved',
                 'data'                  => [
                     'user'  => $queue->configSet('item_consume') ? $addonData : null,
-                    'queue' => method_exists($queue->service, 'processApprove') ? $queue->service->processApprove($queue, $queuedata, $user, $submission) : $queuedata,
+                    'queue' => method_exists($queue->service, 'processApprove') ? $queue->service->processApprove($queue, $data, $user, $submission) : $savedData,
                 ], // list of rewards
             ]);
 
@@ -666,7 +662,7 @@ class QueueSubmissionManager extends Service
      * @param mixed $submission the submission object
      * @param mixed $data       the data for creating character attachments
      */
-    private function createCharacterAttachments($submission, $data, $service)
+    private function createCharacterAttachments($submission, $data, $service, $user)
     {
         DB::beginTransaction();
 
@@ -704,13 +700,12 @@ class QueueSubmissionManager extends Service
                         throw new \Exception("Failed to handle submission characters.");
                     }
                 }
-
                 // Now we have a clean set of assets (redundant data is gone, duplicate entries are merged)
                 // so we can attach the character to the submission
                 QueueSubmissionCharacter::create([
                     'character_id'        => $c->id,
                     'queue_submission_id' => $submission->id,
-                    'data'                => method_exists($service, 'finalizeCharacterAttachments') ? $service->finalizeCharacterAttachments($submission->queue, $data + ['character_id' => $c->id], $submission) : null,
+                    'data'                => method_exists($service, 'finalizeCharacterAttachments') ? $service->finalizeCharacterAttachments($submission->queue, $data + ['character_id' => $c->id], $submission, $user) : null,
                 ]);
             }
 

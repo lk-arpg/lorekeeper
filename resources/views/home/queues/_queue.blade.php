@@ -19,7 +19,7 @@
         @endif
         <hr>
         @if (View::exists('home.queues.types.' . $queue->queue_type))
-            @include('home.queues.types.' . $queue->queue_type)
+            @include('home.queues.types.' . $queue->queue_type, ['data' => isset($submission->data['queue']) ? $submission->data['queue'] : null])
         @else
             <p>This queue has no associated extra form to fill in.</p>
         @endif

@@ -64,7 +64,7 @@
 <div class="card mb-3">
     <div class="card-body">
         @if (View::exists('home.queues.types.' . $queue->queue_type))
-            @include('home.queues.types.' . $queue->queue_type)
+            @include('home.queues.types.' . $queue->queue_type, ['data' => isset($submission->data['queue']) ? $submission->data['queue'] : null])
         @else
             <div class="card-header h2">Queue Form</div>
             <div class="card-body">
@@ -85,7 +85,7 @@
                 </div>
             @endif
             @foreach ($submission->characters()->whereRelation('character', 'deleted_at', null)->get() as $character)
-                @include('home.queues.types.characters.' . $queue->queue_type . '_select_submitted')
+                @include('home.queues.types.characters.' . $queue->queue_type . '_select_submitted', ['data' => $character->data])
             @endforeach
         @else
             <p>This queue does not use characters.</p>

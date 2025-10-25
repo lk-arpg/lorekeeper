@@ -14,16 +14,16 @@
 
     <ul class="nav nav-tabs mb-3">
         <li class="nav-item">
-            <a class="nav-link {{ Request::get('type') == 'draft' ? 'active' : '' }}" href="queue-submissions?type=draft' }}">Drafts</a>
+            <a class="nav-link {{ Request::get('type') == 'draft' ? 'active' : '' }}" href="queue-submissions?type=draft">Drafts</a>
         </li>
         <li class="nav-item">
             <a class="nav-link {{ !Request::get('type') || Request::get('type') == 'pending' ? 'active' : '' }}" href="queue-submissions">Pending</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {{ Request::get('type') == 'approved' ? 'active' : '' }}" href="queue-submissions?type=approved' }}">Approved</a>
+            <a class="nav-link {{ Request::get('type') == 'approved' ? 'active' : '' }}" href="queue-submissions?type=approved">Approved</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {{ Request::get('type') == 'rejected' ? 'active' : '' }}" href="queue-submissions?type=rejected' }}">Rejected</a>
+            <a class="nav-link {{ Request::get('type') == 'rejected' ? 'active' : '' }}" href="queue-submissions?type=rejected">Rejected</a>
         </li>
     </ul>
 

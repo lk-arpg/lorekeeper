@@ -53,7 +53,7 @@
                 }
             @endif
             $('.original.feature-select').selectize({
-                render:renderOptions
+                render: renderOptions
             });
         @else
             $('.original.feature-select').selectize();
@@ -90,7 +90,7 @@
                     }
                 @endif
                 $clone.find('.feature-select').selectize({
-                    render:renderOptions
+                    render: renderOptions
                 });
             @else
                 $clone.find('.feature-select').selectize();

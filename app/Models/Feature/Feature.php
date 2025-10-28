@@ -320,6 +320,7 @@ class Feature extends Model {
                         if ($sortA == $sortB) {
                             return strnatcasecmp($a['name'], $b['name']);
                         }
+
                         return $sortB <=> $sortA;
                     });
                 }
@@ -328,17 +329,17 @@ class Feature extends Model {
 
             foreach ($grouped as $category => $features) {
                 foreach ($features as $id  => $feature) {
-                    $grouped[$category][$id] = $feature['name'] .
+                    $grouped[$category][$id] = $feature['name'].
                     (
                         config('lorekeeper.extensions.organised_traits_dropdown.display_species') && $feature['species_id'] ?
                         ' <span class="text-muted"><small>'.$feature['species']['name'].'</small></span>'
                         : ''
-                    ) .
+                    ).
                     (
                         config('lorekeeper.extensions.organised_traits_dropdown.display_subtype') && $feature['subtype_id'] ?
                         ' <span class="text-muted"><small>('.$feature['subtype']['name'].')</small></span>'
                         : ''
-                    ) .
+                    ).
                     ( // rarity
                         config('lorekeeper.extensions.organised_traits_dropdown.rarity.enable') && $feature['rarity'] ?
                         ' (<span '.($feature['rarity']['color'] ? 'style="color: #'.$feature['rarity']['color'].';"' : '').'>'.Rarity::find($feature['rarity']['id'])->name.'</span>)'

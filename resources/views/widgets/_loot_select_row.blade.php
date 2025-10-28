@@ -3,15 +3,6 @@
     // While it is not per se as tidy as defining these in the controller(s),
     // doing so this way enables better compatibility across disparate extensions
 
-    // Reward types, should reduce friction of merge conflicts
-    $rewardTypes =
-        [
-            'Item' => 'Item',
-            'Currency' => 'Currency',
-        ] +
-        ($showLootTables ? ['LootTable' => 'Loot Table'] : []) +
-        ($showRaffles ? ['Raffle' => 'Raffle Ticket'] : []);
-
     if (!isset($type)) {
         $type = 'Reward';
     }
@@ -21,9 +12,26 @@
     if (!isset($prefix)) {
         $prefix = '';
     }
+
+    // View options
     if (!isset($showRecipient)) {
         $showRecipient = false;
     }
+    if (!isset($showLootTables)) {
+        $showLootTables = false;
+    }
+    if (!isset($showRaffles)) {
+        $showRaffles = false;
+    }
+
+    // Reward types, should reduce friction of merge conflicts
+    $rewardTypes =
+        [
+            'Item' => 'Item',
+            'Currency' => 'Currency',
+        ] +
+        ($showLootTables ? ['LootTable' => 'Loot Table'] : []) +
+        ($showRaffles ? ['Raffle' => 'Raffle Ticket'] : []);
 
     // Custom Selectize
     if (isset($useCustomSelectize) && $useCustomSelectize) {

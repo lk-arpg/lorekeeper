@@ -1,3 +1,19 @@
+@php
+    if (!isset($prefix)) {
+        $prefix = '';
+    }
+
+    // View options
+    if (!isset($showRecipient)) {
+        $showRecipient = false;
+    }
+    if (!isset($showLootTables)) {
+        $showLootTables = false;
+    }
+    if (!isset($showRaffles)) {
+        $showRaffles = false;
+    }
+@endphp
 <script>
     $(document).ready(function() {
         var $lootTable = $('#{{ $prefix }}lootTableBody');

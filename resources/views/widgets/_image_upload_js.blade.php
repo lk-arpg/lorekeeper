@@ -137,7 +137,6 @@
 
         function featureSelectedRender(item, escape) {
             @if (config('lorekeeper.extensions.organised_traits_dropdown.rarity.enable'))
-                console.log(item);
                 return '<div><span>' + (item["text"].trim()) + ' (' + (item["optgroup"].trim()) + ')' + '</span></div>';
             @endif
             return '<div><span>' + escape(item["text"].trim()) + ' (' + escape(item["optgroup"].trim()) + ')' + '</span></div>';

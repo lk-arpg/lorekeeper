@@ -87,9 +87,7 @@
         }
 
         function customLootSelectizeRender(item, escape) {
-            console.log(item);
             item = JSON.parse(item.text);
-            console.log(item);
             option_render = '<div class="option">';
             if (item['image_url']) {
                 option_render += '<div class="d-inline mr-1"><img class="small-icon" alt="' + escape(item['name']) + '" src="' + escape(item['image_url']) + '"></div>';

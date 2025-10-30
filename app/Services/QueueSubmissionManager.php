@@ -683,9 +683,11 @@ class QueueSubmissionManager extends Service
         // Get a list of rewards, then create the submission itself
         $queueRewards = createAssetsArray();
         if ($submission->status == 'Pending' && isset($submission->queue_id) && $submission->queue_id) {
-            foreach ($submission->queue->rewardItems as $key => $type) {
-                foreach ($type as $asset) {
-                    addAsset($queueRewards, $asset['asset'], $asset['quantity']);
+            if ($submission->queue->rewards) {
+                foreach ($submission->queue->rewardItems as $key => $type) {
+                    foreach ($type as $asset) {
+                        addAsset($queueRewards, $asset['asset'], $asset['quantity']);
+                    }
                 }
             }
         }
@@ -889,9 +891,11 @@ class QueueSubmissionManager extends Service
         $queueRewards = createAssetsArray();
         $queueRewards = mergeAssetsArrays($queueRewards, parseAssetData($assets['rewards']));
         if (isset($submission->queue_id) && $submission->queue_id) {
-            foreach ($submission->queue->rewardItems as $key => $type) {
-                foreach ($type as $asset) {
-                    removeAsset($queueRewards, $asset['asset'], $asset['quantity']);
+            if ($submission->queue->rewards) {
+                foreach ($submission->queue->rewardItems as $key => $type) {
+                    foreach ($type as $asset) {
+                        removeAsset($queueRewards, $asset['asset'], $asset['quantity']);
+                    }
                 }
             }
         }

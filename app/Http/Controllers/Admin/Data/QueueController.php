@@ -6,6 +6,7 @@ use App\Models\Item\Item;
 use App\Models\Queue\Queue;
 use App\Models\Queue\QueueCategory;
 use App\Services\QueueService;
+use Config;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -40,7 +41,8 @@ class QueueController extends Controller
     public function getCreateQueueCategory()
     {
         return view('admin.queues.create_edit_queue_category', [
-            'category' => new QueueCategory,
+            'category'      => new QueueCategory,
+            'limit_periods' => [null => 'None', 'Hour' => 'Hour', 'Day' => 'Day', 'Week' => 'Week', 'Month' => 'Month', 'Year' => 'Year'],
         ]);
     }
 
@@ -59,7 +61,8 @@ class QueueController extends Controller
         }
 
         return view('admin.queues.create_edit_queue_category', [
-            'category' => $category,
+            'category'      => $category,
+            'limit_periods' => [null => 'None', 'Hour' => 'Hour', 'Day' => 'Day', 'Week' => 'Week', 'Month' => 'Month', 'Year' => 'Year'],
         ]);
     }
 
@@ -75,7 +78,7 @@ class QueueController extends Controller
     {
         $id ? $request->validate(QueueCategory::$updateRules) : $request->validate(QueueCategory::$createRules);
         $data = $request->only([
-            'name', 'description', 'image', 'remove_image',
+            'name', 'description', 'image', 'remove_image', 'key', 'limit', 'limit_period', 'limit_concurrent','display'
         ]);
         if ($id && $service->updateQueueCategory(QueueCategory::find($id), $data, Auth::user())) {
             flash('Category updated successfully.')->success();
@@ -190,12 +193,12 @@ class QueueController extends Controller
         foreach ($types as $type => $typeData) {
             $result[$type] = $typeData['name'];
         }
+
         return view('admin.queues.create_edit_queue', [
             'queue'         => new Queue,
             'categories'    => ['none' => 'No category'] + QueueCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'types'         => $result,
             'limit_periods' => [null => 'None', 'Hour' => 'Hour', 'Day' => 'Day', 'Week' => 'Week', 'Month' => 'Month', 'Year' => 'Year'],
-
         ]);
     }
 
@@ -208,16 +211,14 @@ class QueueController extends Controller
      */
     public function getEditQueue($id)
     {
-
+        $queue = Queue::find($id);
+        if (! $queue) {
+            abort(404);
+        }
         $types  = config('lorekeeper.queue_types');
         $result = [];
         foreach ($types as $type => $typeData) {
             $result[$type] = $typeData['name'];
-        }
-
-        $queue = Queue::find($id);
-        if (! $queue) {
-            abort(404);
         }
 
         return view('admin.queues.create_edit_queue', [
@@ -241,7 +242,7 @@ class QueueController extends Controller
     {
         $id ? $request->validate(Queue::$updateRules) : $request->validate(Queue::$createRules);
         $data = $request->only([
-            'name', 'queue_category_id', 'summary', 'description', 'start_at', 'end_at', 'hide_before_start', 'hide_after_end', 'is_active', 'rewardable_type', 'rewardable_id', 'quantity', 'image', 'remove_image', 'prefix', 'hide_submissions', 'staff_only', 'form', 'queue_type', 'limit', 'limit_period','check_text'
+            'name', 'queue_category_id', 'summary', 'description', 'start_at', 'end_at', 'hide_before_start', 'hide_after_end', 'is_active', 'image', 'remove_image', 'prefix', 'hide_submissions', 'staff_only', 'form', 'queue_type', 'limit', 'limit_period', 'check_text', 'user_rewardable_type', 'user_rewardable_id', 'user_quantity', 'character_rewardable_type', 'character_rewardable_id', 'character_quantity', 'limit_concurrent'
         ]);
         if ($id && $service->updateQueue(Queue::find($id), $data, Auth::user())) {
             flash('Queue updated successfully.')->success();

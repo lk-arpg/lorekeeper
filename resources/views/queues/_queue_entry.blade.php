@@ -38,22 +38,26 @@
                 @elseif($queue->hide_submissions == 2)
                     <p class="text-info">Submissions to this queue are hidden.</p>
                 @endif
+                @include('queues._queue_rewards')
+                @include('queues._queue_limits', ['staff' => false, 'user' => Auth::user()])
             </div>
         </div>
-        <div class="text-right">
-            @if (Auth::check() && $queue->checkLimit(Auth::user()))
-                @if ($queue->end_at && $queue->end_at->isPast())
-                    <span class="text-secondary">This queue has ended.</span>
-                @elseif($queue->start_at && $queue->start_at->isFuture())
-                    <span class="text-secondary">This queue is not open for submissions yet.</span>
+        @if (Auth::check())
+            <div class="text-right">
+                @if ($queue->checkConcurrent(Auth::user()) && $queue->checkLimit(Auth::user()))
+                    @if ($queue->end_at && $queue->end_at->isPast())
+                        <span class="text-secondary">This queue has ended.</span>
+                    @elseif($queue->start_at && $queue->start_at->isFuture())
+                        <span class="text-secondary">This queue is not open for submissions yet.</span>
+                    @else
+                        <a href="{{ url('queue-submissions/new/' . $queue->id) }}" class="btn btn-primary">Submit Queue</a>
+                    @endunless
                 @else
-                    <a href="{{ url('queue-submissions/new/' . $queue->id) }}" class="btn btn-primary">Submit Queue</a>
-                @endunless
-            @elseif(Auth::check() && !$queue->checkLimit(Auth::user()))
-                <div class="alert alert-danger text-center">
-                    You have already submitted to this queue the maximum number of times{{ $queue->limit_period ? ' per ' . strtolower($queue->limit_period) : '' }}.
-                </div>
-            @endif
-    </div>
+                    <div class="alert alert-warning text-center">
+                        You have reached the submission cap or are not logged in.
+                    </div>
+                @endif
+        </div>
+    @endif
 </div>
 </div>

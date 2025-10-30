@@ -5,9 +5,12 @@ use App\Facades\Notifications;
 use App\Facades\Settings;
 use App\Models\Character\Character;
 use App\Models\Currency\Currency;
+use App\Models\Item\Item;
+use App\Models\Loot\LootTable;
 use App\Models\Queue\Queue;
 use App\Models\Queue\QueueSubmission;
 use App\Models\Queue\QueueSubmissionCharacter;
+use App\Models\Raffle\Raffle;
 use App\Models\User\User;
 use App\Models\User\UserItem;
 use Carbon\Carbon;
@@ -50,6 +53,10 @@ class QueueSubmissionManager extends Service
                 throw new \Exception('This queue may only be submitted to by staff members.');
             }
 
+            if (! $queue->checkConcurrent($user)) {
+                throw new \Exception("This queue does not permit you to submit more submissions while you have " . $queue->limit_concurrent . " of them of them pending or in draft at the same time. Please wait for your submissions to be processed before trying to submit again.");
+            }
+
             if ($queue->limit) {
                 if (! $queue->checkLimit($user)) {
                     throw new \Exception("You have already submitted to this queue the maximum number of times.");
@@ -72,9 +79,10 @@ class QueueSubmissionManager extends Service
                 'queue_id'        => $queue->id,
             ]);
 
+            $assets       = $this->createUserAttachments($submission, $data, $user);
+            $queueRewards = $assets['queueRewards'];
             if ($queue->configSet('item_consume')) {
                 // Set items that have been attached.
-                $assets     = $this->createUserAttachments($submission, $data, $user);
                 $userAssets = $assets['userAssets'];
             }
 
@@ -97,8 +105,9 @@ class QueueSubmissionManager extends Service
 
             $submission->update([
                 'data' => [
-                    'user'  => $queue->configSet('item_consume') ? Arr::only(getDataReadyAssets($userAssets), ['user_items', 'currencies']) : null,
-                    'queue' => method_exists($queue->service, 'processSubmit') ? $queue->service->processSubmit($queue, $data, $user, $submission) : null,
+                    'user'    => $queue->configSet('item_consume') ? Arr::only(getDataReadyAssets($userAssets), ['user_items', 'currencies']) : null,
+                    'queue'   => method_exists($queue->service, 'processSubmit') ? $queue->service->processSubmit($queue, $data, $user, $submission) : null,
+                    'rewards' => getDataReadyAssets($queueRewards),
                 ],
             ]);
 
@@ -150,9 +159,10 @@ class QueueSubmissionManager extends Service
                 $submission->update(['status' => 'Pending', 'submitted_at' => Carbon::now()]);
             }
 
+            $assets       = $this->createUserAttachments($submission, $data, $user);
+            $queueRewards = $assets['queueRewards'];
             if ($queue->configSet('item_consume')) {
                 // Then, re-attach everything fresh.
-                $assets     = $this->createUserAttachments($submission, $data, $user);
                 $userAssets = $assets['userAssets'];
             }
 
@@ -185,8 +195,9 @@ class QueueSubmissionManager extends Service
                 'parsed_comments' => $data['parsed_comments'],
                 'queue_id'        => $queue->id,
                 'data'            => [
-                    'user'  => $queue->configSet('item_consume') ? Arr::only(getDataReadyAssets($userAssets), ['user_items', 'currencies']) : null,
-                    'queue' => method_exists($queue->service, 'processSubmit') ? $queue->service->processSubmit($queue, $data, $user, $submission) : null,
+                    'user'    => $queue->configSet('item_consume') ? Arr::only(getDataReadyAssets($userAssets), ['user_items', 'currencies']) : null,
+                    'queue'   => method_exists($queue->service, 'processSubmit') ? $queue->service->processSubmit($queue, $data, $user, $submission) : null,
+                    'rewards' => getDataReadyAssets($queueRewards),
                 ],
             ]);
 
@@ -234,6 +245,8 @@ class QueueSubmissionManager extends Service
                 $userAssets = $assets['user'];
             }
             $qAssets = $assets['queue'];
+            // Remove queue-only rewards
+            $queueRewards = $this->removeQueueAttachments($submission);
 
             if ($user->id != $submission->user_id) {
                 // The only things we need to set are:
@@ -247,8 +260,9 @@ class QueueSubmissionManager extends Service
                     'staff_id'              => $user->id,
                     'status'                => 'Draft',
                     'data'                  => [
-                        'user'  => $submission->queue->configSet('item_consume') ? $userAssets : null,
-                        'queue' => $qAssets,
+                        'user'    => $submission->queue->configSet('item_consume') ? $userAssets : null,
+                        'queue'   => $qAssets,
+                        'rewards' => getDataReadyAssets($queueRewards),
                     ],
                 ]);
 
@@ -263,8 +277,9 @@ class QueueSubmissionManager extends Service
                     'status'     => 'Draft',
                     'updated_at' => Carbon::now(),
                     'data'       => [
-                        'user'  => $submission->queue->configSet('item_consume') ? $userAssets : null,
-                        'queue' => $qAssets,
+                        'user'    => $submission->queue->configSet('item_consume') ? $userAssets : null,
+                        'queue'   => $qAssets,
+                        'rewards' => getDataReadyAssets($queueRewards),
                     ],
                 ]);
             }
@@ -425,6 +440,20 @@ class QueueSubmissionManager extends Service
                 }
             }
 
+            // Get the updated set of rewards
+            $rewards = $this->processRewards($data, false, true);
+
+            // Logging data
+            $queueLogType = 'Queue Rewards';
+            $queueData    = [
+                'data' => 'Received rewards for submission (<a href="' . $submission->viewUrl . '">#' . $submission->id . '</a>)',
+            ];
+
+            // Distribute user rewards
+            if (! $rewards = fillUserAssets($rewards, $user, $submission->user, $queueLogType, $queueData)) {
+                throw new \Exception('Failed to distribute rewards to user.');
+            }
+
             if ($queue->configSet('character_submit')) {
 
                 // The character identification comes in both the slug field and as character IDs
@@ -480,7 +509,6 @@ class QueueSubmissionManager extends Service
                 $data['parsed_staff_comments'] = null;
             }
 
-
             //carry out approval
 
             if (method_exists($queue->service, 'approve')) {
@@ -506,8 +534,9 @@ class QueueSubmissionManager extends Service
                 'staff_id'              => $user->id,
                 'status'                => 'Approved',
                 'data'                  => [
-                    'user'  => $queue->configSet('item_consume') ? $addonData : null,
-                    'queue' => method_exists($queue->service, 'processApprove') ? $queue->service->processApprove($queue, $data, $user, $submission) : $savedData,
+                    'user'    => $queue->configSet('item_consume') ? $addonData : null,
+                    'queue'   => method_exists($queue->service, 'processApprove') ? $queue->service->processApprove($queue, $data, $user, $submission) : $savedData,
+                    'rewards' => getDataReadyAssets($rewards),
                 ], // list of rewards
             ]);
 
@@ -562,7 +591,7 @@ class QueueSubmissionManager extends Service
             //carry out custom deletions
             $service = $submission->queue->service;
 
-            if (method_exists($queue, 'delete')) {
+            if (method_exists($queue->service, 'delete')) {
                 if (! $service->delete($queue, $data, $user, $submission)) {
                     foreach ($service->errors()->getMessages()['error'] as $error) {
                         flash($error)->error();
@@ -651,8 +680,20 @@ class QueueSubmissionManager extends Service
             }
         }
 
+        // Get a list of rewards, then create the submission itself
+        $queueRewards = createAssetsArray();
+        if ($submission->status == 'Pending' && isset($submission->queue_id) && $submission->queue_id) {
+            foreach ($submission->queue->rewardItems as $key => $type) {
+                foreach ($type as $asset) {
+                    addAsset($queueRewards, $asset['asset'], $asset['quantity']);
+                }
+            }
+        }
+        $queueRewards = mergeAssetsArrays($queueRewards, $this->processRewards($data, false));
+
         return [
-            'userAssets' => $userAssets,
+            'userAssets'   => $userAssets,
+            'queueRewards' => $queueRewards,
         ];
     }
 
@@ -755,5 +796,106 @@ class QueueSubmissionManager extends Service
                 }
             }
         }
+    }
+
+    /**
+     * Processes reward data into a format that can be used for distribution.
+     *
+     * @param array $data
+     * @param bool  $isCharacter
+     * @param bool  $isStaff
+     *
+     * @return array
+     */
+    private function processRewards($data, $isCharacter, $isStaff = false)
+    {
+        if ($isCharacter) {
+            $assets = createAssetsArray(true);
+
+            if (isset($data['character_currency_id'][$data['character_id']]) && isset($data['character_quantity'][$data['character_id']])) {
+                foreach ($data['character_currency_id'][$data['character_id']] as $key => $currency) {
+                    if ($data['character_quantity'][$data['character_id']][$key]) {
+                        addAsset($assets, $data['currencies'][$currency], $data['character_quantity'][$data['character_id']][$key]);
+                    }
+                }
+            } elseif (isset($data['character_rewardable_type'][$data['character_id']]) && isset($data['character_rewardable_id'][$data['character_id']]) && isset($data['character_rewardable_quantity'][$data['character_id']])) {
+                $data['character_rewardable_id'] = array_map([$this, 'innerNull'], $data['character_rewardable_id']);
+
+                foreach ($data['character_rewardable_id'][$data['character_id']] as $key => $reward) {
+                    switch ($data['character_rewardable_type'][$data['character_id']][$key]) {
+                        case 'Currency':if ($data['character_rewardable_quantity'][$data['character_id']][$key]) {
+                                addAsset($assets, $data['currencies'][$reward], $data['character_rewardable_quantity'][$data['character_id']][$key]);
+                            }break;
+                        case 'Item':if ($data['character_rewardable_quantity'][$data['character_id']][$key]) {
+                                addAsset($assets, $data['items'][$reward], $data['character_rewardable_quantity'][$data['character_id']][$key]);
+                            }break;
+                        case 'LootTable':if ($data['character_rewardable_quantity'][$data['character_id']][$key]) {
+                                addAsset($assets, $data['tables'][$reward], $data['character_rewardable_quantity'][$data['character_id']][$key]);
+                            }break;
+                    }
+                }
+            }
+
+            return $assets;
+        } else {
+            $assets = createAssetsArray(false);
+            // Process the additional rewards
+            if (isset($data['rewardable_type']) && $data['rewardable_type']) {
+                foreach ($data['rewardable_type'] as $key => $type) {
+                    $reward = null;
+                    switch ($type) {
+                        case 'Item':
+                            $reward = Item::find($data['rewardable_id'][$key]);
+                            break;
+                        case 'Currency':
+                            $reward = Currency::find($data['rewardable_id'][$key]);
+                            if (! $reward->is_user_owned) {
+                                throw new \Exception('Invalid currency selected.');
+                            }
+                            break;
+                        case 'LootTable':
+                            if (! $isStaff) {
+                                break;
+                            }
+                            $reward = LootTable::find($data['rewardable_id'][$key]);
+                            break;
+                        case 'Raffle':
+                            if (! $isStaff) {
+                                break;
+                            }
+                            $reward = Raffle::find($data['rewardable_id'][$key]);
+                            break;
+                    }
+                    if (! $reward) {
+                        continue;
+                    }
+                    addAsset($assets, $reward, $data['quantity'][$key]);
+                }
+            }
+
+            return $assets;
+        }
+    }
+
+    /**
+     * Removes the attachments associated with a queue from a submission.
+     *
+     * @param mixed $submission the submission object
+     */
+    private function removeQueueAttachments($submission)
+    {
+        $assets = $submission->data;
+        // Get a list of rewards, then create the submission itself
+        $queueRewards = createAssetsArray();
+        $queueRewards = mergeAssetsArrays($queueRewards, parseAssetData($assets['rewards']));
+        if (isset($submission->queue_id) && $submission->queue_id) {
+            foreach ($submission->queue->rewardItems as $key => $type) {
+                foreach ($type as $asset) {
+                    removeAsset($queueRewards, $asset['asset'], $asset['quantity']);
+                }
+            }
+        }
+
+        return $queueRewards;
     }
 }

@@ -1,14 +1,13 @@
 <?php
-
 namespace App\Models\Queue;
 
-use App\Models\Model;
-use Carbon\Carbon;
-use App\Services\Queue\GeneralService;
 use App\Models\Item\Item;
+use App\Models\Model;
+use App\Services\Queue\GeneralService;
+use Carbon\Carbon;
 
-
-class Queue extends Model {
+class Queue extends Model
+{
     /**
      * The attributes that are mass assignable.
      *
@@ -17,7 +16,7 @@ class Queue extends Model {
     protected $fillable = [
         'queue_category_id', 'name', 'summary', 'description', 'parsed_description', 'is_active',
         'start_at', 'end_at', 'hide_before_start', 'hide_after_end', 'has_image', 'prefix',
-        'hide_submissions', 'staff_only', 'hash', 'form','parsed_form','queue_type','data','checklist'
+        'hide_submissions', 'staff_only', 'hash', 'form', 'parsed_form', 'queue_type', 'data', 'checklist', 'limit', 'limit_period', 'output', 'limit_concurrent',
     ];
 
     /**
@@ -33,10 +32,11 @@ class Queue extends Model {
      * @var array
      */
     protected $casts = [
-        'start_at' => 'datetime',
-        'end_at'   => 'datetime',
-        'data'   => 'array',
-         'checklist'   => 'array',
+        'start_at'  => 'datetime',
+        'end_at'    => 'datetime',
+        'data'      => 'array',
+        'checklist' => 'array',
+        'output'    => 'array',
     ];
 
     /**
@@ -46,11 +46,11 @@ class Queue extends Model {
      */
     public static $createRules = [
         'queue_category_id' => 'nullable',
-        'name'               => 'required|unique:queues|between:3,100',
-        'prefix'             => 'nullable|unique:queues|between:2,10',
-        'summary'            => 'nullable',
-        'description'        => 'nullable',
-        'image'              => 'mimes:png',
+        'name'              => 'required|unique:queues|between:3,100',
+        'prefix'            => 'nullable|unique:queues|between:2,10',
+        'summary'           => 'nullable',
+        'description'       => 'nullable',
+        'image'             => 'mimes:png',
     ];
 
     /**
@@ -60,11 +60,11 @@ class Queue extends Model {
      */
     public static $updateRules = [
         'queue_category_id' => 'nullable',
-        'name'               => 'required|between:3,100',
-        'prefix'             => 'nullable|between:2,10',
-        'summary'            => 'nullable',
-        'description'        => 'nullable',
-        'image'              => 'mimes:png',
+        'name'              => 'required|between:3,100',
+        'prefix'            => 'nullable|between:2,10',
+        'summary'           => 'nullable',
+        'description'       => 'nullable',
+        'image'             => 'mimes:png',
     ];
 
     /**********************************************************************************************
@@ -76,10 +76,18 @@ class Queue extends Model {
     /**
      * Get the category the queue belongs to.
      */
-    public function category() {
+    public function category()
+    {
         return $this->belongsTo(QueueCategory::class, 'queue_category_id');
     }
 
+    /**
+     * Get the submissions that belong to this queue.
+     */
+    public function submissions()
+    {
+        return $this->hasMany(QueueSubmission::class, 'queue_id');
+    }
 
     /**********************************************************************************************
 
@@ -94,17 +102,18 @@ class Queue extends Model {
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeActive($query) {
+    public function scopeActive($query)
+    {
         return $query->where('is_active', 1)
             ->where(function ($query) {
                 $query->whereNull('start_at')->orWhere('start_at', '<', Carbon::now())->orWhere(function ($query) {
                     $query->where('start_at', '>=', Carbon::now())->where('hide_before_start', 0);
                 });
             })->where(function ($query) {
-                $query->whereNull('end_at')->orWhere('end_at', '>', Carbon::now())->orWhere(function ($query) {
-                    $query->where('end_at', '<=', Carbon::now())->where('hide_after_end', 0);
-                });
+            $query->whereNull('end_at')->orWhere('end_at', '>', Carbon::now())->orWhere(function ($query) {
+                $query->where('end_at', '<=', Carbon::now())->where('hide_after_end', 0);
             });
+        });
     }
 
     /**
@@ -115,7 +124,8 @@ class Queue extends Model {
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeOpen($query, $isOpen) {
+    public function scopeOpen($query, $isOpen)
+    {
         if ($isOpen) {
             $query->where(function ($query) {
                 $query->whereNull('end_at')->where('start_at', '<', Carbon::now());
@@ -143,7 +153,8 @@ class Queue extends Model {
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeStaffOnly($query, $user) {
+    public function scopeStaffOnly($query, $user)
+    {
         if ($user && $user->isStaff) {
             return $query;
         }
@@ -159,7 +170,8 @@ class Queue extends Model {
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeSortAlphabetical($query, $reverse = false) {
+    public function scopeSortAlphabetical($query, $reverse = false)
+    {
         return $query->orderBy('name', $reverse ? 'DESC' : 'ASC');
     }
 
@@ -170,7 +182,8 @@ class Queue extends Model {
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeSortCategory($query) {
+    public function scopeSortCategory($query)
+    {
         if (QueueCategory::all()->count()) {
             return $query->orderBy(QueueCategory::select('sort')->whereColumn('queues.queue_category_id', 'queue_categories.id'), 'DESC');
         }
@@ -185,7 +198,8 @@ class Queue extends Model {
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeSortNewest($query) {
+    public function scopeSortNewest($query)
+    {
         return $query->orderBy('id', 'DESC');
     }
 
@@ -196,7 +210,8 @@ class Queue extends Model {
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeSortOldest($query) {
+    public function scopeSortOldest($query)
+    {
         return $query->orderBy('id');
     }
 
@@ -208,7 +223,8 @@ class Queue extends Model {
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeSortStart($query, $reverse = false) {
+    public function scopeSortStart($query, $reverse = false)
+    {
         return $query->orderBy('start_at', $reverse ? 'DESC' : 'ASC');
     }
 
@@ -220,8 +236,24 @@ class Queue extends Model {
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeSortEnd($query, $reverse = false) {
+    public function scopeSortEnd($query, $reverse = false)
+    {
         return $query->orderBy('end_at', $reverse ? 'DESC' : 'ASC');
+    }
+
+    /**
+     * Scope a query to sort queues by end date.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param bool                                  $reverse
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeSplash($query)
+    {
+        $query->whereHas('category', function ($query) {
+            $query->where('key', null);
+        })->orWhere('queue_category_id', null);
     }
 
     /**********************************************************************************************
@@ -235,8 +267,9 @@ class Queue extends Model {
      *
      * @return string
      */
-    public function getDisplayNameAttribute() {
-        return '<a href="'.$this->url.'" class="display-queue">'.$this->name.'</a>';
+    public function getDisplayNameAttribute()
+    {
+        return '<a href="' . $this->url . '" class="display-queue">' . $this->name . '</a>';
     }
 
     /**
@@ -244,7 +277,8 @@ class Queue extends Model {
      *
      * @return string
      */
-    public function getImageDirectoryAttribute() {
+    public function getImageDirectoryAttribute()
+    {
         return 'images/data/queues';
     }
 
@@ -253,8 +287,9 @@ class Queue extends Model {
      *
      * @return string
      */
-    public function getImageFileNameAttribute() {
-        return $this->id.'-'.$this->hash.'-image.png';
+    public function getImageFileNameAttribute()
+    {
+        return $this->id . '-' . $this->hash . '-image.png';
     }
 
     /**
@@ -262,7 +297,8 @@ class Queue extends Model {
      *
      * @return string
      */
-    public function getImagePathAttribute() {
+    public function getImagePathAttribute()
+    {
         return public_path($this->imageDirectory);
     }
 
@@ -271,12 +307,13 @@ class Queue extends Model {
      *
      * @return string
      */
-    public function getImageUrlAttribute() {
-        if (!$this->has_image) {
+    public function getImageUrlAttribute()
+    {
+        if (! $this->has_image) {
             return null;
         }
 
-        return asset($this->imageDirectory.'/'.$this->imageFileName);
+        return asset($this->imageDirectory . '/' . $this->imageFileName);
     }
 
     /**
@@ -284,8 +321,9 @@ class Queue extends Model {
      *
      * @return string
      */
-    public function getUrlAttribute() {
-        return url('queues/queues?name='.$this->name);
+    public function getUrlAttribute()
+    {
+        return url('queues/queues?name=' . $this->name);
     }
 
     /**
@@ -293,8 +331,9 @@ class Queue extends Model {
      *
      * @return string
      */
-    public function getIdUrlAttribute() {
-        return url('queues/'.$this->id);
+    public function getIdUrlAttribute()
+    {
+        return url('queues/' . $this->id);
     }
 
     /**
@@ -302,7 +341,8 @@ class Queue extends Model {
      *
      * @return string
      */
-    public function getAssetTypeAttribute() {
+    public function getAssetTypeAttribute()
+    {
         return 'queues';
     }
 
@@ -311,8 +351,9 @@ class Queue extends Model {
      *
      * @return string
      */
-    public function getAdminUrlAttribute() {
-        return url('admin/data/queues/edit/'.$this->id);
+    public function getAdminUrlAttribute()
+    {
+        return url('admin/data/queues/edit/' . $this->id);
     }
 
     /**
@@ -320,11 +361,12 @@ class Queue extends Model {
      *
      * @return string
      */
-    public function getAdminPowerAttribute() {
+    public function getAdminPowerAttribute()
+    {
         return 'edit_data';
     }
 
-     /**
+    /**
      * Get the service associated with the associated type.
      *
      * @return mixed
@@ -345,7 +387,7 @@ class Queue extends Model {
         return config('lorekeeper.queue_types.' . $this->queue_type);
     }
 
-        /**
+    /**
      * Gets the file directory containing the model's image.
      *
      * @return string
@@ -395,7 +437,7 @@ class Queue extends Model {
         return file_exists($this->customImagePath . '/' . $this->CustomImageFileName($key));
     }
 
-     /**
+    /**
      * Get the general service
      *
      * @return mixed
@@ -412,7 +454,10 @@ class Queue extends Model {
      */
     public function configSet($key)
     {
-        if(isset($this->configInfo[$key]) && $this->configInfo[$key] == true) return true;
+        if (isset($this->configInfo[$key]) && $this->configInfo[$key] == true) {
+            return true;
+        }
+
         return false;
     }
 
@@ -422,7 +467,10 @@ class Queue extends Model {
      */
     public function getItemsAttribute()
     {
-        if(!isset($this->data['items'])) return [];
+        if (! isset($this->data['items'])) {
+            return [];
+        }
+
         $final = [];
         foreach ($this->data['items'] as $item) {
             $final[] = Item::find($item);
@@ -431,12 +479,17 @@ class Queue extends Model {
         return $final;
     }
 
-     /**********************************************************************************************
+    /**********************************************************************************************
     OTHER
      **********************************************************************************************/
 
     public function checkLimit($user)
     {
+        //categories supersede all.
+        if ($this->queue_category_id && isset($this->category->limit)) {
+            return $this->category->checkLimit($user);
+        }
+
         if (isset($this->limit)) {
             if ($this->logCount($user) >= $this->limit) {
                 return false;
@@ -473,6 +526,92 @@ class Queue extends Model {
 
         }
         return null;
+    }
+
+    public function checkConcurrent($user)
+    {
+        //categories supersede all.
+        if ($this->queue_category_id && isset($this->category->limit_concurrent)) {
+            return $this->category->checkConcurrent($user);
+        }
+
+        if (isset($this->limit_concurrent)) {
+            if (QueueSubmission::pending($this->id, $user->id)->count() >= $this->limit_concurrent) {
+                return false;
+            }
+
+        }
+        return true;
+    }
+
+    /**
+     * Gets the decoded output json
+     *
+     * @return array
+     */
+    public function getRewardsAttribute()
+    {
+        $rewards = [];
+        if (isset($this->output['users'])) {
+            $assets = $this->getRewardItemsAttribute();
+
+            foreach ($assets as $type => $a) {
+                $class = getAssetModelString($type, false);
+                foreach ($a as $id => $asset) {
+                    $rewards[] = (object) [
+                        'rewardable_type' => $class,
+                        'rewardable_id'   => $id,
+                        'quantity'        => $asset['quantity'],
+                    ];
+                }
+            }
+        }
+        return $rewards;
+    }
+
+    /**
+     * Interprets the json output and retrieves the corresponding items
+     *
+     * @return array
+     */
+    public function getRewardItemsAttribute()
+    {
+        return parseAssetData($this->output['users']);
+    }
+
+    /**
+     * Gets the decoded output json
+     *
+     * @return array
+     */
+    public function getCharacterRewardsAttribute()
+    {
+        $rewards = [];
+        if (isset($this->output['characters'])) {
+            $assets = $this->getCharacterRewardItemsAttribute();
+
+            foreach ($assets as $type => $a) {
+                $class = getAssetModelString($type, false);
+                foreach ($a as $id => $asset) {
+                    $rewards[] = (object) [
+                        'rewardable_type' => $class,
+                        'rewardable_id'   => $id,
+                        'quantity'        => $asset['quantity'],
+                    ];
+                }
+            }
+        }
+        return $rewards;
+    }
+
+    /**
+     * Interprets the json output and retrieves the corresponding items
+     *
+     * @return array
+     */
+    public function getCharacterRewardItemsAttribute()
+    {
+        return parseAssetData($this->output['characters']);
     }
 
 }

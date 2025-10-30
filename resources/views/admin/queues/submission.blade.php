@@ -62,6 +62,8 @@
 
         {!! Form::open(['url' => url()->current(), 'id' => 'submissionForm']) !!}
 
+        <h2>Rewards</h2>
+        @include('widgets._loot_select', ['loots' => $submission->rewards, 'showLootTables' => true, 'showRaffles' => true])
         <div class="mb-3">
             @include('home.queues._queue', ['queue' => $submission->queue, 'staffView' => true])
         </div>
@@ -155,7 +157,7 @@
 
         {!! Form::close() !!}
 
-
+        @include('widgets._loot_select_row', ['showLootTables' => true, 'showRaffles' => true])
 
         <div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
@@ -207,6 +209,7 @@
 @section('scripts')
     @parent
     @if ($submission->status == 'Pending')
+        @include('js._loot_js', ['showLootTables' => true, 'showRaffles' => true])
         @if ($queue->configSet('character_submit') && View::exists('home.queues.types.characters.' . $queue->queue_type . '_select_js'))
             @include('home.queues.types.characters.' . $queue->queue_type . '_select_js')
         @endif

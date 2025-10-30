@@ -163,6 +163,37 @@ class QueueService extends Service
         return $this->rollbackReturn(false);
     }
 
+    /**
+     * Handle category data.
+     *
+     * @param array               $data
+     * @param QueueCategory|null $category
+     *
+     * @return array
+     */
+    private function populateCategoryData($data, $category = null)
+    {
+        if (isset($data['description']) && $data['description']) {
+            $data['parsed_description'] = parse($data['description']);
+        } elseif (! isset($data['description']) && ! $data['description']) {
+            $data['parsed_description'] = null;
+        }
+
+        if (isset($data['remove_image'])) {
+            if ($category && $category->has_image && $data['remove_image']) {
+                $data['has_image'] = 0;
+                $this->deleteImage($category->categoryImagePath, $category->categoryImageFileName);
+            }
+            unset($data['remove_image']);
+        }
+
+        if (! isset($data['display'])) {
+            $data['display'] = 0;
+        }
+
+        return $data;
+    }
+
     /**********************************************************************************************
 
         QUEUES
@@ -300,7 +331,6 @@ class QueueService extends Service
                 throw new \Exception('A submission under this queue exists. Deleting the queue will break the submission page - consider setting the queue to be not active instead.');
             }
 
-            $queue->rewards()->delete();
             if ($queue->has_image) {
                 $this->deleteImage($queue->imagePath, $queue->imageFileName);
             }
@@ -312,33 +342,6 @@ class QueueService extends Service
         }
 
         return $this->rollbackReturn(false);
-    }
-
-    /**
-     * Handle category data.
-     *
-     * @param array               $data
-     * @param QueueCategory|null $category
-     *
-     * @return array
-     */
-    private function populateCategoryData($data, $category = null)
-    {
-        if (isset($data['description']) && $data['description']) {
-            $data['parsed_description'] = parse($data['description']);
-        } elseif (! isset($data['description']) && ! $data['description']) {
-            $data['parsed_description'] = null;
-        }
-
-        if (isset($data['remove_image'])) {
-            if ($category && $category->has_image && $data['remove_image']) {
-                $data['has_image'] = 0;
-                $this->deleteImage($category->categoryImagePath, $category->categoryImageFileName);
-            }
-            unset($data['remove_image']);
-        }
-
-        return $data;
     }
 
     /**
@@ -392,6 +395,17 @@ class QueueService extends Service
                 }
             }
             $data['checklist'] = $data['check_text'];
+        }
+
+        if (isset($data['user_rewardable_type'])) {
+            $data['output']['users'] = encodeForDataColumn($data, false, false, 'user_');
+        } else {
+            $data['output']['users'] = null;
+        }
+        if (isset($data['character_rewardable_type'])) {
+            $data['output']['characters'] = encodeForDataColumn($data, false, true, 'character_');
+        } else {
+            $data['output']['characters'] = null;
         }
 
         return $data;

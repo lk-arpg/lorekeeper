@@ -26,6 +26,7 @@ use App\Models\Character\CharacterCategory;
 use App\Models\Character\CharacterImage;
 use App\Models\Character\Character;
 use App\Models\Character\Sublist;
+use App\Models\Queue\Queue;
 
 use App\Http\Controllers\Controller;
 
@@ -350,7 +351,7 @@ class UserController extends Controller
     public function getUserQueueSubmissions(Request $request, $name) {
         $logs = $this->user->getQueueSubmissions(Auth::user() ?? null);
         if ($request->get('queue_ids')) {
-            $logs->whereIn('queue_ids', $request->get('queue_ids'));
+            $logs->whereIn('queue_id', $request->get('queue_ids'));
         }
         if ($request->get('sort')) {
             $logs->orderBy('created_at', $request->get('sort') == 'newest' ? 'DESC' : 'ASC');
@@ -359,7 +360,7 @@ class UserController extends Controller
         return view('user.queue_logs', [
             'user'    => $this->user,
             'logs'    => $logs->paginate(30)->appends($request->query()),
-            'prompts' => Queue::active()->pluck('name', 'id'),
+            'queues' => Queue::active()->pluck('name', 'id'),
         ]);
     }
 }

@@ -45,7 +45,7 @@ class HomeController extends Controller
             'gallerySubmissionCount' => GallerySubmission::collaboratorApproved()->where('status', 'Pending')->count(),
             'galleryAwardCount' => GallerySubmission::requiresAward()->where('is_valued', 0)->count(),
             'queueCount'        => QueueSubmission::where('status', 'Pending')->whereNotNull('queue_id')->count(),
-            'queues'            => Queue::get(),
+            'queues'            => Queue::query()->active()->get(),
         ]);
     }
 }

@@ -11,7 +11,7 @@
         "format": "./node_modules/.bin/blade-formatter --progress --write '**/*.blade.php'"
     },
     "devDependencies": {
-        "axios": "^1.12.2",
+        "axios": "^1.13.1",
         "blade-formatter": "1.42.3",
         "bootstrap": "^4.6",
         "jquery": "^3.7",

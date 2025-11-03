@@ -60,6 +60,9 @@ class QueueSubmissionController extends Controller {
      */
     public function getQueueSubmissionIndex(Request $request, $id, $status = null) {
 
+        $queue = Queue::find($id);
+        if ($queue->staff_rank_id && !in_array(Auth::user()->rank_id, $queue->staff_rank_id)) abort(404);
+        
         $submissions = QueueSubmission::with('queue')->where('queue_id', $id)->where('status', $status ? ucfirst($status) : 'Pending');
         $data = $request->only(['sort']);
         if (isset($data['sort'])) {
@@ -76,7 +79,7 @@ class QueueSubmissionController extends Controller {
         }
 
         return view('admin.queues.submission_index', [
-            'queue' => Queue::find($id),
+            'queue' => $queue,
             'submissions' => $submissions->paginate(30)->appends($request->query()),
         ]);
     }

@@ -142,9 +142,9 @@ function createAssetsArray($isCharacter = false)
  * @param  array  $second
  * @return array
  */
-function mergeAssetsArrays($first, $second)
+function mergeAssetsArrays($first, $second, $isCharacter = false)
 {
-    $keys = getAssetKeys();
+    $keys = getAssetKeys($isCharacter);
     foreach($keys as $key)
         foreach($second[$key] as $item)
             addAsset($first, $item['asset'], $item['quantity']);
@@ -159,11 +159,30 @@ function mergeAssetsArrays($first, $second)
  * @param  mixed  $asset
  * @param  int    $quantity
  */
-function addAsset(&$array, $asset, $quantity = 1)
+function addAsset(&$array, $asset, $quantity = 1, $prefix = null)
 {
     if(!$asset) return;
-    if(isset($array[$asset->assetType][$asset->id])) $array[$asset->assetType][$asset->id]['quantity'] += $quantity;
+    if(isset($array[$asset->assetType][$asset->id])) $array[$asset->assetType][$asset->id][$prefix.'quantity'] += $quantity;
     else $array[$asset->assetType][$asset->id] = ['asset' => $asset, 'quantity' => $quantity];
+}
+
+/**
+ * Removes an asset from the given array, if it exists.
+ *
+ * @param array $array
+ * @param mixed $asset
+ * @param int   $quantity
+ */
+function removeAsset(&$array, $asset, $quantity = 1) {
+    if (!$asset) {
+        return;
+    }
+    if (isset($array[$asset->assetType][$asset->id])) {
+        $array[$asset->assetType][$asset->id]['quantity'] -= $quantity;
+        if ($array[$asset->assetType][$asset->id]['quantity'] == 0) {
+            unset($array[$asset->assetType][$asset->id]);
+        }
+    }
 }
 
 /**
@@ -197,9 +216,9 @@ function getDataReadyAssets($array, $isCharacter = false)
  * @param  array  $array
  * @return array
  */
-function parseAssetData($array)
+function parseAssetData($array, $isCharacter = false)
 {
-    $assets = createAssetsArray();
+    $assets = createAssetsArray($isCharacter);
     foreach($array as $key => $contents)
     {
         $model = getAssetModelString($key);
@@ -320,4 +339,57 @@ function fillCharacterAssets($assets, $sender, $recipient, $logType, $data, $sub
         }
     }
     return $assets;
+}
+
+/**
+ * Creates a rewards string from an asset array.
+ *
+ * @param array $array
+ *
+ * @return string
+ */
+function createRewardsString($array) {
+    $string = [];
+    foreach ($array as $key => $contents) {
+        foreach ($contents as $asset) {
+            $string[] = $asset['asset']->displayName.' x'.$asset['quantity'];
+        }
+    }
+    if (!count($string)) {
+        return 'Nothing. :('; // :(
+    }
+
+    if (count($string) == 1) {
+        return implode(', ', $string);
+    }
+
+    return implode(', ', array_slice($string, 0, count($string) - 1)).(count($string) > 2 ? ', and ' : ' and ').end($string);
+}
+
+
+function encodeForDataColumn($data, $encode = true, $isCharacter = false, $prefix = null) {
+    // The data will be stored as an asset table, json_encode()d.
+    // First build the asset table, then prepare it for storage.
+    $assets = createAssetsArray($isCharacter);
+    foreach ($data[$prefix.'rewardable_type'] as $key => $r) {
+        switch ($r) {
+            case 'Item':
+                $type = 'App\Models\Item\Item';
+                break;
+            case 'Currency':
+                $type = 'App\Models\Currency\Currency';
+                break;
+            case 'LootTable':
+                $type = 'App\Models\Loot\LootTable';
+                break;
+            case 'Raffle':
+                $type = 'App\Models\Raffle\Raffle';
+                break;
+        }
+        $asset = $type::find($data[$prefix.'rewardable_id'][$key]);
+        addAsset($assets, $asset, $data[$prefix.'quantity'][$key], $prefix);
+    }
+    $assets = getDataReadyAssets($assets, $isCharacter);
+
+    return $encode ? json_encode($assets) : $assets;
 }

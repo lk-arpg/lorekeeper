@@ -112,6 +112,9 @@
                         <a class="dropdown-item" href="{{ url('prompts/prompts') }}">
                             Prompts
                         </a>
+                        <a class="dropdown-item" href="{{ url('queues/queues') }}">
+                            Queues
+                        </a>
                         <a class="dropdown-item" href="{{ url('shops') }}">
                             Shops
                         </a>

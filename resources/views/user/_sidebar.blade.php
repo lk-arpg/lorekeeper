@@ -25,6 +25,7 @@
         <div class="sidebar-item"><a href="{{ $user->url.'/item-logs' }}" class="{{ $user->url.'/currency-logs*' }}">Item Logs</a></div>
         <div class="sidebar-item"><a href="{{ $user->url.'/currency-logs' }}" class="{{ set_active($user->url.'/currency-logs*') }}">Currency Logs</a></div>
         <div class="sidebar-item"><a href="{{ $user->url.'/submissions' }}" class="{{ set_active($user->url.'/submissions*') }}">Submissions</a></div>
+        <div class="sidebar-item"><a href="{{ $user->url.'/queue-submissions' }}" class="{{ set_active($user->url.'/queue-submissions*') }}">Queue Submissions</a></div>
     </li>
 
     @if(Auth::check() && Auth::user()->hasPower('edit_user_info'))

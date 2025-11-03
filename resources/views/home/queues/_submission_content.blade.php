@@ -60,19 +60,39 @@
         </div>
     @endif
 </div>
+<div class="card mb-3">
+    <div class="card-header h2">Rewards</div>
+    <div class="card-body">
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th width="70%">Reward</th>
+                    <th width="30%">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (parseAssetData(isset($submission->data['rewards']) ? $submission->data['rewards'] : $submission->data) as $type)
+                    @foreach ($type as $asset)
+                        <tr>
+                            <td>{!! $asset['asset'] ? $asset['asset']->displayName : 'Deleted Asset' !!}</td>
+                            <td>{{ $asset['quantity'] }}</td>
+                        </tr>
+                    @endforeach
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+</div>
 
 <div class="card mb-3">
-    <div class="card-body">
-        @if (View::exists('home.queues.types.' . $queue->queue_type))
-            @include('home.queues.types.' . $queue->queue_type)
-        @else
-            <div class="card-header h2">Queue Form</div>
-            <div class="card-body">
-                <p>This queue has no associated extra form to fill in.</p>
-            </div>
-        @endif
-
-    </div>
+    @if (View::exists('home.queues.types.' . $queue->queue_type))
+        @include('home.queues.types.' . $queue->queue_type, ['data' => isset($submission->data['queue']) ? $submission->data['queue'] : null])
+    @else
+        <div class="card-header h2">Queue Form</div>
+        <div class="card-body">
+            <p>This queue has no associated extra form to fill in.</p>
+        </div>
+    @endif
 </div>
 
 <div class="card mb-3">
@@ -85,7 +105,7 @@
                 </div>
             @endif
             @foreach ($submission->characters()->whereRelation('character', 'deleted_at', null)->get() as $character)
-                @include('home.queues.types.characters.' . $queue->queue_type . '_select_submitted')
+                @include('home.queues.types.characters.' . $queue->queue_type . '_select_submitted', ['data' => $character->data])
             @endforeach
         @else
             <p>This queue does not use characters.</p>

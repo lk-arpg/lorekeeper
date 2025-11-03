@@ -575,6 +575,6 @@ class User extends Authenticatable implements MustVerifyEmail
      * @return \Illuminate\Pagination\LengthAwarePaginator
      */
     public function getQueueSubmissions($user = null) {
-        return QueueSubmission::with('user')->with('prompt')->viewable($user ? $user : null)->where('user_id', $this->id)->orderBy('id', 'DESC');
+        return QueueSubmission::with('user')->viewable($user ? $user : null)->where('user_id', $this->id)->orderBy('id', 'DESC');
     }
 }

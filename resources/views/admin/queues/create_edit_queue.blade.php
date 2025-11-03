@@ -111,6 +111,14 @@
             {!! Form::select('limit_period', $limit_periods, $queue->limit_period, ['class' => 'form-control', 'data-name' => 'limit_period']) !!}
         </div>
     </div>
+    <div class="row">
+        <div class="col-md-4 form-group">
+            {!! Form::label('limit_concurrent', 'Concurrent Limit (Optional)') !!} {!! add_help(
+                'A limit to concurrent submissions (applies regardless of the limit above). This will check if the user has any pending or draft submissions and prevents them from making more after they hit the cap until they are processed. Leave blank to enforce no limit to concurrent submissions.',
+            ) !!}
+            {!! Form::text('limit_concurrent', $queue->limit_concurrent, ['class' => 'form-control']) !!}
+        </div>
+    </div>
 
     <h3>Checklist</h3>
     <p>Create a checklist below to force users to acknowledge all necessary steps of submitting to the queue are complete. The user will not be able to submit until they have accepted that they have completed each step.</p>
@@ -144,6 +152,19 @@
         </tbody>
     </table>
 
+    <h4 class="mt-5">Rewards</h4>
+    <p>Mods are able to modify the specific rewards granted at approval time.</p>
+    <p>You can add loot tables containing any kind of currencies (both user- and character-attached), but be sure to keep track of which are being distributed! Character-only currencies cannot be given to users.</p>
+
+    <h4>User Rewards <i class="fas fa-user"></i></h4>
+    <p>User rewards are credited on a per-user basis.</p>
+    @include('widgets._loot_select', ['loots' => $queue->rewards, 'showLootTables' => true, 'showRaffles' => true, 'prefix' => 'user_'])
+
+    @if (!$queue->id || $queue->configSet('character_submit'))
+        <h4>Character Rewards <i class="fas fa-paw"></i></h4>
+        <p>Character rewards are not currently functional and will need to be properly coded into a custom queue to suit its needs.</p>
+        @include('widgets._loot_select', ['loots' => $queue->characterRewards, 'showLootTables' => true, 'showRaffles' => true, 'prefix' => 'character_', 'isCharacter' => true])
+    @endif
     <h3>Queue Type</h3>
     <p>Queue types change how the form changes in functionality. If you are installing this extension blank, then select vanilla, as there is nothing else to swap to.</p>
 
@@ -157,6 +178,9 @@
     </div>
 
     {!! Form::close() !!}
+
+    @include('widgets._loot_select_row', ['showLootTables' => true, 'showRaffles' => true, 'prefix' => 'user_'])
+    @include('widgets._loot_select_row', ['showLootTables' => true, 'showRaffles' => true, 'prefix' => 'character_', 'isCharacter' => true])
 
     <div id="checkRowData" class="hide">
         <table class="table table-sm">
@@ -181,28 +205,27 @@
         @if ($queue->configSet('item_consume'))
             <h3>Item Preset</h3>
             <p>This queue consumes items, so you have the option to select which items the user may attach to their submission when they make it.</p>
-
             <div class="text-right mb-3">
-                <a href="#" class="btn btn-info" id="addLoot">Add Item</a>
+                <a href="#" class="btn btn-info" id="addpreset">Add Item</a>
             </div>
-            <table class="table table-sm" id="lootSeason">
+            <table class="table table-sm" id="presetTable">
                 <thead>
                     <tr>
                         <th width="40%">Item</th>
                         <th width="10%"></th>
                     </tr>
                 </thead>
-                <tbody id="lootSeasonBody">
+                <tbody id="presetTableBody">
                     @if (isset($queue->data['items']))
                         @foreach ($queue->data['items'] as $item)
-                            <tr class="loot-row">
-                                <td class="loot-row-select">
+                            <tr class="preset-row">
+                                <td class="preset-row-select">
                                     {!! Form::select('item_id[]', $item_limits, $item, [
                                         'class' => 'form-control pet-select selectize',
                                         'placeholder' => 'Select Item',
                                     ]) !!}
                                 </td>
-                                <td class="text-right"><a href="#" class="btn btn-danger remove-loot-button">Remove</a>
+                                <td class="text-right"><a href="#" class="btn btn-danger remove-preset-button">Remove</a>
                                 </td>
                             </tr>
                         @endforeach
@@ -218,12 +241,12 @@
         {!! Form::close() !!}
 
         @if ($queue->configSet('item_consume'))
-            <div id="lootRowData" class="hide">
+            <div id="presetRowData" class="hide">
                 <table class="table table-sm">
-                    <tbody id="lootRow">
-                        <tr class="loot-row">
-                            <td class="loot-row-select">{!! Form::select('item_id[]', $item_limits, null, ['class' => 'form-control item-select selectize', 'placeholder' => 'Select Item']) !!}</td>
-                            <td class="text-right"><a href="#" class="btn btn-danger remove-loot-button">Remove</a></td>
+                    <tbody id="presetRow">
+                        <tr class="preset-row">
+                            <td class="preset-row-select">{!! Form::select('item_id[]', $item_limits, null, ['class' => 'form-control item-select selectize', 'placeholder' => 'Select Item']) !!}</td>
+                            <td class="text-right"><a href="#" class="btn btn-danger remove-preset-button">Remove</a></td>
                         </tr>
                     </tbody>
                 </table>
@@ -231,21 +254,20 @@
 
             <script>
                 $(document).ready(function() {
-                    var $lootSeason = $('#lootSeasonBody');
-                    var $lootRow = $('#lootRow').find('.loot-row');
-                    var $itemSelect = $('#lootRowData').find('.item-select');
+                    var $presetTable = $('#presetTableBody');
+                    var $presetRow = $('#presetRow').find('.preset-row');
 
-                    $('#lootSeasonBody .selectize').selectize();
-                    attachRemoveListener($('#lootSeasonBody .remove-loot-button'));
-                    $('#addLoot').on('click', function(e) {
+                    $('#presetTableBody .selectize').selectize();
+                    attachRemovePresetListener($('#presetTableBody .remove-preset-button'));
+                    $('#addpreset').on('click', function(e) {
                         e.preventDefault();
-                        var $clone = $lootRow.clone();
-                        $lootSeason.append($clone);
+                        var $clone = $presetRow.clone();
+                        $presetTable.append($clone);
                         $clone.find('.selectize').selectize();
-                        attachRemoveListener($clone.find('.remove-loot-button'));
+                        attachRemovePresetListener($clone.find('.remove-preset-button'));
                     });
 
-                    function attachRemoveListener(node) {
+                    function attachRemovePresetListener(node) {
                         node.on('click', function(e) {
                             e.preventDefault();
                             $(this).parent().parent().remove();
@@ -290,6 +312,8 @@
     @if (View::exists('admin.queues.types.' . $queue->queue_type . '_js'))
         @include('admin.queues.types.' . $queue->queue_type . '_js', ['data' => $queue->data])
     @endif
+    @include('js._loot_js', ['showLootTables' => true, 'showRaffles' => true, 'prefix' => 'user_'])
+    @include('js._loot_js', ['showLootTables' => true, 'showRaffles' => true, 'prefix' => 'character_', 'isCharacter' => true])
     <script>
         $(document).ready(function() {
             $('.delete-queue-button').on('click', function(e) {

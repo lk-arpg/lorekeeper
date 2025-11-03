@@ -245,4 +245,42 @@ class QueueSubmission extends Model
         return $query->where('queue_id', $queue)->where('user_id', $user)->where('status', '=', 'Approved')->orWhere('queue_id', $queue)->where('user_id', $user)->where('status', '=', 'Pending');
     }
 
+    /**
+     * Scope a query to only include user's logs.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopePending($query, $queue, $user)
+    {
+        return $query->where('queue_id', $queue)->where('user_id', $user)->where('status', '=', 'Pending')->orWhere('queue_id', $queue)->where('user_id', $user)->where('status', '=', 'Draft');
+    }
+
+     /**
+     * Get the rewards for the submission/claim.
+     *
+     * @return array
+     */
+    public function getRewardsAttribute()
+    {
+        if(isset($this->data['rewards']))
+        $assets = parseAssetData($this->data['rewards']);
+        else
+        $assets = parseAssetData($this->data);
+        $rewards = [];
+        foreach($assets as $type => $a)
+        {
+            $class = getAssetModelString($type, false);
+            foreach($a as $id => $asset)
+            {
+                $rewards[] = (object)[
+                    'rewardable_type' => $class,
+                    'rewardable_id' => $id,
+                    'quantity' => $asset['quantity']
+                ];
+            }
+        }
+        return $rewards;
+    }
+
 }

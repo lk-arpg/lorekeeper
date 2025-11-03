@@ -1,21 +1,25 @@
 <div class="row world-entry">
-    @if ($category->imageUrl)
-        <div class="col-md-3 world-entry-image"><a href="{{ $category->imageUrl }}" data-lightbox="entry" data-title="{{ $category->name }}"><img src="{{ $category->imageUrl }}" class="world-entry-image" alt="{{ $category->name }}" /></a></div>
+    @if ($category->categoryImageUrl)
+        <div class="col-md-3 world-entry-image"><a href="{{ $category->categoryImageUrl }}" data-lightbox="entry" data-title="{{ $category->displayName }}"><img src="{{ $category->categoryImageUrl }}" class="world-entry-image"
+                    alt="{{ $category->displayName }}" /></a></div>
     @endif
-    <div class="{{ $imageUrl ? 'col-md-9' : 'col-12' }}">
-        <h3>{!! $category->name !!} @if (isset($searchUrl) && $searchUrl)
-                <a href="{{ $searchUrl }}" class="world-entry-search text-muted"><i class="fas fa-search"></i></a>
-            @endif
+    <div class="{{ $category->categoryImageUrl ? 'col-md-9' : 'col-12' }}">
+        @if (Auth::check() && Auth::user()->hasPower('edit_data'))
+            <a data-toggle="tooltip" title="Edit Category" href="{{ $category->adminUrl }}" class="mb-2 float-right">
+                <h3><i class="fas fa-pencil-alt"></i></h3>
+            </a>
+        @endif
+        <h3>{!! $category->displayName !!}
         </h3>
         <div class="world-entry-text">
-            {!! $category->description !!}
+            {!! $category->parsed_description !!}
 
             @if (isset($category->limit))
-                 <div class="alert alert-info text-center">
+                <div class="alert alert-info text-center">
                     You can submit to queues within this category {{ $category->limit }} {{ $category->limit > 1 ? 'times' : 'time' }}{{ $category->limit_period ? ' per ' . strtolower($category->limit_period) : '' }}. ( Submitted
                     {{ $category->logCount(Auth::user()) }} /
                     {{ $category->limit }} )
-                 </div>
+                </div>
             @endif
             @if (isset($category->limit_concurrent))
                 <div class="alert alert-warning text-center">

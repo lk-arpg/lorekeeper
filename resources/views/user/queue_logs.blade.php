@@ -1,14 +1,14 @@
 @extends('user.layout')
 
 @section('profile-title')
-    {{ $user->name }}'s Submissions
+    {{ $user->name }}'s Queue Submissions
 @endsection
 
 @section('profile-content')
-    {!! breadcrumbs(['Users' => 'users', $user->name => $user->url, 'Submissions' => $user->url . '/submissions']) !!}
+    {!! breadcrumbs(['Users' => 'users', $user->name => $user->url, 'Queue Submissions' => $user->url . '/queue-submissions']) !!}
 
     <h1>
-        {!! $user->displayName !!}'s Submissions
+        {!! $user->displayName !!}'s Queue Submissions
     </h1>
 
     <div>
@@ -56,7 +56,7 @@
                     <div class="row flex-wrap">
                         <div class="col-12 col-md-2">
                             <div class="logs-table-cell">
-                                {!! $log->queue_id ? $log->queue->displayName : '---' !!}
+                                {!! $log->queue->displayName !!}
                             </div>
                         </div>
                         <div class="col-6 col-md-4">

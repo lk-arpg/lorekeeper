@@ -23,13 +23,7 @@
     @foreach ($categories as $category)
         <div class="card mb-3">
             <div class="card-body">
-                @include('queues._entry', [
-                    'edit' => ['object' => $category, 'title' => 'Category'],
-                    'imageUrl' => $category->categoryImageUrl,
-                    'name' => $category->displayName,
-                    'description' => $category->parsed_description,
-                    'searchUrl' => $category->searchUrl,
-                ])
+                @include('queues._category_entry')
             </div>
         </div>
     @endforeach

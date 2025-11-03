@@ -43,7 +43,7 @@
         <div class="card-body" style="clear:both;">
             <div id="characters" class="mb-3">
                 @foreach ($submission->characters as $character)
-                    @include('home.queues.types.characters.' . $queue->queue_type . '_select_entry')
+                    @include('home.queues.types.characters.' . $queue->queue_type . '_select_entry', ['data' => $character->data])
                 @endforeach
                 @if (old('slug') && !$submission->id)
                     @php

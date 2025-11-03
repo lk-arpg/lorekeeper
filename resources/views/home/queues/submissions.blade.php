@@ -8,22 +8,30 @@
 
     {!! breadcrumbs(['Queue Submissions' => 'queue-submissions']) !!}
 
+    @if (isset($queue))
+        <div class="float-right">
+            <a href="{{ url('queue-submissions/new/' . $queue->id) }}" class="btn btn-success">New Submission</a>
+        </div>
+    @endif
+
     <h1>
-        Queue Submissions
+        {{ isset($queue) ? $queue->name : 'Queue' }} Submissions
     </h1>
+
+
 
     <ul class="nav nav-tabs mb-3">
         <li class="nav-item">
-            <a class="nav-link {{ Request::get('type') == 'draft' ? 'active' : '' }}" href="queue-submissions?type=draft">Drafts</a>
+            <a class="nav-link {{ Request::get('type') == 'draft' ? 'active' : '' }}" href="/queue-submissions{{ isset($queue) ? '/' . $queue->id : '' }}?type=draft">Drafts</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {{ !Request::get('type') || Request::get('type') == 'pending' ? 'active' : '' }}" href="queue-submissions">Pending</a>
+            <a class="nav-link {{ !Request::get('type') || Request::get('type') == 'pending' ? 'active' : '' }}" href="/queue-submissions{{ isset($queue) ? '/' . $queue->id : '' }}">Pending</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {{ Request::get('type') == 'approved' ? 'active' : '' }}" href="queue-submissions?type=approved">Approved</a>
+            <a class="nav-link {{ Request::get('type') == 'approved' ? 'active' : '' }}" href="/queue-submissions{{ isset($queue) ? '/' . $queue->id : '' }}?type=approved">Approved</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {{ Request::get('type') == 'rejected' ? 'active' : '' }}" href="queue-submissions?type=rejected">Rejected</a>
+            <a class="nav-link {{ Request::get('type') == 'rejected' ? 'active' : '' }}" href="/queue-submissions{{ isset($queue) ? '/' . $queue->id : '' }}?type=rejected">Rejected</a>
         </li>
     </ul>
 
@@ -32,9 +40,11 @@
         <div class="mb-4 logs-table">
             <div class="logs-table-header">
                 <div class="row">
-                    <div class="col-12 col-md-2 font-weight-bold">
-                        <div class="logs-table-cell">Queue</div>
-                    </div>
+                    @if (!isset($queue))
+                        <div class="col-12 col-md-2 font-weight-bold">
+                            <div class="logs-table-cell">Queue</div>
+                        </div>
+                    @endif
                     <div class="col-6 col-md-5 font-weight-bold">
                         <div class="logs-table-cell">Last Action</div>
                     </div>
@@ -47,9 +57,11 @@
                 @foreach ($submissions as $submission)
                     <div class="logs-table-row">
                         <div class="row flex-wrap">
-                            <div class="col-12 col-md-2">
-                                <div class="logs-table-cell">{!! $submission->queue->displayName !!}</div>
-                            </div>
+                            @if (!isset($queue))
+                                <div class="col-12 col-md-2">
+                                    <div class="logs-table-cell">{!! $submission->queue->displayName !!}</div>
+                                </div>
+                            @endif
                             <div class="col-6 col-md-5">
                                 <div class="logs-table-cell">{!! pretty_date($submission->updated_at) !!}</div>
                             </div>

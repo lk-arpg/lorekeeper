@@ -5,31 +5,33 @@
 @endsection
 
 @section('admin-content')
-        {!! breadcrumbs(['Admin Panel' => 'admin', 'Queue Submissions' => 'admin/queue-submissions/pending']) !!}
+    {!! breadcrumbs(['Admin Panel' => 'admin', 'Queue Submissions' => 'admin/queue-submissions/pending']) !!}
 
     <h1>
-        Queue Submissions
+        {{ isset($queue) ? $queue->name : 'Queue' }} Submissions
     </h1>
 
     <ul class="nav nav-tabs mb-3">
         <li class="nav-item">
-            <a class="nav-link {{ set_active('admin/queue-submissions/pending*') }} {{ set_active('admin/queue-submissions') }}"
-                href="{{ url('admin/queue-submissions/pending') }}">Pending</a>
+            <a class="nav-link {{ set_active('admin/queue-submissions/' . (isset($queue) ? $queue->id . '/' : '') . 'pending*') }} {{ set_active('admin/queue-submissions' . (isset($queue) ? '/' . $queue->id : '')) }}"
+               href="{{ url('admin/queue-submissions/' . (isset($queue) ? $queue->id . '/' : '') . 'pending') }}">Pending</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {{ set_active('admin/queue-submissions/approved*') }}" href="{{ url('admin/queue-submissions/approved') }}">Approved</a>
+            <a class="nav-link {{ set_active('admin/queue-submissions/' . (isset($queue) ? $queue->id . '/' : '') . 'approved*') }}" href="{{ url('admin/queue-submissions/' . (isset($queue) ? $queue->id . '/' : '') . 'approved') }}">Approved</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {{ set_active('admin/queue-submissions/rejected*') }}" href="{{ url('admin/queue-submissions/rejected') }}">Rejected</a>
+            <a class="nav-link {{ set_active('admin/queue-submissions/' . (isset($queue) ? $queue->id . '/' : '') . 'rejected*') }}" href="{{ url('admin/queue-submissions/' . (isset($queue) ? $queue->id . '/' : '') . 'rejected') }}">Rejected</a>
         </li>
     </ul>
 
     {!! Form::open(['method' => 'GET', 'class' => 'form-inline justify-content-end']) !!}
-    <div class="form-inline justify-content-end">
+    @if (!isset($queue))
+        <div class="form-inline justify-content-end">
             <div class="form-group ml-3 mb-3">
                 {!! Form::select('queue_category_id', $categories, Request::get('queue_category_id'), ['class' => 'form-control']) !!}
             </div>
-    </div>
+        </div>
+    @endif
     <div class="form-inline justify-content-end">
         <div class="form-group ml-3 mb-3">
             {!! Form::select(
@@ -52,9 +54,11 @@
     <div class="mb-4 logs-table">
         <div class="logs-table-header">
             <div class="row">
+                @if (!isset($queue))
                     <div class="col-12 col-md-2">
                         <div class="logs-table-cell">Queue</div>
                     </div>
+                @endif
                 <div class="col-6 col-md-2">
                     <div class="logs-table-cell">User</div>
                 </div>
@@ -70,9 +74,11 @@
             @foreach ($submissions as $submission)
                 <div class="logs-table-row">
                     <div class="row flex-wrap">
+                        @if (!isset($queue))
                             <div class="col-12 col-md-2">
                                 <div class="logs-table-cell">{!! $submission->queue->displayName !!}</div>
                             </div>
+                        @endif
                         <div class="col-6 col-md-2">
                             <div class="logs-table-cell">{!! $submission->user->displayName !!}</div>
                         </div>

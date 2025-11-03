@@ -462,6 +462,8 @@ Route::get('{type}/{status}', 'DesignController@getDesignIndex')->where('type', 
 Route::group(['prefix' => 'queue-submissions', 'middleware' => 'power:manage_submissions'], function() {
     Route::get('/', 'QueueSubmissionController@getSubmissionIndex');
     Route::get('/{status}', 'QueueSubmissionController@getSubmissionIndex')->where('status', 'pending|approved|rejected');
+    Route::get('/{id}', 'QueueSubmissionController@getQueueSubmissionIndex');
+    Route::get('/{id}/{status}', 'QueueSubmissionController@getQueueSubmissionIndex')->where('status', 'pending|approved|rejected');
     Route::get('edit/{id}', 'QueueSubmissionController@getSubmission');
-    Route::post('edit/{id}/{action}', 'QueueSubmissionController@postSubmission')->where('action', 'approve|reject');
+    Route::post('edit/{id}/{action}', 'QueueSubmissionController@postSubmission')->where('action', 'approve|reject|cancel');
 });

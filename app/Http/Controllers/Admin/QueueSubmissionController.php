@@ -7,6 +7,7 @@ use App\Models\Character\Character;
 use App\Models\Currency\Currency;
 use App\Models\Item\Item;
 use App\Models\Loot\LootTable;
+use App\Models\Queue\Queue;
 use App\Models\Queue\QueueCategory;
 use App\Models\Raffle\Raffle;
 use App\Models\Queue\QueueSubmission;
@@ -47,6 +48,36 @@ class QueueSubmissionController extends Controller {
         return view('admin.queues.submission_index', [
             'submissions' => $submissions->paginate(30)->appends($request->query()),
             'categories'  => ['none' => 'Any Category'] + QueueCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+        ]);
+    }
+
+    /**
+     * Shows a specific queue's submission index page.
+     *
+     * @param string $status
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getQueueSubmissionIndex(Request $request, $id, $status = null) {
+
+        $submissions = QueueSubmission::with('queue')->where('queue_id', $id)->where('status', $status ? ucfirst($status) : 'Pending');
+        $data = $request->only(['sort']);
+        if (isset($data['sort'])) {
+            switch ($data['sort']) {
+                case 'newest':
+                    $submissions->sortNewest();
+                    break;
+                case 'oldest':
+                    $submissions->sortOldest();
+                    break;
+            }
+        } else {
+            $submissions->sortOldest();
+        }
+
+        return view('admin.queues.submission_index', [
+            'queue' => Queue::find($id),
+            'submissions' => $submissions->paginate(30)->appends($request->query()),
         ]);
     }
 

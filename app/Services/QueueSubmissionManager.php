@@ -267,6 +267,7 @@ class QueueSubmissionManager extends Service
                 ]);
 
                 Notifications::create('QUEUE_SUBMISSION_CANCELLED', $submission->user, [
+                    'queue_name'   => $submission->queue->name,
                     'staff_url'     => $user->url,
                     'staff_name'    => $user->name,
                     'submission_id' => $submission->id,
@@ -344,6 +345,7 @@ class QueueSubmissionManager extends Service
             ]);
 
             Notifications::create('QUEUE_SUBMISSION_REJECTED', $submission->user, [
+                'queue_name'   => $submission->queue->name,
                 'staff_url'     => $user->url,
                 'staff_name'    => $user->name,
                 'submission_id' => $submission->id,
@@ -541,6 +543,7 @@ class QueueSubmissionManager extends Service
             ]);
 
             Notifications::create('QUEUE_SUBMISSION_APPROVED', $submission->user, [
+                'queue_name'   => $submission->queue->name,
                 'staff_url'     => $user->url,
                 'staff_name'    => $user->name,
                 'submission_id' => $submission->id,

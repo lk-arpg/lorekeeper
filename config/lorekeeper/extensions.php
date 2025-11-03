@@ -54,4 +54,10 @@ return [
         'default_recipient' => 0, // 0 to default to the character's owner (if a user), 1 to default to the submission user.
     ],
 
+    //queue-creator - SUPERCOOL
+    'queue_creator' => [
+        'expand_in_admin_index' => 0, // 1 un-nests the queues on the admin index page and lists them as individual cards with their own counts instead
+        'expand_in_user_menu' => 0, // 1 un-nests the queue submissions on the user menu page and gives each one a unique page with draft/pending/approved/rejected tabs
+    ]
+
 ];

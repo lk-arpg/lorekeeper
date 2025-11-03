@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Item\Item;
 use App\Models\Queue\Queue;
 use App\Models\Queue\QueueCategory;
+use App\Models\Rank\Rank;
 use App\Services\QueueService;
 use Config;
 use Illuminate\Http\Request;
@@ -199,6 +200,7 @@ class QueueController extends Controller
             'categories'    => ['none' => 'No category'] + QueueCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'types'         => $result,
             'limit_periods' => [null => 'None', 'Hour' => 'Hour', 'Day' => 'Day', 'Week' => 'Week', 'Month' => 'Month', 'Year' => 'Year'],
+            'ranks'         => ['none' => 'All Staff with Submissions Power'] + Rank::pluck('name', 'id')->toArray(),
         ]);
     }
 
@@ -227,6 +229,7 @@ class QueueController extends Controller
             'types'         => $result,
             'item_limits'   => $queue->configSet('item_consume') ? Item::orderBy('name')->pluck('name', 'id') : [],
             'limit_periods' => [null => 'None', 'Hour' => 'Hour', 'Day' => 'Day', 'Week' => 'Week', 'Month' => 'Month', 'Year' => 'Year'],
+            'ranks'         => Rank::pluck('name', 'id')->toArray(),
         ] + $queue->service->getEditData());
     }
 
@@ -241,8 +244,7 @@ class QueueController extends Controller
     public function postCreateEditQueue(Request $request, QueueService $service, $id = null)
     {
         $id ? $request->validate(Queue::$updateRules) : $request->validate(Queue::$createRules);
-        $data = $request->only([
-            'name', 'queue_category_id', 'summary', 'description', 'start_at', 'end_at', 'hide_before_start', 'hide_after_end', 'is_active', 'image', 'remove_image', 'prefix', 'hide_submissions', 'staff_only', 'form', 'queue_type', 'limit', 'limit_period', 'check_text', 'user_rewardable_type', 'user_rewardable_id', 'user_quantity', 'character_rewardable_type', 'character_rewardable_id', 'character_quantity', 'limit_concurrent'
+        $data = $request->only(['name', 'queue_category_id', 'staff_rank_id', 'summary', 'description', 'start_at', 'end_at', 'hide_before_start', 'hide_after_end', 'is_active', 'image', 'remove_image', 'prefix', 'hide_submissions', 'staff_only', 'form', 'queue_type', 'limit', 'limit_period', 'check_text', 'user_rewardable_type', 'user_rewardable_id', 'user_quantity', 'character_rewardable_type', 'character_rewardable_id', 'character_quantity', 'limit_concurrent'
         ]);
         if ($id && $service->updateQueue(Queue::find($id), $data, Auth::user())) {
             flash('Queue updated successfully.')->success();

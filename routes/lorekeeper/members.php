@@ -181,6 +181,7 @@ Route::group(['prefix' => 'designs', 'namespace' => 'Characters'], function() {
 
 Route::group(['prefix' => 'queue-submissions', 'namespace' => 'Users'], function () {
     Route::get('/', 'QueueSubmissionController@getIndex');
+    Route::get('/{id}', 'QueueSubmissionController@getIndex');
     Route::get('new/{id}', 'QueueSubmissionController@getNewSubmission')->where(['id' => '[0-9]+']);
     Route::get('new/character/{slug}', 'QueueSubmissionController@getCharacterInfo');
     Route::post('new/{id}', 'QueueSubmissionController@postNewSubmission');

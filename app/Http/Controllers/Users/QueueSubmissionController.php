@@ -37,18 +37,26 @@ class QueueSubmissionController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getIndex(Request $request)
+    public function getIndex(Request $request, $id = null)
     {
-        $submissions = QueueSubmission::with('queue')->where('user_id', Auth::user()->id)->whereNotNull('queue_id');
+        $submissions = QueueSubmission::with('queue')->where('user_id', Auth::user()->id)->whereNotNull('queue_id')->whereHas('queue', function ($query) {
+            return $query->active();
+        });
         $type        = $request->get('type');
         if (! $type) {
             $type = 'Pending';
         }
 
+        $queue = Queue::find($id);
+        if (isset($queue) && !$queue->is_active) abort(404);
+        if (isset($id))
+            $submissions = $submissions->where('queue_id', $id);
+
         $submissions = $submissions->where('status', ucfirst($type));
 
         return view('home.queues.submissions', [
             'submissions' => $submissions->orderBy('id', 'DESC')->paginate(20)->appends($request->query()),
+            'queue' => $queue,
             'isClaims'    => false,
         ]);
     }

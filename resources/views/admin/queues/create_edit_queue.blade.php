@@ -40,9 +40,19 @@
         @endif
     </div>
 
-    <div class="form-group">
-        {!! Form::label('Queue Category (Optional)') !!}
-        {!! Form::select('queue_category_id', $categories, $queue->queue_category_id, ['class' => 'form-control']) !!}
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                {!! Form::label('Queue Category (Optional)') !!}
+                {!! Form::select('queue_category_id', $categories, $queue->queue_category_id, ['class' => 'form-control']) !!}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                {!! Form::label('Associated Staff Ranks (Optional)') !!}{!! add_help('Queues are shown to all staff with the submission power by default. Setting this makes it so that only selected ranks will see this queue.') !!}
+                {!! Form::select('staff_rank_id[]', $ranks, $queue->staff_rank_id, ['class' => 'form-control selectize', 'multiple']) !!}
+            </div>
+        </div>
     </div>
 
     <div class="form-group">
@@ -315,6 +325,8 @@
     @include('js._loot_js', ['showLootTables' => true, 'showRaffles' => true, 'prefix' => 'user_'])
     @include('js._loot_js', ['showLootTables' => true, 'showRaffles' => true, 'prefix' => 'character_', 'isCharacter' => true])
     <script>
+        $('.selectize').selectize();
+
         $(document).ready(function() {
             $('.delete-queue-button').on('click', function(e) {
                 e.preventDefault();

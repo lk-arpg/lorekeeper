@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models\Queue;
 
 use App\Models\Item\Item;
@@ -6,8 +7,7 @@ use App\Models\Model;
 use App\Services\Queue\GeneralService;
 use Carbon\Carbon;
 
-class Queue extends Model
-{
+class Queue extends Model {
     /**
      * The attributes that are mass assignable.
      *
@@ -17,6 +17,7 @@ class Queue extends Model
         'queue_category_id', 'name', 'summary', 'description', 'parsed_description', 'is_active',
         'start_at', 'end_at', 'hide_before_start', 'hide_after_end', 'has_image', 'prefix',
         'hide_submissions', 'staff_only', 'hash', 'form', 'parsed_form', 'queue_type', 'data', 'checklist', 'limit', 'limit_period', 'output', 'limit_concurrent',
+        'staff_rank_id'
     ];
 
     /**
@@ -71,29 +72,30 @@ class Queue extends Model
 
         RELATIONS
 
-    **********************************************************************************************/
+     **********************************************************************************************/
 
     /**
      * Get the category the queue belongs to.
      */
-    public function category()
-    {
+    public function category() {
         return $this->belongsTo(QueueCategory::class, 'queue_category_id');
     }
 
     /**
      * Get the submissions that belong to this queue.
      */
-    public function submissions()
-    {
-        return $this->hasMany(QueueSubmission::class, 'queue_id');
+    public function submissions($status) {
+        if (isset($status))
+            return $this->hasMany(QueueSubmission::class, 'queue_id')->where('status', ucfirst($status));
+        else
+            return $this->hasMany(QueueSubmission::class, 'queue_id');
     }
 
     /**********************************************************************************************
 
         SCOPES
 
-    **********************************************************************************************/
+     **********************************************************************************************/
 
     /**
      * Scope a query to only include active queues.
@@ -102,8 +104,7 @@ class Queue extends Model
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeActive($query)
-    {
+    public function scopeActive($query) {
         return $query->where('is_active', 1)
             ->where(function ($query) {
                 $query->whereNull('start_at')->orWhere('start_at', '<', Carbon::now())->orWhere(function ($query) {
@@ -124,8 +125,7 @@ class Queue extends Model
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeOpen($query, $isOpen)
-    {
+    public function scopeOpen($query, $isOpen) {
         if ($isOpen) {
             $query->where(function ($query) {
                 $query->whereNull('end_at')->where('start_at', '<', Carbon::now());
@@ -153,8 +153,7 @@ class Queue extends Model
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeStaffOnly($query, $user)
-    {
+    public function scopeStaffOnly($query, $user) {
         if ($user && $user->isStaff) {
             return $query;
         }
@@ -170,8 +169,7 @@ class Queue extends Model
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeSortAlphabetical($query, $reverse = false)
-    {
+    public function scopeSortAlphabetical($query, $reverse = false) {
         return $query->orderBy('name', $reverse ? 'DESC' : 'ASC');
     }
 
@@ -182,8 +180,7 @@ class Queue extends Model
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeSortCategory($query)
-    {
+    public function scopeSortCategory($query) {
         if (QueueCategory::all()->count()) {
             return $query->orderBy(QueueCategory::select('sort')->whereColumn('queues.queue_category_id', 'queue_categories.id'), 'DESC');
         }
@@ -198,8 +195,7 @@ class Queue extends Model
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeSortNewest($query)
-    {
+    public function scopeSortNewest($query) {
         return $query->orderBy('id', 'DESC');
     }
 
@@ -210,8 +206,7 @@ class Queue extends Model
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeSortOldest($query)
-    {
+    public function scopeSortOldest($query) {
         return $query->orderBy('id');
     }
 
@@ -223,8 +218,7 @@ class Queue extends Model
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeSortStart($query, $reverse = false)
-    {
+    public function scopeSortStart($query, $reverse = false) {
         return $query->orderBy('start_at', $reverse ? 'DESC' : 'ASC');
     }
 
@@ -236,8 +230,7 @@ class Queue extends Model
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeSortEnd($query, $reverse = false)
-    {
+    public function scopeSortEnd($query, $reverse = false) {
         return $query->orderBy('end_at', $reverse ? 'DESC' : 'ASC');
     }
 
@@ -249,8 +242,7 @@ class Queue extends Model
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeSplash($query)
-    {
+    public function scopeSplash($query) {
         $query->whereHas('category', function ($query) {
             $query->where('key', null);
         })->orWhere('queue_category_id', null);
@@ -260,15 +252,14 @@ class Queue extends Model
 
         ACCESSORS
 
-    **********************************************************************************************/
+     **********************************************************************************************/
 
     /**
      * Displays the model's name, linked to its encyclopedia page.
      *
      * @return string
      */
-    public function getDisplayNameAttribute()
-    {
+    public function getDisplayNameAttribute() {
         return '<a href="' . $this->url . '" class="display-queue">' . $this->name . '</a>';
     }
 
@@ -277,8 +268,7 @@ class Queue extends Model
      *
      * @return string
      */
-    public function getImageDirectoryAttribute()
-    {
+    public function getImageDirectoryAttribute() {
         return 'images/data/queues';
     }
 
@@ -287,8 +277,7 @@ class Queue extends Model
      *
      * @return string
      */
-    public function getImageFileNameAttribute()
-    {
+    public function getImageFileNameAttribute() {
         return $this->id . '-' . $this->hash . '-image.png';
     }
 
@@ -297,8 +286,7 @@ class Queue extends Model
      *
      * @return string
      */
-    public function getImagePathAttribute()
-    {
+    public function getImagePathAttribute() {
         return public_path($this->imageDirectory);
     }
 
@@ -307,9 +295,8 @@ class Queue extends Model
      *
      * @return string
      */
-    public function getImageUrlAttribute()
-    {
-        if (! $this->has_image) {
+    public function getImageUrlAttribute() {
+        if (!$this->has_image) {
             return null;
         }
 
@@ -321,8 +308,7 @@ class Queue extends Model
      *
      * @return string
      */
-    public function getUrlAttribute()
-    {
+    public function getUrlAttribute() {
         return url('queues/queues?name=' . $this->name);
     }
 
@@ -331,8 +317,7 @@ class Queue extends Model
      *
      * @return string
      */
-    public function getIdUrlAttribute()
-    {
+    public function getIdUrlAttribute() {
         return url('queues/' . $this->id);
     }
 
@@ -341,8 +326,7 @@ class Queue extends Model
      *
      * @return string
      */
-    public function getAssetTypeAttribute()
-    {
+    public function getAssetTypeAttribute() {
         return 'queues';
     }
 
@@ -351,8 +335,7 @@ class Queue extends Model
      *
      * @return string
      */
-    public function getAdminUrlAttribute()
-    {
+    public function getAdminUrlAttribute() {
         return url('admin/data/queues/edit/' . $this->id);
     }
 
@@ -361,8 +344,7 @@ class Queue extends Model
      *
      * @return string
      */
-    public function getAdminPowerAttribute()
-    {
+    public function getAdminPowerAttribute() {
         return 'edit_data';
     }
 
@@ -371,8 +353,7 @@ class Queue extends Model
      *
      * @return mixed
      */
-    public function getServiceAttribute()
-    {
+    public function getServiceAttribute() {
         $class = 'App\Services\Queue\\' . str_replace(' ', '', ucwords(str_replace('_', ' ', $this->queue_type))) . 'Service';
         return (new $class());
     }
@@ -382,8 +363,7 @@ class Queue extends Model
      *
      * @return mixed
      */
-    public function getConfigInfoAttribute()
-    {
+    public function getConfigInfoAttribute() {
         return config('lorekeeper.queue_types.' . $this->queue_type);
     }
 
@@ -392,8 +372,7 @@ class Queue extends Model
      *
      * @return string
      */
-    public function getCustomImageDirectoryAttribute()
-    {
+    public function getCustomImageDirectoryAttribute() {
         return 'images/data/queues/images';
     }
 
@@ -402,8 +381,7 @@ class Queue extends Model
      *
      * @return string
      */
-    public function customImageFileName($key)
-    {
+    public function customImageFileName($key) {
         return $this->id . '-' . $key . '.png';
     }
 
@@ -412,8 +390,7 @@ class Queue extends Model
      *
      * @return string
      */
-    public function getCustomImagePathAttribute()
-    {
+    public function getCustomImagePathAttribute() {
         return public_path($this->customImageDirectory);
     }
 
@@ -422,8 +399,7 @@ class Queue extends Model
      *
      * @return string
      */
-    public function customImageUrl($key)
-    {
+    public function customImageUrl($key) {
         return asset($this->customImageDirectory . '/' . $this->CustomImageFileName($key));
     }
 
@@ -432,8 +408,7 @@ class Queue extends Model
      *
      * @return string
      */
-    public function customImageExists($key)
-    {
+    public function customImageExists($key) {
         return file_exists($this->customImagePath . '/' . $this->CustomImageFileName($key));
     }
 
@@ -442,8 +417,7 @@ class Queue extends Model
      *
      * @return mixed
      */
-    public function getGeneralServiceAttribute()
-    {
+    public function getGeneralServiceAttribute() {
         return (new GeneralService());
     }
 
@@ -452,8 +426,7 @@ class Queue extends Model
      *
      * @return mixed
      */
-    public function configSet($key)
-    {
+    public function configSet($key) {
         if (isset($this->configInfo[$key]) && $this->configInfo[$key] == true) {
             return true;
         }
@@ -465,9 +438,8 @@ class Queue extends Model
      * Retrieves any data that should be used in the holiday type on the user side
      *
      */
-    public function getItemsAttribute()
-    {
-        if (! isset($this->data['items'])) {
+    public function getItemsAttribute() {
+        if (!isset($this->data['items'])) {
             return [];
         }
 
@@ -479,12 +451,16 @@ class Queue extends Model
         return $final;
     }
 
+    /** Gets the staff rank id as a list of ids */
+    public function getStaffRankIdAttribute($value) {
+        return json_decode($value);
+    }
+
     /**********************************************************************************************
     OTHER
      **********************************************************************************************/
 
-    public function checkLimit($user)
-    {
+    public function checkLimit($user) {
         //categories supersede all.
         if ($this->queue_category_id && isset($this->category->limit)) {
             return $this->category->checkLimit($user);
@@ -494,13 +470,11 @@ class Queue extends Model
             if ($this->logCount($user) >= $this->limit) {
                 return false;
             }
-
         }
         return true;
     }
 
-    public function logCount($user)
-    {
+    public function logCount($user) {
         if (isset($this->limit)) {
 
             switch ($this->limit_period) {
@@ -523,13 +497,11 @@ class Queue extends Model
                     return QueueSubmission::submitted($this->id, $user->id)->where('created_at', '>=', now()->startOfYear())->count();
                     break;
             }
-
         }
         return null;
     }
 
-    public function checkConcurrent($user)
-    {
+    public function checkConcurrent($user) {
         //categories supersede all.
         if ($this->queue_category_id && isset($this->category->limit_concurrent)) {
             return $this->category->checkConcurrent($user);
@@ -539,7 +511,6 @@ class Queue extends Model
             if (QueueSubmission::pending($this->id, $user->id)->count() >= $this->limit_concurrent) {
                 return false;
             }
-
         }
         return true;
     }
@@ -549,8 +520,7 @@ class Queue extends Model
      *
      * @return array
      */
-    public function getRewardsAttribute()
-    {
+    public function getRewardsAttribute() {
         $rewards = [];
         if (isset($this->output['users'])) {
             $assets = $this->getRewardItemsAttribute();
@@ -574,8 +544,7 @@ class Queue extends Model
      *
      * @return array
      */
-    public function getRewardItemsAttribute()
-    {
+    public function getRewardItemsAttribute() {
         return parseAssetData($this->output['users']);
     }
 
@@ -584,8 +553,7 @@ class Queue extends Model
      *
      * @return array
      */
-    public function getCharacterRewardsAttribute()
-    {
+    public function getCharacterRewardsAttribute() {
         $rewards = [];
         if (isset($this->output['characters'])) {
             $assets = $this->getCharacterRewardItemsAttribute();
@@ -609,9 +577,7 @@ class Queue extends Model
      *
      * @return array
      */
-    public function getCharacterRewardItemsAttribute()
-    {
+    public function getCharacterRewardItemsAttribute() {
         return parseAssetData($this->output['characters']);
     }
-
 }

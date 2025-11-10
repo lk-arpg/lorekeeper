@@ -110,7 +110,7 @@ class CharacterCategory extends Model {
      * @return string
      */
     public function getCategoryImageFileNameAttribute() {
-        return $this->hash.$this->id.'-image.png';
+        return $this->id.'-'.$this->hash.'-image.png';
     }
 
     /**

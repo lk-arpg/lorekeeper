@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Character\CharacterCurrency;
 use App\Models\Currency\Currency;
+use App\Models\Currency\CurrencyCategory;
 use App\Models\User\UserCurrency;
 use Illuminate\Support\Facades\DB;
 
@@ -13,9 +14,168 @@ class CurrencyService extends Service {
     | Currency Service
     |--------------------------------------------------------------------------
     |
-    | Handles the creation and editing of currency.
+    | Handles the creation and editing of currency categories and currencies.
     |
     */
+
+    /**********************************************************************************************
+
+        CURRENCY CATEGORIES
+
+    **********************************************************************************************/
+
+    /**
+     * Create a category.
+     *
+     * @param array                 $data
+     * @param \App\Models\User\User $user
+     *
+     * @return bool|CurrencyCategory
+     */
+    public function createCurrencyCategory($data, $user) {
+        DB::beginTransaction();
+
+        try {
+            $data = $this->populateCategoryData($data);
+
+            $image = null;
+            if (isset($data['image']) && $data['image']) {
+                $data['has_image'] = 1;
+                $data['hash'] = randomString(10);
+                $image = $data['image'];
+                unset($data['image']);
+            } else {
+                $data['has_image'] = 0;
+            }
+
+            $category = CurrencyCategory::create($data);
+
+            if (!$this->logAdminAction($user, 'Created Currency Category', 'Created '.$category->displayName)) {
+                throw new \Exception('Failed to log admin action.');
+            }
+
+            if ($image) {
+                $this->handleImage($image, $category->categoryImagePath, $category->categoryImageFileName);
+            }
+
+            return $this->commitReturn($category);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Update a category.
+     *
+     * @param CurrencyCategory      $category
+     * @param array                 $data
+     * @param \App\Models\User\User $user
+     *
+     * @return bool|CurrencyCategory
+     */
+    public function updateCurrencyCategory($category, $data, $user) {
+        DB::beginTransaction();
+
+        try {
+            // More specific validation
+            if (CurrencyCategory::where('name', $data['name'])->where('id', '!=', $category->id)->exists()) {
+                throw new \Exception('The name has already been taken.');
+            }
+
+            $data = $this->populateCategoryData($data, $category);
+
+            $image = null;
+            if (isset($data['image']) && $data['image']) {
+                $data['has_image'] = 1;
+                $data['hash'] = randomString(10);
+                $image = $data['image'];
+                unset($data['image']);
+            }
+
+            $category->update($data);
+
+            if (!$this->logAdminAction($user, 'Updated Currency Category', 'Updated '.$category->displayName)) {
+                throw new \Exception('Failed to log admin action.');
+            }
+
+            if ($category) {
+                $this->handleImage($image, $category->categoryImagePath, $category->categoryImageFileName);
+            }
+
+            return $this->commitReturn($category);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Delete a category.
+     *
+     * @param CurrencyCategory      $category
+     * @param \App\Models\User\User $user
+     *
+     * @return bool
+     */
+    public function deleteCurrencyCategory($category, $user) {
+        DB::beginTransaction();
+
+        try {
+            // Check first if the category is currently in use
+            if (Currency::where('currency_category_id', $category->id)->exists()) {
+                throw new \Exception('A currency with this category exists. Please change its category first.');
+            }
+            if (!$this->logAdminAction($user, 'Deleted Currency Category', 'Deleted '.$category->name)) {
+                throw new \Exception('Failed to log admin action.');
+            }
+
+            if ($category->has_image) {
+                $this->deleteImage($category->categoryImagePath, $category->categoryImageFileName);
+            }
+            $category->delete();
+
+            return $this->commitReturn(true);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Sorts category order.
+     *
+     * @param string $data
+     *
+     * @return bool
+     */
+    public function sortCurrencyCategory($data) {
+        DB::beginTransaction();
+
+        try {
+            // explode the sort array and reverse it since the order is inverted
+            $sort = array_reverse(explode(',', $data));
+
+            foreach ($sort as $key => $s) {
+                CurrencyCategory::where('id', $s)->update(['sort' => $key]);
+            }
+
+            return $this->commitReturn(true);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
+    }
+
+    /**********************************************************************************************
+
+        CURRENCIES
+
+    **********************************************************************************************/
 
     /**
      * Creates a new currency.
@@ -23,7 +183,7 @@ class CurrencyService extends Service {
      * @param array                 $data
      * @param \App\Models\User\User $user
      *
-     * @return \App\Models\Currency\Currency|bool
+     * @return bool|Currency
      */
     public function createCurrency($data, $user) {
         DB::beginTransaction();
@@ -32,6 +192,10 @@ class CurrencyService extends Service {
             // More specific validation
             if (!isset($data['is_user_owned']) && !isset($data['is_character_owned'])) {
                 throw new \Exception('Please choose if this currency is attached to users and/or characters.');
+            }
+
+            if ((isset($data['currency_category_id']) && $data['currency_category_id']) && !CurrencyCategory::where('id', $data['currency_category_id'])->exists()) {
+                throw new \Exception('The selected currency category is invalid.');
             }
 
             $data = $this->populateData($data);
@@ -78,11 +242,11 @@ class CurrencyService extends Service {
     /**
      * Updates a currency.
      *
-     * @param \App\Models\Currency\Currency $currency
-     * @param array                         $data
-     * @param \App\Models\User\User         $user
+     * @param Currency              $currency
+     * @param array                 $data
+     * @param \App\Models\User\User $user
      *
-     * @return \App\Models\Currency\Currency|bool
+     * @return bool|Currency
      */
     public function updateCurrency($currency, $data, $user) {
         DB::beginTransaction();
@@ -97,6 +261,9 @@ class CurrencyService extends Service {
             }
             if (isset($data['abbreviation']) && Currency::where('abbreviation', $data['abbreviation'])->where('id', '!=', $currency->id)->exists()) {
                 throw new \Exception('The abbreviation has already been taken.');
+            }
+            if ((isset($data['currency_category_id']) && $data['currency_category_id']) && !CurrencyCategory::where('id', $data['currency_category_id'])->exists()) {
+                throw new \Exception('The selected currency category is invalid.');
             }
 
             $data = $this->populateData($data, $currency);
@@ -116,6 +283,8 @@ class CurrencyService extends Service {
             }
 
             $currency->update($data);
+
+            $this->populateConversions($currency, $data);
 
             if (!$this->logAdminAction($user, 'Updated Currency', 'Updated '.$currency->displayName)) {
                 throw new \Exception('Failed to log admin action.');
@@ -139,8 +308,8 @@ class CurrencyService extends Service {
     /**
      * Deletes a currency.
      *
-     * @param \App\Models\Currency\Currency $currency
-     * @param mixed                         $user
+     * @param Currency $currency
+     * @param mixed    $user
      *
      * @return bool
      */
@@ -154,7 +323,7 @@ class CurrencyService extends Service {
             if (DB::table('prompt_rewards')->where('rewardable_type', 'Currency')->where('rewardable_id', $currency->id)->exists()) {
                 throw new \Exception('A prompt currently distributes this currency as a reward. Please remove the currency before deleting it.');
             }
-            if (DB::table('shop_stock')->where('currency_id', $currency->id)->exists()) {
+            if (DB::table('shop_stock_costs')->where('cost_type', 'Currency')->where('cost_id', $currency->id)->exists()) {
                 throw new \Exception('A shop currently requires this currency to purchase an currency. Please change the currency before deleting it.');
             }
             // Disabled for now due to issues with JSON lookup with older mysql versions/mariaDB
@@ -190,7 +359,7 @@ class CurrencyService extends Service {
     /**
      * Sorts currency order.
      *
-     * @param array  $data
+     * @param string $data
      * @param string $type
      *
      * @return bool
@@ -215,10 +384,40 @@ class CurrencyService extends Service {
     }
 
     /**
+     * Handle category data.
+     *
+     * @param array                 $data
+     * @param CurrencyCategory|null $category
+     *
+     * @return array
+     */
+    private function populateCategoryData($data, $category = null) {
+        if (isset($data['description']) && $data['description']) {
+            $data['parsed_description'] = parse($data['description']);
+        } else {
+            $data['parsed_description'] = null;
+        }
+
+        if (!isset($data['is_visible'])) {
+            $data['is_visible'] = 0;
+        }
+
+        if (isset($data['remove_image'])) {
+            if ($category && $category->has_image && $data['remove_image']) {
+                $data['has_image'] = 0;
+                $this->deleteImage($category->categoryImagePath, $category->categoryImageFileName);
+            }
+            unset($data['remove_image']);
+        }
+
+        return $data;
+    }
+
+    /**
      * Processes user input for creating/updating a currency.
      *
-     * @param array                         $data
-     * @param \App\Models\Currency\Currency $currency
+     * @param array    $data
+     * @param Currency $currency
      *
      * @return array
      */
@@ -248,6 +447,10 @@ class CurrencyService extends Service {
             $data['allow_character_to_user'] = 0;
         }
 
+        if (!isset($data['is_visible'])) {
+            $data['is_visible'] = 0;
+        }
+
         $data['sort_user'] = $data['sort_character'] = 0;
 
         // Process the checkbox fields
@@ -274,5 +477,27 @@ class CurrencyService extends Service {
         }
 
         return $data;
+    }
+
+    /**
+     * Processes user input for creating/updating a currency's conversions.
+     *
+     * @param Currency $currency
+     * @param array    $data
+     */
+    private function populateConversions($currency, $data) {
+        $currency->conversions()->delete();
+        if (isset($data['conversion_id']) && $data['conversion_id']) {
+            foreach ($data['conversion_id'] as $key => $conversion_id) {
+                $conversion = Currency::find($conversion_id);
+                if (!$conversion) {
+                    continue;
+                }
+                $currency->conversions()->create([
+                    'conversion_id' => $conversion_id,
+                    'rate'          => $data['rate'][$key] ?? 1.00,
+                ]);
+            }
+        }
     }
 }

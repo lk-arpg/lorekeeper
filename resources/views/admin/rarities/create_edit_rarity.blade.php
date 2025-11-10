@@ -66,6 +66,7 @@
                     'imageUrl' => $rarity->rarityImageUrl,
                     'name' => $rarity->displayName,
                     'description' => $rarity->parsed_description,
+                    'searchItemsUrl' => $rarity->searchItemsUrl,
                     'searchFeaturesUrl' => $rarity->searchFeaturesUrl,
                     'searchCharactersUrl' => $rarity->searchCharactersUrl,
                     'edit' => [
@@ -80,6 +81,7 @@
 
 @section('scripts')
     @parent
+    @include('js._tinymce_wysiwyg')
     <script>
         $(document).ready(function() {
             $('.delete-rarity-button').on('click', function(e) {

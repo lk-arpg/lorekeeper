@@ -15,7 +15,13 @@
     <li class="sidebar-section">
         <div class="sidebar-section-header">Shops</div>
         @foreach ($shops as $shop)
-            <div class="sidebar-item"><a href="{{ $shop->url }}" class="{{ set_active('shops/' . $shop->id) }}">{{ $shop->name }}</a></div>
+            @if ($shop->is_staff)
+                @if (Auth::check() && Auth::user()->isstaff)
+                    <div class="sidebar-item"><a href="{{ $shop->url }}" class="{{ set_active('shops/' . $shop->id) }}">{{ $shop->name }}</a></div>
+                @endif
+            @else
+                <div class="sidebar-item"><a href="{{ $shop->url }}" class="{{ set_active('shops/' . $shop->id) }}">{{ $shop->name }}</a></div>
+            @endif
         @endforeach
     </li>
 </ul>

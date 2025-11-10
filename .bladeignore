@@ -1,1 +1,2 @@
 vendor/*
+resources/views/js/_tinymce_wysiwyg.blade.php

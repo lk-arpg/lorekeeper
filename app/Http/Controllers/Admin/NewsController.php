@@ -60,7 +60,7 @@ class NewsController extends Controller {
     public function postCreateEditNews(Request $request, NewsService $service, $id = null) {
         $id ? $request->validate(News::$updateRules) : $request->validate(News::$createRules);
         $data = $request->only([
-            'title', 'text', 'post_at', 'is_visible', 'bump',
+            'title', 'text', 'post_at', 'is_visible', 'bump', 'image', 'remove_image',
         ]);
         if ($id && $service->updateNews(News::find($id), $data, Auth::user())) {
             flash('News updated successfully.')->success();
@@ -110,5 +110,40 @@ class NewsController extends Controller {
         }
 
         return redirect()->to('admin/news');
+    }
+
+    /**
+     * Gets the news regeneration modal.
+     *
+     * @param int $id
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getRegenNews($id) {
+        $news = News::find($id);
+
+        return view('admin.news._regen_news', [
+            'news' => $news,
+        ]);
+    }
+
+    /**
+     * Regenerates a news page.
+     *
+     * @param App\Services\NewsService $service
+     * @param int                      $id
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postRegenNews(Request $request, NewsService $service, $id) {
+        if ($id && $service->regenNews(News::find($id))) {
+            flash('News regenerated successfully.')->success();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
+        }
+
+        return redirect()->to('admin/news/edit/'.$id);
     }
 }

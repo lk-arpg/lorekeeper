@@ -116,7 +116,9 @@
                 </div>
             </div>
         @endif
-        @if (config('lorekeeper.settings.masterlist_image_automation') === 0 || config('lorekeeper.settings.masterlist_image_automation_hide_manual_thumbnail') === 0 || Auth::user()->hasPower('manage_characters'))
+        @if (
+            ((config('lorekeeper.settings.masterlist_image_automation') === 0 || config('lorekeeper.settings.masterlist_image_automation_hide_manual_thumbnail') === 0) && config('lorekeeper.settings.hide_manual_thumbnail_image_upload') === 0) ||
+                Auth::user()->hasPower('manage_characters'))
             <div class="card mb-3" id="thumbnailUpload">
                 <div class="card-body">
                     {!! Form::label('Thumbnail Image') !!} {!! add_help('This image is shown on the masterlist page.') !!}

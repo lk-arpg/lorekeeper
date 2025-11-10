@@ -22,10 +22,20 @@ return [
     // Navbar News Notif - Juni
     'navbar_news_notif' => 0,
 
-    // Species Trait Index - Mercury
-    'species_trait_index' => [
-        'enable'       => 0,
-        'trait_modals' => 0, // Enables modals when you click on a trait for more info instead of linking to the traits page - Moif
+    /*  Visual Trait Indexes
+     *
+     *  Species Trait Index - Mercury
+     *  Subtype Trait Index - Speedy
+     *  Universal Trait Index - CHERVB
+     *  All Traits Index (Kitchen Sink Index) - Speedy
+     *  Trait Modals addition - Moif
+     */
+    'visual_trait_index' => [
+        'enable_species_index'   => 0, // Enables the Species Trait Index
+        'enable_subtype_index'   => 0, // Enables the Subtype Trait Index
+        'enable_universal_index' => 0, // Enables the Universal Trait Index
+        'enable_all_trait_index' => 0, // Enables the All Traits Index
+        'trait_modals'           => 0, // Enables modals when you click on a trait for more info instead of linking to the traits page
     ],
 
     // Character Status Badges - Juni
@@ -44,7 +54,6 @@ return [
         'loot_tables'     => [
             // Adds the ability to use either rarity criteria for items or item categories with rarity criteria in loot tables. Note that disabling this does not apply retroactively.
             'enable'              => 0,
-            'alternate_filtering' => 0, // By default this uses more broadly compatible methods to filter by rarity. If you are on Dreamhost/know your DB software can handle searching in JSON, it's recommended to set this to 1 instead.
         ],
     ],
 
@@ -106,4 +115,21 @@ return [
     // Use ReCaptcha to check new user registrations - Mercury
     // Requires site key and secret be set in your .env file!
     'use_recaptcha' => 0,
+
+    // Show Small Badges on the User's Characters/MYO Slots Page
+    // Indicating Trading Status (and Gift Art & Gift Writing Status)
+    'badges_on_user_character_page' => 0,
+
+    // Allow users to return a pending design update to drafts, for instance if they make a mistake. - Uri
+    'design_return_to_draft' => 1,
+
+    // Multiple Subtypes - Newt
+    'exclusionary_search'    => 0, // If enabled, searching for multiple subtypes will only return results that have all of the subtypes specified. If disabled, it will return results that have any of the subtypes specified.
+    'multiple_subtype_limit' => 10, // The maximum number of subtypes a character can have.
+
+    // TinyMCE Code Editor - Moif
+    'tinymce_code_editor'   => 1, // If enabled, uses the more advanced code editor instead of TinyMCE's default.
+
+    // Unmerge Item Page and Item Entry - Speedy
+    'unmerge_item_page_and_entry' => 0, // If enabled, uses the html on world/item_page.blade.php instead of the include that links to world/_item_entry.blade.php
 ];

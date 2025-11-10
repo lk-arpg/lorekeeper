@@ -102,6 +102,6 @@
 
 @section('scripts')
     @include('widgets._bank_select_row', ['owners' => [Auth::user(), $request->character]])
-    @include('widgets._inventory_select_js', ['readOnly' => true])
+    @include('widgets._inventory_select_js')
     @include('widgets._bank_select_js', [])
 @endsection

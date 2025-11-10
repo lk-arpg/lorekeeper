@@ -4,6 +4,10 @@
     Character{!! View::hasSection('profile-title') ? ' :: ' . trim(View::getSection('profile-title')) : '' !!}
 @endsection
 
+@section('meta-img')
+    {{ $character->image->content_warnings ? asset('images/content-warning.png') : $character->image->thumbnailUrl }}
+@endsection
+
 @section('sidebar')
     @include('character.' . ($isMyo ? 'myo.' : '') . '_sidebar')
 @endsection

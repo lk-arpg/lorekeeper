@@ -32,9 +32,7 @@
             @foreach ($users as $user)
                 <li>
                     {!! $user->displayName !!} has {{ $userItems->where('user_id', $user->id)->pluck('count')->sum() }}
-                    @if (
-                        $userItems->where('user_id', $user->id)->pluck('count')->sum() >
-                            $userItems->where('user_id', $user->id)->pluck('availableQuantity')->sum())
+                    @if ($userItems->where('user_id', $user->id)->pluck('count')->sum() > $userItems->where('user_id', $user->id)->pluck('availableQuantity')->sum())
                         ({{ $userItems->where('user_id', $user->id)->pluck('availableQuantity')->sum() }} Available)
                         <ul>
                             @foreach ($userItems->where('user_id', $user->id) as $item)
@@ -78,7 +76,7 @@
                                     $held = [];
                                     if (isset($holdLocations['trade'])) {
                                         foreach ($holdLocations['trade'] as $trade => $quantity) {
-                                            array_push($held, '<a href="' . App\Models\Trade::find($trade)->url . '">Trade #' . App\Models\Trade::find($trade)->id . '</a>' . ' (' . $quantity . ')');
+                                            array_push($held, '<a href="' . App\Models\Trade\Trade::find($trade)->url . '">Trade #' . App\Models\Trade\Trade::find($trade)->id . '</a>' . ' (' . $quantity . ')');
                                         }
                                     }
                                     if (isset($holdLocations['update'])) {

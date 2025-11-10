@@ -1,2 +1,2 @@
-{!! Form::label('Subtype (Optional)') !!}
-{!! Form::select('subtype_id', $subtypes, $image->subtype_id, ['class' => 'form-control', 'id' => 'subtype']) !!}
+{!! Form::label('Subtypes (Optional)') !!}
+{!! Form::select('subtype_ids[]', $subtypes, $image->subtypes()?->pluck('subtype_id')->toArray(), ['class' => 'form-control', 'id' => 'subtype', 'multiple', 'placeholder' => 'Select Subtype(s)']) !!}

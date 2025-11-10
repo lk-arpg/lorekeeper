@@ -62,5 +62,5 @@ return [
      * rules for a request. In most cases, you shouldn't change
      * this value.
      */
-    'spam_protection' => \Spatie\Honeypot\SpamProtection::class,
+    'spam_protection' => Spatie\Honeypot\SpamProtection::class,
 ];

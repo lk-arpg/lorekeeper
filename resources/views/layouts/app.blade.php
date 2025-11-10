@@ -41,48 +41,47 @@
     <meta name="robots" content="noimageai">
 
     <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}"></script>
-    <script src="{{ asset('js/site.js') }}"></script>
-    <script src="{{ asset('js/jquery-ui.min.js') }}"></script>
-    <script src="{{ asset('js/bootstrap4-toggle.min.js') }}"></script>
+    <script src="{{ mix('js/app.js') }}"></script>
+    <script defer src="{{ mix('js/app-secondary.js') }}"></script>
+    <script defer src="{{ asset('js/site.js') }}"></script>
     <script src="{{ asset('js/tinymce.min.js') }}"></script>
     <script src="{{ asset('js/jquery.tinymce.min.js') }}"></script>
-    <script src="{{ asset('js/lightbox.min.js') }}"></script>
-    <script src="{{ asset('js/bootstrap-colorpicker.min.js') }}"></script>
+    <script defer src="{{ asset('js/bootstrap-colorpicker.min.js') }}"></script>
     <script src="{{ asset('js/bs-custom-file-input.min.js') }}"></script>
-    <script src="{{ asset('js/selectize.min.js') }}"></script>
-    <script src="{{ asset('js/jquery-ui-timepicker-addon.js') }}"></script>
-    <script src="{{ asset('js/croppie.min.js') }}"></script>
+    <script defer src="{{ asset('js/jquery-ui-timepicker-addon.js') }}"></script>
+    <script defer src="{{ asset('js/croppie.min.js') }}"></script>
+    <script src="{{ asset('js/jquery.ui.touch-punch.min.js') }}"></script>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" type="text/css">
 
     <!-- Styles -->
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="{{ mix('css/app.css') }}" rel="stylesheet">
     <link href="{{ asset('css/lorekeeper.css?v=' . filemtime(public_path('css/lorekeeper.css'))) }}" rel="stylesheet">
 
     {{-- Font Awesome --}}
-    <link href="{{ asset('css/all.min.css') }}" rel="stylesheet">
+    <link defer href="{{ faVersion() }}" rel="stylesheet">
 
     {{-- jQuery UI --}}
-    <link href="{{ asset('css/jquery-ui.min.css') }}" rel="stylesheet">
+    <link defer href="{{ asset('css/jquery-ui.min.css') }}" rel="stylesheet">
 
     {{-- Bootstrap Toggle --}}
-    <link href="{{ asset('css/bootstrap4-toggle.min.css') }}" rel="stylesheet">
+    <link defer href="{{ asset('css/bootstrap4-toggle.min.css') }}" rel="stylesheet">
 
-
-    <link href="{{ asset('css/lightbox.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('css/bootstrap-colorpicker.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('css/jquery-ui-timepicker-addon.css') }}" rel="stylesheet">
-    <link href="{{ asset('css/croppie.css') }}" rel="stylesheet">
-    <link href="{{ asset('css/selectize.bootstrap4.css') }}" rel="stylesheet">
+    <link defer href="{{ asset('css/lightbox.min.css') }}" rel="stylesheet">
+    <link defer href="{{ asset('css/bootstrap-colorpicker.min.css') }}" rel="stylesheet">
+    <link defer href="{{ asset('css/jquery-ui-timepicker-addon.css') }}" rel="stylesheet">
+    <link defer href="{{ asset('css/croppie.css') }}" rel="stylesheet">
+    <link defer href="{{ asset('css/selectize.bootstrap4.css') }}" rel="stylesheet">
 
     @if (file_exists(public_path() . '/css/custom.css'))
         <link href="{{ asset('css/custom.css') . '?v=' . filemtime(public_path('css/custom.css')) }}" rel="stylesheet">
     @endif
 
     @include('feed::links')
+
+    @yield('head')
 </head>
 
 <body>
@@ -152,29 +151,12 @@
                 }
             });
 
-            $(function() {
+            $(document).ready(function() {
                 $('[data-toggle="tooltip"]').tooltip({
                     html: true
                 });
                 $('.cp').colorpicker();
-                tinymce.init({
-                    selector: '.wysiwyg',
-                    height: 500,
-                    menubar: false,
-                    convert_urls: false,
-                    plugins: [
-                        'advlist autolink lists link image charmap print preview anchor',
-                        'searchreplace visualblocks code fullscreen spoiler',
-                        'insertdatetime media table paste code help wordcount'
-                    ],
-                    toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | spoiler-add spoiler-remove | removeformat | code',
-                    content_css: [
-                        '{{ asset('css/app.css') }}',
-                        '{{ asset('css/lorekeeper.css') }}'
-                    ],
-                    spoiler_caption: 'Toggle Spoiler',
-                    target_list: false
-                });
+
                 bsCustomFileInput.init();
                 var $mobileMenuButton = $('#mobileMenuButton');
                 var $sidebar = $('#sidebar');

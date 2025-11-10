@@ -31,7 +31,7 @@ class Notifications {
             $notification = Notification::create([
                 'user_id'               => $user->id,
                 'notification_type_id'  => Notification::getNotificationId($type),
-                'data'                  => json_encode($data),
+                'data'                  => $data,
                 'is_unread'             => 1,
             ]);
 

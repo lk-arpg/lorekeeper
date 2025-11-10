@@ -56,7 +56,7 @@ class SalesController extends Controller {
                     $query->sortNewest();
                     break;
                 case 'oldest':
-                    $query->sortOldest();
+                    $query->sortNewest(true);
                     break;
                 case 'bump':
                     $query->sortBump();
@@ -83,7 +83,7 @@ class SalesController extends Controller {
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getSales($id, $slug = null) {
-        $sales = Sales::where('id', $id)->where('is_visible', 1)->first();
+        $sales = Sales::where('id', $id)->visible(Auth::user() ?? null)->first();
         if (!$sales) {
             abort(404);
         }

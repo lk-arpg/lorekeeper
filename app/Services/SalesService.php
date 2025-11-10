@@ -22,10 +22,10 @@ class SalesService extends Service {
     /**
      * Creates a Sales post.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $user
+     * @param array $data
+     * @param User  $user
      *
-     * @return \App\Models\Sales\Sales|bool
+     * @return bool|Sales
      */
     public function createSales($data, $user) {
         DB::beginTransaction();
@@ -40,7 +40,30 @@ class SalesService extends Service {
                 $data['is_open'] = 0;
             }
 
+            $image = null;
+            if (isset($data['image']) && $data['image']) {
+                $data['has_image'] = 1;
+                $data['hash'] = randomString(10);
+                $image = $data['image'];
+                unset($data['image']);
+            } else {
+                $data['has_image'] = 0;
+            }
+
             $sales = Sales::create($data);
+
+            if (isset($data['remove_image'])) {
+                if ($sales && $sales->has_image && $data['remove_image']) {
+                    $data['has_image'] = 0;
+                    $image = null;
+                    $this->deleteImage($sales->imagePath, $sales->imageFileName);
+                }
+                unset($data['remove_image']);
+            }
+
+            if ($image) {
+                $this->handleImage($image, $sales->imagePath, $sales->imageFileName);
+            }
 
             // The character identification comes in both the slug field and as character IDs
             // First, check if the characters are accessible to begin with.
@@ -73,11 +96,11 @@ class SalesService extends Service {
     /**
      * Updates a Sales post.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $user
-     * @param mixed                 $sales
+     * @param array $data
+     * @param User  $user
+     * @param mixed $sales
      *
-     * @return \App\Models\Sales\Sales|bool
+     * @return bool|Sales
      */
     public function updateSales($sales, $data, $user) {
         DB::beginTransaction();
@@ -90,6 +113,14 @@ class SalesService extends Service {
             }
             if (!isset($data['is_open'])) {
                 $data['is_open'] = 0;
+            }
+
+            $image = null;
+            if (isset($data['image']) && $data['image']) {
+                $data['has_image'] = 1;
+                $data['hash'] = randomString(10);
+                $image = $data['image'];
+                unset($data['image']);
             }
 
             if (isset($data['bump']) && $data['is_visible'] == 1 && $data['bump'] == 1) {
@@ -115,6 +146,19 @@ class SalesService extends Service {
 
             $sales->update($data);
 
+            if (isset($data['remove_image'])) {
+                if ($sales && $sales->has_image && $data['remove_image']) {
+                    $data['has_image'] = 0;
+                    $image = null;
+                    $this->deleteImage($sales->imagePath, $sales->imageFileName);
+                }
+                unset($data['remove_image']);
+            }
+
+            if ($sales) {
+                $this->handleImage($image, $sales->imagePath, $sales->imageFileName);
+            }
+
             return $this->commitReturn($sales);
         } catch (\Exception $e) {
             $this->setError('error', $e->getMessage());
@@ -134,6 +178,10 @@ class SalesService extends Service {
         DB::beginTransaction();
 
         try {
+            if ($sales->has_image) {
+                $this->deleteImage($sales->imagePath, $sales->imageFileName);
+            }
+
             $sales->delete();
 
             return $this->commitReturn(true);
@@ -241,7 +289,7 @@ class SalesService extends Service {
                 'image_id'     => $data['image_id'][$key] ?? $character->image->id,
                 'sales_id'     => $sales->id,
                 'type'         => $charData[$key]['type'],
-                'data'         => json_encode($charData[$key]),
+                'data'         => $charData[$key],
                 'description'  => $data['description'][$key] ?? null,
                 'link'         => $data['link'][$key] ?? null,
                 'is_open'      => $data['character_is_open'][$character->slug] ?? ($data['new_entry'][$key] ? 1 : 0),

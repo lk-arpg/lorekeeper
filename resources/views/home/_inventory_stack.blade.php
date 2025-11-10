@@ -18,6 +18,17 @@
         @endif
     </div>
 
+    @if ($item->parsed_description)
+        <div class="mb-2">
+            <a data-toggle="collapse" href="#itemDescription" class="h5">Description <i class="fas fa-caret-down"></i></a>
+            <div class="card collapse mt-1" id="itemDescription">
+                <div class="card-body">
+                    {!! $item->parsed_description !!}
+                </div>
+            </div>
+        </div>
+    @endif
+
     <h5>Item Variations</h5>
     @if ($user && $user->hasPower('edit_inventories'))
         <p class="alert alert-warning my-2">Note: Your rank allows you to transfer account-bound items to another user.</p>
@@ -66,7 +77,7 @@
                         @endif
                         <td class="col-1">
                             @if (!$itemRow->isTransferrable)
-                                <i class="fas fa-lock" data-toggle="tooltip" title="Account-bound items cannot be transferred but can be deleted."></i>
+                                <i class="fas fa-lock" data-toggle="tooltip" title="Account-bound items cannot be transferred{!! $item->is_deletable ? ', but can be deleted.' : '.' !!}"></i>
                             @endif
                         </td>
                     </tr>
@@ -119,35 +130,39 @@
                         </div>
                     </li>
                 @endif
-                <li class="list-group-item">
-                    <a class="card-title h5 collapse-title" data-toggle="collapse" href="#transferForm">
-                        @if ($stack->first()->user_id != $user->id)
-                            [ADMIN]
-                        @endif Transfer Item
-                    </a>
-                    <div id="transferForm" class="collapse">
-                        <div class="form-group">
-                            {!! Form::label('user_id', 'Recipient') !!} {!! add_help('You can only transfer items to verified users.') !!}
-                            {!! Form::select('user_id', $userOptions, null, ['class' => 'form-control']) !!}
+                @if ($canTransfer || $user->hasPower('edit_inventories'))
+                    <li class="list-group-item">
+                        <a class="card-title h5 collapse-title" data-toggle="collapse" href="#transferForm">
+                            @if ($stack->first()->user_id != $user->id || !$canTransfer)
+                                [ADMIN]
+                            @endif Transfer Item
+                        </a>
+                        <div id="transferForm" class="collapse">
+                            <div class="form-group">
+                                {!! Form::label('user_id', 'Recipient') !!} {!! add_help('You can only transfer items to verified users.') !!}
+                                {!! Form::select('user_id', $userOptions, null, ['class' => 'form-control user-select']) !!}
+                            </div>
+                            <div class="text-right">
+                                {!! Form::button('Transfer', ['class' => 'btn btn-primary', 'name' => 'action', 'value' => 'transfer', 'type' => 'submit']) !!}
+                            </div>
                         </div>
-                        <div class="text-right">
-                            {!! Form::button('Transfer', ['class' => 'btn btn-primary', 'name' => 'action', 'value' => 'transfer', 'type' => 'submit']) !!}
+                    </li>
+                @endif
+                @if ($item->is_deletable || $user->hasPower('edit_inventories'))
+                    <li class="list-group-item">
+                        <a class="card-title h5 collapse-title" data-toggle="collapse" href="#deleteForm">
+                            @if ($stack->first()->user_id != $user->id || !$item->is_deletable)
+                                [ADMIN]
+                            @endif Delete Item
+                        </a>
+                        <div id="deleteForm" class="collapse">
+                            <p>This action is not reversible. Are you sure you want to delete this item?</p>
+                            <div class="text-right">
+                                {!! Form::button('Delete', ['class' => 'btn btn-danger', 'name' => 'action', 'value' => 'delete', 'type' => 'submit']) !!}
+                            </div>
                         </div>
-                    </div>
-                </li>
-                <li class="list-group-item">
-                    <a class="card-title h5 collapse-title" data-toggle="collapse" href="#deleteForm">
-                        @if ($stack->first()->user_id != $user->id)
-                            [ADMIN]
-                        @endif Delete Item
-                    </a>
-                    <div id="deleteForm" class="collapse">
-                        <p>This action is not reversible. Are you sure you want to delete this item?</p>
-                        <div class="text-right">
-                            {!! Form::button('Delete', ['class' => 'btn btn-danger', 'name' => 'action', 'value' => 'delete', 'type' => 'submit']) !!}
-                        </div>
-                    </div>
-                </li>
+                    </li>
+                @endif
             </ul>
         </div>
     @endif
@@ -161,6 +176,7 @@
             return false;
     });
     $('.default.character-select').selectize();
+    $('.user-select').selectize();
 
     function toggleChecks($toggle) {
         $.each($('.item-check'), function(index, checkbox) {

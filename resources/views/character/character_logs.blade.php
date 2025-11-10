@@ -4,10 +4,6 @@
     {{ $character->fullName }}'s Change Log
 @endsection
 
-@section('meta-img')
-    {{ $character->image->thumbnailUrl }}
-@endsection
-
 @section('profile-content')
     @if ($character->is_myo_slot)
         {!! breadcrumbs(['MYO Slot Masterlist' => 'myos', $character->fullName => $character->url, 'Change Log' => $character->url . '/change-log']) !!}

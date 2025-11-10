@@ -4,10 +4,6 @@
     {{ $character->fullName }}'s Ownership History
 @endsection
 
-@section('meta-img')
-    {{ $character->image->thumbnailUrl }}
-@endsection
-
 @section('profile-content')
     @if ($character->is_myo_slot)
         {!! breadcrumbs(['MYO Slot Masterlist' => 'myos', $character->fullName => $character->url, 'Ownership History' => $character->url . '/ownership']) !!}

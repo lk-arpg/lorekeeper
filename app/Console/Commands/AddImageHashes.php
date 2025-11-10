@@ -70,7 +70,7 @@ class AddImageHashes extends Command {
                     (new FeatureService)->handleImage(
                         null,
                         public_path($image->imageDirectory),
-                        $image->hash.$image->id.'-image.png',
+                        $image->id.'-'.$image->hash.'-image.png',
                         $oldName
                     )
                 ) {
@@ -87,7 +87,7 @@ class AddImageHashes extends Command {
                         (new FeatureService)->handleImage(
                             null,
                             public_path($image->imageDirectory),
-                            $image->hash.$image->id.'-icon.png',
+                            $image->id.'-'.$image->hash.'-icon.png',
                             $oldName
                         )
                     ) {

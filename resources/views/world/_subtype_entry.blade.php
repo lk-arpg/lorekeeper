@@ -17,6 +17,11 @@
                 <i class="fas fa-search"></i>
             </a>
         </h3>
+        @if (count($subtype->features) && config('lorekeeper.extensions.visual_trait_index.enable_subtype_index'))
+            <a href="{{ $subtype->visualTraitsUrl }}">
+                <strong>Visual Trait Index</strong>
+            </a>
+        @endif
         <div class="world-entry-text">
             {!! $subtype->parsed_description !!}
         </div>

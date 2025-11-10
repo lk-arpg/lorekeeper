@@ -23,7 +23,7 @@ return [
             ],
             [
                 'name' => 'Admin Logs',
-                'url'  => 'admin/logs',
+                'url'  => 'admin/admin-logs',
             ],
             [
                 'name' => 'Staff Reward Settings',
@@ -99,6 +99,10 @@ return [
                 'name' => 'Claim Submissions',
                 'url'  => 'admin/claims',
             ],
+            [
+                'name' => 'Trades',
+                'url'  => 'admin/trades/incoming',
+            ],
         ],
     ],
     'Grants'     => [
@@ -128,10 +132,6 @@ return [
             [
                 'name' => 'Character Transfers',
                 'url'  => 'admin/masterlist/transfers/incoming',
-            ],
-            [
-                'name' => 'Character Trades',
-                'url'  => 'admin/masterlist/trades/incoming',
             ],
             [
                 'name' => 'Design Updates',
@@ -194,6 +194,10 @@ return [
                 'name' => 'Items',
                 'url'  => 'admin/data/items',
             ],
+            [
+                'name' => 'Dynamic Limits',
+                'url'  => 'admin/data/limits',
+            ],
         ],
     ],
     'Raffles'    => [
@@ -219,6 +223,10 @@ return [
             [
                 'name' => 'File Manager',
                 'url'  => 'admin/files',
+            ],
+            [
+                'name' => 'Log Viewer',
+                'url'  => 'admin/logs',
             ],
         ],
     ],

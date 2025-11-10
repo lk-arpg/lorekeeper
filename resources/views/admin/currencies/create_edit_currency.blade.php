@@ -17,17 +17,21 @@
 
     <h3>Basic Information</h3>
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-4">
             <div class="form-group">
                 {!! Form::label('Currency Name') !!}
                 {!! Form::text('name', $currency->name, ['class' => 'form-control']) !!}
             </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-4">
             <div class="form-group">
                 {!! Form::label('Abbreviation (Optional)') !!} {!! add_help('This will be used to denote the currency if an icon is not provided. If an abbreviation is not given, the currency\'s full name will be used.') !!}
                 {!! Form::text('abbreviation', $currency->abbreviation, ['class' => 'form-control']) !!}
             </div>
+        </div>
+        <div class="col-md-4 form-group">
+            {!! Form::label('Currency Category (Optional)') !!}
+            {!! Form::select('currency_category_id', $categories, $currency->currency_category_id, ['class' => 'form-control', 'placeholder' => 'No category']) !!}
         </div>
     </div>
 
@@ -116,11 +120,57 @@
         </div>
     </div>
 
+    @if ($currency->id && $currency->is_user_owned)
+        <h3>Conversion Rates</h3>
+        <p>
+            Choose whether this currency should be able to be converted to other currencies. If so, you can set the conversion rates here.
+            <br />
+            <strong>Conversion rates are unidirectional.</strong> If you want to allow a currency to be converted both ways, you will need to create conversion on both currencies.
+            <br />
+            Rates should be in decimal form. For example, 1 USD = 0.75 EUR, so the rate would be 0.75.
+            Conversions will only allow whole number conversions, e.g. requiring a user to convert 3 USD to 4 EUR.
+            <br />
+            <strong>Conversions are only possible on user owned currencies.</strong>
+        </p>
+        <div class="form-group">
+            <div class="d-flex justify-content-end mb-2">
+                <a href="#" class="btn btn-primary mb-2" id="add-conversion">Add Conversion</a>
+            </div>
+            <div id="conversionList">
+                @foreach ($currency->conversions as $conversion)
+                    <div class="d-flex mb-2">
+                        {!! Form::select('conversion_id[]', $currencies, $conversion->conversion_id, ['class' => 'form-control mr-2 conversion-select original', 'placeholder' => 'Select Currency']) !!}
+                        {!! Form::text('rate[]', $conversion->rate, ['class' => 'form-control mr-2', 'placeholder' => 'Conversion Rate']) !!}
+                        <div class="form-control border-0 w-25">
+                            {{ $conversion->ratio() }}
+                        </div>
+                        <a href="#" class="remove-conversion btn btn-danger mb-2">×</a>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @endif
+
+    <div class="form-group">
+        {!! Form::checkbox('is_visible', 1, $currency->id ? $currency->is_visible : 1, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
+        {!! Form::label('is_visible', 'Is Visible', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If turned off, the currency will not be visible in the currencies list or available for selection in search. Permissioned staff will still be able to see them, however.') !!}
+    </div>
+
     <div class="text-right">
         {!! Form::submit($currency->id ? 'Edit' : 'Create', ['class' => 'btn btn-primary']) !!}
     </div>
 
     {!! Form::close() !!}
+
+    @if ($currency->id && $currency->is_user_owned)
+        <div class="conversion-row hide mb-2">
+            {!! Form::select('conversion_id[]', $currencies, null, ['class' => 'form-control mr-2 conversion-select', 'placeholder' => 'Select Currency']) !!}
+            {!! Form::text('rate[]', null, ['class' => 'form-control mr-2 conversion-rate', 'placeholder' => 'Conversion Rate']) !!}
+            <div class="form-control border-0 w-25">
+            </div>
+            <a href="#" class="remove-conversion btn btn-danger mb-2">×</a>
+        </div>
+    @endif
 
     @if ($currency->id)
         <h3>Previews</h3>
@@ -143,6 +193,7 @@
 
 @section('scripts')
     @parent
+    @include('js._tinymce_wysiwyg')
     <script>
         $(document).ready(function() {
             var $userOwned = $('#userOwned');
@@ -174,12 +225,61 @@
                 else $characterOptions.addClass('hide');
             }
 
-
-
             $('.delete-currency-button').on('click', function(e) {
                 e.preventDefault();
                 loadModal("{{ url('admin/data/currencies/delete') }}/{{ $currency->id }}", 'Delete Currency');
             });
+
+            /////////////////////// Conversion Rates ///////////////////////
+            $('.original.currency-select').selectize();
+
+            $('#add-conversion').on('click', function(e) {
+                e.preventDefault();
+                addConversionRow();
+            });
+            $('.remove-conversion').on('click', function(e) {
+                e.preventDefault();
+                removeConversionRow($(this));
+            })
+
+            function addConversionRow() {
+                var $clone = $('.conversion-row').clone();
+                $('#conversionList').append($clone);
+                $clone.removeClass('hide conversion-row');
+                $clone.addClass('d-flex');
+                $clone.find('.remove-conversion').on('click', function(e) {
+                    e.preventDefault();
+                    removeConversionRow($(this));
+                })
+                $clone.find('.conversion-rate').on('input', function() {
+                    var $row = $(this).parent();
+                    var rate = parseFloat($(this).val());
+
+                    if (isNaN(rate) || rate <= 0) {
+                        return;
+                    }
+
+                    function gcd(a, b) {
+                        if (b === 0) return a;
+                        return gcd(b, a % b);
+                    }
+
+                    // Convert rate to a ratio
+                    var numerator = rate * 100; // Adjust to avoid floating point issues
+                    var denominator = 100;
+                    var divisor = gcd(numerator, denominator);
+
+                    numerator = numerator / divisor;
+                    denominator = denominator / divisor;
+
+                    $row.find('.w-25').text(numerator + ' : ' + denominator);
+                });
+                $clone.find('.conversion-select').selectize();
+            }
+
+            function removeConversionRow($trigger) {
+                $trigger.parent().remove();
+            }
         });
     </script>
 @endsection

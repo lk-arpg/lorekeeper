@@ -101,19 +101,21 @@
                         </div>
                     </li>
                 @endif
-                <li class="list-group-item">
-                    <a class="card-title h5 collapse-title" data-toggle="collapse" href="#deleteForm">
-                        @if ($owner_id != $user->id)
-                            [ADMIN]
-                        @endif Delete Item
-                    </a>
-                    <div id="deleteForm" class="collapse">
-                        <p>This action is not reversible. Are you sure you want to delete this item?</p>
-                        <div class="text-right">
-                            {!! Form::button('Delete', ['class' => 'btn btn-danger', 'name' => 'action', 'value' => 'delete', 'type' => 'submit']) !!}
+                @if ($item->is_deletable || $user->hasPower('edit_inventories'))
+                    <li class="list-group-item">
+                        <a class="card-title h5 collapse-title" data-toggle="collapse" href="#deleteForm">
+                            @if ($owner_id != $user->id || !$item->is_deletable)
+                                [ADMIN]
+                            @endif Delete Item
+                        </a>
+                        <div id="deleteForm" class="collapse">
+                            <p>This action is not reversible. Are you sure you want to delete this item?</p>
+                            <div class="text-right">
+                                {!! Form::button('Delete', ['class' => 'btn btn-danger', 'name' => 'action', 'value' => 'delete', 'type' => 'submit']) !!}
+                            </div>
                         </div>
-                    </div>
-                </li>
+                    </li>
+                @endif
             </ul>
         </div>
     @endif

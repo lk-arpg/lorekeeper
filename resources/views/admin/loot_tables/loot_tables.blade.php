@@ -12,6 +12,20 @@
     <p>Loot tables can be attached to prompts as a reward for doing the prompt. This will roll a random reward from the contents of the table. Tables can be chained as well.</p>
 
     <div class="text-right mb-3"><a class="btn btn-primary" href="{{ url('admin/data/loot-tables/create') }}"><i class="fas fa-plus"></i> Create New Loot Table</a></div>
+
+    <div>
+        {!! Form::open(['method' => 'GET', 'class' => '']) !!}
+        <div class="form-inline justify-content-end">
+            <div class="form-group ml-3 mb-3">
+                {!! Form::text('name', Request::get('name'), ['class' => 'form-control', 'placeholder' => 'Name']) !!}
+            </div>
+            <div class="form-group ml-3 mb-3">
+                {!! Form::submit('Search', ['class' => 'btn btn-primary']) !!}
+            </div>
+        </div>
+        {!! Form::close() !!}
+    </div>
+
     @if (!count($tables))
         <p>No loot tables found.</p>
     @else

@@ -4,6 +4,7 @@ namespace App\Models\Loot;
 
 use App\Models\Item\Item;
 use App\Models\Model;
+use App\Models\Rarity;
 
 class LootTable extends Model {
     /**
@@ -167,11 +168,20 @@ class LootTable extends Model {
         $rewards = createAssetsArray();
 
         if (isset($criteria) && $criteria && isset($rarity) && $rarity) {
-            if (config('lorekeeper.extensions.item_entry_expansion.loot_tables.alternate_filtering')) {
-                $loot = Item::where('item_category_id', $id)->released()->whereNotNull('data')->where('data->rarity', $criteria, $rarity)->get();
-            } else {
-                $loot = Item::where('item_category_id', $id)->released()->whereNotNull('data')->whereRaw('JSON_EXTRACT(`data`, \'$.rarity\')'.$criteria.$rarity)->get();
+            $rarity = Rarity::find($rarity);
+            if (!$rarity) {
+                throw new \Exception('Invalid rarity!');
             }
+
+            $loot = Item::where('item_category_id', $id)->released()->whereNotNull('data')->get()->filter(function ($item) use ($criteria, $rarity) {
+                $itemRarity = Rarity::find($item->data['rarity_id'] ?? null);
+                if (!$itemRarity) {
+                    return false;
+                }
+
+                // check the sort order of the rarity
+                return eval('return '.$itemRarity->sort.$criteria.$rarity->sort.';');
+            })->values();
         } else {
             $loot = Item::where('item_category_id', $id)->released()->get();
         }
@@ -206,11 +216,20 @@ class LootTable extends Model {
     public function rollRarityItem($quantity, $criteria, $rarity) {
         $rewards = createAssetsArray();
 
-        if (config('lorekeeper.extensions.item_entry_expansion.loot_tables.alternate_filtering')) {
-            $loot = Item::released()->whereNotNull('data')->where('data->rarity', $criteria, $rarity)->get();
-        } else {
-            $loot = Item::released()->whereNotNull('data')->whereRaw('JSON_EXTRACT(`data`, \'$.rarity\')'.$criteria.$rarity)->get();
+        $rarity = Rarity::find($rarity);
+        if (!$rarity) {
+            throw new \Exception('Invalid rarity!');
         }
+
+        $loot = Item::released()->whereNotNull('data')->get()->filter(function ($item) use ($criteria, $rarity) {
+            $itemRarity = Rarity::find($item->data['rarity_id'] ?? null);
+            if (!$itemRarity) {
+                return false;
+            }
+
+            // check the sort order of the rarity
+            return eval('return '.$itemRarity->sort.$criteria.$rarity->sort.';');
+        })->values();
         if (!$loot->count()) {
             throw new \Exception('There are no items to select from!');
         }

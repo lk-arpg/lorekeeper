@@ -30,6 +30,14 @@
             </div>
             <div class="col-md-10"><a href="{{ $submission->url }}">{{ $submission->url }}</a></div>
         </div>
+        @if (config('lorekeeper.settings.allow_gallery_submissions_on_prompts') && $submission->data['gallery_submission_id'])
+            <div class="row mb-2 no-gutters">
+                <div class="col-md-2">
+                    <h5 class="mb-0">Gallery Submission</h5>
+                </div>
+                <div class="col-md-10"><a href="{{ $submission->gallerySubmission->url }}">{{ $submission->gallerySubmission->title }}</a></div>
+            </div>
+        @endif
         <div class="row mb-2 no-gutters">
             <div class="col-md-2">
                 <h5 class="mb-0">Submitted</h5>
@@ -98,8 +106,7 @@
 <div class="card mb-3">
     <div class="card-header h2">Characters</div>
     <div class="card-body">
-        @if (count(
-                $submission->characters()->whereRelation('character', 'deleted_at', null)->get()) != count($submission->characters()->get()))
+        @if (count($submission->characters()->whereRelation('character', 'deleted_at', null)->get()) != count($submission->characters()->get()))
             <div class="alert alert-warning">
                 Some characters have been deleted since this submission was created.
             </div>

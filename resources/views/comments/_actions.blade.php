@@ -23,8 +23,8 @@
             {{-- Likes Section --}}
             <a href="#" data-toggle="modal" data-target="#show-likes-{{ $comment->id }}">
                 <button href="#" data-toggle="tooltip" title="Click to View" class="btn btn-sm px-3 py-2 px-sm-2 py-sm-1 btn-faded">
-                    {{ $comment->likes()->where('is_like', 1)->count() -$comment->likes()->where('is_like', 0)->count() }}
-                    {{ $comment->likes()->where('is_like', 1)->count() -$comment->likes()->where('is_like', 0)->count() !=1? 'Likes': 'Like' }}
+                    {{ $comment->likes()->where('is_like', 1)->count() - $comment->likes()->where('is_like', 0)->count() }}
+                    {{ $comment->likes()->where('is_like', 1)->count() - $comment->likes()->where('is_like', 0)->count() != 1 ? 'Likes' : 'Like' }}
                 </button>
             </a>
             {!! Form::open(['url' => 'comments/' . $comment->id . '/like/1', 'class' => 'd-inline-block']) !!}

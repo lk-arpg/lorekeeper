@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | Browse Routes
@@ -47,6 +49,8 @@ Route::get('/deactivated-list', 'BrowseController@getDeactivated');
 // PROFILES
 Route::group(['prefix' => 'user', 'namespace' => 'Users'], function () {
     Route::get('{name}/gallery', 'UserController@getUserGallery');
+    Route::get('{name}/character-designs', 'UserController@getUserCharacterDesigns');
+    Route::get('{name}/character-art', 'UserController@getUserCharacterArt');
     Route::get('{name}/favorites', 'UserController@getUserFavorites');
     Route::get('{name}/favorites/own-characters', 'UserController@getUserOwnCharacterFavorites');
 
@@ -99,17 +103,21 @@ Route::group(['prefix' => 'myo', 'namespace' => 'Characters'], function () {
 Route::group(['prefix' => 'world'], function () {
     Route::get('/', 'WorldController@getIndex');
 
+    Route::get('currency-categories', 'WorldController@getCurrencyCategories');
     Route::get('currencies', 'WorldController@getCurrencies');
     Route::get('rarities', 'WorldController@getRarities');
     Route::get('species', 'WorldController@getSpecieses');
     Route::get('subtypes', 'WorldController@getSubtypes');
     Route::get('species/{id}/traits', 'WorldController@getSpeciesFeatures');
-    Route::get('species/{speciesId}/trait/{id}', 'WorldController@getSpeciesFeatureDetail')->where(['id' => '[0-9]+', 'speciesId' => '[0-9]+']);
+    Route::get('subtypes/{id}/traits', 'WorldController@getSubtypeFeatures');
+    Route::get('universaltraits', 'WorldController@getUniversalFeatures');
+    Route::get('all-traits-index', 'WorldController@getKitchenSinkFeatures');
     Route::get('item-categories', 'WorldController@getItemCategories');
     Route::get('items', 'WorldController@getItems');
     Route::get('items/{id}', 'WorldController@getItem');
     Route::get('trait-categories', 'WorldController@getFeatureCategories');
     Route::get('traits', 'WorldController@getFeatures');
+    Route::get('traits/modal/{id}', 'WorldController@getFeatureDetail')->where(['id' => '[0-9]+']);
     Route::get('character-categories', 'WorldController@getCharacterCategories');
 });
 
@@ -131,6 +139,7 @@ Route::group(['prefix' => 'shops'], function () {
 **************************************************************************************************/
 Route::get('credits', 'PageController@getCreditsPage');
 Route::get('info/{key}', 'PageController@getPage');
+Route::get('feeds', 'PageController@getFeedsPage');
 
 /**************************************************************************************************
     Raffles
@@ -154,6 +163,7 @@ Route::group(['prefix' => 'claims', 'namespace' => 'Users'], function () {
     Comments
 **************************************************************************************************/
 Route::get('comment/{id}', 'PermalinkController@getComment');
+Route::get('sort-comments/{model}/{id}', 'Comments\CommentController@getSortedComments');
 
 /**************************************************************************************************
     Galleries

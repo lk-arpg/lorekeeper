@@ -22,8 +22,8 @@
         </div>
         <div class="world-entry-text">
             <p>{{ $prompt->summary }}</p>
-            <h3 class="mb-3"><a data-toggle="collapse" href="#prompt-{{ $prompt->id }}" @if (isset($isPage)) aria-expanded="true" @endif)>Details <i class="fas fa-angle-down"></i></a></h3>
-            <div class="collapse @if (isset($isPage)) show @endif mb-5" id="prompt-{{ $prompt->id }}">
+            <h3 class="mb-3"><a data-toggle="collapse" href="#prompt-{{ $prompt->id }}" @if (isset($isPage)) aria-expanded="true" @endif>Details <i class="fas fa-angle-down"></i></a></h3>
+            <div class="collapse @if (isset($isPage)) show @endif" id="prompt-{{ $prompt->id }}">
                 @if ($prompt->parsed_description)
                     {!! $prompt->parsed_description !!}
                 @else
@@ -55,6 +55,13 @@
                         @endforeach
                     </tbody>
                 </table>
+            @endif
+            @if (count(getLimits($prompt)))
+                <hr />
+                @include('widgets._limits', [
+                    'object' => $prompt,
+                    'hideUnlock' => true,
+                ])
             @endif
         </div>
         <div class="text-right">

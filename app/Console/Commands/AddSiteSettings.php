@@ -45,6 +45,12 @@ class AddSiteSettings extends Command {
 
         $this->addSiteSetting('open_transfers_queue', 0, '0: Character transfers do not need mod approval, 1: Transfers must be approved by a mod.');
 
+        $this->addSiteSetting('open_trades_queue', 0, '0: Trades do not need mod approval, 1: Trades must be approved by a mod.');
+
+        $this->addSiteSetting('trade_listing_duration', 14, 'Number of days a trade listing is displayed for.');
+
+        $this->addSiteSetting('trade_listing_limit', 3, 'Number of trade listings a user can have at once.');
+
         $this->addSiteSetting('is_prompts_open', 1, '0: New prompt submissions cannot be made (mods can work on the queue still), 1: Prompts are submittable.');
 
         $this->addSiteSetting('is_claims_open', 1, '0: New claims cannot be made (mods can work on the queue still), 1: Claims are submittable.');
@@ -82,6 +88,18 @@ class AddSiteSettings extends Command {
         $this->addSiteSetting('deactivated_key', 0, 'Optional key to view the deactivated list. Enter "0" to not require one.');
 
         $this->addSiteSetting('comment_dislikes_enabled', 0, '0: Dislikes disabled, 1: Dislikes enabled.');
+
+        $this->addSiteSetting('shop_type', 0, '0: Default, 1: Collapsible.');
+
+        $this->addSiteSetting('coupon_settings', 0, '0: Percentage is taken from total (e.g 20% from 2 items costing a total of 100 = 80), 1: Percentage is taken from item (e.g 20% from 2 items costing a total of 100 = 90)');
+
+        $this->addSiteSetting('limited_stock_coupon_settings', 0, '0: Does not allow coupons to be used on limited stock items, 1: Allows coupons to be used on limited stock items');
+
+        $this->addSiteSetting('can_transfer_currency_directly', 1, 'Whether or not users can directly transfer currency to other users without trading. 0: Users cannot directly transfer currency. 1: Direct currency transfers are allowed.');
+
+        $this->addSiteSetting('can_transfer_items_directly', 1, 'Whether or not users can directly transfer items to other users without trading. 0: Users cannot directly transfer items. 1: Direct item transfers are allowed.');
+
+        $this->addSiteSetting('allow_users_to_delete_profile_comments', 0, '0: Users cannot delete profile comments, 1: Users can delete profile comments.');
 
         $this->line("\nSite settings up to date!");
     }

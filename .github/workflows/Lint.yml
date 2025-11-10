@@ -9,19 +9,87 @@ on:
       - '**'
     types:
       - opened
-      - edited
       - synchronize
       - reopened
 
 jobs:
   pint:
-    uses: itinerare/github-actions/.github/workflows/pint.yml@main
-    with:
-      php-version: '8.1'
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
     concurrency:
-      group: ci-${{ github.head_ref || github.ref_name }}
+      group: ci-pint-${{ github.head_ref || github.ref_name }}
+      cancel-in-progress: true
+
+    steps:
+    - uses: shivammathur/setup-php@bf6b4fbd49ca58e4608c9c89fba0b8d90bd2a39f # v2
+      with:
+        php-version: 8.1
+
+    - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+      with:
+        repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+        ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
+
+    - name: Get composer cache directory
+      id: composer-cache
+      run: |
+        echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+    - name: Cache or restore composer cache
+      uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
+      with:
+        path: ${{ steps.composer-cache.outputs.dir }}
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-composer-
+
+    - name: Install dependencies
+      run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist --ignore-platform-reqs
+
+    - name: Run pint
+      run: composer lint
+
+    - name: Commit changes
+      uses: EndBug/add-and-commit@a94899bca583c204427a224a7af87c02f9b325d5 # v9
+      with:
+          message: 'refactor: fix PHP styling'
+          committer_name: github-actions[bot]
+          committer_email: github-actions[bot]@users.noreply.github.com
 
   blade-formatter:
-    uses: itinerare/github-actions/.github/workflows/blade_formatter.yml@main
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
     concurrency:
-      group: ci-${{ github.head_ref || github.ref_name }}
+      group: ci-blade-formatter-${{ github.head_ref || github.ref_name }}
+      cancel-in-progress: true
+
+    steps:
+    - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+      with:
+        repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+        ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
+
+    - name: Set up node
+      uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+      with:
+        node-version: 22.x
+        cache: 'npm'
+
+    - name: Install packages
+      run: npm install
+
+    - name: Run blade-formatter
+      run: npm run format
+
+    - name: Commit changes
+      uses: EndBug/add-and-commit@a94899bca583c204427a224a7af87c02f9b325d5 # v9
+      with:
+          message: 'refactor: fix blade formatting'
+          committer_name: github-actions[bot]
+          committer_email: github-actions[bot]@users.noreply.github.com

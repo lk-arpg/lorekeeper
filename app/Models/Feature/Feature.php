@@ -142,7 +142,13 @@ class Feature extends Model {
     public function scopeSortSubtype($query) {
         $ids = Subtype::orderBy('sort', 'DESC')->pluck('id')->toArray();
 
-        return count($ids) ? $query->with('feature_subtypes')->orderBy(DB::raw('FIELD(feature_subtypes.subtype_id, '.implode(',', $ids).')')) : $query;
+        if (count($ids)) {
+            $ordered_subtypes = $this->subtypes()->latest('id')->pluck('id')->toArray();
+            foreach ($ordered_subtypes as $subtype) {
+                return $query->with('feature_subtypes')->orderBy(DB::raw($subtype.', '.implode(',', $ids).')'));
+            }
+        }
+        return $query;
     }
 
     /**
@@ -311,7 +317,7 @@ class Feature extends Model {
             $sorted_feature_categories = collect(FeatureCategory::all()->where('is_visible', '>=', $visibleOnly)->sortBy('sort')->pluck('name')->toArray());
 
             $grouped = self::where('is_visible', '>=', $visibleOnly)
-                ->select('name', 'id', 'feature_category_id', 'rarity_id', 'species_id', 'subtype_id')->with(['category', 'rarity', 'species', 'subtype'])
+                ->select('name', 'id', 'feature_category_id', 'rarity_id', 'species_id')->with(['category', 'rarity', 'species', 'subtypes'])
                 ->orderBy('name')->get()->keyBy('id')->groupBy('category.name', $preserveKeys = true)
                 ->toArray();
             if (isset($grouped[''])) {
@@ -351,8 +357,12 @@ class Feature extends Model {
                         : ''
                     ).
                     (
-                        config('lorekeeper.extensions.organised_traits_dropdown.display_subtype') && $feature['subtype_id'] ?
-                        ' <span class="text-muted"><small>('.$feature['subtype']['name'].')</small></span>'
+                        config('lorekeeper.extensions.organised_traits_dropdown.display_subtype') && count($feature['subtypes']) ?
+                        ' <span class="text-muted"><small>('.implode(', ', array_map(
+                            function (array $subtype) {
+                                return $subtype['name'];
+                            }, $feature['subtypes']
+                        )).')</small></span>'
                         : ''
                     ).
                     ( // rarity

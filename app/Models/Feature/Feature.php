@@ -311,7 +311,7 @@ class Feature extends Model {
             });
 
             // Sort by rarity if enabled
-            if (config('lorekeeper.extensions.organised_traits_dropdown.rarity.enable') && config('lorekeeper.extensions.organised_traits_dropdown.rarity.sort_by_rarity')) {
+            if (config('lorekeeper.extensions.organised_traits_dropdown.rarity.sort_by_rarity')) {
                 foreach ($grouped as $category => &$features) { // &$features to modify the array in place
                     uasort($features, function ($a, $b) {
                         $sortA = $a['rarity']['sort'] ?? -1;
@@ -321,7 +321,7 @@ class Feature extends Model {
                             return strnatcasecmp($a['name'], $b['name']);
                         }
 
-                        return $sortB <=> $sortA;
+                        return $sortA <=> $sortB;
                     });
                 }
                 unset($features); // break the reference

@@ -223,7 +223,7 @@
  * http://jquery.org/license
  */
 
-/*! Axios v1.12.2 Copyright (c) 2025 Matt Zabriskie and contributors */
+/*! Axios v1.13.2 Copyright (c) 2025 Matt Zabriskie and contributors */
 
 /*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
 

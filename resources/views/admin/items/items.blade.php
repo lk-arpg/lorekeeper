@@ -78,19 +78,24 @@
         <div class="mb-4 logs-table">
             <div class="logs-table-header">
                 <div class="row">
-                    <div class="col-5 col-md-6">
+                    <div class="{{ config('lorekeeper.extensions.item_entry_expansion.extra_fields') ? 'col-6 col-md-5' : 'col-5 col-md-6' }}">
                         <div class="logs-table-cell">Name</div>
                     </div>
-                    <div class="col-5 col-md-5">
+                    <div class="{{ config('lorekeeper.extensions.item_entry_expansion.extra_fields') ? 'col-6 col-md-3' : 'col-5 col-md-5' }}">
                         <div class="logs-table-cell">Category</div>
                     </div>
+                    @if (config('lorekeeper.extensions.item_entry_expansion.extra_fields'))
+                        <div class="col-6 col-md-3">
+                            <div class="logs-table-cell">Rarity</div>
+                        </div>
+                    @endif
                 </div>
             </div>
             <div class="logs-table-body">
                 @foreach ($items as $item)
                     <div class="logs-table-row">
                         <div class="row flex-wrap">
-                            <div class="col-5 col-md-6">
+                            <div class="{{ config('lorekeeper.extensions.item_entry_expansion.extra_fields') ? 'col-6 col-md-5' : 'col-5 col-md-6' }}">
                                 <div class="logs-table-cell">
                                     @if (!$item->is_released)
                                         <i class="fas fa-eye-slash mr-1"></i>
@@ -98,10 +103,15 @@
                                     {{ $item->name }}
                                 </div>
                             </div>
-                            <div class="col-4 col-md-5">
-                                <div class="logs-table-cell">{{ $item->category ? $item->category->name : '' }}</div>
+                            <div class="{{ config('lorekeeper.extensions.item_entry_expansion.extra_fields') ? 'col-6 col-md-3' : 'col-4 col-md-5' }}">
+                                <div class="logs-table-cell">{{ $item->category ? $item->category->name : '---' }}</div>
                             </div>
-                            <div class="col-3 col-md-1 text-right">
+                            @if (config('lorekeeper.extensions.item_entry_expansion.extra_fields'))
+                                <div class="col-6 col-md-3">
+                                    <div class="logs-table-cell">{!! $item->rarity ? $item->rarity->displayName : '---' !!}</div>
+                                </div>
+                            @endif
+                            <div class="{{ config('lorekeeper.extensions.item_entry_expansion.extra_fields') ? 'col-2 col-md-1' : 'col-3 col-md-1' }} text-right">
                                 <div class="logs-table-cell">
                                     <a href="{{ url('admin/data/items/edit/' . $item->id) }}" class="btn btn-primary py-0 px-2">Edit</a>
                                 </div>

@@ -111,7 +111,7 @@ class Shop extends Model {
      * @return string
      */
     public function getDisplayNameAttribute() {
-        return '<a href="'.$this->url.'" class="display-shop">'.(!$this->isActive ? '<i class="fas fa-eye-slash"></i> ' : '').$this->name.'</a>';
+        return '<a href="'.$this->url.'" class="display-shop">'.(!$this->isActiveCheck ? '<i class="fas fa-eye-slash"></i> ' : '').$this->name.'</a>';
     }
 
     /**
@@ -199,7 +199,7 @@ class Shop extends Model {
      * Returns if this shop should be active or not.
      * We dont account for is_visible here, as this is used for checking both visible and invisible shop.
      */
-    public function getIsActiveAttribute() {
+    public function getIsActiveCheckAttribute() {
         if ($this->start_at && $this->start_at > Carbon::now()) {
             return false;
         }
@@ -213,6 +213,10 @@ class Shop extends Model {
         }
 
         if ($this->months && !in_array(Carbon::now()->format('F'), $this->months)) {
+            return false;
+        }
+
+        if (!$this->is_timed_shop && !$this->is_active) {
             return false;
         }
 

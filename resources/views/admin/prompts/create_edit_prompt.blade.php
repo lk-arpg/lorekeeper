@@ -107,7 +107,10 @@
     @include('widgets._loot_select_row', ['showLootTables' => true, 'showRaffles' => true])
 
     @if ($prompt->id)
-        @include('widgets._add_limits', ['object' => $prompt])
+        @include('widgets._add_limits', [
+            'object' => $prompt,
+            'hideAutoUnlock' => true,
+        ])
 
         <h3>Preview</h3>
         <div class="card mb-3">

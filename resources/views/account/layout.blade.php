@@ -1,8 +1,7 @@
 @extends('layouts.app')
 
 @section('title')
-    Account ::
-    @yield('account-title')
+    Account{!! View::hasSection('account-title') ? ' :: ' . trim(View::getSection('account-title')) : '' !!}
 @endsection
 
 @section('sidebar')

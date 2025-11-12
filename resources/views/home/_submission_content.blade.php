@@ -111,7 +111,7 @@
                 Some characters have been deleted since this submission was created.
             </div>
         @endif
-        @foreach ($submission->characters()->whereRelation('character', 'deleted_at', null)->get() as $character)
+        @foreach ($submission->characters()->with('character', 'character.image')->whereRelation('character', 'deleted_at', null)->get() as $character)
             <div class="submission-character-row mb-2">
                 <div class="submission-character-thumbnail">
                     <a href="{{ $character->character->url }}"><img src="{{ $character->character->image->thumbnailUrl }}" class="img-thumbnail" alt="Thumbnail for {{ $character->character->fullName }}" /></a>

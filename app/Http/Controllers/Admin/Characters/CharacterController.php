@@ -12,10 +12,9 @@ use App\Models\Feature\Feature;
 use App\Models\Rarity;
 use App\Models\Species\Species;
 use App\Models\Species\Subtype;
-use App\Models\Trade;
+use App\Models\Trade\Trade;
 use App\Models\User\User;
 use App\Services\CharacterManager;
-use App\Services\TradeManager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -640,86 +639,6 @@ class CharacterController extends Controller {
             } else {
                 flash('Transfer '.strtolower($action).'ed.')->success();
             }
-        } else {
-            foreach ($service->errors()->getMessages()['error'] as $error) {
-                flash($error)->error();
-            }
-        }
-
-        return redirect()->back();
-    }
-
-    /**
-     * Shows the character trade queue.
-     *
-     * @param string $type
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
-    public function getTradeQueue($type) {
-        $trades = Trade::query();
-        $user = Auth::user();
-
-        if ($type == 'completed') {
-            $trades->completed();
-        } elseif ($type == 'incoming') {
-            $trades->where('status', 'Pending');
-        } else {
-            abort(404);
-        }
-
-        $openTransfersQueue = Settings::get('open_transfers_queue');
-
-        return view('admin.masterlist.character_trades', [
-            'trades'             => $trades->orderBy('id', 'DESC')->paginate(20),
-            'tradesQueue'        => Settings::get('open_transfers_queue'),
-            'openTransfersQueue' => $openTransfersQueue,
-            'transferCount'      => $openTransfersQueue ? CharacterTransfer::active()->where('is_approved', 0)->count() : 0,
-            'tradeCount'         => $openTransfersQueue ? Trade::where('status', 'Pending')->count() : 0,
-        ]);
-    }
-
-    /**
-     * Shows the character trade action modal.
-     *
-     * @param int    $id
-     * @param string $action
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
-    public function getTradeModal($id, $action) {
-        if ($action != 'approve' && $action != 'reject') {
-            abort(404);
-        }
-        $trade = Trade::where('id', $id)->first();
-        if (!$trade) {
-            abort(404);
-        }
-
-        return view('admin.masterlist._'.$action.'_trade_modal', [
-            'trade'    => $trade,
-            'cooldown' => Settings::get('transfer_cooldown'),
-        ]);
-    }
-
-    /**
-     * Acts on a trade in the trade queue.
-     *
-     * @param App\Services\CharacterManager $service
-     * @param int                           $id
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function postTradeQueue(Request $request, TradeManager $service, $id) {
-        if (!Auth::check()) {
-            abort(404);
-        }
-
-        $action = strtolower($request->get('action'));
-        if ($action == 'approve' && $service->approveTrade($request->only(['action', 'cooldowns']) + ['id' => $id], Auth::user())) {
-            flash('Trade approved.')->success();
-        } elseif ($action == 'reject' && $service->rejectTrade($request->only(['action', 'reason']) + ['id' => $id], Auth::user())) {
-            flash('Trade rejected.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();

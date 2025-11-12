@@ -54,10 +54,10 @@ class UpdateTimedStock extends Command {
 
         // also activate or deactivate the shops
         $hideshop = Shop::where('is_timed_shop', 1)->where('is_active', 1)->get()->filter(function ($shop) {
-            return !$shop->isActive;
+            return !$shop->isActiveCheck;
         });
         $showshop = Shop::where('is_timed_shop', 1)->where('is_active', 0)->get()->filter(function ($shop) {
-            return $shop->isActive;
+            return $shop->isActiveCheck;
         });
 
         // set shop that should be active to active

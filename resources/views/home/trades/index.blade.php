@@ -11,11 +11,18 @@
         Trades
     </h1>
 
+    <p>Here are your trades.</p>
+
     <div class="text-right">
+        <a href="{{ url('trades/listings') }}" class="btn btn-dark">View Trade Listings</a>
+        <a href="{{ url('trades/listings/create') }}" class="btn btn-secondary">New Trade Listing</a>
         <a href="{{ url('trades/create') }}" class="btn btn-primary">New Trade</a>
     </div>
 
     <ul class="nav nav-tabs mb-3">
+        <li class="nav-item">
+            <a class="nav-link {{ set_active('trades/proposals*') }}" href="{{ url('trades/proposals') }}">Proposals</a>
+        </li>
         <li class="nav-item">
             <a class="nav-link {{ set_active('trades/open*') }}" href="{{ url('trades/open') }}">Open</a>
         </li>

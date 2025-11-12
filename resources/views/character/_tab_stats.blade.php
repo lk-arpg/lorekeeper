@@ -37,7 +37,7 @@
             <h5>Sale Value</h5>
         </div>
         <div class="col-lg-9 col-7 pl-1">
-            {{ Config::get('lorekeeper.settings.currency_symbol') }}{{ $character->sale_value }}
+            {{ config('lorekeeper.settings.currency_symbol') }}{{ $character->sale_value }}
         </div>
     </div>
 @endif

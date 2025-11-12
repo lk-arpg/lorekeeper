@@ -1,8 +1,7 @@
 @extends('layouts.app')
 
 @section('title')
-    Admin ::
-    @yield('admin-title')
+    Admin{!! View::hasSection('admin-title') ? ' :: ' . trim(View::getSection('admin-title')) : '' !!}
 @endsection
 
 @section('sidebar')

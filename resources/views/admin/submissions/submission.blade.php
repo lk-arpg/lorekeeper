@@ -254,7 +254,22 @@
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                     </div>
                     <div class="modal-body">
-                        <p>This will cancel the {{ $submission->prompt_id ? 'submission' : 'claim' }} and send it back to drafts. Make sure to include a staff comment if you do this!</p>
+                        <p>
+                            This will cancel the {{ $submission->prompt_id ? 'submission' : 'claim' }} and send it back to drafts.
+                            Make sure to include a staff comment if you do this!
+                        </p>
+                        @if ($submission->prompt_id && hasLimits($submission->prompt))
+                            <div class="alert alert-secondary">
+                                The user will not have to meet the prompt's requirements to submit again.
+                                <div class="text-center mb-0">
+                                    @include('widgets._limits', [
+                                        'object' => $submission->prompt,
+                                        'compact' => true,
+                                        'hideUnlock' => true,
+                                    ])
+                                </div>
+                            </div>
+                        @endif
                         <div class="text-right">
                             <a href="#" id="cancelSubmit" class="btn btn-secondary">Cancel</a>
                         </div>

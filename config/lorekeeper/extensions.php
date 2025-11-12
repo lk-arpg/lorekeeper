@@ -87,7 +87,7 @@ return [
     'organised_traits_dropdown' => [
         'enable'           => 1,
         'display_species'  => 0, // displays species
-        'display_subtype'  => 0, // displays subtype, SPECIES DISPLAY MUST ALSO BE ENABLED FOR THIS TO WORK.
+        'display_subtype'  => 0, // displays subtype. NOTE: species display must also be enabled for this to work.
         'rarity'           => [
             'enable'         => 1, // If enabled, displays trait rarity in the dropdown.
             'sort_by_rarity' => 1, // If enabled, sorts traits by rarity in the dropdown.

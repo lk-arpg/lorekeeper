@@ -416,12 +416,16 @@ function takeUserAssets($assets, $sender, $recipient, $logType, $data, $selected
 
             //Comparing plucked item ids in $contents to unique item ids in $selected
             if(!(collect($contents)->pluck('asset')->pluck('id')->diff(collect($selected)->pluck('stack')->pluck('item_id')->unique())->isEmpty())) {
-                flash('Assets do not match selected stacks');
+                flash('Assets do not match selected stacks.');
 
                 return false;
             }
 
+            //Building the array to validate deducted quantities
+            $selectedQuantities = array_fill_keys(array_keys($contents), 0);
+
             foreach ($selected as $stackData) {
+                $selectedQuantities[$stackData['stack']->item_id] += abs($stackData['quantity']);
                 if (!$service->debitStack($sender, $logType, $data, $stackData['stack'], abs($stackData['quantity']))) {
                     foreach ($service->errors()->getMessages()['error'] as $error) {
                         flash($error)->error();
@@ -430,6 +434,14 @@ function takeUserAssets($assets, $sender, $recipient, $logType, $data, $selected
                     return false;
                 }
             }
+
+            //Validate deducted quantities against $contents
+            if($selectedQuantities != array_combine(array_keys($contents), array_map("abs",array_column($contents, 'quantity')))) {
+                flash('Deducted quantities do not match asset quantities.');
+
+                return false;
+            }
+
         } elseif ($key == 'currencies' && count($contents)) {
             $service = new App\Services\CurrencyManager;
             foreach ($contents as $asset) {

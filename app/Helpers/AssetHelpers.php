@@ -415,7 +415,7 @@ function takeUserAssets($assets, $sender, $recipient, $logType, $data, $selected
             }
 
             //Comparing plucked item ids in $contents to unique item ids in $selected
-            if(!(collect($contents)->pluck('asset')->pluck('id')->diff(collect($selected)->pluck('stack')->pluck('item_id')->unique())->isEmpty())) {
+            if (!(collect($contents)->pluck('asset')->pluck('id')->diff(collect($selected)->pluck('stack')->pluck('item_id')->unique())->isEmpty())) {
                 flash('Assets do not match selected stacks.');
 
                 return false;

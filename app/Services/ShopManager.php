@@ -217,6 +217,12 @@ class ShopManager extends Service {
                 addAsset($baseStockCost, $cost->item, $cost->quantity);
             }
 
+            if (countAssets($userCostAssets) == 0) {
+                // the coupon made it free
+                // we will manually make the array empty to prevent trying to credit 0 currency
+                $userCostAssets = createAssetsArray();
+            }
+
             if ($character) {
                 if (!fillCharacterAssets($characterCostAssets, $character, null, 'Shop Purchase', [
                     'data' => 'Purchased '.$shopStock->item->name.' x'.$quantity.' from '.$shop->name.

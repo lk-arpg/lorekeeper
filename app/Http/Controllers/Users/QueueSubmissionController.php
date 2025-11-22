@@ -40,15 +40,15 @@ class QueueSubmissionController extends Controller
     public function getIndex(Request $request, $id = null)
     {
         $submissions = QueueSubmission::with('queue')->where('user_id', Auth::user()->id)->whereNotNull('queue_id')->whereHas('queue', function ($query) {
-            return $query->active();
+            return $query->active()->staffOnly(Auth::user());
         });
         $type        = $request->get('type');
         if (! $type) {
             $type = 'Pending';
         }
 
-        $queue = Queue::find($id);
-        if (isset($queue) && !$queue->is_active) abort(404);
+        $queue = Queue::active()->staffOnly(Auth::user())->find($id);
+        if (isset($id) && !$queue) abort(404);
         if (isset($id))
             $submissions = $submissions->where('queue_id', $id);
 
@@ -78,6 +78,9 @@ class QueueSubmissionController extends Controller
         }
 
         $queue = $submission->queue;
+        if (!$queue || ($queue->staff_only && !Auth::user()->isStaff)) {
+            abort(404);
+        }
 
         return view('home.queues.submission', [
             'submission' => $submission,
@@ -97,8 +100,7 @@ class QueueSubmissionController extends Controller
     public function getNewSubmission(Request $request, $id)
     {
         $closed = ! Settings::get('is_queue_open');
-
-        $queue = Queue::active()->find($id);
+        $queue = Queue::active()->staffOnly(Auth::user())->find($id);
         if (! $queue) {
             abort(404);
         }

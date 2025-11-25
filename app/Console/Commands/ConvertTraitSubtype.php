@@ -37,12 +37,17 @@ class ConvertTraitSubtype extends Command {
      */
     public function handle() {
         if (Schema::hasTable('feature_subtypes')) {
+            if (!Schema::hasColumn('features', 'subtype_id')) {
+                $this->info('This command will not execute, as it has already been run.');
+                return;
+            }
+
             $features = Feature::where(function ($query) {
                 $query->whereNotNull('subtype_id');
             })->get();
 
             $this->info('Converting '.count($features).' features\' subtypes...');
-            $imageBar = $this->output->createProgressBar(count($features));
+            $bar = $this->output->createProgressBar(count($features));
             foreach ($features as $feature) {
                 if ($feature->subtype_id) {
                     FeatureSubtype::create([
@@ -50,10 +55,10 @@ class ConvertTraitSubtype extends Command {
                         'subtype_id' => $feature->subtype_id,
                     ]);
                 }
-                $imageBar->advance();
+                $bar->advance();
             }
 
-            $imageBar->finish();
+            $bar->finish();
             $this->info("\n".'Dropping subtype ID column from the feature table...');
 
             Schema::table('features', function (Blueprint $table) {
@@ -62,7 +67,7 @@ class ConvertTraitSubtype extends Command {
 
             $this->info('Done!');
         } else {
-            $this->info('This command will not execute, as it has already been run.');
+            $this->info('Required table does not exist, please run migrations first.');
         }
     }
 }

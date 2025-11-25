@@ -1,10 +1,16 @@
+@php
+    if (!isset($fieldPrefix)) {
+        $fieldPrefix = '';
+    }
+@endphp
 <script>
     $(document).ready(function() {
-        var $userCharacterCategory = $('#userCharacterCategory');
+        var $userCharacters = $('#{{ $fieldPrefix }}userCharacters');
+        var $userCharacterCategory = $('#{{ $fieldPrefix }}userCharacterCategory');
         $userCharacterCategory.on('change', function(e) {
             refreshCharacterCategory();
         });
-        $('.character-stack').on('click', function(e) {
+        $('.{{ $fieldPrefix }}character-stack').on('click', function(e) {
             if (!$(this).parent().parent().hasClass('disabled')) {
                 var $parent = $(this).parent().parent().parent();
                 $parent.toggleClass('category-selected');
@@ -12,23 +18,25 @@
                 refreshCharacterCategory();
             }
         });
-        $('.characters-select-all').on('click', function(e) {
+        $('.{{ $fieldPrefix }}characters-select-all').on('click', function(e) {
             e.preventDefault();
-            var $target = $('.user-character:not(.hide):not(.select-disabled)');
+            console.log('select all');
+            var $target = $('.{{ $fieldPrefix }}user-character:not(.hide):not(.select-disabled)');
             $target.addClass('category-selected');
             $target.find('.character-checkbox').prop('checked', true);
         });
-        $('.characters-clear-selection').on('click', function(e) {
+        $('.{{ $fieldPrefix }}characters-clear-selection').on('click', function(e) {
             e.preventDefault();
-            var $target = $('.user-character:not(.hide)');
+            console.log('clear selection');
+            var $target = $('.{{ $fieldPrefix }}user-character:not(.hide)');
             $target.removeClass('category-selected');
             $target.find('.character-checkbox').prop('checked', false);
         });
 
         function refreshCharacterCategory() {
             var display = $userCharacterCategory.val();
-            $('.user-character').addClass('hide');
-            $('.user-characters .category-' + display).removeClass('hide');
+            $('.{{ $fieldPrefix }}user-character').addClass('hide');
+            $userCharacters.find('.category-' + display).removeClass('hide');
         }
     });
 </script>

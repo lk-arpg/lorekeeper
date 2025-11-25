@@ -92,11 +92,23 @@
             <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:User_Transfer_Reasons"><strong>User Transfer Reasons</strong></a> by <a href="https://github.com/snupsplus">Snupsplus</a>
         </p>
         <p class="mb-0 col-md-4">
+            <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:Shop_Features"><strong>Shop Features</strong></a> by <a href="https://github.com/ScuffedNewt">ScuffedNewt</a>
+        </p>
+        <p class="mb-0 col-md-4">
+            <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:Dynamic_Limits"><strong>Dynamic Limits</strong></a> by <a href="https://github.com/ScuffedNewt">ScuffedNewt</a>
+        </p>
+        <p class="mb-0 col-md-4">
+            <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:TinyMCE_Code_Editor"><strong>TinyMCE Code Editor</strong></a> by <a href="https://github.com/AW0005">Moif</a>
+        </p>
+        <p class="mb-0 col-md-4">
+            <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:Trade_Listings"><strong>Trade Listings</strong></a> by <a href="https://github.com/itinerare">itinerare</a> & <a href="https://github.com/ScuffedNewt">ScuffedNewt</a>
+        </p>
+        <p class="mb-0 col-md-4">
             <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:Aliases_on_Userpage"><strong>Aliases on Userpage</strong></a> by <a href="https://github.com/SpeedyD">Speedy</a>
             ({{ config('lorekeeper.extensions.aliases_on_userpage') ? 'Enabled' : 'Disabled' }})
         </p>
         <p class="mb-0 col-md-4">
-            <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:Kitchen_Sink_Index"><strong>All Trait Index</strong></a> by <a href="https://github.com/SpeedyD">Speedy</a>
+            <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:Kitchen_Sink_Index"><strong>All Traits Index</strong></a> by <a href="https://github.com/SpeedyD">Speedy</a>
             ({{ config('lorekeeper.extensions.visual_trait_index.enable_all_trait_index') ? 'Enabled' : 'Disabled' }})
         </p>
         <p class="mb-0 col-md-4">
@@ -152,8 +164,9 @@
             ({{ config('lorekeeper.extensions.navbar_news_notif') ? 'Enabled' : 'Disabled' }})
         </p>
         <p class="mb-0 col-md-4">
-            <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:Organised_Traits_Dropdown"><strong>Organised Traits Dropdown</strong></a> by <a href="https://github.com/draginraptor">Draginraptor</a>
-            ({{ config('lorekeeper.extensions.organised_traits_dropdown') ? 'Enabled' : 'Disabled' }})
+            <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:Organised_Traits_Dropdown"><strong>Organised Traits Dropdown</strong></a> by <a href="https://github.com/draginraptor">Draginraptor</a> and <a
+                href="https://github.com/ScuffedNewt">ScuffedNewt</a>
+            ({{ config('lorekeeper.extensions.organised_traits_dropdown.enable') ? 'Enabled' : 'Disabled' }})
         </p>
         <p class="mb-0 col-md-4">
             <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:Scroll_To_Top"><strong>Scroll to Top</strong></a> by <a href="https://github.com/preimpression">Preimpression</a>

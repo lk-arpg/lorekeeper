@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Trade;
 
 use App\Facades\Settings;
 use App\Models\Character\Character;
+use App\Models\Model;
 use App\Models\User\User;
 use App\Models\User\UserItem;
 
@@ -16,7 +17,7 @@ class Trade extends Model {
     protected $fillable = [
         'sender_id', 'recipient_id', 'comments',
         'status', 'is_sender_confirmed', 'is_recipient_confirmed', 'is_sender_trade_confirmed', 'is_recipient_trade_confirmed',
-        'is_approved', 'reason', 'data',
+        'is_approved', 'reason', 'data', 'terms_link',
     ];
 
     /**
@@ -41,6 +42,26 @@ class Trade extends Model {
      * @var string
      */
     public $timestamps = true;
+
+    /**
+     * Validation rules for character creation.
+     *
+     * @var array
+     */
+    public static $createRules = [
+        'status'     => 'required|in:Open,Pending,Completed,Rejected,Canceled,Proposal',
+        'terms_link' => 'nullable|url',
+    ];
+
+    /**
+     * Validation rules for character updating.
+     *
+     * @var array
+     */
+    public static $updateRules = [
+        'status'     => 'required|in:Open,Pending,Completed,Rejected,Canceled,Proposal',
+        'terms_link' => 'nullable|url',
+    ];
 
     /**********************************************************************************************
 
@@ -75,8 +96,31 @@ class Trade extends Model {
 
     **********************************************************************************************/
 
+    /**
+     * Scope a query to only include finalised trades.
+     *
+     * @param mixed $query
+     */
     public function scopeCompleted($query) {
         return $query->where('status', 'Completed')->orWhere('status', 'Rejected');
+    }
+
+    /**
+     * Scope a query to order by the newest trades.
+     *
+     * @param mixed $query
+     */
+    public function scopeSortNewest($query) {
+        return $query->orderBy('id', 'DESC');
+    }
+
+    /**
+     * Scope a query to order by the oldest trades.
+     *
+     * @param mixed $query
+     */
+    public function scopeSortOldest($query) {
+        return $query->orderBy('id', 'ASC');
     }
 
     /**********************************************************************************************

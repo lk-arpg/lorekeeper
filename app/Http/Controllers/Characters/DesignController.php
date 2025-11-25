@@ -170,12 +170,21 @@ class DesignController extends Controller {
             $inventory = isset($r->data['user']) ? parseAssetData($r->data['user']) : null;
         }
 
+        $item_filter = Item::orderBy('name')->get()->mapWithKeys(function ($item) {
+            return [
+                $item->id => json_encode([
+                    'name'      => $item->name,
+                    'image_url' => $item->image_url,
+                ]),
+            ];
+        });
+
         return view('character.design.addons', [
             'request'     => $r,
             'categories'  => ItemCategory::visible(Auth::user() ?? null)->orderBy('sort', 'DESC')->get(),
             'inventory'   => $inventory,
             'items'       => Item::all()->keyBy('id'),
-            'item_filter' => Item::orderBy('name')->get()->keyBy('id'),
+            'item_filter' => $item_filter,
             'page'        => 'update',
         ]);
     }

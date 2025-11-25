@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title')
-    Site News :: @yield('news-title')
+    Site News{!! View::hasSection('news-title') ? ' :: ' . trim(View::getSection('news-title')) : '' !!}
 @endsection
 
 @section('sidebar')

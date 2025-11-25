@@ -1,4 +1,4 @@
-{!! Form::open(['url' => 'admin/masterlist/trade/' . $trade->id]) !!}
+{!! Form::open(['url' => 'admin/trades/' . $trade->id]) !!}
 <p>This will process the trade between {!! $trade->sender->displayName !!} and {!! $trade->recipient->displayName !!} immediately. Please enter the transfer cooldown period for each character in days (the fields have been pre-filled with the default cooldown value).</p>
 @foreach ($trade->getCharacterData() as $character)
     <div class="form-group">

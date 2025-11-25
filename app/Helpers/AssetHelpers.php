@@ -438,6 +438,31 @@ function countAssets($array) {
 }
 
 /**
+ * Returns whether or not an asset can be traded based on its type.
+ *
+ * @param mixed $type
+ * @param mixed $asset
+ *
+ * @return bool
+ */
+function canTradeAsset($type, $asset) {
+    switch ($type) {
+        case 'Item':
+            return $asset->allow_transfer;
+            break;
+        case 'Currency':
+            // we don't have to worry about character->user or user->character transfers here
+            // technically you can loophole by transferring to a character and then transferring to a user
+            // but that is a process issue, not a code issue
+            return $asset->is_user_owned && $asset->allow_user_to_user;
+            break;
+        default:
+            return false;
+            break;
+    }
+}
+
+/**
  * Distributes the assets in an assets array to the given recipient (character).
  * Loot tables will be rolled before distribution.
  *

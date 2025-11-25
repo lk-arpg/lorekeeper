@@ -54,6 +54,8 @@ class RankService extends Service {
             $data['color'] = isset($data['color']) ? str_replace('#', '', $data['color']) : null;
             if (isset($data['description']) && $data['description']) {
                 $data['parsed_description'] = parse($data['description']);
+            } else {
+                $data['parsed_description'] = null;
             }
 
             $data['icon'] ??= 'fas fa-user';
@@ -106,6 +108,8 @@ class RankService extends Service {
             $data['color'] = isset($data['color']) ? str_replace('#', '', $data['color']) : null;
             if (isset($data['description']) && $data['description']) {
                 $data['parsed_description'] = parse($data['description']);
+            } else {
+                $data['parsed_description'] = null;
             }
 
             $data['icon'] ??= 'fas fa-user';

@@ -7,6 +7,7 @@ use App\Models\Character\Character;
 use App\Models\Character\CharacterImage;
 use App\Models\Character\Sublist;
 use App\Models\Currency\Currency;
+use App\Models\Currency\CurrencyCategory;
 use App\Models\Gallery\Gallery;
 use App\Models\Gallery\GalleryCharacter;
 use App\Models\Gallery\GallerySubmission;
@@ -243,7 +244,7 @@ class UserController extends Controller {
             'items'       => $items,
             'userOptions' => User::where('id', '!=', $this->user->id)->orderBy('name')->pluck('name', 'id')->toArray(),
             'user'        => $this->user,
-            'logs'        => $this->user->getItemLogs(),
+            'logs'        => $this->user->getItemLogs()->take(10)->get(),
             'artists'     => User::whereIn('id', Item::whereNotNull('artist_id')->pluck('artist_id')->toArray())->pluck('name', 'id')->toArray(),
             'rarities'    => ['withoutOption' => 'No Rarity'] + Rarity::orderBy('rarities.sort', 'DESC')->pluck('name', 'id')->toArray(),
         ]);
@@ -261,7 +262,7 @@ class UserController extends Controller {
 
         return view('user.bank', [
             'user' => $this->user,
-            'logs' => $this->user->getCurrencyLogs(),
+            'logs' => $this->user->getCurrencyLogs()->take(10)->get(),
         ] + (Auth::check() && Auth::user()->id == $this->user->id ? [
             'currencyOptions' => Currency::visible(Auth::user() ?? null)->where('allow_user_to_user', 1)->where('is_user_owned', 1)->whereIn('id', UserCurrency::where('user_id', $this->user->id)->pluck('currency_id')->toArray())->orderBy('sort_user', 'DESC')->pluck('name', 'id')->toArray(),
             'userOptions'     => User::where('id', '!=', Auth::user()->id)->orderBy('name')->pluck('name', 'id')->toArray(),
@@ -275,12 +276,31 @@ class UserController extends Controller {
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getUserCurrencyLogs($name) {
+    public function getUserCurrencyLogs(Request $request, $name) {
         $user = $this->user;
 
+        $query = $this->user->getCurrencyLogs();
+        if ($request->get('currency_ids')) {
+            $query->whereIn('currency_id', $request->get('currency_ids'));
+        }
+        if ($request->get('currency_category_ids')) {
+            $query->whereIn('currency_id', Currency::whereIn('currency_category_id', $request->get('currency_category_ids'))->pluck('id')->toArray());
+        }
+        if ($request->get('user_id')) {
+            $query->where(function ($query) use ($request) {
+                $query->where('sender_id', $request->get('user_id'))->orWhere('recipient_id', $request->get('user_id'));
+            });
+        }
+        if ($request->get('sort')) {
+            $query->orderBy('created_at', $request->get('sort') == 'newest' ? 'DESC' : 'ASC');
+        }
+
         return view('user.currency_logs', [
-            'user' => $this->user,
-            'logs' => $this->user->getCurrencyLogs(0),
+            'user'               => $this->user,
+            'logs'               => $query->paginate(30)->appends($request->query()),
+            'users'              => User::orderBy('name')->pluck('name', 'id')->toArray(),
+            'currencies'         => Currency::visible(Auth::user() ?? null)->orderBy('name', 'DESC')->pluck('name', 'id')->toArray(),
+            'currencyCategories' => CurrencyCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
         ]);
     }
 
@@ -291,12 +311,30 @@ class UserController extends Controller {
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getUserItemLogs($name) {
+    public function getUserItemLogs(Request $request, $name) {
         $user = $this->user;
+        $query = $this->user->getItemLogs();
+        if ($request->get('item_ids')) {
+            $query->whereIn('item_id', $request->get('item_ids'));
+        }
+        if ($request->get('item_category_ids')) {
+            $query->whereIn('item_id', Item::whereIn('item_category_id', $request->get('item_category_ids'))->pluck('id')->toArray());
+        }
+        if ($request->get('user_id')) {
+            $query->where(function ($query) use ($request) {
+                $query->where('sender_id', $request->get('user_id'))->orWhere('recipient_id', $request->get('user_id'));
+            });
+        }
+        if ($request->get('sort')) {
+            $query->orderBy('created_at', $request->get('sort') == 'newest' ? 'DESC' : 'ASC');
+        }
 
         return view('user.item_logs', [
-            'user' => $this->user,
-            'logs' => $this->user->getItemLogs(0),
+            'user'           => $this->user,
+            'logs'           => $query->paginate(30)->appends($request->query()),
+            'users'          => User::orderBy('name')->pluck('name', 'id')->toArray(),
+            'items'          => Item::released(Auth::user() ?? null)->orderBy('name')->pluck('name', 'id')->toArray(),
+            'itemCategories' => ItemCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
         ]);
     }
 

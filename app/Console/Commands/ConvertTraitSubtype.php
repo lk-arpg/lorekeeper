@@ -39,6 +39,7 @@ class ConvertTraitSubtype extends Command {
         if (Schema::hasTable('feature_subtypes')) {
             if (!Schema::hasColumn('features', 'subtype_id')) {
                 $this->info('This command will not execute, as it has already been run.');
+
                 return;
             }
 

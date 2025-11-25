@@ -398,7 +398,7 @@ class User extends Authenticatable implements MustVerifyEmail {
             return '(Unverified)';
         }
 
-        return $this->primaryAlias->displayAlias;
+        return $this->primaryAlias?->displayAlias ?? '(No Alias)';
     }
 
     /**
@@ -578,43 +578,33 @@ class User extends Authenticatable implements MustVerifyEmail {
     /**
      * Get the user's currency logs.
      *
-     * @param int $limit
-     *
      * @return \Illuminate\Pagination\LengthAwarePaginator|\Illuminate\Support\Collection
      */
-    public function getCurrencyLogs($limit = 10) {
+    public function getCurrencyLogs() {
         $user = $this;
         $query = CurrencyLog::with('currency')->where(function ($query) use ($user) {
             $query->with('sender')->where('sender_type', 'User')->where('sender_id', $user->id)->whereNotIn('log_type', ['Staff Grant', 'Prompt Rewards', 'Claim Rewards', 'Gallery Submission Reward']);
         })->orWhere(function ($query) use ($user) {
             $query->with('recipient')->where('recipient_type', 'User')->where('recipient_id', $user->id)->where('log_type', '!=', 'Staff Removal');
         })->orderBy('id', 'DESC');
-        if ($limit) {
-            return $query->take($limit)->get();
-        } else {
-            return $query->paginate(30);
-        }
+
+        return $query;
     }
 
     /**
      * Get the user's item logs.
      *
-     * @param int $limit
-     *
      * @return \Illuminate\Pagination\LengthAwarePaginator|\Illuminate\Support\Collection
      */
-    public function getItemLogs($limit = 10) {
+    public function getItemLogs() {
         $user = $this;
         $query = ItemLog::with('item')->where(function ($query) use ($user) {
             $query->with('sender')->where('sender_type', 'User')->where('sender_id', $user->id)->whereNotIn('log_type', ['Staff Grant', 'Prompt Rewards', 'Claim Rewards']);
         })->orWhere(function ($query) use ($user) {
             $query->with('recipient')->where('recipient_type', 'User')->where('recipient_id', $user->id)->where('log_type', '!=', 'Staff Removal');
         })->orderBy('id', 'DESC');
-        if ($limit) {
-            return $query->take($limit)->get();
-        } else {
-            return $query->paginate(30);
-        }
+
+        return $query;
     }
 
     /**

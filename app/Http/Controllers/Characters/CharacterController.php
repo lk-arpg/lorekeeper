@@ -255,6 +255,7 @@ class CharacterController extends Controller {
         $items = count($categories) ?
             $this->character->items()
                 ->whereIn('items.id', $query->pluck('id')->toArray())
+                ->with('category')
                 ->where('count', '>', 0)
                 ->orderByRaw('FIELD(item_category_id,'.implode(',', $categories->pluck('id')->toArray()).')')
                 ->orderBy('name')
@@ -263,6 +264,7 @@ class CharacterController extends Controller {
                 ->groupBy(['item_category_id', 'id']) :
             $this->character->items()
                 ->whereIn('items.id', $query->pluck('id')->toArray())
+                ->with('category')
                 ->where('count', '>', 0)
                 ->orderBy('name')
                 ->orderBy('updated_at')
@@ -278,11 +280,8 @@ class CharacterController extends Controller {
             'artists'               => User::whereIn('id', Item::whereNotNull('artist_id')->pluck('artist_id')->toArray())->pluck('name', 'id')->toArray(),
             'rarities'              => ['withoutOption' => 'Without Rarity'] + Rarity::orderBy('rarities.sort', 'DESC')->pluck('name', 'id')->toArray(),
         ] + (Auth::check() && (Auth::user()->hasPower('edit_inventories') || Auth::user()->id == $this->character->user_id) ? [
-            'itemOptions'   => $itemOptions->pluck('name', 'id'),
-            'userInventory' => UserItem::with('item')->whereIn('item_id', $itemOptions->pluck('id'))->whereNull('deleted_at')->where('count', '>', '0')->where('user_id', Auth::user()->id)->get()->filter(function ($userItem) {
-                return $userItem->isTransferrable == true;
-            })->sortBy('item.name'),
-            'page'          => 'character',
+            'itemOptions' => $itemOptions->pluck('name', 'id'),
+            'page'        => 'character',
         ] : []));
     }
 

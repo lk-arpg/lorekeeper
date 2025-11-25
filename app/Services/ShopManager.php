@@ -184,7 +184,9 @@ class ShopManager extends Service {
                             ];
                         }
                     } else {
-                        $stacks = UserItem::where('user_id', $user->id)->where('item_id', $cost->item->id)->where('count', '>', '0')->get();
+                        $stacks = UserItem::where('user_id', $user->id)->where('item_id', $cost->item->id)->where('count', '>', '0')->get()->filter(function ($stack) {
+                            return $stack->available_quantity > 0;
+                        });
                         foreach ($stacks as $stack) {
                             if ($stack->count >= $requiredQuantity) {
                                 $selected[] = [

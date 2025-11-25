@@ -5,12 +5,23 @@
     $limitTypes = collect(config('lorekeeper.limits.limit_types'))->map(function ($value, $key) {
         return $value['name'];
     });
-    $limits = \App\Models\Limit\Limit::hasLimits($object) ? \App\Models\Limit\Limit::getLimits($object) : null;
+    $limits = hasLimits($object) ? getLimits($object) : null;
 
     $prompts = \App\Models\Prompt\Prompt::orderBy('name')->pluck('name', 'id')->toArray();
     $items = \App\Models\Item\Item::orderBy('name')->pluck('name', 'id')->toArray();
     $currencies = \App\Models\Currency\Currency::orderBy('name')->pluck('name', 'id')->toArray();
     $dynamics = \App\Models\Limit\DynamicLimit::orderBy('name')->pluck('name', 'id')->toArray();
+
+    // Hiding auto unlock options are good for cases where the user should not know the option exists for that object
+    // Prompts are a good example--users shouldn't know they can auto-unlock prompts, as that would be confusing, since
+    // the UI for the prompt interactions occurs on submission...
+    // ex the limits are checked as part of submitting a prompt,
+    // requiring the user to manually unlock the prompt prior, especially if the limits are needed for every prompt submission, would be problematic.
+    // also as currently implemented having manual unlocking required would effectively prevent users from submitting the prompt
+    // as a refinement, this could be changed to allow for manual unlocking under certain conditions
+    if (!isset($hideAutoUnlock)) {
+        $hideAutoUnlock = false;
+    }
 @endphp
 
 <div class="card p-4 mb-3 mt-3" id="limit-card">
@@ -37,23 +48,35 @@
                 <div class="col-md form-group">
                     {!! Form::label('is_unlocked', 'Is Unlocked?', ['class' => 'form-label font-weight-bold']) !!}
                     <p>
-                        If this is set to "No", the object will continue to be locked until all requirements are met, every time the user attempts to interact with it.
+                        If this is set to "No", the object will continue to be locked until all requirements are met, every time the user attempts to use or interact with it.
                         <br />
-                        If this is set to "Yes", the object will be unlocked for the user to interact with indefinitely after the requirements are met once. This option is good for one-time unlocks such as shops, locations, certain prompts, etc.
+                        If this is set to "Yes", the object will be unlocked for the user to interact with indefinitely after the requirements are met once.
+                        <br />
+                        The "Yes" option is good for one-time unlocks such as shops, locations, certain prompts, etc.
                     </p>
                     {!! Form::select('is_unlocked', ['yes' => 'Yes', 'no' => 'No'], $limits?->first()->is_unlocked ? 'yes' : 'no', ['class' => 'form-control']) !!}
                 </div>
-                <div class="col-md form-group border-left">
-                    {!! Form::label('is_auto_unlocked', 'Automatically Unlock?', ['class' => 'form-label font-weight-bold']) !!} {!! add_help("This only affects objects with 'Is Unlocked?' set to 'Yes'.") !!}
-                    <p>
-                        If this is set to "No", the user must manually unlock the object by interacting with it - ex. clicking on the "Unlock" button.
+                @if (!$hideAutoUnlock)
+                    <div class="col-md form-group border-left">
+                        {!! Form::label('is_auto_unlocked', 'Automatically Unlock?', ['class' => 'form-label font-weight-bold']) !!} {!! add_help("This only affects objects with 'Is Unlocked?' set to 'Yes'.") !!}
+                        <p>
+                            If this is set to "No", the user must manually unlock the object by interacting with it - ex. clicking on the "Unlock" button.
+                        <div class="text-warning">
+                            This will prevent the limits from being used as part of a series of actions, ex. prompt submissions.
+                        </div>
                         <br />
                         If this is set to "Yes", the object will be automatically unlocked when the user attempts to access them - ex. when a user enters a shop.
                         <br />
                         This setting is good for preventing users from being debited before being certain they want to interact with the object.
-                    </p>
-                    {!! Form::select('is_auto_unlocked', ['yes' => 'Yes', 'no' => 'No'], $limits?->first()->is_auto_unlocked ? 'yes' : 'no', ['class' => 'form-control']) !!}
-                </div>
+                        <div class="text-danger">
+                            This option is not suitable for objects that should have limits as part of an action workflow, ex. prompt submissions.
+                        </div>
+                        </p>
+                        {!! Form::select('is_auto_unlocked', ['yes' => 'Yes', 'no' => 'No'], $limits?->first()->is_auto_unlocked ? 'yes' : 'no', ['class' => 'form-control']) !!}
+                    </div>
+                @else
+                    {!! Form::hidden('is_auto_unlocked', 'yes') !!}
+                @endif
             </div>
             @if ($limits)
                 @foreach ($limits as $limit)

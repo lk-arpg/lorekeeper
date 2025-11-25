@@ -10,7 +10,7 @@ use App\Models\Gallery\GallerySubmission;
 use App\Models\Invitation;
 use App\Models\Rank\Rank;
 use App\Models\Submission\Submission;
-use App\Models\Trade;
+use App\Models\Trade\Trade;
 use App\Models\User\User;
 use App\Models\User\UserUpdateLog;
 use Carbon\Carbon;

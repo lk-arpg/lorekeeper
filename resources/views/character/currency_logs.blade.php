@@ -4,10 +4,6 @@
     {{ $character->fullName }}'s Currency Logs
 @endsection
 
-@section('meta-img')
-    {{ $character->image->content_warnings ? asset('images/content-warning.png') : $character->image->thumbnailUrl }}
-@endsection
-
 @section('profile-content')
     {!! breadcrumbs([
         $character->category->masterlist_sub_id ? $character->category->sublist->name . ' Masterlist' : 'Character masterlist' => $character->category->masterlist_sub_id ? 'sublist/' . $character->category->sublist->key : 'masterlist',

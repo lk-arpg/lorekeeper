@@ -40,11 +40,20 @@
 
 <script>
     $(document).ready(function() {
-        @if (config('lorekeeper.extensions.organised_traits_dropdown'))
-            $('.original.feature-select').selectize({
-                render: {
+        @if (config('lorekeeper.extensions.organised_traits_dropdown.enable'))
+            let renderOptions = {};
+            @if (config('lorekeeper.extensions.organised_traits_dropdown.rarity.enable'))
+                renderOptions = {
+                    option: featureOptionRender,
                     item: featureSelectedRender
                 }
+            @else
+                renderOptions = {
+                    item: featureSelectedRender
+                }
+            @endif
+            $('.original.feature-select').selectize({
+                render: renderOptions
             });
         @else
             $('.original.feature-select').selectize();
@@ -68,11 +77,20 @@
                 removeFeatureRow($(this));
             })
 
-            @if (config('lorekeeper.extensions.organised_traits_dropdown'))
-                $clone.find('.feature-select').selectize({
-                    render: {
+            @if (config('lorekeeper.extensions.organised_traits_dropdown.enable'))
+                let renderOptions = {};
+                @if (config('lorekeeper.extensions.organised_traits_dropdown.rarity.enable'))
+                    renderOptions = {
+                        option: featureOptionRender,
                         item: featureSelectedRender
                     }
+                @else
+                    renderOptions = {
+                        item: featureSelectedRender
+                    }
+                @endif
+                $clone.find('.feature-select').selectize({
+                    render: renderOptions
                 });
             @else
                 $clone.find('.feature-select').selectize();
@@ -83,7 +101,14 @@
             $trigger.parent().remove();
         }
 
+        function featureOptionRender(item, escape) {
+            return '<div class="option"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + (item["text"].trim()) + '</span></div>';
+        }
+
         function featureSelectedRender(item, escape) {
+            @if (config('lorekeeper.extensions.organised_traits_dropdown.rarity.enable'))
+                return '<div><span>' + (item["text"].trim()) + ' (' + (item["optgroup"].trim()) + ')' + '</span></div>';
+            @endif
             return '<div><span>' + escape(item["text"].trim()) + ' (' + escape(item["optgroup"].trim()) + ')' + '</span></div>';
         }
         refreshSubtype();

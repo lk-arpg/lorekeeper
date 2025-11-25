@@ -1,8 +1,11 @@
 @extends('layouts.app')
 
 @section('title')
-    Character ::
-    @yield('profile-title')
+    Character{!! View::hasSection('profile-title') ? ' :: ' . trim(View::getSection('profile-title')) : '' !!}
+@endsection
+
+@section('meta-img')
+    {{ $character->image->content_warnings ? asset('images/content-warning.png') : $character->image->thumbnailUrl }}
 @endsection
 
 @section('sidebar')

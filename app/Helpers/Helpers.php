@@ -450,17 +450,6 @@ function prettyProfileName($url) {
 }
 
 /**
- * Returns the given objects limits, if any.
- *
- * @param mixed $object
- *
- * @return bool
- */
-function getLimits($object) {
-    return App\Models\Limit\Limit::where('object_model', get_class($object))->where('object_id', $object->id)->get();
-}
-
-/**
  * Checks the site setting and returns the appropriate FontAwesome version.
  *
  * @return string
@@ -482,4 +471,35 @@ function faVersion() {
     }
 
     return asset($directory.'/'.$version.'.min.css');
+}
+
+/**
+ * Returns the given objects limits, if any.
+ *
+ * @param mixed $object
+ *
+ * @return bool
+ */
+function getLimits($object) {
+    return App\Models\Limit\Limit::where('object_model', get_class($object))->where('object_id', $object->id)->get();
+}
+
+/**
+ * checks if a certain object has any limits.
+ *
+ * @param mixed $object
+ */
+function hasLimits($object) {
+    return App\Models\Limit\Limit::where('object_model', get_class($object))->where('object_id', $object->id)->exists();
+}
+
+/**
+ * Checks if a user has a limit unlocked.
+ *
+ * @param mixed $object
+ */
+function hasUnlockedLimits($object) {
+    $service = new App\Services\LimitManager;
+
+    return $service->checkLimits($object);
 }

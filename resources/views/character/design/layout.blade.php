@@ -1,8 +1,7 @@
 @extends('layouts.app')
 
 @section('title')
-    Design Approvals ::
-    @yield('design-title')
+    Design Approvals{!! View::hasSection('design-title') ? ' :: ' . trim(View::getSection('design-title')) : '' !!}
 @endsection
 
 @section('sidebar')

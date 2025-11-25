@@ -11,7 +11,16 @@
             var $raffleSelect = $('#lootRowData').find('.raffle-select');
         @endif
 
-        $('#lootTableBody .selectize').selectize();
+        @if (isset($useCustomSelectize) && $useCustomSelectize)
+            $('#lootTableBody .selectize').selectize({
+                render: {
+                    option: customLootSelectizeRender,
+                    item: customLootSelectizeRender
+                }
+            });
+        @else
+            $('#lootTableBody .selectize').selectize();
+        @endif
         attachRemoveListener($('#lootTableBody .remove-loot-button'));
 
         $('#addLoot').on('click', function(e) {
@@ -57,7 +66,16 @@
 
                 $cell.html('');
                 $cell.append($clone);
-                $clone.selectize();
+                @if (isset($useCustomSelectize) && $useCustomSelectize)
+                    $clone.selectize({
+                        render: {
+                            option: customLootSelectizeRender,
+                            item: customLootSelectizeRender
+                        }
+                    });
+                @else
+                    $clone.selectize();
+                @endif
             });
         }
 
@@ -68,5 +86,14 @@
             });
         }
 
+        function customLootSelectizeRender(item, escape) {
+            item = JSON.parse(item.text);
+            option_render = '<div class="option">';
+            if (item['image_url']) {
+                option_render += '<div class="d-inline mr-1"><img class="small-icon" alt="' + escape(item['name']) + '" src="' + escape(item['image_url']) + '"></div>';
+            }
+            option_render += '<span>' + escape(item['name']) + '</span></div>';
+            return option_render;
+        }
     });
 </script>

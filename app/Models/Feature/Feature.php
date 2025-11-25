@@ -343,7 +343,7 @@ class Feature extends Model {
                             return strnatcasecmp($a['name'], $b['name']);
                         }
 
-                        return $sortB <=> $sortA;
+                        return $sortA <=> $sortB;
                     });
                 }
                 unset($features); // break the reference

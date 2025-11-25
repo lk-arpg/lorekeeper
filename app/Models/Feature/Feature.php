@@ -15,7 +15,7 @@ class Feature extends Model {
      * @var array
      */
     protected $fillable = [
-        'feature_category_id', 'species_id', 'subtype_id', 'rarity_id', 'name', 'has_image', 'description', 'parsed_description', 'is_visible', 'hash',
+        'feature_category_id', 'species_id', 'rarity_id', 'name', 'has_image', 'description', 'parsed_description', 'is_visible', 'hash',
     ];
 
     /**
@@ -32,7 +32,6 @@ class Feature extends Model {
     public static $createRules = [
         'feature_category_id' => 'nullable',
         'species_id'          => 'nullable',
-        'subtype_id'          => 'nullable',
         'rarity_id'           => 'required|exists:rarities,id',
         'name'                => 'required|unique:features|between:3,100',
         'description'         => 'nullable',
@@ -47,7 +46,6 @@ class Feature extends Model {
     public static $updateRules = [
         'feature_category_id' => 'nullable',
         'species_id'          => 'nullable',
-        'subtype_id'          => 'nullable',
         'rarity_id'           => 'required|exists:rarities,id',
         'name'                => 'required|between:3,100',
         'description'         => 'nullable',
@@ -75,17 +73,17 @@ class Feature extends Model {
     }
 
     /**
-     * Get the subtype the feature belongs to.
-     */
-    public function subtype() {
-        return $this->belongsTo(Subtype::class);
-    }
-
-    /**
      * Get the category the feature belongs to.
      */
     public function category() {
         return $this->belongsTo(FeatureCategory::class, 'feature_category_id');
+    }
+
+    /**
+     * Get the subtypes of this feature.
+     */
+    public function subtypes() {
+        return $this->belongsToMany(Subtype::class, 'feature_subtypes');
     }
 
     /**********************************************************************************************
@@ -144,7 +142,13 @@ class Feature extends Model {
     public function scopeSortSubtype($query) {
         $ids = Subtype::orderBy('sort', 'DESC')->pluck('id')->toArray();
 
-        return count($ids) ? $query->orderBy(DB::raw('FIELD(subtype_id, '.implode(',', $ids).')')) : $query;
+        if (count($ids)) {
+            $ordered_subtypes = $this->subtypes()->latest('id')->pluck('id')->toArray();
+            foreach ($ordered_subtypes as $subtype) {
+                return $query->with('feature_subtypes')->orderBy(DB::raw($subtype.', '.implode(',', $ids).')'));
+            }
+        }
+        return $query;
     }
 
     /**
@@ -286,6 +290,23 @@ class Feature extends Model {
 
     **********************************************************************************************/
 
+    /**
+     * Displays the trait's subtypes as an imploded string.
+     *
+     * @param mixed|null $user
+     */
+    public function displaySubtypes($user = null) {
+        if (!count($this->subtypes()->visible($user)->get())) {
+            return 'None';
+        }
+        $subtypes = [];
+        foreach ($this->subtypes()->visible($user)->get() as $subtype) {
+            $subtypes[] = $subtype->displayName;
+        }
+
+        return implode(', ', $subtypes);
+    }
+
     public static function getDropdownItems($withHidden = 0) {
         $visibleOnly = 1;
         if ($withHidden) {
@@ -296,7 +317,7 @@ class Feature extends Model {
             $sorted_feature_categories = collect(FeatureCategory::all()->where('is_visible', '>=', $visibleOnly)->sortBy('sort')->pluck('name')->toArray());
 
             $grouped = self::where('is_visible', '>=', $visibleOnly)
-                ->select('name', 'id', 'feature_category_id', 'rarity_id', 'species_id', 'subtype_id')->with(['category', 'rarity', 'species', 'subtype'])
+                ->select('name', 'id', 'feature_category_id', 'rarity_id', 'species_id')->with(['category', 'rarity', 'species', 'subtypes'])
                 ->orderBy('name')->get()->keyBy('id')->groupBy('category.name', $preserveKeys = true)
                 ->toArray();
             if (isset($grouped[''])) {
@@ -311,7 +332,7 @@ class Feature extends Model {
             });
 
             // Sort by rarity if enabled
-            if (config('lorekeeper.extensions.organised_traits_dropdown.rarity.sort_by_rarity')) {
+            if (config('lorekeeper.extensions.organised_traits_dropdown.rarity.enable') && config('lorekeeper.extensions.organised_traits_dropdown.rarity.sort_by_rarity')) {
                 foreach ($grouped as $category => &$features) { // &$features to modify the array in place
                     uasort($features, function ($a, $b) {
                         $sortA = $a['rarity']['sort'] ?? -1;
@@ -321,7 +342,7 @@ class Feature extends Model {
                             return strnatcasecmp($a['name'], $b['name']);
                         }
 
-                        return $sortA <=> $sortB;
+                        return $sortB <=> $sortA;
                     });
                 }
                 unset($features); // break the reference
@@ -336,8 +357,12 @@ class Feature extends Model {
                         : ''
                     ).
                     (
-                        config('lorekeeper.extensions.organised_traits_dropdown.display_subtype') && $feature['subtype_id'] ?
-                        ' <span class="text-muted"><small>('.$feature['subtype']['name'].')</small></span>'
+                        config('lorekeeper.extensions.organised_traits_dropdown.display_subtype') && count($feature['subtypes']) ?
+                        ' <span class="text-muted"><small>('.implode(', ', array_map(
+                            function (array $subtype) {
+                                return $subtype['name'];
+                            }, $feature['subtypes']
+                        )).')</small></span>'
                         : ''
                     ).
                     ( // rarity

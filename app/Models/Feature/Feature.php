@@ -292,6 +292,15 @@ class Feature extends Model {
     **********************************************************************************************/
 
     /**
+     * Gets the trait's subtypes that are visible to the current user.
+     *
+     * @param mixed|null $user
+     */
+    public function getSubtypes($user = null) {
+        return $this->subtypes()->visible($user)->get();
+    }
+
+    /**
      * Displays the trait's subtypes as an imploded string.
      *
      * @param mixed|null $user

@@ -25,7 +25,7 @@
         @if ($feature->species_id)
             <div>
                 <strong>Species:</strong> {!! $feature->species->displayName !!}
-                @if (!$feature->subtypes->isEmpty())
+                @if (count($feature->getSubtypes(Auth::User() ?? null)))
                     ({!! $feature->displaySubtypes(Auth::User() ?? null) !!})
                 @endif
             </div>

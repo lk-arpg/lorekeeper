@@ -444,8 +444,11 @@ class WorldController extends Controller {
         $features = count($categories) ?
             $features->orderByRaw('FIELD(feature_category_id,'.implode(',', $categories->pluck('id')->toArray()).')') :
             $features;
-        $features = $features->orderByRaw('FIELD(rarity_id,'.implode(',', $rarities->pluck('id')->toArray()).')')
-            ->orderBy('has_image', 'DESC')
+        $features = count($rarities) ?
+            $features->orderByRaw('FIELD(rarity_id,'.implode(',', $rarities->pluck('id')->toArray()).')') :
+            $features;
+
+        $features->orderBy('has_image', 'DESC')
             ->orderBy('name')
             ->get()->groupBy(['feature_category_id', 'id']);
 
@@ -484,15 +487,17 @@ class WorldController extends Controller {
         $categories = FeatureCategory::orderBy('sort', 'DESC')->get();
         $rarities = Rarity::orderBy('sort', 'ASC')->get();
 
+        $features = Feature::visible(Auth::user() ?? null);
+
         $features = count($categories) ?
-        $query = Feature::visible(Auth::user() ?? null)->orderByRaw('FIELD(feature_category_id,'.implode(',', $categories->pluck('id')->toArray()).')')
-            ->orderByRaw('FIELD(rarity_id,'.implode(',', $rarities->pluck('id')->toArray()).')')
-            ->orderBy('has_image', 'DESC')
-            ->orderBy('name')
-            ->get()
-            ->groupBy(['feature_category_id', 'id']) :
-        $query = Feature::visible(Auth::user() ?? null)->orderByRaw('FIELD(rarity_id,'.implode(',', $rarities->pluck('id')->toArray()).')')
-            ->orderBy('has_image', 'DESC')
+            $features->orderByRaw('FIELD(feature_category_id,'.implode(',', $categories->pluck('id')->toArray()).')') :
+            $features;
+
+        $features = count($rarities) ?
+            $features->orderByRaw('FIELD(rarity_id,'.implode(',', $rarities->pluck('id')->toArray()).')') :
+            $features;
+
+        $features->orderBy('has_image', 'DESC')
             ->orderBy('name')
             ->get()
             ->groupBy(['feature_category_id', 'id']);

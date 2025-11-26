@@ -392,7 +392,7 @@ function fillUserAssets($assets, $sender, $recipient, $logType, $data) {
 
 /**
  * Removes the assets in an assets array from the given recipient (user).
- * 
+ *
  * This does not validate the quantities between $assets and $selected.
  * This is due to extracting quantities from $selected being a complicated and expensive operation.
  * Quantity validation should be performed in the containing function.
@@ -433,7 +433,6 @@ function takeUserAssets($assets, $sender, $recipient, $logType, $data, $selected
                     return false;
                 }
             }
-
         } elseif ($key == 'currencies' && count($contents)) {
             $service = new App\Services\CurrencyManager;
             foreach ($contents as $asset) {

@@ -39,7 +39,7 @@
             @if (!count($prompt->rewards))
                 No rewards.
             @else
-                <table class="table table-sm">
+                <table class="table table-sm mb-0">
                     <thead>
                         <tr>
                             <th width="70%">Reward</th>
@@ -49,7 +49,10 @@
                     <tbody>
                         @foreach ($prompt->rewards as $reward)
                             <tr>
-                                <td>{!! $reward->reward->displayName !!}</td>
+                                <td>
+                                    {!! $reward->rewardable_recipient == 'User' ? '<i class="fas fa-user" data-toggle="tooltip" title="User Reward"></i>' : '<i class="fas fa-paw" data-toggle="tooltip" title="Character Reward"></i>' !!}
+                                    {!! $reward->reward ? $reward->reward->displayName : $reward->rewardable_type !!}
+                                </td>
                                 <td>{{ $reward->quantity }}</td>
                             </tr>
                         @endforeach

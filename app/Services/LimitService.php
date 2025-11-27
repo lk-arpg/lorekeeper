@@ -27,9 +27,10 @@ class LimitService extends Service {
      * edits an limits on an object.
      *
      * @param mixed     $data
-     * @param bool|true $log
      * @param mixed     $object_model
      * @param mixed     $object_id
+     * @param mixed     $data
+     * @param bool|true $log
      */
     public function editLimits($object_model, $object_id, $data, $log = true) {
         DB::beginTransaction();

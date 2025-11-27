@@ -3,6 +3,7 @@
 namespace App\Models\Prompt;
 
 use App\Models\Model;
+use App\Models\Reward\Reward;
 use Carbon\Carbon;
 
 class Prompt extends Model {
@@ -79,7 +80,7 @@ class Prompt extends Model {
      * Get the rewards attached to this prompt.
      */
     public function rewards() {
-        return $this->hasMany(PromptReward::class, 'prompt_id');
+        return $this->morphMany(Reward::class, 'object', 'object_model', 'object_id');
     }
 
     /**********************************************************************************************

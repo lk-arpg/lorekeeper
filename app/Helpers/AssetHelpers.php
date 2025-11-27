@@ -144,6 +144,14 @@ function getAssetModelString($type, $namespaced = true) {
                 return 'CharacterItem';
             }
             break;
+
+        case 'prompts': case 'prompt':
+            if ($namespaced) {
+                return '\App\Models\Prompt\Prompt';
+            } else {
+                return 'Prompt';
+            }
+            break;
     }
 
     return null;
@@ -200,7 +208,10 @@ function addAsset(&$array, $asset, $quantity = 1) {
     if (isset($array[$asset->assetType][$asset->id])) {
         $array[$asset->assetType][$asset->id]['quantity'] += $quantity;
     } else {
-        $array[$asset->assetType][$asset->id] = ['asset' => $asset, 'quantity' => $quantity];
+        $array[$asset->assetType][$asset->id] = [
+            'asset'    => $asset,
+            'quantity' => $quantity,
+        ];
     }
 }
 

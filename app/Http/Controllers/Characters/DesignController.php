@@ -263,7 +263,7 @@ class DesignController extends Controller {
         $species = $request->input('species');
 
         return view('character.design._features_feature', [
-            'features'  => Feature::getDropdownItems(Auth::user()->hasPower('edit_data'), $species)
+            'features'  => Feature::getDropdownItems(Auth::user()->hasPower('edit_data'), $species),
         ]);
     }
 

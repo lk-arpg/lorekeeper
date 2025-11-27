@@ -98,10 +98,10 @@ class Feature extends Model {
     /**
      * Scope a query to sort features in alphabetical order.
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param bool                                  $reverse
+     * @param Builder $query
+     * @param bool    $reverse
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeSortAlphabetical($query, $reverse = false) {
         return $query->orderBy('name', $reverse ? 'DESC' : 'ASC');
@@ -110,9 +110,9 @@ class Feature extends Model {
     /**
      * Scope a query to sort features in category order.
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param Builder $query
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeSortCategory($query) {
         if (FeatureCategory::all()->count()) {
@@ -125,9 +125,9 @@ class Feature extends Model {
     /**
      * Scope a query to sort features in species order.
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param Builder $query
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeSortSpecies($query) {
         $ids = Species::orderBy('sort', 'DESC')->pluck('id')->toArray();
@@ -138,9 +138,9 @@ class Feature extends Model {
     /**
      * Scope a query to sort features in subtype order.
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param Builder $query
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeSortSubtype($query) {
         $ids = Subtype::orderBy('sort', 'DESC')->pluck('id')->toArray();
@@ -151,10 +151,10 @@ class Feature extends Model {
     /**
      * Scope a query to sort features in rarity order.
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param bool                                  $reverse
+     * @param Builder $query
+     * @param bool    $reverse
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeSortRarity($query, $reverse = false) {
         $ids = Rarity::orderBy('sort', $reverse ? 'ASC' : 'DESC')->pluck('id')->toArray();
@@ -165,10 +165,10 @@ class Feature extends Model {
     /**
      * Scope a query to sort features by newest first.
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param mixed                                 $reverse
+     * @param Builder $query
+     * @param mixed   $reverse
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeSortNewest($query, $reverse = false) {
         return $query->orderBy('id', $reverse ? 'ASC' : 'DESC');
@@ -177,10 +177,10 @@ class Feature extends Model {
     /**
      * Scope a query to show only visible features.
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param mixed|null                            $user
+     * @param Builder    $query
+     * @param mixed|null $user
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeVisible($query, $user = null) {
         if ($user && $user->hasPower('edit_data')) {
@@ -300,7 +300,7 @@ class Feature extends Model {
                 $grouped = self::where('is_visible', '>=', $visibleOnly)
                     ->when($withSpecies, function (Builder $query, int $withSpecies) {
                         $query->where('species_id', '=', $withSpecies)
-                        ->orWhere('species_id', '=', NULL);
+                            ->orWhere('species_id', '=', null);
                     })
                     ->select('name', 'id', 'feature_category_id', 'rarity_id', 'species_id', 'subtype_id')->with(['category', 'rarity', 'species', 'subtype'])
                     ->orderBy('name')->get()->keyBy('id')->groupBy('category.name', $preserveKeys = true)
@@ -369,7 +369,7 @@ class Feature extends Model {
                 return self::where('is_visible', '>=', $visibleOnly)
                     ->when($withSpecies, function (Builder $query, int $withSpecies) {
                         $query->where('species_id', '=', $withSpecies)
-                        ->orWhere('species_id', '=', NULL);
+                            ->orWhere('species_id', '=', null);
                     })
                     ->orderBy('name')
                     ->pluck('name', 'id')

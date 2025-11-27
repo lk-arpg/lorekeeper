@@ -100,8 +100,8 @@
         'showLootTables' => true,
         'showRecipient' => true,
         'info' => '<p>User rewards are credited on a per-user basis, character rewards are rewarded to all characters attached. Mods are able to modify the specific rewards granted at approval time.</p>
-                                                <p class="mb-0">You can add loot tables containing any kind of currencies (both user- and character-attached), but be sure to keep track of which are being distributed!
-                                                <strong>Character-only currencies cannot be given to users.</strong></p>',
+                                                    <p class="mb-0">You can add loot tables containing any kind of currencies (both user- and character-attached), but be sure to keep track of which are being distributed!
+                                                    <strong>Character-only currencies cannot be given to users.</strong></p>',
     ])
 
     <div class="text-right">

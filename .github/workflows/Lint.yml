@@ -55,6 +55,7 @@ jobs:
     - name: Commit changes
       uses: EndBug/add-and-commit@a94899bca583c204427a224a7af87c02f9b325d5 # v9
       with:
+          pull: '--rebase --autostash'
           message: 'refactor: fix PHP styling'
           committer_name: github-actions[bot]
           committer_email: github-actions[bot]@users.noreply.github.com
@@ -90,6 +91,7 @@ jobs:
     - name: Commit changes
       uses: EndBug/add-and-commit@a94899bca583c204427a224a7af87c02f9b325d5 # v9
       with:
+          pull: '--rebase --autostash'
           message: 'refactor: fix blade formatting'
           committer_name: github-actions[bot]
           committer_email: github-actions[bot]@users.noreply.github.com

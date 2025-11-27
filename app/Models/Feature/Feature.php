@@ -6,6 +6,7 @@ use App\Models\Model;
 use App\Models\Rarity;
 use App\Models\Species\Species;
 use App\Models\Species\Subtype;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
 class Feature extends Model {
@@ -286,7 +287,7 @@ class Feature extends Model {
 
     **********************************************************************************************/
 
-    public static function getDropdownItems($withHidden = 0) {
+    public static function getDropdownItems($withHidden = 0, $withSpecies = 0) {
         $visibleOnly = 1;
         if ($withHidden) {
             $visibleOnly = 0;
@@ -295,10 +296,21 @@ class Feature extends Model {
         if (config('lorekeeper.extensions.organised_traits_dropdown.enable')) {
             $sorted_feature_categories = collect(FeatureCategory::all()->where('is_visible', '>=', $visibleOnly)->sortBy('sort')->pluck('name')->toArray());
 
-            $grouped = self::where('is_visible', '>=', $visibleOnly)
-                ->select('name', 'id', 'feature_category_id', 'rarity_id', 'species_id', 'subtype_id')->with(['category', 'rarity', 'species', 'subtype'])
-                ->orderBy('name')->get()->keyBy('id')->groupBy('category.name', $preserveKeys = true)
-                ->toArray();
+            if (config('show_species-only_traits_in_dropdown') && $withSpecies) {
+                $grouped = self::where('is_visible', '>=', $visibleOnly)
+                    ->when($withSpecies, function (Builder $query, int $withSpecies) {
+                        $query->where('species_id', '=', $withSpecies)
+                        ->orWhere('species_id', '=', NULL);
+                    })
+                    ->select('name', 'id', 'feature_category_id', 'rarity_id', 'species_id', 'subtype_id')->with(['category', 'rarity', 'species', 'subtype'])
+                    ->orderBy('name')->get()->keyBy('id')->groupBy('category.name', $preserveKeys = true)
+                    ->toArray();
+            } else {
+                $grouped = self::where('is_visible', '>=', $visibleOnly)
+                    ->select('name', 'id', 'feature_category_id', 'rarity_id', 'species_id', 'subtype_id')->with(['category', 'rarity', 'species', 'subtype'])
+                    ->orderBy('name')->get()->keyBy('id')->groupBy('category.name', $preserveKeys = true)
+                    ->toArray();
+            }
             if (isset($grouped[''])) {
                 if (!$sorted_feature_categories->contains('Miscellaneous')) {
                     $sorted_feature_categories->push('Miscellaneous');
@@ -353,7 +365,21 @@ class Feature extends Model {
 
             return $features_by_category;
         } else {
-            return self::where('is_visible', '>=', $visibleOnly)->orderBy('name')->pluck('name', 'id')->toArray();
+            if (config('show_species-only_traits_in_dropdown') && $withSpecies) {
+                return self::where('is_visible', '>=', $visibleOnly)
+                    ->when($withSpecies, function (Builder $query, int $withSpecies) {
+                        $query->where('species_id', '=', $withSpecies)
+                        ->orWhere('species_id', '=', NULL);
+                    })
+                    ->orderBy('name')
+                    ->pluck('name', 'id')
+                    ->toArray();
+            } else {
+                return self::where('is_visible', '>=', $visibleOnly)
+                    ->orderBy('name')
+                    ->pluck('name', 'id')
+                    ->toArray();
+            }
         }
     }
 }

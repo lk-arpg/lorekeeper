@@ -101,7 +101,7 @@
 
         function refreshSubtype() {
             var species = $('#species').val();
-            var subtype_ids = "{{ !$feature->subtypes->isEmpty() ? implode(',', $feature->subtypes->pluck('id')->toArray()) : 'null' }}";
+            var subtype_ids = @json($feature->subtypes->pluck('id')->toArray());
             $.ajax({
                 type: "GET",
                 url: "{{ url('admin/data/traits/check-subtype') }}?species=" + species + "&subtype_ids=" + subtype_ids,

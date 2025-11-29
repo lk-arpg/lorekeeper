@@ -259,10 +259,10 @@ class DesignController extends Controller {
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getFeaturesFeature(Request $request) {
+    public function getFeaturesTrait(Request $request) {
         $species = $request->input('species');
 
-        return view('character.design._features_feature', [
+        return view('character.design._features_trait', [
             'features'  => Feature::getDropdownItems(Auth::user()->hasPower('edit_data'), $species),
         ]);
     }

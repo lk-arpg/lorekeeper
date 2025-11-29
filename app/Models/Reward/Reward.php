@@ -51,7 +51,7 @@ class Reward extends Model {
 
         if (!class_exists($model)) {
             // Laravel requires a relationship instance to be returned (cannot return null), so returning one that doesn't exist here.
-            return $this->belongsTo(self::class, 'id', 'item_id')->whereNull('item_id');
+            return $this->belongsTo(self::class, 'id', 'object_id')->whereNull('object_id');
         }
 
         return $this->belongsTo($model, 'rewardable_id');

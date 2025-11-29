@@ -503,3 +503,23 @@ function hasUnlockedLimits($object) {
 
     return $service->checkLimits($object);
 }
+
+/**
+ * Returns the given objects rewards, if any.
+ *
+ * @param mixed $object
+ *
+ * @return bool
+ */
+function getRewards($object) {
+    return App\Models\Reward\Reward::where('object_model', get_class($object))->where('object_id', $object->id)->get();
+}
+
+/**
+ * checks if a certain object has any rewards.
+ *
+ * @param mixed $object
+ */
+function hasRewards($object) {
+    return App\Models\Reward\Reward::where('object_model', get_class($object))->where('object_id', $object->id)->exists();
+}

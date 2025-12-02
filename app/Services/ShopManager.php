@@ -228,14 +228,14 @@ class ShopManager extends Service {
                     'data' => 'Purchased '.$shopStock->item->name.' x'.$quantity.' from '.$shop->name.
                     ($coupon ? '. Coupon used: '.$couponUserItem->item->name : ''),
                 ])) {
-                    throw new \Exception('Failed to purchase item.');
+                    throw new \Exception('Failed to purchase item - could not debit character costs.');
                 }
             }
-            if (!fillUserAssets($userCostAssets, $user, null, 'Shop Purchase', [
+            if (!takeUserAssets($userCostAssets, $user, null, 'Shop Purchase', [
                 'data' => 'Purchased '.$shopStock->item->name.' x'.$quantity.' from '.$shop->name.
                 ($coupon ? '. Coupon used: '.$couponUserItem->item->name : ''),
             ], $selected)) {
-                throw new \Exception('Failed to purchase item - could not debit costs.');
+                throw new \Exception('Failed to purchase item - could not debit user costs.');
             }
 
             // If the item has a limited quantity, decrease the quantity

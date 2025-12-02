@@ -327,11 +327,10 @@ function compareAssetArrays($first, $second, $isCharacter = false, $absQuantitie
  * @param App\Models\User\User $recipient
  * @param string               $logType
  * @param string               $data
- * @param mixed|null           $selected
  *
  * @return array
  */
-function fillUserAssets($assets, $sender, $recipient, $logType, $data, $selected = null) {
+function fillUserAssets($assets, $sender, $recipient, $logType, $data) {
     // Roll on any loot tables
     if (isset($assets['loot_tables'])) {
         foreach ($assets['loot_tables'] as $table) {
@@ -344,51 +343,23 @@ function fillUserAssets($assets, $sender, $recipient, $logType, $data, $selected
         if ($key == 'items' && count($contents)) {
             $service = new App\Services\InventoryManager;
             foreach ($contents as $asset) {
-                if ($asset['quantity'] < 0) {
-                    if (!$selected) {
-                        flash('No selected item found for debiting.')->error();
-
-                        return false;
+                if (!$service->creditItem($sender, $recipient, $logType, $data, $asset['asset'], $asset['quantity'])) {
+                    foreach ($service->errors()->getMessages()['error'] as $error) {
+                        flash($error)->error();
                     }
 
-                    foreach ($selected as $stackData) {
-                        if (!$service->debitStack($sender, $logType, $data, $stackData['stack'], $stackData['quantity'])) {
-                            foreach ($service->errors()->getMessages()['error'] as $error) {
-                                flash($error)->error();
-                            }
-
-                            return false;
-                        }
-                    }
-                } else {
-                    if (!$service->creditItem($sender, $recipient, $logType, $data, $asset['asset'], $asset['quantity'])) {
-                        foreach ($service->errors()->getMessages()['error'] as $error) {
-                            flash($error)->error();
-                        }
-
-                        return false;
-                    }
+                    return false;
                 }
             }
         } elseif ($key == 'currencies' && count($contents)) {
             $service = new App\Services\CurrencyManager;
             foreach ($contents as $asset) {
-                if ($asset['quantity'] < 0) {
-                    if (!$service->debitCurrency($sender, $recipient, $logType, $data['data'], $asset['asset'], abs($asset['quantity']))) {
-                        foreach ($service->errors()->getMessages()['error'] as $error) {
-                            flash($error)->error();
-                        }
-
-                        return false;
+                if (!$service->creditCurrency($sender, $recipient, $logType, $data['data'], $asset['asset'], $asset['quantity'])) {
+                    foreach ($service->errors()->getMessages()['error'] as $error) {
+                        flash($error)->error();
                     }
-                } else {
-                    if (!$service->creditCurrency($sender, $recipient, $logType, $data['data'], $asset['asset'], $asset['quantity'])) {
-                        foreach ($service->errors()->getMessages()['error'] as $error) {
-                            flash($error)->error();
-                        }
 
-                        return false;
-                    }
+                    return false;
                 }
             }
         } elseif ($key == 'raffle_tickets' && count($contents)) {
@@ -417,6 +388,66 @@ function fillUserAssets($assets, $sender, $recipient, $logType, $data, $selected
             $service = new App\Services\CharacterManager;
             foreach ($contents as $asset) {
                 if (!$service->moveCharacter($asset['asset'], $recipient, $data, $asset['quantity'], $logType)) {
+                    foreach ($service->errors()->getMessages()['error'] as $error) {
+                        flash($error)->error();
+                    }
+
+                    return false;
+                }
+            }
+        }
+    }
+
+    return $assets;
+}
+
+/**
+ * Removes the assets in an assets array from the given recipient (user).
+ *
+ * This does not validate the quantities between $assets and $selected.
+ * This is due to extracting quantities from $selected being a complicated and expensive operation.
+ * Quantity validation should be performed in the containing function.
+ *
+ * @param array                $assets
+ * @param App\Models\User\User $sender
+ * @param App\Models\User\User $recipient
+ * @param string               $logType
+ * @param string               $data
+ * @param mixed|null           $selected
+ *
+ * @return array
+ */
+function takeUserAssets($assets, $sender, $recipient, $logType, $data, $selected = null) {
+    foreach ($assets as $key => $contents) {
+        if ($key == 'items' && count($contents)) {
+            $service = new App\Services\InventoryManager;
+            // do not loop the assets here, just the stackdata. otherwise it will deduct stacks multiple times
+            if (!$selected) {
+                flash('No selected item found for debiting.')->error();
+
+                return false;
+            }
+
+            // Comparing unique item ids in $contents to unique item ids in $selected
+            if (!(collect($contents)->pluck('asset')->pluck('id')->diff(collect($selected)->pluck('stack')->pluck('item_id')->unique())->isEmpty())) {
+                flash('Assets do not match selected stacks.');
+
+                return false;
+            }
+
+            foreach ($selected as $stackData) {
+                if (!$service->debitStack($sender, $logType, $data, $stackData['stack'], abs($stackData['quantity']))) {
+                    foreach ($service->errors()->getMessages()['error'] as $error) {
+                        flash($error)->error();
+                    }
+
+                    return false;
+                }
+            }
+        } elseif ($key == 'currencies' && count($contents)) {
+            $service = new App\Services\CurrencyManager;
+            foreach ($contents as $asset) {
+                if (!$service->debitCurrency($sender, $recipient, $logType, $data['data'], $asset['asset'], abs($asset['quantity']))) {
                     foreach ($service->errors()->getMessages()['error'] as $error) {
                         flash($error)->error();
                     }

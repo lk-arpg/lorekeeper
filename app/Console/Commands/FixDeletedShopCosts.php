@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use App\Models\Shop\ShopStockCost;
-use App\Models\User\User;
 use Illuminate\Console\Command;
 
 class FixDeletedShopCosts extends Command {
@@ -34,13 +33,12 @@ class FixDeletedShopCosts extends Command {
      * @return mixed
      */
     public function handle() {
-
         $costs = ShopStockCost::doesntHave('stock');
 
-        $this->info("Deleting " . $costs->count() . " orphaned shop costs...");
+        $this->info('Deleting '.$costs->count().' orphaned shop costs...');
 
         $costs->delete();
 
-        $this->info("Success!");
+        $this->info('Success!');
     }
 }

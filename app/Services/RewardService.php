@@ -83,7 +83,7 @@ class RewardService extends Service {
                         // so we just have to return a generic error message
                         // However, uncommenting the below will send the validator errors to the logs
                         // \Log::debug($validator->errors());
-                        throw new \Exception ('Reward data validation failed.');
+                        throw new \Exception('Reward data validation failed.');
                     }
 
                     $reward = Reward::create($rewardData);

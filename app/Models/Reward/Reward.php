@@ -30,6 +30,36 @@ class Reward extends Model {
         'data' => 'array',
     ];
 
+    /**
+     * Validation rules for reward creation.
+     *
+     * @var array
+     */
+    public static $createRules = [
+        'object_id'            => 'required',
+        'object_model'         => 'required',
+        'rewardable_recipient' => 'required',
+        'rewardable_id'        => 'nullable',
+        'rewardable_type'      => 'required',
+        'quantity'             => 'required',
+        'data'                 => 'nullable',
+    ];
+
+    /**
+     * Validation rules for reward updating.
+     *
+     * @var array
+     */
+    public static $updateRules = [
+        'object_id'            => 'required',
+        'object_model'         => 'required',
+        'rewardable_recipient' => 'required',
+        'rewardable_id'        => 'nullable',
+        'rewardable_type'      => 'required',
+        'quantity'             => 'required',
+        'data'                 => 'nullable',
+    ];
+
     /**********************************************************************************************
 
         RELATIONS

@@ -320,8 +320,8 @@ class CurrencyService extends Service {
             if (DB::table('loots')->where('rewardable_type', 'Currency')->where('rewardable_id', $currency->id)->exists()) {
                 throw new \Exception('A loot table currently distributes this currency as a potential reward. Please remove the currency before deleting it.');
             }
-            if (DB::table('prompt_rewards')->where('rewardable_type', 'Currency')->where('rewardable_id', $currency->id)->exists()) {
-                throw new \Exception('A prompt currently distributes this currency as a reward. Please remove the currency before deleting it.');
+            if (DB::table('rewards')->where('rewardable_type', 'Currency')->where('rewardable_id', $currency->id)->exists()) {
+                throw new \Exception('An object currently distributes this currency as a reward. Please remove the currency before deleting it.');
             }
             if (DB::table('shop_stock_costs')->where('cost_type', 'Currency')->where('cost_id', $currency->id)->exists()) {
                 throw new \Exception('A shop currently requires this currency to purchase an currency. Please change the currency before deleting it.');

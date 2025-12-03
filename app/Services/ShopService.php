@@ -325,6 +325,7 @@ class ShopService extends Service {
         DB::beginTransaction();
 
         try {
+            $stock->costs()->delete();
             $stock->delete();
 
             return $this->commitReturn(true);

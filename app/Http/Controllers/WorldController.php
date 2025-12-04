@@ -448,7 +448,8 @@ class WorldController extends Controller {
             $features->orderByRaw('FIELD(rarity_id,'.implode(',', $rarities->pluck('id')->toArray()).')') :
             $features;
 
-        $features->orderBy('has_image', 'DESC')
+        $features = $features
+            ->orderBy('has_image', 'DESC')
             ->orderBy('name')
             ->get()->groupBy(['feature_category_id', 'id']);
 
@@ -497,7 +498,8 @@ class WorldController extends Controller {
             $features->orderByRaw('FIELD(rarity_id,'.implode(',', $rarities->pluck('id')->toArray()).')') :
             $features;
 
-        $features->orderBy('has_image', 'DESC')
+        $features = $features
+            ->orderBy('has_image', 'DESC')
             ->orderBy('name')
             ->get()
             ->groupBy(['feature_category_id', 'id']);

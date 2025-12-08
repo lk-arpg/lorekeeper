@@ -44,7 +44,7 @@
             }
         }
 
-        
+
         var $featureSelect = $('.feature-select');
 
         @if (config('lorekeeper.extensions.organised_traits_dropdown.enable'))

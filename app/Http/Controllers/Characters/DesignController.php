@@ -235,7 +235,7 @@ class DesignController extends Controller {
             'specieses' => ['0' => 'Select Species'] + Species::visible()->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'subtypes'  => Subtype::visible()->where('species_id', '=', $r->species_id)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'rarities'  => ['0' => 'Select Rarity'] + Rarity::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'features'  => Feature::getDropdownItems(Auth::user()->hasPower('edit_data'), $r->species_id),
+            'features'  => Feature::getDropdownItems(0, $r->species_id),
         ]);
     }
 

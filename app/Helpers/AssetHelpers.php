@@ -10,8 +10,6 @@
 |
 */
 
-use Termwind\Components\BreakLine;
-
 /**
  * Calculates amount of group currency a submission should be awarded
  * based on form input. Corresponds to the GroupCurrencyForm configured in
@@ -21,8 +19,7 @@ use Termwind\Components\BreakLine;
  *
  * @return int
  */
-function calculateGroupCurrency($data)
-{
+function calculateGroupCurrency($data) {
     // Sets a starting point for the total so that numbers can be added to it.
     // Don't change this!
     $total = 0;
@@ -73,8 +70,7 @@ function calculateGroupCurrency($data)
  *
  * @return array
  */
-function getAssetKeys($isCharacter = false)
-{
+function getAssetKeys($isCharacter = false) {
     if (!$isCharacter) {
         return ['items', 'currencies', 'raffle_tickets', 'loot_tables', 'user_items', 'characters'];
     } else {
@@ -91,8 +87,7 @@ function getAssetKeys($isCharacter = false)
  *
  * @return string
  */
-function getAssetModelString($type, $namespaced = true)
-{
+function getAssetModelString($type, $namespaced = true) {
     switch ($type) {
         case 'items': case 'item':
             if ($namespaced) {
@@ -169,8 +164,7 @@ function getAssetModelString($type, $namespaced = true)
  *
  * @return array
  */
-function createAssetsArray($isCharacter = false)
-{
+function createAssetsArray($isCharacter = false) {
     $keys = getAssetKeys($isCharacter);
     $assets = [];
     foreach ($keys as $key) {
@@ -188,8 +182,7 @@ function createAssetsArray($isCharacter = false)
  *
  * @return array
  */
-function mergeAssetsArrays($first, $second)
-{
+function mergeAssetsArrays($first, $second) {
     $keys = getAssetKeys();
     foreach ($keys as $key) {
         foreach ($second[$key] as $item) {
@@ -208,8 +201,7 @@ function mergeAssetsArrays($first, $second)
  * @param mixed $asset
  * @param int   $quantity
  */
-function addAsset(&$array, $asset, $quantity = 1)
-{
+function addAsset(&$array, $asset, $quantity = 1) {
     if (!$asset) {
         return;
     }
@@ -230,8 +222,7 @@ function addAsset(&$array, $asset, $quantity = 1)
  * @param mixed $asset
  * @param int   $quantity
  */
-function removeAsset(&$array, $asset, $quantity = 1)
-{
+function removeAsset(&$array, $asset, $quantity = 1) {
     if (!$asset) {
         return;
     }
@@ -252,8 +243,7 @@ function removeAsset(&$array, $asset, $quantity = 1)
  *
  * @return array
  */
-function getDataReadyAssets($array, $isCharacter = false)
-{
+function getDataReadyAssets($array, $isCharacter = false) {
     $result = [];
     foreach ($array as $key => $type) {
         if ($type && !isset($result[$key])) {
@@ -275,8 +265,7 @@ function getDataReadyAssets($array, $isCharacter = false)
  *
  * @return array
  */
-function parseAssetData($array)
-{
+function parseAssetData($array) {
     $assets = createAssetsArray();
     foreach ($array as $key => $contents) {
         $model = getAssetModelString($key);
@@ -303,8 +292,7 @@ function parseAssetData($array)
  *
  * @return bool
  */
-function compareAssetArrays($first, $second, $isCharacter = false, $absQuantities = false)
-{
+function compareAssetArrays($first, $second, $isCharacter = false, $absQuantities = false) {
     $keys = getAssetKeys($isCharacter);
     foreach ($keys as $key) {
         if (count($first[$key]) != count($second[$key])) {
@@ -342,8 +330,7 @@ function compareAssetArrays($first, $second, $isCharacter = false, $absQuantitie
  *
  * @return array
  */
-function fillUserAssets($assets, $sender, $recipient, $logType, $data)
-{
+function fillUserAssets($assets, $sender, $recipient, $logType, $data) {
     // Roll on any loot tables
     if (isset($assets['loot_tables'])) {
         foreach ($assets['loot_tables'] as $table) {
@@ -430,8 +417,7 @@ function fillUserAssets($assets, $sender, $recipient, $logType, $data)
  *
  * @return array
  */
-function takeUserAssets($assets, $sender, $recipient, $logType, $data, $selected = null)
-{
+function takeUserAssets($assets, $sender, $recipient, $logType, $data, $selected = null) {
     foreach ($assets as $key => $contents) {
         if ($key == 'items' && count($contents)) {
             $service = new App\Services\InventoryManager;
@@ -482,8 +468,7 @@ function takeUserAssets($assets, $sender, $recipient, $logType, $data, $selected
  *
  * @return int
  */
-function countAssets($array)
-{
+function countAssets($array) {
     $count = 0;
     foreach ($array as $key => $contents) {
         foreach ($contents as $asset) {
@@ -502,8 +487,7 @@ function countAssets($array)
  *
  * @return bool
  */
-function canTradeAsset($type, $asset)
-{
+function canTradeAsset($type, $asset) {
     switch ($type) {
         case 'Item':
             return $asset->allow_transfer;
@@ -533,8 +517,7 @@ function canTradeAsset($type, $asset)
  *
  * @return array
  */
-function fillCharacterAssets($assets, $sender, $recipient, $logType, $data, $submitter = null)
-{
+function fillCharacterAssets($assets, $sender, $recipient, $logType, $data, $submitter = null) {
     if (!config('lorekeeper.extensions.character_reward_expansion.default_recipient') && $recipient->user) {
         $item_recipient = $recipient->user;
     } else {
@@ -579,22 +562,21 @@ function fillCharacterAssets($assets, $sender, $recipient, $logType, $data, $sub
  *
  * @return string
  */
-function createRewardsString($array, $useDisplayName = true, $absQuantities = false)
-{
+function createRewardsString($array, $useDisplayName = true, $absQuantities = false) {
     $string = [];
     foreach ($array as $key => $contents) {
         foreach ($contents as $asset) {
             if ($useDisplayName) {
                 if ($key == 'currencies') {
-                    $name = $asset['asset'] ? $asset['asset']->display(($absQuantities ? abs($asset['quantity']) : $asset['quantity'])) : 'Deleted ' . ucfirst(str_replace('_', ' ', $key));
-                    $string[] = $asset['asset'] ? $name : $name . ' x' . ($absQuantities ? abs($asset['quantity']) : $asset['quantity']);
+                    $name = $asset['asset'] ? $asset['asset']->display(($absQuantities ? abs($asset['quantity']) : $asset['quantity'])) : 'Deleted '.ucfirst(str_replace('_', ' ', $key));
+                    $string[] = $asset['asset'] ? $name : $name.' x'.($absQuantities ? abs($asset['quantity']) : $asset['quantity']);
                 } else {
-                    $name = $asset['asset']->displayName ?? ($asset['asset']->name ?? 'Deleted ' . ucfirst(str_replace('_', ' ', $key)));
-                    $string[] = $name . ' x' . ($absQuantities ? abs($asset['quantity']) : $asset['quantity']);
+                    $name = $asset['asset']->displayName ?? ($asset['asset']->name ?? 'Deleted '.ucfirst(str_replace('_', ' ', $key)));
+                    $string[] = $name.' x'.($absQuantities ? abs($asset['quantity']) : $asset['quantity']);
                 }
             } else {
-                $name = $asset['asset']->name ?? 'Deleted ' . ucfirst(str_replace('_', ' ', $key));
-                $string[] = $name . ' x' . ($absQuantities ? abs($asset['quantity']) : $asset['quantity']);
+                $name = $asset['asset']->name ?? 'Deleted '.ucfirst(str_replace('_', ' ', $key));
+                $string[] = $name.' x'.($absQuantities ? abs($asset['quantity']) : $asset['quantity']);
             }
         }
     }
@@ -606,7 +588,7 @@ function createRewardsString($array, $useDisplayName = true, $absQuantities = fa
         return implode(', ', $string);
     }
 
-    return implode(', ', array_slice($string, 0, count($string) - 1)) . (count($string) > 2 ? ', and ' : ' and ') . end($string);
+    return implode(', ', array_slice($string, 0, count($string) - 1)).(count($string) > 2 ? ', and ' : ' and ').end($string);
 }
 
 /**
@@ -614,13 +596,11 @@ function createRewardsString($array, $useDisplayName = true, $absQuantities = fa
  * For example, raffle tickets can not be given to characters.
  *
  * @param array $showData
- * @param boolean $isCharacter
+ * @param bool  $isCharacter
  *
  * @return array
  */
-
-function getRewardTypes($showData, $isCharacter = false)
-{
+function getRewardTypes($showData, $isCharacter = false) {
     if (!$isCharacter) {
         return ['Item' => 'Item', 'Currency' => 'Currency'] +
             ($showData['showLootTables'] ? ['LootTable' => 'Loot Table'] : []) +
@@ -633,43 +613,40 @@ function getRewardTypes($showData, $isCharacter = false)
 
 /**
  * Gets the reward data needed for loot/reward selection blades.
- * 
+ *
  * Builds an array structured to match keys with the above getRewardTypes.
  * For example:
  * [ 'Item' => $items, 'Currency' => $currencies]
- * 
+ *
  * $useCustomSelectize is utilized when rendering within the trade listing blades.
  *
  * @param array $showData
- * @param array $rewardTypes
- * @param boolean $isCharacter
- * @param boolean $useCustomSelectize
+ * @param bool  $isCharacter
+ * @param bool  $useCustomSelectize
  *
  * @return array
  */
-
-function getRewardLootData($showData, $isCharacter = false, $useCustomSelectize = false)
-{
+function getRewardLootData($showData, $isCharacter = false, $useCustomSelectize = false) {
     // We call getRewardTypes here, rather than as a parameter, to prevent accidentally getting mismatched arrays.
     $rewardTypes = getRewardTypes($showData, $isCharacter);
 
     $rewardLootData = [];
 
-    //Iterate through each valid key in $rewardTypes and get the data associated with it
+    // Iterate through each valid key in $rewardTypes and get the data associated with it
     foreach ($rewardTypes as $rewardKey => $rewardType) {
         $query = null;
 
         switch ($rewardKey) {
             case 'Item':
-                $query = \App\Models\Item\Item::orderBy('name')
+                $query = App\Models\Item\Item::orderBy('name')
                     ->where(function ($query) use ($showData) {
                         if ($showData['isTradeable']) {
                             $query->where('allow_transfer', 1);
                         }
-                });
+                    });
                 break;
             case 'Currency':
-                $query = \App\Models\Currency\Currency::query();
+                $query = App\Models\Currency\Currency::query();
                 if ($isCharacter) {
                     $query->where('is_character_owned', 1);
                 } else {
@@ -680,29 +657,29 @@ function getRewardLootData($showData, $isCharacter = false, $useCustomSelectize 
                         $query->where('allow_user_to_user', 1);
                     }
                 })
-                ->orderBy('sort_character', 'DESC');
+                    ->orderBy('sort_character', 'DESC');
                 break;
             case 'LootTable':
-                $query = \App\Models\Loot\LootTable::orderBy('name');
+                $query = App\Models\Loot\LootTable::orderBy('name');
                 break;
             case 'Raffle':
-                $query = \App\Models\Raffle\Raffle::where('rolled_at', null)->where('is_active', 1)->orderBy('name');
+                $query = App\Models\Raffle\Raffle::where('rolled_at', null)->where('is_active', 1)->orderBy('name');
                 break;
-            //Add the query builder for your other assets here, set with the matching key in getRewardTypes
-            //If your asset type does not have a model, you may need to add special handling here.
-            //
-            //case 'Example':
-            //  $query = \App\Models\Example::orderby('name');
-            //  break;
+                // Add the query builder for your other assets here, set with the matching key in getRewardTypes
+                // If your asset type does not have a model, you may need to add special handling here.
+                //
+                // case 'Example':
+                //  $query = \App\Models\Example::orderby('name');
+                //  break;
         }
 
-        //If your asset type does not have a model with an id and name value, then you may need to add special handling here.
+        // If your asset type does not have a model with an id and name value, then you may need to add special handling here.
         if ($useCustomSelectize) {
             $data = $query->get()->mapWithKeys(function ($item) {
                 return [
                     $item->id => json_encode([
-                        'name' => $item->name,
-                        'image_url' => isset($item->imageUrl) ? $item->imageUrl : null,
+                        'name'      => $item->name,
+                        'image_url' => $item->imageUrl ?? null,
                     ]),
                 ];
             });
@@ -710,7 +687,7 @@ function getRewardLootData($showData, $isCharacter = false, $useCustomSelectize 
             $data = $query->pluck('name', 'id')->toArray();
         }
 
-        //Finally, add the data to the array.
+        // Finally, add the data to the array.
         $rewardLootData[$rewardKey] = $data;
     }
 

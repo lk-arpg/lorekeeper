@@ -23,11 +23,13 @@
     $recipient = $isCharacter ? 'Character' : 'User';
 
     // Put any logic for handling 'showXYZ' variables in this array
-    $showData = isset($showData) ? $showData : [
-        'isTradeable' => isset($isTradeable) && $isTradeable ? $isTradeable : false, 
-        'showLootTables' => isset($showLootTables) && $showLootTables ? $showLootTables : false,
-        'showRaffles' => isset($showRaffles) && $showLootTables ? $showRaffles : false,
-    ];
+    $showData = isset($showData)
+        ? $showData
+        : [
+            'isTradeable' => isset($isTradeable) && $isTradeable ? $isTradeable : false,
+            'showLootTables' => isset($showLootTables) && $showLootTables ? $showLootTables : false,
+            'showRaffles' => isset($showRaffles) && $showLootTables ? $showRaffles : false,
+        ];
 
     // Fetch valid reward types, defined in AssetHelpers
     $rewardTypes = getRewardTypes($showData, $isCharacter);
@@ -75,7 +77,7 @@
             </tr>
         </tbody>
     </table>
-    @foreach($rewardTypes as $rewardKey=>$rewardType)
+    @foreach ($rewardTypes as $rewardKey => $rewardType)
         {!! Form::select($prefix . 'rewardable_id[]', $rewardLootData[$rewardKey], null, ['class' => 'form-control object-select ' . strtolower($rewardKey) . '-select', 'placeholder' => 'Select ' . $rewardType]) !!}
     @endforeach
 </div>

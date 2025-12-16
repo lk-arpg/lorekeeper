@@ -23,11 +23,13 @@
     $recipient = $isCharacter ? 'Character' : 'User';
 
     // Put any logic for handling 'showXYZ' variables in this array
-    $showData = isset($showData) ? $showData : [
-        'isTradeable' => isset($isTradeable) && $isTradeable ? $isTradeable : false, 
-        'showLootTables' => isset($showLootTables) && $showLootTables ? $showLootTables : false,
-        'showRaffles' => isset($showRaffles) && $showLootTables ? $showRaffles : false,
-    ];
+    $showData = isset($showData)
+        ? $showData
+        : [
+            'isTradeable' => isset($isTradeable) && $isTradeable ? $isTradeable : false,
+            'showLootTables' => isset($showLootTables) && $showLootTables ? $showLootTables : false,
+            'showRaffles' => isset($showRaffles) && $showLootTables ? $showRaffles : false,
+        ];
 
     // Fetch valid reward types, defined in AssetHelpers
     // This is also called individually for each pre-existing loot row, to fill out the table accurately
@@ -80,7 +82,10 @@
                         ]) !!}
                     </td>
                     <td class="loot-row-select">
-                        {!! Form::select($prefix . 'rewardable_id[]', $rewardLootData[$loot->rewardable_type], $loot->rewardable_id, ['class' => 'form-control ' . strtolower($loot->rewardable_type) . '-select', 'placeholder' => 'Select ' . $rewardTypes[$loot->rewardable_type]]) !!}
+                        {!! Form::select($prefix . 'rewardable_id[]', $rewardLootData[$loot->rewardable_type], $loot->rewardable_id, [
+                            'class' => 'form-control ' . strtolower($loot->rewardable_type) . '-select',
+                            'placeholder' => 'Select ' . $rewardTypes[$loot->rewardable_type],
+                        ]) !!}
                     </td>
                     <td>{!! Form::text($prefix . 'quantity[]', $loot->quantity, ['class' => 'form-control']) !!}</td>
                     @if (isset($extra_fields))

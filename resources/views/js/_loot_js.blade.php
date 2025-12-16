@@ -17,7 +17,7 @@
 
     // Put any logic for handling 'showXYZ' variables in this array
     $showData = [
-        'isTradeable' => isset($isTradeable) && $isTradeable ? $isTradeable : false, 
+        'isTradeable' => isset($isTradeable) && $isTradeable ? $isTradeable : false,
         'showLootTables' => isset($showLootTables) && $showLootTables ? $showLootTables : false,
         'showRaffles' => isset($showRaffles) && $showLootTables ? $showRaffles : false,
     ];
@@ -68,10 +68,12 @@
             //Update the lootRow with the new types
             $.ajax({
                 type: "POST",
-                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
                 url: "{{ url('rewards/types') }}",
                 data: {
-                    recipient: $recipient,                    
+                    recipient: $recipient,
                     prefix: '{{ $prefix }}',
                     type: '{{ $type }}',
                     showData: JSON.parse('{!! json_encode($showData) !!}'),

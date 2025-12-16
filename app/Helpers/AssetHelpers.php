@@ -94,8 +94,7 @@ function getAssetKeys($isCharacter = false)
 function getAssetModelString($type, $namespaced = true)
 {
     switch ($type) {
-        case 'items':
-        case 'item':
+        case 'items': case 'item':
             if ($namespaced) {
                 return '\App\Models\Item\Item';
             } else {
@@ -103,8 +102,7 @@ function getAssetModelString($type, $namespaced = true)
             }
             break;
 
-        case 'currencies':
-        case 'currency':
+        case 'currencies': case 'currency':
             if ($namespaced) {
                 return '\App\Models\Currency\Currency';
             } else {
@@ -113,7 +111,6 @@ function getAssetModelString($type, $namespaced = true)
             break;
 
         case 'raffle_tickets':
-        case 'raffle':
             if ($namespaced) {
                 return '\App\Models\Raffle\Raffle';
             } else {
@@ -122,7 +119,6 @@ function getAssetModelString($type, $namespaced = true)
             break;
 
         case 'loot_tables':
-        case 'loottable':
             if ($namespaced) {
                 return '\App\Models\Loot\LootTable';
             } else {
@@ -131,7 +127,6 @@ function getAssetModelString($type, $namespaced = true)
             break;
 
         case 'user_items':
-        case 'useritem':
             if ($namespaced) {
                 return '\App\Models\User\UserItem';
             } else {
@@ -140,7 +135,6 @@ function getAssetModelString($type, $namespaced = true)
             break;
 
         case 'characters':
-        case 'character':
             if ($namespaced) {
                 return '\App\Models\Character\Character';
             } else {
@@ -156,8 +150,7 @@ function getAssetModelString($type, $namespaced = true)
             }
             break;
 
-        case 'prompts':
-        case 'prompt':
+        case 'prompts': case 'prompt':
             if ($namespaced) {
                 return '\App\Models\Prompt\Prompt';
             } else {

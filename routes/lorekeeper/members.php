@@ -259,3 +259,10 @@ Route::group(['prefix' => 'comments', 'namespace' => 'Comments'], function () {
 Route::group(['prefix' => 'limits'], function () {
     Route::post('unlock/{id}', 'Admin\LimitController@postUnlockLimits');
 });
+
+/**************************************************************************************************
+    Rewards
+**************************************************************************************************/
+Route::group(['prefix' => 'rewards'], function () {
+    Route::post('/types', 'RewardController@postRewardTypes');
+});

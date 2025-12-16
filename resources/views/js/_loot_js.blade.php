@@ -1,34 +1,41 @@
 @php
+    if (!isset($type)) {
+        $type = 'Reward';
+    }
     if (!isset($prefix)) {
         $prefix = '';
     }
-
-    // View options
     if (!isset($showRecipient)) {
         $showRecipient = false;
     }
-    if (!isset($showLootTables)) {
-        $showLootTables = false;
+    if (!isset($isCharacter)) {
+        $isCharacter = false;
     }
-    if (!isset($showRaffles)) {
-        $showRaffles = false;
+    if (!isset($useCustomSelectize)) {
+        $useCustomSelectize = false;
     }
+
+    // Put any logic for handling 'showXYZ' variables in this array
+    $showData = [
+        'isTradeable' => isset($isTradeable) && $isTradeable ? $isTradeable : false, 
+        'showLootTables' => isset($showLootTables) && $showLootTables ? $showLootTables : false,
+        'showRaffles' => isset($showRaffles) && $showLootTables ? $showRaffles : false,
+    ];
 @endphp
 <script>
     $(document).ready(function() {
         var $lootTable = $('#{{ $prefix }}lootTableBody');
         var $lootRow = $('#{{ $prefix }}lootRow').find('.loot-row');
-        console.log($lootRow);
         var $itemSelect = $('#{{ $prefix }}lootRowData').find('.item-select');
         var $currencySelect = $('#{{ $prefix }}lootRowData').find('.currency-select');
-        @if ($showLootTables)
+        @if ($showData['showLootTables'])
             var $tableSelect = $('#{{ $prefix }}lootRowData').find('.table-select');
         @endif
-        @if ($showRaffles)
+        @if ($showData['showRaffles'])
             var $raffleSelect = $('#{{ $prefix }}lootRowData').find('.raffle-select');
         @endif
 
-        @if (isset($useCustomSelectize) && $useCustomSelectize)
+        @if ($useCustomSelectize)
             $('#{{ $prefix }}lootTableBody .selectize').selectize({
                 render: {
                     option: customLootSelectizeRender,
@@ -53,6 +60,32 @@
             }
         });
 
+        $('.recipient-type').on('change', function(e) {
+            var $rewardTypeCell = $(this).parent().parent().find('.loot-row-type');
+            var $rewardIdsCell = $(this).parent().parent().find('.loot-row-select');
+            var $recipient = $(this).val();
+
+            //Update the lootRow with the new types
+            $.ajax({
+                type: "POST",
+                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                url: "{{ url('rewards/types') }}",
+                data: {
+                    recipient: $recipient,                    
+                    prefix: '{{ $prefix }}',
+                    type: '{{ $type }}',
+                    showData: JSON.parse('{!! json_encode($showData) !!}'),
+                    useCustomSelectize: '{{ $useCustomSelectize }}'
+                },
+                dataType: "text"
+            }).done(function(res) {
+                $rewardTypeCell.html(res);
+                $rewardIdsCell.html('');
+            }).fail(function(jqXHR, textStatus, errorThrown) {
+                alert("AJAX call failed: " + textStatus + ", " + errorThrown);
+            });
+        });
+
         $('.reward-type').on('change', function(e) {
             var val = $(this).val();
             var $cell = $(this).parent().parent().find('.loot-row-select');
@@ -60,10 +93,10 @@
             var $clone = null;
             if (val == 'Item') $clone = $itemSelect.clone();
             else if (val == 'Currency') $clone = $currencySelect.clone();
-            @if ($showLootTables)
+            @if ($showData['showLootTables'])
                 else if (val == 'LootTable') $clone = $tableSelect.clone();
             @endif
-            @if ($showRaffles)
+            @if ($showData['showRaffles'])
                 else if (val == 'Raffle') $clone = $raffleSelect.clone();
             @endif
 
@@ -79,10 +112,10 @@
                 var $clone = null;
                 if (val == 'Item') $clone = $itemSelect.clone();
                 else if (val == 'Currency') $clone = $currencySelect.clone();
-                @if ($showLootTables)
+                @if ($showData['showLootTables'])
                     else if (val == 'LootTable') $clone = $tableSelect.clone();
                 @endif
-                @if ($showRaffles)
+                @if ($showData['showRaffles'])
                     else if (val == 'Raffle') $clone = $raffleSelect.clone();
                 @endif
 

@@ -72,7 +72,7 @@ class Subtype extends Model {
      * Get the features associated with this subtype.
      */
     public function features() {
-        return $this->hasMany(Feature::class);
+        return $this->belongsToMany(Feature::class, 'feature_subtypes');
     }
 
     /**********************************************************************************************

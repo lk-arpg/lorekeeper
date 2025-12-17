@@ -77,7 +77,7 @@
                             ]) !!}
                         </td>
                     @endif
-                    
+
                     <td class="{{ $prefix }}loot-row-type">
                         {{-- The long array of key value pairs is now defined in getRewardTypes and data should be moved there --}}
                         {!! Form::select($prefix . 'rewardable_type[]', getRewardTypes($showData, $loot->rewardable_recipient == 'Character'), $loot->rewardable_type, [

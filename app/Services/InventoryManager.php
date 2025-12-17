@@ -589,6 +589,56 @@ class InventoryManager extends Service {
     }
 
     /**
+     * Returns an array of debitable stacks for a user or character.
+     *
+     * @param mixed $owner
+     * @param mixed $itemId
+     * @param mixed $quantityRequired
+     */
+    public function getDebitableStacks($owner, $itemId, $quantityRequired) {
+        $stacks = [];
+        $totalAvailable = 0;
+
+        if ($owner->logType == 'User') {
+            $ownedStacks = UserItem::where([
+                ['user_id', '=', $owner->id],
+                ['item_id', '=', $itemId],
+                ['count', '>', 0],
+            ])->get()->filter(function ($stack) {
+                return $stack->getAvailableQuantityAttribute() > 0;
+            });
+        } else {
+            $ownedStacks = CharacterItem::where([
+                ['character_id', '=', $owner->id],
+                ['item_id', '=', $itemId],
+                ['count', '>', 0],
+            ])->get()->filter(function ($stack) {
+                return $stack->getAvailableQuantityAttribute() > 0;
+            });
+        }
+
+        foreach ($ownedStacks as $stack) {
+            $availableQuantity = $stack->getAvailableQuantityAttribute();
+            if ($availableQuantity > 0) {
+                $stacks[] = [
+                    'stack'    => $stack,
+                    'quantity' => min($availableQuantity, $quantityRequired - $totalAvailable),
+                ];
+                $totalAvailable += $availableQuantity;
+                if ($totalAvailable >= $quantityRequired) {
+                    break;
+                }
+            }
+        }
+
+        if ($totalAvailable < $quantityRequired) {
+            return false;
+        }
+
+        return $stacks;
+    }
+
+    /**
      * Names an item stack.
      *
      * @param \App\Models\Character\Character|User $owner

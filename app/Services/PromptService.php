@@ -207,12 +207,18 @@ class PromptService extends Service {
                 $this->handleImage($image, $prompt->imagePath, $prompt->imageFileName);
             }
 
-            (new RewardService)->populateRewards(
+            $rewardService = new RewardService;
+            if (!$rewardService->populateRewards(
                 get_class($prompt),
                 $prompt->id,
                 Arr::only($data, ['rewardable_type', 'rewardable_id', 'quantity', 'rewardable_recipient']),
                 false
-            );
+            )) {
+                foreach ($rewardService->errors()->getMessages()['error'] as $error) {
+                    flash($error)->error();
+                }
+                throw new \Exception('Failed to create rewards.');
+            }
 
             return $this->commitReturn($prompt);
         } catch (\Exception $e) {
@@ -270,12 +276,18 @@ class PromptService extends Service {
                 $this->handleImage($image, $prompt->imagePath, $prompt->imageFileName);
             }
 
-            (new RewardService)->populateRewards(
+            $rewardService = new RewardService;
+            if (!$rewardService->populateRewards(
                 get_class($prompt),
                 $prompt->id,
                 Arr::only($data, ['rewardable_type', 'rewardable_id', 'quantity', 'rewardable_recipient']),
                 false
-            );
+            )) {
+                foreach ($rewardService->errors()->getMessages()['error'] as $error) {
+                    flash($error)->error();
+                }
+                throw new \Exception('Failed to create rewards.');
+            }
 
             return $this->commitReturn($prompt);
         } catch (\Exception $e) {

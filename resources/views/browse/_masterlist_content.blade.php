@@ -94,7 +94,7 @@
             <hr />
             <div class="form-group">
                 {!! Form::label('Has Traits: ') !!} {!! add_help('This will narrow the search to characters that have ALL of the selected traits at the same time.') !!}
-                {!! Form::select('feature_ids[]', $features, Request::get('feature_ids'), ['class' => 'form-control feature-select userselectize', 'placeholder' => 'Select Traits', 'multiple']) !!}
+                {!! Form::select('feature_ids[]', $features, Request::get('feature_ids'), ['class' => 'form-control feature-select', 'placeholder' => 'Select Traits', 'multiple']) !!}
             </div>
             @if (!$isMyo)
                 <div class="row">

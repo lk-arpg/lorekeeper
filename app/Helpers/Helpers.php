@@ -497,11 +497,17 @@ function hasLimits($object) {
  * Checks if a user has a limit unlocked.
  *
  * @param mixed $object
+ * @param mixed $user
  */
-function hasUnlockedLimits($object) {
-    $service = new App\Services\LimitManager;
+function hasUnlockedLimits($user, $object) {
+    if (!hasLimits($object)) {
+        return true;
+    }
 
-    return $service->checkLimits($object);
+    return App\Models\Limit\UserUnlockedLimit::where('user_id', $user->id)
+        ->where('object_model', get_class($object))
+        ->where('object_id', $object->id)
+        ->exists();
 }
 
 /**

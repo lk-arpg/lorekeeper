@@ -235,7 +235,7 @@ class DesignController extends Controller {
             'specieses' => ['0' => 'Select Species'] + Species::visible()->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'subtypes'  => Subtype::visible()->where('species_id', '=', $r->species_id)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'rarities'  => ['0' => 'Select Rarity'] + Rarity::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'features'  => Feature::getDropdownItems(),
+            'features'  => Feature::getDropdownItems(0, $r->species_id),
         ]);
     }
 
@@ -251,6 +251,19 @@ class DesignController extends Controller {
         return view('character.design._features_subtype', [
             'subtypes' => Subtype::visible()->where('species_id', '=', $species)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'subtype'  => $id,
+        ]);
+    }
+
+    /**
+     * Shows the edit image trait portion of the modal.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getFeaturesTrait(Request $request) {
+        $species = $request->input('species');
+
+        return view('character.design._features_trait', [
+            'features'  => Feature::getDropdownItems(Auth::user()->hasPower('edit_data'), $species),
         ]);
     }
 

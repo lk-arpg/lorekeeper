@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Models\Reward\Reward;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Validator;
 
 class RewardService extends Service {
     /*
@@ -64,7 +66,7 @@ class RewardService extends Service {
 
             if (isset($data['rewardable_type'])) {
                 foreach ($data['rewardable_type'] as $key => $type) {
-                    $reward = new Reward([
+                    $rewardData = [
                         'object_model'         => $object_model,
                         'object_id'            => $object_id,
                         'rewardable_recipient' => $data['rewardable_recipient'][$key] ?? 'User',
@@ -72,7 +74,19 @@ class RewardService extends Service {
                         'rewardable_id'        => $data['rewardable_id'][$key],
                         'quantity'             => $data['quantity'][$key],
                         'data'                 => $rewardableData[$key] ?? (count($rewardableData) > 0 ? $rewardableData : null),
-                    ]);
+                    ];
+
+                    $validator = Validator::make($rewardData, Reward::$createRules);
+
+                    if ($validator->fails()) {
+                        // Unfortunately $validator->errors() gets eaten here if we try to save it to the session/flash them
+                        // so we just have to return a generic error message
+                        // However, uncommenting the below will send the validator errors to the logs
+                        // \Log::debug($validator->errors());
+                        throw new \Exception('Reward data validation failed.');
+                    }
+
+                    $reward = Reward::create($rewardData);
 
                     if (!$reward->save()) {
                         throw new \Exception('Failed to save reward.');

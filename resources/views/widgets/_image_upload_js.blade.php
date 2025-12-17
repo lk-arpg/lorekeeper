@@ -102,6 +102,7 @@
             var $clone = $('.feature-row').clone();
             $('#featureList').append($clone);
             $clone.removeClass('hide feature-row');
+            $clone.removeAttr('id');
             $clone.addClass('d-flex');
             $clone.find('.remove-feature').on('click', function(e) {
                 e.preventDefault();

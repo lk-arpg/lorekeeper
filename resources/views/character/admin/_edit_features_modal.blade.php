@@ -26,7 +26,7 @@
             </div>
         @endforeach
     </div>
-    <div class="feature-row hide mb-2">
+    <div class="feature-row hide mb-2" id="new-feature">
         {!! Form::select('feature_id[]', $features, null, ['class' => 'form-control mr-2 feature-select', 'placeholder' => 'Select Trait']) !!}
         {!! Form::text('feature_data[]', null, ['class' => 'form-control mr-2', 'placeholder' => 'Extra Info (Optional)']) !!}
         <a href="#" class="remove-feature btn btn-danger mb-2">×</a>
@@ -116,6 +116,7 @@
 
     $("#species").change(function() {
         refreshSubtype();
+        refreshTrait();
     });
 
     function refreshSubtype() {
@@ -130,6 +131,20 @@
             $("#subtype").selectize({
                 maxItems: {{ config('lorekeeper.extensions.multiple_subtype_limit') }},
             });
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            alert("AJAX call failed: " + textStatus + ", " + errorThrown);
+        });
+    };
+
+
+    function refreshTrait() {
+        var species = $('#species').val();
+        $.ajax({
+            type: "GET",
+            url: "{{ url('designs/traits/feature') }}?species=" + species,
+            dataType: "text"
+        }).done(function(res) {
+            $("#new-feature").html(res);
         }).fail(function(jqXHR, textStatus, errorThrown) {
             alert("AJAX call failed: " + textStatus + ", " + errorThrown);
         });

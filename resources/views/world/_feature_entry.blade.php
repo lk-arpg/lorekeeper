@@ -25,8 +25,8 @@
         @if ($feature->species_id)
             <div>
                 <strong>Species:</strong> {!! $feature->species->displayName !!}
-                @if ($feature->subtype_id)
-                    ({!! $feature->subtype->displayName !!} subtype)
+                @if (count($feature->getSubtypes(Auth::User() ?? null)))
+                    ({!! $feature->displaySubtypes(Auth::User() ?? null) !!})
                 @endif
             </div>
         @endif

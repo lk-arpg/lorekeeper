@@ -22,8 +22,8 @@
                                         <i class="fas fa-eye-slash mr-1"></i>
                                     @endif
                                     {!! $feature->first()->displayName !!}
-                                    @if ($showSubtype && $feature->first()->subtype)
-                                        <br />({!! $feature->first()->subtype->displayName !!} Subtype)
+                                    @if ($showSubtype && count($feature->first()->getSubtypes(Auth::User() ?? null)))
+                                        <br />(Subtype{{ count($feature->first()->getSubtypes(Auth::User() ?? null)) > 1 ? 's' : '' }}: {!! $feature->first()->displaySubtypes(Auth::User() ?? null) !!})
                                     @endif
                                 </p>
                             </div>

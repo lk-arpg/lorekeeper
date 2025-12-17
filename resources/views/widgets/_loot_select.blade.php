@@ -78,14 +78,14 @@
                         </td>
                     @endif
                     
-                    <td class="loot-row-type">
+                    <td class="{{ $prefix }}loot-row-type">
                         {{-- The long array of key value pairs is now defined in getRewardTypes and data should be moved there --}}
                         {!! Form::select($prefix . 'rewardable_type[]', getRewardTypes($showData, $loot->rewardable_recipient == 'Character'), $loot->rewardable_type, [
                             'class' => 'form-control reward-type',
                             'placeholder' => 'Select ' . $type . ' Type',
                         ]) !!}
                     </td>
-                    <td class="loot-row-select">
+                    <td class="{{ $prefix }}loot-row-select">
                         {{-- If statements here can be removed and replaced with the below code. They are now defined programmatically --}}
                         {!! Form::select($prefix . 'rewardable_id[]', $rewardLootData[$loot->rewardable_type], $loot->rewardable_id, [
                             'class' => 'form-control ' . strtolower($loot->rewardable_type) . '-select',

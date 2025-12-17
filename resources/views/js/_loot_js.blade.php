@@ -53,6 +53,7 @@
             console.log($clone);
             $lootTable.append($clone);
             attachRewardTypeListener($clone.find('.reward-type'));
+            attachRewardRecipientListener($clone.find('.recipient-type'));
             attachRemoveListener($clone.find('.remove-loot-button'));
             if ($clone.find('.loot-weight').length) {
                 attachWeightListener($clone.find('.loot-weight'));
@@ -61,8 +62,8 @@
         });
 
         $('.recipient-type').on('change', function(e) {
-            var $rewardTypeCell = $(this).parent().parent().find('.loot-row-type');
-            var $rewardIdsCell = $(this).parent().parent().find('.loot-row-select');
+            var $rewardTypeCell = $(this).parent().parent().find('.{{ $prefix }}loot-row-type');
+            var $rewardIdsCell = $(this).parent().parent().find('.{{ $prefix }}loot-row-select');
             var $recipient = $(this).val();
 
             //Update the lootRow with the new types
@@ -90,7 +91,7 @@
 
         $('.reward-type').on('change', function(e) {
             var val = $(this).val();
-            var $cell = $(this).parent().parent().find('.loot-row-select');
+            var $cell = $(this).parent().parent().find('.{{ $prefix }}loot-row-select');
 
             var $clone = null;
             if (val == 'Item') $clone = $itemSelect.clone();
@@ -106,10 +107,40 @@
             $cell.append($clone);
         });
 
+        function attachRewardRecipientListener(node) {
+            node.on('change', function(e) {
+            var $rewardTypeCell = $(this).parent().parent().find('.{{ $prefix }}loot-row-type');
+            var $rewardIdsCell = $(this).parent().parent().find('.{{ $prefix }}loot-row-select');
+            var $recipient = $(this).val();
+
+            //Update the lootRow with the new types
+            $.ajax({
+                type: "POST",
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                url: "{{ url('rewards/types') }}",
+                data: {
+                    recipient: $recipient,
+                    prefix: '{{ $prefix }}',
+                    type: '{{ $type }}',
+                    showData: JSON.parse('{!! json_encode($showData) !!}'),
+                    useCustomSelectize: '{{ $useCustomSelectize }}'
+                },
+                dataType: "text"
+            }).done(function(res) {
+                $rewardTypeCell.html(res);
+                $rewardIdsCell.html('');
+            }).fail(function(jqXHR, textStatus, errorThrown) {
+                alert("AJAX call failed: " + textStatus + ", " + errorThrown);
+            });
+        });
+        }
+
         function attachRewardTypeListener(node) {
             node.on('change', function(e) {
                 var val = $(this).val();
-                var $cell = $(this).parent().parent().find('.loot-row-select');
+                var $cell = $(this).parent().parent().find('.{{ $prefix }}loot-row-select');
 
                 var $clone = null;
                 if (val == 'Item') $clone = $itemSelect.clone();

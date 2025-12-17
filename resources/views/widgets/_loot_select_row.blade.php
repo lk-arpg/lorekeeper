@@ -50,14 +50,14 @@
                         ]) !!}
                     </td>
                 @endif
-                <td class="loot-row-type">
+                <td class="{{ $prefix }}loot-row-type">
                     {{-- The long array of key value pairs is now defined in getRewardTypes and data should be moved there --}}
                     {!! Form::select($prefix . 'rewardable_type[]', $rewardTypes, null, [
                         'class' => 'form-control reward-type',
                         'placeholder' => 'Select ' . $type . ' Type',
                     ]) !!}
                 </td>
-                <td class="loot-row-select"></td>
+                <td class="{{ $prefix }}loot-row-select"></td>
                 <td>{!! Form::text($prefix . 'quantity[]', 1, ['class' => 'form-control']) !!}</td>
                 @if (isset($extra_fields))
                     @foreach ($extra_fields as $field => $data)

@@ -334,6 +334,9 @@ Route::group(['prefix' => 'grants', 'namespace' => 'Users', 'middleware' => 'pow
     Route::post('items', 'GrantController@postItems');
 
     Route::get('item-search', 'GrantController@getItemSearch');
+
+    Route::get('loot-tables', 'GrantController@getLootTables');
+    Route::post('loot-tables', 'GrantController@postLootTables');
 });
 
 // TRADES

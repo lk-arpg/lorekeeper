@@ -8,12 +8,14 @@ use App\Models\Character\CharacterDesignUpdate;
 use App\Models\Character\CharacterItem;
 use App\Models\Currency\Currency;
 use App\Models\Item\Item;
+use App\Models\Loot\LootTable;
 use App\Models\Submission\Submission;
 use App\Models\Trade\Trade;
 use App\Models\User\User;
 use App\Models\User\UserItem;
 use App\Services\CurrencyManager;
 use App\Services\InventoryManager;
+use App\Services\LootManager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -116,5 +118,37 @@ class GrantController extends Controller {
             'trades'         => $item ? $trades : null,
             'submissions'    => $item ? $submissions : null,
         ]);
+    }
+
+    /**
+     * Show the loot table grant page.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getLootTables() {
+        return view('admin.grants.loot_tables', [
+            'users'       => User::orderBy('id')->pluck('name', 'id'),
+            'loot_tables' => LootTable::orderBy('name')->pluck('name', 'id'),
+        ]);
+    }
+
+    /**
+     * Grants or removes loot tables from multiple users.
+     *
+     * @param App\Services\LootManager $service
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postLootTables(Request $request, LootManager $service) {
+        $data = $request->only(['names', 'loot_table_ids', 'quantities', 'data', 'disallow_transfer', 'notes']);
+        if ($service->grantLootTables($data, Auth::user())) {
+            flash('Loot tables granted successfully.')->success();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
+        }
+
+        return redirect()->back();
     }
 }

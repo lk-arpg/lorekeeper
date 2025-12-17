@@ -291,6 +291,12 @@ return [
         'url'     => 'account/bookmarks',
     ],
 
+    // LOOT_TABLE_GRANT
+    40  => [
+        'name'    => 'Loot Table Grant',
+        'message' => 'You have received a staff grant of the loot table {item_name} (×{item_quantity}) from <a href="{sender_url}">{sender_name}</a>. You received: {assets}',
+    ],
+
     // USER_REACTIVATED
     103 => [
         'name'      => 'User Reactivated',

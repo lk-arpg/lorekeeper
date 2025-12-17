@@ -116,6 +116,10 @@ return [
                 'name' => 'Item Grants',
                 'url'  => 'admin/grants/items',
             ],
+            [
+                'name' => 'Loot Table Grants',
+                'url'  => 'admin/grants/loot-tables',
+            ],
         ],
     ],
     'Masterlist' => [

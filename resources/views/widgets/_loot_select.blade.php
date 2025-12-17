@@ -33,9 +33,11 @@
 
     // Fetch valid reward types, defined in AssetHelpers
     // This is also called individually for each pre-existing loot row, to fill out the table accurately
+    // All available reward or asset types should now be added to getRewardTypes
     $rewardTypes = getRewardTypes($showData, $isCharacter);
 
     // Fetch reward data, defined in AssetHelpers
+    // All previous code that defines available asset IDs should now be moved to getRewardLootData
     $rewardLootData = getRewardLootData($showData, $isCharacter, $useCustomSelectize);
 @endphp
 <div class="text-right mb-3">
@@ -75,13 +77,16 @@
                             ]) !!}
                         </td>
                     @endif
+                    
                     <td class="loot-row-type">
+                        {{-- The long array of key value pairs is now defined in getRewardTypes and data should be moved there --}}
                         {!! Form::select($prefix . 'rewardable_type[]', getRewardTypes($showData, $loot->rewardable_recipient == 'Character'), $loot->rewardable_type, [
                             'class' => 'form-control reward-type',
                             'placeholder' => 'Select ' . $type . ' Type',
                         ]) !!}
                     </td>
                     <td class="loot-row-select">
+                        {{-- If statements here can be removed and replaced with the below code. They are now defined programmatically --}}
                         {!! Form::select($prefix . 'rewardable_id[]', $rewardLootData[$loot->rewardable_type], $loot->rewardable_id, [
                             'class' => 'form-control ' . strtolower($loot->rewardable_type) . '-select',
                             'placeholder' => 'Select ' . $rewardTypes[$loot->rewardable_type],

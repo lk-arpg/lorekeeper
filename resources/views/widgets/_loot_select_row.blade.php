@@ -51,6 +51,7 @@
                     </td>
                 @endif
                 <td class="loot-row-type">
+                    {{-- The long array of key value pairs is now defined in getRewardTypes and data should be moved there --}}
                     {!! Form::select($prefix . 'rewardable_type[]', $rewardTypes, null, [
                         'class' => 'form-control reward-type',
                         'placeholder' => 'Select ' . $type . ' Type',
@@ -77,6 +78,7 @@
             </tr>
         </tbody>
     </table>
+    {{-- If statements here can be removed and replaced with the below code. They are now defined programmatically --}}
     @foreach ($rewardTypes as $rewardKey => $rewardType)
         {!! Form::select($prefix . 'rewardable_id[]', $rewardLootData[$rewardKey], null, ['class' => 'form-control object-select ' . strtolower($rewardKey) . '-select', 'placeholder' => 'Select ' . $rewardType]) !!}
     @endforeach

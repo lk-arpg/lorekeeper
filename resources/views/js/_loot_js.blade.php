@@ -195,7 +195,7 @@
 
         //The below replaces any "clone" if statements
         function cloneRewardableId(val, recipient = null) {
-            if(recipient != null) {
+            if (recipient != null) {
                 return $('#{{ $prefix }}lootRowData').find('.rewardable-ids-' + recipient.toLowerCase()).find('.' + val.toLowerCase() + '-select').clone();
             } else {
                 return $('#{{ $prefix }}lootRowData').find('.' + val.toLowerCase() + '-select').clone();

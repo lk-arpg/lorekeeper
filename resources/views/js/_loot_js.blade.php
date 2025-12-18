@@ -92,33 +92,33 @@
 
         function attachRewardRecipientListener(node) {
             node.on('change', function(e) {
-            var $rewardTypeCell = $(this).parent().parent().find('.{{ $prefix }}loot-row-type');
-            var $rewardIdsCell = $(this).parent().parent().find('.{{ $prefix }}loot-row-select');
-            var $recipient = $(this).val();
+                var $rewardTypeCell = $(this).parent().parent().find('.{{ $prefix }}loot-row-type');
+                var $rewardIdsCell = $(this).parent().parent().find('.{{ $prefix }}loot-row-select');
+                var $recipient = $(this).val();
 
-            //Update the lootRow with the new types
-            $.ajax({
-                type: "POST",
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                url: "{{ url('rewards/types') }}",
-                data: {
-                    recipient: $recipient,
-                    prefix: '{{ $prefix }}',
-                    type: '{{ $type }}',
-                    showData: JSON.parse('{!! json_encode($showData) !!}'),
-                    useCustomSelectize: '{{ $useCustomSelectize }}'
-                },
-                dataType: "text"
-            }).done(function(res) {
-                $rewardTypeCell.html(res);
-                attachRewardTypeListener($rewardTypeCell.find('.reward-type'));
-                $rewardIdsCell.html('');
-            }).fail(function(jqXHR, textStatus, errorThrown) {
-                alert("AJAX call failed: " + textStatus + ", " + errorThrown);
+                //Update the lootRow with the new types
+                $.ajax({
+                    type: "POST",
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    url: "{{ url('rewards/types') }}",
+                    data: {
+                        recipient: $recipient,
+                        prefix: '{{ $prefix }}',
+                        type: '{{ $type }}',
+                        showData: JSON.parse('{!! json_encode($showData) !!}'),
+                        useCustomSelectize: '{{ $useCustomSelectize }}'
+                    },
+                    dataType: "text"
+                }).done(function(res) {
+                    $rewardTypeCell.html(res);
+                    attachRewardTypeListener($rewardTypeCell.find('.reward-type'));
+                    $rewardIdsCell.html('');
+                }).fail(function(jqXHR, textStatus, errorThrown) {
+                    alert("AJAX call failed: " + textStatus + ", " + errorThrown);
+                });
             });
-        });
         }
 
         function attachRewardTypeListener(node) {

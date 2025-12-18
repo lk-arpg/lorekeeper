@@ -645,6 +645,10 @@ function getRewardLootData($showData, $recipient = 'User', $useCustomSelectize =
                         if ($showData['isTradeable']) {
                             $query->where('allow_transfer', 1);
                         }
+                    })->where(function ($query) use ($recipient) {
+                        if ($recipient == 'Character') {
+                            $query->whereRelation('category', 'is_character_owned', 1);
+                        }
                     });
                 break;
             case 'Currency':

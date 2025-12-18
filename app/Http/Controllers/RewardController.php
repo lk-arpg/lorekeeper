@@ -12,12 +12,11 @@ class RewardController extends Controller {
      */
     public function postRewardTypes(Request $request) {
         $data = $request->only('recipient', 'prefix', 'type', 'showData');
-        $isCharacter = $data['recipient'] == 'Character' ? true : false;
 
         return view('widgets._loot_reward_types', [
             'prefix'      => $data['prefix'],
             'type'        => $data['type'],
-            'rewardTypes' => getRewardTypes($data['showData'], $isCharacter),
+            'rewardTypes' => getRewardTypes($data['showData'], $data['recipient']),
         ]);
     }
 }

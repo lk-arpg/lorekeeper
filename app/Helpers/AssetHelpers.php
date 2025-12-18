@@ -600,14 +600,16 @@ function createRewardsString($array, $useDisplayName = true, $absQuantities = fa
  *
  * @return array
  */
-function getRewardTypes($showData, $isCharacter = false) {
-    if (!$isCharacter) {
+function getRewardTypes($showData, $recipient) {
+    if ($recipient == 'User') {
         return ['Item' => 'Item', 'Currency' => 'Currency'] +
             ($showData['showLootTables'] ? ['LootTable' => 'Loot Table'] : []) +
             ($showData['showRaffles'] ? ['Raffle' => 'Raffle Ticket'] : []);
-    } else {
+    } else if ($recipient == 'Character') {
         return ['Item' => 'Item', 'Currency' => 'Currency'] +
             ($showData['showLootTables'] ? ['LootTable' => 'Loot Table'] : []);
+    } else {
+        throw new \Exception('No recipient given.');
     }
 }
 
@@ -626,9 +628,9 @@ function getRewardTypes($showData, $isCharacter = false) {
  *
  * @return array
  */
-function getRewardLootData($showData, $isCharacter = false, $useCustomSelectize = false) {
+function getRewardLootData($showData, $recipient = 'User', $useCustomSelectize = false) {
     // We call getRewardTypes here, rather than as a parameter, to prevent accidentally getting mismatched arrays.
-    $rewardTypes = getRewardTypes($showData, $isCharacter);
+    $rewardTypes = getRewardTypes($showData, $recipient);
 
     $rewardLootData = [];
 
@@ -647,9 +649,9 @@ function getRewardLootData($showData, $isCharacter = false, $useCustomSelectize 
                 break;
             case 'Currency':
                 $query = App\Models\Currency\Currency::query();
-                if ($isCharacter) {
+                if ($recipient == 'Character') {
                     $query->where('is_character_owned', 1);
-                } else {
+                } else if ($recipient == 'User') {
                     $query->where('is_user_owned', 1);
                 }
                 $query->where(function ($query) use ($showData) {

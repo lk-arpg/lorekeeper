@@ -5,12 +5,6 @@
     if (!isset($prefix)) {
         $prefix = '';
     }
-    if (!isset($showRecipient)) {
-        $showRecipient = false;
-    }
-    if (!isset($isCharacter)) {
-        $isCharacter = false;
-    }
     if (!isset($useCustomSelectize)) {
         $useCustomSelectize = false;
     }
@@ -26,14 +20,7 @@
     $(document).ready(function() {
         var $lootTable = $('#{{ $prefix }}lootTableBody');
         var $lootRow = $('#{{ $prefix }}lootRow').find('.loot-row');
-        var $itemSelect = $('#{{ $prefix }}lootRowData').find('.item-select');
-        var $currencySelect = $('#{{ $prefix }}lootRowData').find('.currency-select');
-        @if ($showData['showLootTables'])
-            var $tableSelect = $('#{{ $prefix }}lootRowData').find('.table-select');
-        @endif
-        @if ($showData['showRaffles'])
-            var $raffleSelect = $('#{{ $prefix }}lootRowData').find('.raffle-select');
-        @endif
+        //The clone "itemSelect" etc variables here are no longer necessary, and can be deleted
 
         @if ($useCustomSelectize)
             $('#{{ $prefix }}lootTableBody .selectize').selectize({
@@ -50,7 +37,6 @@
         $('#{{ $prefix }}addLoot').on('click', function(e) {
             e.preventDefault();
             var $clone = $lootRow.clone();
-            console.log($clone);
             $lootTable.append($clone);
             attachRewardTypeListener($clone.find('.reward-type'));
             attachRewardRecipientListener($clone.find('.recipient-type'));
@@ -83,6 +69,7 @@
                 dataType: "text"
             }).done(function(res) {
                 $rewardTypeCell.html(res);
+                attachRewardTypeListener($rewardTypeCell.find('.reward-type'));
                 $rewardIdsCell.html('');
             }).fail(function(jqXHR, textStatus, errorThrown) {
                 alert("AJAX call failed: " + textStatus + ", " + errorThrown);
@@ -92,16 +79,12 @@
         $('.reward-type').on('change', function(e) {
             var val = $(this).val();
             var $cell = $(this).parent().parent().find('.{{ $prefix }}loot-row-select');
+            var $recipient = $(this).parent().parent().find('.recipient-type').val();
 
-            var $clone = null;
-            if (val == 'Item') $clone = $itemSelect.clone();
-            else if (val == 'Currency') $clone = $currencySelect.clone();
-            @if ($showData['showLootTables'])
-                else if (val == 'LootTable') $clone = $tableSelect.clone();
-            @endif
-            @if ($showData['showRaffles'])
-                else if (val == 'Raffle') $clone = $raffleSelect.clone();
-            @endif
+            console.log($recipient);
+
+            //All if statements here are replaced with the following line
+            var $clone = cloneRewardableId(val, $recipient);
 
             $cell.html('');
             $cell.append($clone);
@@ -130,6 +113,7 @@
                 dataType: "text"
             }).done(function(res) {
                 $rewardTypeCell.html(res);
+                attachRewardTypeListener($rewardTypeCell.find('.reward-type'));
                 $rewardIdsCell.html('');
             }).fail(function(jqXHR, textStatus, errorThrown) {
                 alert("AJAX call failed: " + textStatus + ", " + errorThrown);
@@ -141,16 +125,12 @@
             node.on('change', function(e) {
                 var val = $(this).val();
                 var $cell = $(this).parent().parent().find('.{{ $prefix }}loot-row-select');
+                var $recipient = $(this).parent().parent().find('.recipient-type').val();
 
-                var $clone = null;
-                if (val == 'Item') $clone = $itemSelect.clone();
-                else if (val == 'Currency') $clone = $currencySelect.clone();
-                @if ($showData['showLootTables'])
-                    else if (val == 'LootTable') $clone = $tableSelect.clone();
-                @endif
-                @if ($showData['showRaffles'])
-                    else if (val == 'Raffle') $clone = $raffleSelect.clone();
-                @endif
+                console.log($recipient);
+
+                //If statements here are replaced with the following line
+                var $clone = cloneRewardableId(val, $recipient);
 
                 $cell.html('');
                 $cell.append($clone);
@@ -211,6 +191,15 @@
             }
             option_render += '<span>' + escape(item['name']) + '</span></div>';
             return option_render;
+        }
+
+        //The below replaces any "clone" if statements
+        function cloneRewardableId(val, recipient = null) {
+            if(recipient != null) {
+                return $('#{{ $prefix }}lootRowData').find('.rewardable-ids-' + recipient.toLowerCase()).find('.' + val.toLowerCase() + '-select').clone();
+            } else {
+                return $('#{{ $prefix }}lootRowData').find('.' + val.toLowerCase() + '-select').clone();
+            }
         }
     });
 </script>

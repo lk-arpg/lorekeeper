@@ -32,10 +32,18 @@
         ];
 
     // Fetch valid reward types, defined in AssetHelpers
-    $rewardTypes = getRewardTypes($showData, $isCharacter);
+    $rewardTypes = getRewardTypes($showData, $recipient);
 
     // Fetch reward data, defined in AssetHelpers
-    $rewardLootData = getRewardLootData($showData, $isCharacter, $useCustomSelectize);
+    // All previous code that defines available asset IDs should now be moved to getRewardLootData
+    // Get the character specific loot availability if the recipient is being shown
+    if($showRecipient) {
+        foreach($rewardableRecipients as $recipient) {
+            $rewardLootData[$recipient] = getRewardLootData($showData, $recipient, $useCustomSelectize);
+        }
+    } else {
+        $rewardLootData = getRewardLootData($showData, $recipient, $useCustomSelectize);
+    }
 @endphp
 
 <div id="{{ $prefix }}lootRowData" class="hide">
@@ -79,7 +87,17 @@
         </tbody>
     </table>
     {{-- If statements here can be removed and replaced with the below code. They are now defined programmatically --}}
-    @foreach ($rewardTypes as $rewardKey => $rewardType)
-        {!! Form::select($prefix . 'rewardable_id[]', $rewardLootData[$rewardKey], null, ['class' => 'form-control object-select ' . strtolower($rewardKey) . '-select', 'placeholder' => 'Select ' . $rewardType]) !!}
-    @endforeach
+    @if($showRecipient)
+        @foreach($rewardableRecipients as $recipient)
+            <div class="rewardable-ids-{{ strtolower($recipient) }}">
+                @foreach (getRewardTypes($showData, $recipient) as $rewardKey => $rewardType)
+                    {!! Form::select($prefix . 'rewardable_id[]', $rewardLootData[$recipient][$rewardKey], null, ['class' => 'form-control object-select ' . strtolower($rewardKey) . '-select', 'placeholder' => 'Select ' . $rewardType]) !!}
+                @endforeach
+            </div>
+        @endforeach
+    @else
+        @foreach ($rewardTypes as $rewardKey => $rewardType)
+            {!! Form::select($prefix . 'rewardable_id[]', $rewardLootData[$rewardKey], null, ['class' => 'form-control object-select ' . strtolower($rewardKey) . '-select', 'placeholder' => 'Select ' . $rewardType]) !!}
+        @endforeach
+    @endif
 </div>

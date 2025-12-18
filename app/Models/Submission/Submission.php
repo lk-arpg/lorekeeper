@@ -229,9 +229,9 @@ class Submission extends Model {
             foreach ($a as $id => $asset) {
                 $rewards[] = (object) [
                     'rewardable_recipient' => 'User',
-                    'rewardable_type' => $class,
-                    'rewardable_id'   => $id,
-                    'quantity'        => $asset['quantity'],
+                    'rewardable_type'      => $class,
+                    'rewardable_id'        => $id,
+                    'quantity'             => $asset['quantity'],
                 ];
             }
         }

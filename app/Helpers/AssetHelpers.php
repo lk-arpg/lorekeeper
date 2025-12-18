@@ -596,7 +596,7 @@ function createRewardsString($array, $useDisplayName = true, $absQuantities = fa
  * For example, raffle tickets can not be given to characters.
  *
  * @param array $showData
- * @param bool  $isCharacter
+ * @param mixed $recipient
  *
  * @return array
  */
@@ -605,11 +605,11 @@ function getRewardTypes($showData, $recipient) {
         return ['Item' => 'Item', 'Currency' => 'Currency'] +
             ($showData['showLootTables'] ? ['LootTable' => 'Loot Table'] : []) +
             ($showData['showRaffles'] ? ['Raffle' => 'Raffle Ticket'] : []);
-    } else if ($recipient == 'Character') {
+    } elseif ($recipient == 'Character') {
         return ['Item' => 'Item', 'Currency' => 'Currency'] +
             ($showData['showLootTables'] ? ['LootTable' => 'Loot Table'] : []);
     } else {
-        throw new \Exception('No recipient given.');
+        throw new Exception('No recipient given.');
     }
 }
 
@@ -623,8 +623,8 @@ function getRewardTypes($showData, $recipient) {
  * $useCustomSelectize is utilized when rendering within the trade listing blades.
  *
  * @param array $showData
- * @param bool  $isCharacter
  * @param bool  $useCustomSelectize
+ * @param mixed $recipient
  *
  * @return array
  */
@@ -655,7 +655,7 @@ function getRewardLootData($showData, $recipient = 'User', $useCustomSelectize =
                 $query = App\Models\Currency\Currency::query();
                 if ($recipient == 'Character') {
                     $query->where('is_character_owned', 1);
-                } else if ($recipient == 'User') {
+                } elseif ($recipient == 'User') {
                     $query->where('is_user_owned', 1);
                 }
                 $query->where(function ($query) use ($showData) {

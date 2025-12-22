@@ -41,6 +41,7 @@ class BoxService extends Service {
                 $class = getAssetModelString($type, false);
                 foreach ($a as $id => $asset) {
                     $rewards[] = (object) [
+                        'rewardable_recipient' => 'User',
                         'rewardable_type' => $class,
                         'rewardable_id'   => $id,
                         'quantity'        => $asset['quantity'],

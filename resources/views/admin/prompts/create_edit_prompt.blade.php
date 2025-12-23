@@ -98,7 +98,8 @@
             <h3>Submission Limits</h3>
             <p>Limit the number of times a user can submit. Leave blank to allow endless submissions.</p>
             <p>Set a number into number of submissions. This will be applied for all time if you leave period blank, or per time period (ex: once a month, twice a week) if selected.</p>
-            <p>If you turn 'per character' on, then the number of submissions multiplies per character (ex: if you can submit twice a month per character and you own three characters, that's 6 submissions) HOWEVER it will not keep track of which characters are being submitted due to conflicts arising in character cameos. A user will be able to submit those full 6 times with just one character...!</p>
+            <p>If you turn 'per character' on, then the number of submissions multiplies per character (ex: if you can submit twice a month per character and you own three characters, that's 6 submissions) HOWEVER it will not keep track of which
+                characters are being submitted due to conflicts arising in character cameos. A user will be able to submit those full 6 times with just one character...!</p>
             <div class="row">
                 <div class="col-md-6 form-group">
                     {!! Form::label('limit', 'Number of Submissions (Optional)') !!} {!! add_help('Enter a number to limit how many times a user can submit. Leave blank to allow endless submissions.') !!}

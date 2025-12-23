@@ -62,6 +62,32 @@ class SubmissionManager extends Service {
                 if ($prompt->staff_only && !$user->isStaff) {
                     throw new \Exception('This prompt may only be submitted to by staff members.');
                 }
+
+                if ($prompt->limit) {
+                    // check that the user hasn't hit the prompt submission limit
+                    // filter the submissions by hour/day/week/etc and count
+                    $count['all'] = Submission::submitted($prompt->id, $user->id)->count();
+                    $count['Hour'] = Submission::submitted($prompt->id, $user->id)->where('created_at', '>=', now()->startOfHour())->count();
+                    $count['Day'] = Submission::submitted($prompt->id, $user->id)->where('created_at', '>=', now()->startOfDay())->count();
+                    $count['Week'] = Submission::submitted($prompt->id, $user->id)->where('created_at', '>=', now()->startOfWeek())->count();
+                    $count['Month'] = Submission::submitted($prompt->id, $user->id)->where('created_at', '>=', now()->startOfMonth())->count();
+                    $count['Year'] = Submission::submitted($prompt->id, $user->id)->where('created_at', '>=', now()->startOfYear())->count();
+
+                    // if limit by character is on... multiply by # of chars. otherwise, don't
+                    if ($prompt->limit_character) {
+                        $limit = $prompt->limit * Character::visible()->where('is_myo_slot', 0)->where('user_id', $user->id)->count();
+                    } else {
+                        $limit = $prompt->limit;
+                    }
+                    // if limit by time period is on
+                    if ($prompt->limit_period) {
+                        if ($count[$prompt->limit_period] >= $limit) {
+                            throw new \Exception('You have already submitted to this prompt the maximum number of times.');
+                        }
+                    } elseif ($count['all'] >= $limit) {
+                        throw new \Exception('You have already submitted to this prompt the maximum number of times.');
+                    }
+                }
             } else {
                 $prompt = null;
             }

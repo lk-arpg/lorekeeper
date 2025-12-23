@@ -175,8 +175,9 @@ class PromptController extends Controller {
      */
     public function getCreatePrompt() {
         return view('admin.prompts.create_edit_prompt', [
-            'prompt'     => new Prompt,
-            'categories' => ['none' => 'No category'] + PromptCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'prompt'        => new Prompt,
+            'categories'    => ['none' => 'No category'] + PromptCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'limit_periods' => [null => 'None', 'Hour' => 'Hour', 'Day' => 'Day', 'Week' => 'Week', 'Month' => 'Month', 'Year' => 'Year'],
         ]);
     }
 
@@ -194,8 +195,9 @@ class PromptController extends Controller {
         }
 
         return view('admin.prompts.create_edit_prompt', [
-            'prompt'     => $prompt,
-            'categories' => ['none' => 'No category'] + PromptCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'prompt'        => $prompt,
+            'categories'    => ['none' => 'No category'] + PromptCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'limit_periods' => [null => 'None', 'Hour' => 'Hour', 'Day' => 'Day', 'Week' => 'Week', 'Month' => 'Month', 'Year' => 'Year'],
         ]);
     }
 
@@ -212,6 +214,7 @@ class PromptController extends Controller {
         $data = $request->only([
             'name', 'prompt_category_id', 'summary', 'description', 'start_at', 'end_at', 'hide_before_start', 'hide_after_end', 'is_active', 'image', 'remove_image', 'prefix', 'hide_submissions', 'staff_only',
             'rewardable_type', 'rewardable_id', 'quantity', 'rewardable_recipient',
+            'limit', 'limit_period', 'limit_character',
         ]);
         if ($id && $service->updatePrompt(Prompt::find($id), $data, Auth::user())) {
             flash('Prompt updated successfully.')->success();

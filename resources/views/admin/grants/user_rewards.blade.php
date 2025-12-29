@@ -56,7 +56,6 @@
         'showLootTables' => true,
         'useCustomSelectize' => true,
     ])
-
 @endsection
 @section('scripts')
     @include('js._loot_js', [

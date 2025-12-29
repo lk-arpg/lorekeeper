@@ -95,7 +95,7 @@ class User extends Authenticatable implements MustVerifyEmail {
      * Get all of the user's update logs.
      */
     public function logs() {
-        return $this->hasMany('App\Models\User\UserUpdateLog');
+        return $this->hasMany(UserUpdateLog::class);
     }
 
     /**

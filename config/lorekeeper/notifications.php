@@ -297,6 +297,18 @@ return [
         'message' => 'You have received a staff grant of the loot table {item_name} (×{item_quantity}) from <a href="{sender_url}">{sender_name}</a>. You received: {assets}',
     ],
 
+    // USER_REWARD_GRANT
+    41 => [
+        'name'    => 'User Reward Grant',
+        'message' => 'You have received a staff grant rewards from <a href="{sender_url}">{sender_name}</a>. You received: {assets}',
+    ],
+
+    // CHARACTER_REWARD_GRANT
+    42 => [
+        'name'    => 'Character Reward Grant',
+        'message' => '{character_name} has received a staff grant rewards from <a href="{sender_url}">{sender_name}</a>. They received: {assets}',
+    ],
+
     // USER_REACTIVATED
     103 => [
         'name'      => 'User Reactivated',

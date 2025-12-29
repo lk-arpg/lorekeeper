@@ -42,13 +42,13 @@
     <h3>Additional Data</h3>
 
     <div class="form-group">
-        {!! Form::label('notes', 'Notes (Optional)') !!} {!! add_help('Additional notes for the loot table. This will appear in the loot table\'s description, but not in the logs.') !!}
+        {!! Form::label('notes', 'Notes (Optional)') !!} {!! add_help('Additional notes for the loot table rewards. This will appear in the loot table reward\'s description, but not in the logs.') !!}
         {!! Form::text('notes', null, ['class' => 'form-control', 'maxlength' => 400]) !!}
     </div>
 
     <div class="form-group">
         {!! Form::checkbox('disallow_transfer', 1, 0, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
-        {!! Form::label('disallow_transfer', 'Account-bound', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If this is on, the recipient(s) will not be able to transfer this loot table to other users. Loot Tables that disallow transfers by default will still not be transferrable.') !!}
+        {!! Form::label('disallow_transfer', 'Account-bound', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If this is on, the recipient(s) will not be able to transfer this loot table\'s rewards to other users. Loot Table rewards that disallow transfers by default will still not be transferrable.') !!}
     </div>
 
     <div class="text-right">

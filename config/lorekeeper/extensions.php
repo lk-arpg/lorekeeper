@@ -142,5 +142,5 @@ return [
     'unmerge_item_page_and_entry' => 0, // If enabled, uses the html on world/item_page.blade.php instead of the include that links to world/_item_entry.blade.php
 
     // Show Species-only traits in dropdown - Speedy
-    'show_exlusively_species_traits_in_dropdown' => 0, // If enabled, will only show traits from the associated species as well as traits that aren't species-limited in the dropdown menus.
+    'show_exclusively_species_traits_in_dropdown' => 0, // If enabled, will only show traits from the associated species as well as traits that aren't species-limited in the dropdown menus.
 ];

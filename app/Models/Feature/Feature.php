@@ -327,7 +327,7 @@ class Feature extends Model {
         if (config('lorekeeper.extensions.organised_traits_dropdown.enable')) {
             $sorted_feature_categories = collect(FeatureCategory::all()->where('is_visible', '>=', $visibleOnly)->sortBy('sort')->pluck('name')->toArray());
 
-            if (config('show_exlusively_species_traits_in_dropdown') && $withSpecies) {
+            if (config('lorekeeper.extensions.show_exclusively_species_traits_in_dropdown') && $withSpecies) {
                 $grouped = self::where('is_visible', '>=', $visibleOnly)
                     ->when($withSpecies, function (Builder $query, int $withSpecies) {
                         $query->where('species_id', '=', $withSpecies)
@@ -401,7 +401,7 @@ class Feature extends Model {
 
             return $features_by_category;
         } else {
-            if (config('show_exlusively_species_traits_in_dropdown') && $withSpecies) {
+            if (config('lorekeeper.extensions.show_exclusively_species_traits_in_dropdown') && $withSpecies) {
                 return self::where('is_visible', '>=', $visibleOnly)
                     ->when($withSpecies, function (Builder $query, int $withSpecies) {
                         $query->where('species_id', '=', $withSpecies)

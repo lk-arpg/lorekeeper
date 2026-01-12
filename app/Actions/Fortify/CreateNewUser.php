@@ -3,6 +3,7 @@
 namespace App\Actions\Fortify;
 
 use App\Models\Invitation;
+use App\Models\Rank\Rank;
 use App\Models\User\User;
 use App\Services\InvitationService;
 use App\Services\UserService;
@@ -20,11 +21,14 @@ class CreateNewUser implements CreatesNewUsers {
     public function create(array $input) {
         (new UserService)->validator($input)->validate();
 
+        // Create a user with the lowest existing rank
+        $rank_id = Rank::orderBy('sort')->first()->id;
+
         $user = User::create([
             'name'     => $input['name'],
             'email'    => $input['email'],
             'password' => Hash::make($input['password']),
-            'rank_id'  => 2,
+            'rank_id'  => $rank_id,
             'birthday' => $input['dob'],
         ]);
         $user->settings()->create([

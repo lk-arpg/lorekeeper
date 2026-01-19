@@ -21,9 +21,15 @@
 
     <h3>Basic Information</h3>
 
-    <div class="form-group">
-        {!! Form::label('Name') !!}
-        {!! Form::text('name', $category->name, ['class' => 'form-control']) !!}
+    <div class="row">
+        <div class="form-group col-md-6">
+            {!! Form::label('Name') !!}
+            {!! Form::text('name', $category->name, ['class' => 'form-control']) !!}
+        </div>
+        <div class="form-group col-md-6">
+            {!! Form::label('Parent Category (Optional)') !!}
+            {!! Form::select('parent_id', $categories, $category->parent_id, ['class' => 'form-control', 'placeholder' => 'Select Parent Category']) !!}
+        </div>
     </div>
 
     <div class="form-group">
@@ -56,7 +62,9 @@
         <h3>Preview</h3>
         <div class="card mb-3">
             <div class="card-body">
-                @include('prompts._entry', ['imageUrl' => $category->categoryImageUrl, 'name' => $category->displayName, 'description' => $category->parsed_description])
+                @include('prompts._entry', [
+                    'category' => $category,
+                ])
             </div>
         </div>
     @endif

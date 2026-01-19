@@ -15,7 +15,7 @@
         <div class="card mb-3">
             <div class="card-body">
                 <div class="d-flex flex-column flex-sm-row">
-                    <div class="mr-2" style="width: 200px;"><img src="{{ asset('images/' . $image['filename']) }}" class="mw-100" alt="Site image: {{ $image['name'] }}" /></div>
+                    <div class="mr-2" style="width: 200px;"><img src="{{ asset('images/' . $image['filename'] . '?v=' . filemtime(public_path('images/' . $image['filename']))) }}" class="mw-100" alt="Site image: {{ $image['name'] }}" /></div>
                     <div style="width: 100%;">
                         <h3 class="card-heading">{{ $image['name'] }} <a href="{{ asset('images/' . $image['filename']) }}" class="btn btn-info btn-sm float-right">View Current</a></h3>
                         <p>{{ $image['description'] }}</p>

@@ -37,7 +37,8 @@ class PromptController extends Controller {
      */
     public function getCreatePromptCategory() {
         return view('admin.prompts.create_edit_prompt_category', [
-            'category' => new PromptCategory,
+            'category'   => new PromptCategory,
+            'categories' => PromptCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
         ]);
     }
 
@@ -55,7 +56,8 @@ class PromptController extends Controller {
         }
 
         return view('admin.prompts.create_edit_prompt_category', [
-            'category' => $category,
+            'category'   => $category,
+            'categories' => PromptCategory::where('id', '!=', $category->id)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
         ]);
     }
 
@@ -70,7 +72,7 @@ class PromptController extends Controller {
     public function postCreateEditPromptCategory(Request $request, PromptService $service, $id = null) {
         $id ? $request->validate(PromptCategory::$updateRules) : $request->validate(PromptCategory::$createRules);
         $data = $request->only([
-            'name', 'description', 'image', 'remove_image',
+            'name', 'description', 'image', 'remove_image', 'parent_id',
         ]);
         if ($id && $service->updatePromptCategory(PromptCategory::find($id), $data, Auth::user())) {
             flash('Category updated successfully.')->success();

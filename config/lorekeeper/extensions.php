@@ -143,4 +143,11 @@ return [
 
     // Show Species-only traits in dropdown - Speedy
     'show_exclusively_species_traits_in_dropdown' => 0, // If enabled, will only show traits from the associated species as well as traits that aren't species-limited in the dropdown menus.
+
+    // queue-creator - SUPERCOOL
+    'queue_creator' => [
+        'expand_in_admin_index' => 0, // 1 un-nests the queues on the admin index page and lists them as individual cards with their own counts instead
+        'expand_in_user_menu'   => 0, // 1 un-nests the queue submissions on the user menu page and gives each one a unique page with draft/pending/approved/rejected tabs
+    ],
+
 ];

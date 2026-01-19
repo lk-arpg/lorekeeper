@@ -14,6 +14,14 @@
         <div class="sidebar-item"><a href="{{ url('characters/transfers/incoming') }}" class="{{ set_active('characters/transfers*') }}">Character Transfers</a></div>
         <div class="sidebar-item"><a href="{{ url('trades/open') }}" class="{{ set_active('trades*') }}">Trades</a></div>
         <div class="sidebar-item"><a href="{{ url('comments/liked') }}" class="{{ set_active('comments/liked*') }}">Liked Comments</a></div>
+        @if (config('lorekeeper.extensions.queue_creator.expand_in_user_menu'))
+            @php $queues = \App\Models\Queue\Queue::query()->active()->staffOnly(Auth::user())->get(); @endphp
+            @foreach ($queues as $queue)
+                <div class="sidebar-item"><a href="{{ url('queue-submissions/' . $queue->id) }}" class="{{ set_active('queue-submissions/' . $queue->id) }}">{{ $queue->name }} Submissions</a></div>
+            @endforeach
+        @else
+            <div class="sidebar-item"><a href="{{ url('queue-submissions') }}" class="{{ set_active('queue-submissions*') }}">Queue Submissions</a></div>
+        @endif
     </li>
     <li class="sidebar-section">
         <div class="sidebar-section-header">Reports</div>

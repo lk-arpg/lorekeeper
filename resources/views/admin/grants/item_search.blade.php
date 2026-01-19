@@ -42,7 +42,7 @@
                                     $userTradesReceived = $trades->where('recipient_id', $user->id);
                                     $userUpdates = $designUpdates->where('user_id', $user->id);
                                     $userSubmissions = $submissions->where('user_id', $user->id);
-
+                                    
                                     // Collect hold location IDs and quantities
                                     $holdLocations = [];
                                     if (isset($item->trade_count) && $item->trade_count > 0) {
@@ -71,27 +71,27 @@
                                             }
                                         }
                                     }
-
+                                    
                                     // Format a string with all the places a stack is held
                                     $held = [];
                                     if (isset($holdLocations['trade'])) {
                                         foreach ($holdLocations['trade'] as $trade => $quantity) {
-                                            array_push($held, '<a href="'.App\Models\Trade\Trade::find($trade)->url.'">Trade #'.App\Models\Trade\Trade::find($trade)->id.'</a>'.' ('.$quantity.')');
+                                            array_push($held, '<a href="' . App\Models\Trade\Trade::find($trade)->url . '">Trade #' . App\Models\Trade\Trade::find($trade)->id . '</a>' . ' (' . $quantity . ')');
                                         }
                                     }
                                     if (isset($holdLocations['update'])) {
                                         foreach ($holdLocations['update'] as $update => $quantity) {
-                                            array_push($held, (Auth::user()->hasPower('manage_characters') ? '<a href="'.App\Models\Character\CharacterDesignUpdate::find($update)->url.'">Design Update #'.App\Models\Character\CharacterDesignUpdate::find($update)->id.'</a>' : 'Design Update #'.App\Models\Character\CharacterDesignUpdate::find($update)->id).' ('.$quantity.')');
+                                            array_push($held, (Auth::user()->hasPower('manage_characters') ? '<a href="' . App\Models\Character\CharacterDesignUpdate::find($update)->url . '">Design Update #' . App\Models\Character\CharacterDesignUpdate::find($update)->id . '</a>' : 'Design Update #' . App\Models\Character\CharacterDesignUpdate::find($update)->id) . ' (' . $quantity . ')');
                                         }
                                     }
                                     if (isset($holdLocations['submission'])) {
                                         foreach ($holdLocations['submission'] as $submission => $quantity) {
-                                            array_push($held, (Auth::user()->hasPower('manage_submissions') ? '<a href="'.App\Models\Submission\Submission::find($submission)->viewUrl.'">Submission #'.App\Models\Submission\Submission::find($submission)->id.'</a>' : 'Submission #'.App\Models\Submission\Submission::find($submission)->id).' ('.$quantity.')');
+                                            array_push($held, (Auth::user()->hasPower('manage_submissions') ? '<a href="' . App\Models\Submission\Submission::find($submission)->viewUrl . '">Submission #' . App\Models\Submission\Submission::find($submission)->id . '</a>' : 'Submission #' . App\Models\Submission\Submission::find($submission)->id) . ' (' . $quantity . ')');
                                         }
                                     }
                                     if (isset($holdLocations['queuesubmission'])) {
                                         foreach ($holdLocations['queuesubmission'] as $queuesubmission => $quantity) {
-                                            array_push($held, (Auth::user()->hasPower('manage_submissions') ? '<a href="'.App\Models\Queue\QueueSubmission::find($queuesubmission)->viewUrl.'">Queue #'.App\Models\Queue\QueueSubmission::find($queuesubmission)->id.'</a>' : 'Queue #'.App\Models\Queue\QueueSubmission::find($queuesubmission)->id).' ('.$quantity.')');
+                                            array_push($held, (Auth::user()->hasPower('manage_submissions') ? '<a href="' . App\Models\Queue\QueueSubmission::find($queuesubmission)->viewUrl . '">Queue #' . App\Models\Queue\QueueSubmission::find($queuesubmission)->id . '</a>' : 'Queue #' . App\Models\Queue\QueueSubmission::find($queuesubmission)->id) . ' (' . $quantity . ')');
                                         }
                                     }
                                     $heldString = implode(', ', $held);

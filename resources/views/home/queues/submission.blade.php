@@ -1,7 +1,7 @@
 @extends('home.layout')
 
 @section('home-title')
-   Submission #{{ $submission->id }}
+    Submission #{{ $submission->id }}
 @endsection
 
 @section('home-content')
@@ -13,9 +13,9 @@
         @if ($submission->user_id == Auth::user()->id && $submission->status == 'Pending')
             {!! Form::open(['url' => url()->current(), 'id' => 'submissionForm']) !!}
 
-                <div class="text-right">
-                    <a href="#" class="btn btn-danger mr-2" id="cancellationButton">Cancel  submission</a>
-                </div>
+            <div class="text-right">
+                <a href="#" class="btn btn-danger mr-2" id="cancellationButton">Cancel submission</a>
+            </div>
             <div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content hide" id="cancellationContent">

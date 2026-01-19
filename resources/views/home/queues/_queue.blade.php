@@ -5,7 +5,7 @@
             @include('queues._queue_limits', ['staff' => true, 'user' => $submission->user])
         @else
             <p>You have completed this queue <strong>{{ $count }}</strong> time{{ $count == 1 ? '' : 's' }}.</p>
-           @include('queues._queue_limits', ['staff' => false, 'user' => Auth::user()])
+            @include('queues._queue_limits', ['staff' => false, 'user' => Auth::user()])
         @endif
         @include('queues._queue_rewards')
         <hr>

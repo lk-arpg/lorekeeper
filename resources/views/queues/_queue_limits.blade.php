@@ -15,11 +15,12 @@
     @endif
     @if ($queue->queue_category_id && isset($queue->category->limit_concurrent))
         <div class="alert alert-warning text-center">
-            This queue's category ( {!! $queue->category->displayName !!} ) does not permit {{ $staff ? 'this user' : 'you' }} to submit more submissions to queues within it while {{ $staff ? 'this user has' : 'you have' }} {{ $queue->category->limit_concurrent }} of them pending or in
+            This queue's category ( {!! $queue->category->displayName !!} ) does not permit {{ $staff ? 'this user' : 'you' }} to submit more submissions to queues within it while {{ $staff ? 'this user has' : 'you have' }}
+            {{ $queue->category->limit_concurrent }} of them pending or in
             draft at the same time throughout it.
         </div>
     @elseif (isset($queue->limit_concurrent))
-       <div class="alert alert-warning text-center">
+        <div class="alert alert-warning text-center">
             This queue does not permit {{ $staff ? 'this user' : 'you' }} to submit more submissions to it while {{ $staff ? 'this user has' : 'you have' }} {{ $queue->limit_concurrent }} of them pending or in draft at the same time.
         </div>
     @endif

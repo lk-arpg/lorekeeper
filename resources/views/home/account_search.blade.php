@@ -39,7 +39,7 @@
                                 <?php
                                 $tradesSent = $trades->where('sender_id', Auth::user()->id);
                                 $tradesReceived = $trades->where('recipient_id', Auth::user()->id);
-
+                                
                                 // Collect hold location IDs and quantities
                                 $holdLocations = [];
                                 if (isset($item->trade_count) && $item->trade_count > 0) {
@@ -68,27 +68,27 @@
                                         }
                                     }
                                 }
-
+                                
                                 // Format a string with all the places a stack is held
                                 $held = [];
                                 if (isset($holdLocations['trade'])) {
                                     foreach ($holdLocations['trade'] as $trade => $quantity) {
-                                        array_push($held, '<a href="'.App\Models\Trade\Trade::find($trade)->url.'">Trade #'.App\Models\Trade\Trade::find($trade)->id.'</a>'.' ('.$quantity.')');
+                                        array_push($held, '<a href="' . App\Models\Trade\Trade::find($trade)->url . '">Trade #' . App\Models\Trade\Trade::find($trade)->id . '</a>' . ' (' . $quantity . ')');
                                     }
                                 }
                                 if (isset($holdLocations['update'])) {
                                     foreach ($holdLocations['update'] as $update => $quantity) {
-                                        array_push($held, '<a href="'.App\Models\Character\CharacterDesignUpdate::find($update)->url.'">Design Update #'.App\Models\Character\CharacterDesignUpdate::find($update)->id.'</a>'.' ('.$quantity.')');
+                                        array_push($held, '<a href="' . App\Models\Character\CharacterDesignUpdate::find($update)->url . '">Design Update #' . App\Models\Character\CharacterDesignUpdate::find($update)->id . '</a>' . ' (' . $quantity . ')');
                                     }
                                 }
                                 if (isset($holdLocations['submission'])) {
                                     foreach ($holdLocations['submission'] as $submission => $quantity) {
-                                        array_push($held, '<a href="'.App\Models\Submission\Submission::find($submission)->viewUrl.'">Submission #'.App\Models\Submission\Submission::find($submission)->id.'</a>'.' ('.$quantity.')');
+                                        array_push($held, '<a href="' . App\Models\Submission\Submission::find($submission)->viewUrl . '">Submission #' . App\Models\Submission\Submission::find($submission)->id . '</a>' . ' (' . $quantity . ')');
                                     }
                                 }
                                 if (isset($holdLocations['queuesubmissions'])) {
                                     foreach ($holdLocations['queuesubmissions'] as $queuesubmission => $quantity) {
-                                        array_push($held, '<a href="'.App\Models\Queue\QueueSubmission::find($queuesubmission)->viewUrl.'">Submission #'.App\Models\Queue\QueueSubmission::find($queuesubmission)->id.'</a>'.' ('.$quantity.')');
+                                        array_push($held, '<a href="' . App\Models\Queue\QueueSubmission::find($queuesubmission)->viewUrl . '">Submission #' . App\Models\Queue\QueueSubmission::find($queuesubmission)->id . '</a>' . ' (' . $quantity . ')');
                                     }
                                 }
                                 ?>

@@ -11,11 +11,11 @@
             {!! $category->description !!}
 
             @if (isset($category->limit))
-                 <div class="alert alert-info text-center">
+                <div class="alert alert-info text-center">
                     You can submit to queues within this category {{ $category->limit }} {{ $category->limit > 1 ? 'times' : 'time' }}{{ $category->limit_period ? ' per ' . strtolower($category->limit_period) : '' }}. ( Submitted
                     {{ $category->logCount(Auth::user()) }} /
                     {{ $category->limit }} )
-                 </div>
+                </div>
             @endif
             @if (isset($category->limit_concurrent))
                 <div class="alert alert-warning text-center">

@@ -14,7 +14,7 @@
     <ul class="nav nav-tabs mb-3">
         <li class="nav-item">
             <a class="nav-link {{ set_active('admin/queue-submissions/' . (isset($queue) ? $queue->id . '/' : '') . 'pending*') }} {{ set_active('admin/queue-submissions' . (isset($queue) ? '/' . $queue->id : '')) }}"
-               href="{{ url('admin/queue-submissions/' . (isset($queue) ? $queue->id . '/' : '') . 'pending') }}">Pending</a>
+                href="{{ url('admin/queue-submissions/' . (isset($queue) ? $queue->id . '/' : '') . 'pending') }}">Pending</a>
         </li>
         <li class="nav-item">
             <a class="nav-link {{ set_active('admin/queue-submissions/' . (isset($queue) ? $queue->id . '/' : '') . 'approved*') }}" href="{{ url('admin/queue-submissions/' . (isset($queue) ? $queue->id . '/' : '') . 'approved') }}">Approved</a>

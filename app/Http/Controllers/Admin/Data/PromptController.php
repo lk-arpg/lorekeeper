@@ -177,7 +177,7 @@ class PromptController extends Controller {
         return view('admin.prompts.create_edit_prompt', [
             'prompt'        => new Prompt,
             'categories'    => ['none' => 'No category'] + PromptCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'limit_periods' => [null => 'None', 'Hour' => 'Hour', 'Day' => 'Day', 'Week' => 'Week', 'Month' => 'Month', 'Year' => 'Year'],
+            'limit_periods' => config('lorekeeper.extensions.limit_periods'),
         ]);
     }
 
@@ -197,7 +197,7 @@ class PromptController extends Controller {
         return view('admin.prompts.create_edit_prompt', [
             'prompt'        => $prompt,
             'categories'    => ['none' => 'No category'] + PromptCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'limit_periods' => [null => 'None', 'Hour' => 'Hour', 'Day' => 'Day', 'Week' => 'Week', 'Month' => 'Month', 'Year' => 'Year'],
+            'limit_periods' => config('lorekeeper.extensions.limit_periods'),
         ]);
     }
 

@@ -1,13 +1,12 @@
 <?php
+
 namespace App\Models\Queue;
 
 use App\Models\Model;
-use App\Models\Queue\Queue;
 use App\Models\User\User;
 use Carbon\Carbon;
 
-class QueueSubmission extends Model
-{
+class QueueSubmission extends Model {
     /**
      * The attributes that are mass assignable.
      *
@@ -69,32 +68,28 @@ class QueueSubmission extends Model
     /**
      * Get the queue this submission is for.
      */
-    public function queue()
-    {
+    public function queue() {
         return $this->belongsTo(Queue::class, 'queue_id');
     }
 
     /**
      * Get the user who made the submission.
      */
-    public function user()
-    {
+    public function user() {
         return $this->belongsTo(User::class, 'user_id');
     }
 
     /**
      * Get the staff who processed the submission.
      */
-    public function staff()
-    {
+    public function staff() {
         return $this->belongsTo(User::class, 'staff_id');
     }
 
     /**
      * Get the characters attached to the submission.
      */
-    public function characters()
-    {
+    public function characters() {
         return $this->hasMany(QueueSubmissionCharacter::class, 'queue_submission_id');
     }
 
@@ -111,8 +106,7 @@ class QueueSubmission extends Model
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeActive($query)
-    {
+    public function scopeActive($query) {
         return $query->where('status', 'Pending');
     }
 
@@ -123,8 +117,7 @@ class QueueSubmission extends Model
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeDrafts($query)
-    {
+    public function scopeDrafts($query) {
         return $query->where('status', 'Drafts');
     }
 
@@ -136,8 +129,7 @@ class QueueSubmission extends Model
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeViewable($query, $user = null)
-    {
+    public function scopeViewable($query, $user = null) {
         $forbiddenSubmissions = $this
             ->whereHas('queue', function ($q) {
                 $q->where('hide_submissions', 1)->whereNotNull('end_at')->where('end_at', '>', Carbon::now());
@@ -167,8 +159,7 @@ class QueueSubmission extends Model
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeSortOldest($query)
-    {
+    public function scopeSortOldest($query) {
         return $query->orderBy('id');
     }
 
@@ -179,8 +170,7 @@ class QueueSubmission extends Model
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeSortNewest($query)
-    {
+    public function scopeSortNewest($query) {
         return $query->orderBy('id', 'DESC');
     }
 
@@ -197,8 +187,7 @@ class QueueSubmission extends Model
      *
      * @return array
      */
-    public function getInventory($user)
-    {
+    public function getInventory($user) {
         return $this->data && isset($this->data['user']['user_items']) ? $this->data['user']['user_items'] : [];
     }
 
@@ -209,8 +198,7 @@ class QueueSubmission extends Model
      *
      * @return array
      */
-    public function getCurrencies($user)
-    {
+    public function getCurrencies($user) {
         return $this->data && isset($this->data['user']) && isset($this->data['user']['currencies']) ? $this->data['user']['currencies'] : [];
     }
 
@@ -219,9 +207,8 @@ class QueueSubmission extends Model
      *
      * @return string
      */
-    public function getViewUrlAttribute()
-    {
-        return url('queue-submissions/view/' . $this->id);
+    public function getViewUrlAttribute() {
+        return url('queue-submissions/view/'.$this->id);
     }
 
     /**
@@ -229,58 +216,59 @@ class QueueSubmission extends Model
      *
      * @return string
      */
-    public function getAdminUrlAttribute()
-    {
-        return url('admin/queue-submissions/edit/' . $this->id);
+    public function getAdminUrlAttribute() {
+        return url('admin/queue-submissions/edit/'.$this->id);
     }
 
     /**
      * Scope a query to only include user's logs.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param mixed                                 $queue
+     * @param mixed                                 $user
+     *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeSubmitted($query, $queue, $user)
-    {
+    public function scopeSubmitted($query, $queue, $user) {
         return $query->where('queue_id', $queue)->where('user_id', $user)->where('status', '=', 'Approved')->orWhere('queue_id', $queue)->where('user_id', $user)->where('status', '=', 'Pending');
     }
 
     /**
      * Scope a query to only include user's logs.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param mixed                                 $queue
+     * @param mixed                                 $user
+     *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopePending($query, $queue, $user)
-    {
+    public function scopePending($query, $queue, $user) {
         return $query->where('queue_id', $queue)->where('user_id', $user)->where('status', '=', 'Pending')->orWhere('queue_id', $queue)->where('user_id', $user)->where('status', '=', 'Draft');
     }
 
-     /**
+    /**
      * Get the rewards for the submission/claim.
      *
      * @return array
      */
-    public function getRewardsAttribute()
-    {
-        if(isset($this->data['rewards']))
-        $assets = parseAssetData($this->data['rewards']);
-        else
-        $assets = parseAssetData($this->data);
+    public function getRewardsAttribute() {
+        if (isset($this->data['rewards'])) {
+            $assets = parseAssetData($this->data['rewards']);
+        } else {
+            $assets = parseAssetData($this->data);
+        }
         $rewards = [];
-        foreach($assets as $type => $a)
-        {
+        foreach ($assets as $type => $a) {
             $class = getAssetModelString($type, false);
-            foreach($a as $id => $asset)
-            {
-                $rewards[] = (object)[
+            foreach ($a as $id => $asset) {
+                $rewards[] = (object) [
                     'rewardable_type' => $class,
-                    'rewardable_id' => $id,
-                    'quantity' => $asset['quantity']
+                    'rewardable_id'   => $id,
+                    'quantity'        => $asset['quantity'],
                 ];
             }
         }
+
         return $rewards;
     }
-
 }

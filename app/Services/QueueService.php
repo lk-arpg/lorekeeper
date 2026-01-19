@@ -1,14 +1,13 @@
 <?php
+
 namespace App\Services;
 
 use App\Models\Queue\Queue;
 use App\Models\Queue\QueueCategory;
 use App\Models\Queue\QueueSubmission;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 
-class QueueService extends Service
-{
+class QueueService extends Service {
     /*
     |--------------------------------------------------------------------------
     | Queue Service
@@ -32,8 +31,7 @@ class QueueService extends Service
      *
      * @return bool|QueueCategory
      */
-    public function createQueueCategory($data, $user)
-    {
+    public function createQueueCategory($data, $user) {
         DB::beginTransaction();
 
         try {
@@ -42,8 +40,8 @@ class QueueService extends Service
             $image = null;
             if (isset($data['image']) && $data['image']) {
                 $data['has_image'] = 1;
-                $data['hash']      = randomString(10);
-                $image             = $data['image'];
+                $data['hash'] = randomString(10);
+                $image = $data['image'];
                 unset($data['image']);
             } else {
                 $data['has_image'] = 0;
@@ -66,14 +64,13 @@ class QueueService extends Service
     /**
      * Update a category.
      *
-     * @param QueueCategory        $category
+     * @param QueueCategory         $category
      * @param array                 $data
      * @param \App\Models\User\User $user
      *
      * @return bool|QueueCategory
      */
-    public function updateQueueCategory($category, $data, $user)
-    {
+    public function updateQueueCategory($category, $data, $user) {
         DB::beginTransaction();
 
         try {
@@ -87,8 +84,8 @@ class QueueService extends Service
             $image = null;
             if (isset($data['image']) && $data['image']) {
                 $data['has_image'] = 1;
-                $data['hash']      = randomString(10);
-                $image             = $data['image'];
+                $data['hash'] = randomString(10);
+                $image = $data['image'];
                 unset($data['image']);
             }
 
@@ -113,8 +110,7 @@ class QueueService extends Service
      *
      * @return bool
      */
-    public function deleteQueueCategory($category)
-    {
+    public function deleteQueueCategory($category) {
         DB::beginTransaction();
 
         try {
@@ -143,8 +139,7 @@ class QueueService extends Service
      *
      * @return bool
      */
-    public function sortQueueCategory($data)
-    {
+    public function sortQueueCategory($data) {
         DB::beginTransaction();
 
         try {
@@ -163,37 +158,6 @@ class QueueService extends Service
         return $this->rollbackReturn(false);
     }
 
-    /**
-     * Handle category data.
-     *
-     * @param array               $data
-     * @param QueueCategory|null $category
-     *
-     * @return array
-     */
-    private function populateCategoryData($data, $category = null)
-    {
-        if (isset($data['description']) && $data['description']) {
-            $data['parsed_description'] = parse($data['description']);
-        } elseif (! isset($data['description']) && ! $data['description']) {
-            $data['parsed_description'] = null;
-        }
-
-        if (isset($data['remove_image'])) {
-            if ($category && $category->has_image && $data['remove_image']) {
-                $data['has_image'] = 0;
-                $this->deleteImage($category->categoryImagePath, $category->categoryImageFileName);
-            }
-            unset($data['remove_image']);
-        }
-
-        if (! isset($data['display'])) {
-            $data['display'] = 0;
-        }
-
-        return $data;
-    }
-
     /**********************************************************************************************
 
         QUEUES
@@ -208,8 +172,7 @@ class QueueService extends Service
      *
      * @return bool|Queue
      */
-    public function createQueue($data, $user)
-    {
+    public function createQueue($data, $user) {
         DB::beginTransaction();
 
         try {
@@ -217,7 +180,7 @@ class QueueService extends Service
                 $data['queue_category_id'] = null;
             }
 
-            if ((isset($data['queue_category_id']) && $data['queue_category_id']) && ! QueueCategory::where('id', $data['queue_category_id'])->exists()) {
+            if ((isset($data['queue_category_id']) && $data['queue_category_id']) && !QueueCategory::where('id', $data['queue_category_id'])->exists()) {
                 throw new \Exception('The selected queue category is invalid.');
             }
 
@@ -226,14 +189,14 @@ class QueueService extends Service
             $image = null;
             if (isset($data['image']) && $data['image']) {
                 $data['has_image'] = 1;
-                $data['hash']      = randomString(10);
-                $image             = $data['image'];
+                $data['hash'] = randomString(10);
+                $image = $data['image'];
                 unset($data['image']);
             } else {
                 $data['has_image'] = 0;
             }
 
-            if (! isset($data['hide_submissions']) && ! $data['hide_submissions']) {
+            if (!isset($data['hide_submissions']) && !$data['hide_submissions']) {
                 $data['hide_submissions'] = 0;
             }
 
@@ -254,14 +217,13 @@ class QueueService extends Service
     /**
      * Updates a queue.
      *
-     * @param Queue                $queue
+     * @param Queue                 $queue
      * @param array                 $data
      * @param \App\Models\User\User $user
      *
      * @return bool|Queue
      */
-    public function updateQueue($queue, $data, $user)
-    {
+    public function updateQueue($queue, $data, $user) {
         DB::beginTransaction();
 
         try {
@@ -273,7 +235,7 @@ class QueueService extends Service
             if (Queue::where('name', $data['name'])->where('id', '!=', $queue->id)->exists()) {
                 throw new \Exception('The name has already been taken.');
             }
-            if ((isset($data['queue_category_id']) && $data['queue_category_id']) && ! QueueCategory::where('id', $data['queue_category_id'])->exists()) {
+            if ((isset($data['queue_category_id']) && $data['queue_category_id']) && !QueueCategory::where('id', $data['queue_category_id'])->exists()) {
                 throw new \Exception('The selected queue category is invalid.');
             }
             if (isset($data['prefix']) && Queue::where('prefix', $data['prefix'])->where('id', '!=', $queue->id)->exists()) {
@@ -285,12 +247,12 @@ class QueueService extends Service
             $image = null;
             if (isset($data['image']) && $data['image']) {
                 $data['has_image'] = 1;
-                $data['hash']      = randomString(10);
-                $image             = $data['image'];
+                $data['hash'] = randomString(10);
+                $image = $data['image'];
                 unset($data['image']);
             }
 
-            if (! isset($data['hide_submissions']) && ! $data['hide_submissions']) {
+            if (!isset($data['hide_submissions']) && !$data['hide_submissions']) {
                 $data['hide_submissions'] = 0;
             }
 
@@ -321,8 +283,7 @@ class QueueService extends Service
      *
      * @return bool
      */
-    public function deleteQueue($queue)
-    {
+    public function deleteQueue($queue) {
         DB::beginTransaction();
 
         try {
@@ -345,34 +306,98 @@ class QueueService extends Service
     }
 
     /**
+     * Update the queue's type data.
+     *
+     * @param array $data
+     * @param mixed $queue
+     *
+     * @return bool
+     */
+    public function updateType($queue, $data) {
+        DB::beginTransaction();
+
+        try {
+            if (isset($data['item_id'])) {
+                foreach ($data['item_id'] as $item) {
+                    if (!isset($item)) {
+                        throw new \Exception('One of the items was not specified.');
+                    }
+                }
+            }
+
+            $queue->data = $queue->service->updateData($queue, $data) +
+                [
+                    'items' => $data['item_id'] ?? null,
+                ] + (isset($data['item_id']) ? [
+                    'items' => $data['item_id'],
+                ] : []);
+            $queue->save();
+
+            return $this->commitReturn(true);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Handle category data.
+     *
+     * @param array              $data
+     * @param QueueCategory|null $category
+     *
+     * @return array
+     */
+    private function populateCategoryData($data, $category = null) {
+        if (isset($data['description']) && $data['description']) {
+            $data['parsed_description'] = parse($data['description']);
+        } elseif (!isset($data['description']) && !$data['description']) {
+            $data['parsed_description'] = null;
+        }
+
+        if (isset($data['remove_image'])) {
+            if ($category && $category->has_image && $data['remove_image']) {
+                $data['has_image'] = 0;
+                $this->deleteImage($category->categoryImagePath, $category->categoryImageFileName);
+            }
+            unset($data['remove_image']);
+        }
+
+        if (!isset($data['display'])) {
+            $data['display'] = 0;
+        }
+
+        return $data;
+    }
+
+    /**
      * Processes user input for creating/updating a queue.
      *
-     * @param array  $data
+     * @param array $data
      * @param Queue $queue
      *
      * @return array
      */
-    private function populateData($data, $queue = null)
-    {
-
-        if (! $data['queue_type']) {
-            throw new \Exception("You must select a queue type. Choose vanilla if you want a blank queue.");
+    private function populateData($data, $queue = null) {
+        if (!$data['queue_type']) {
+            throw new \Exception('You must select a queue type. Choose vanilla if you want a blank queue.');
         }
 
         if (isset($data['description']) && $data['description']) {
             $data['parsed_description'] = parse($data['description']);
         }
 
-        if (! isset($data['hide_before_start'])) {
+        if (!isset($data['hide_before_start'])) {
             $data['hide_before_start'] = 0;
         }
-        if (! isset($data['hide_after_end'])) {
+        if (!isset($data['hide_after_end'])) {
             $data['hide_after_end'] = 0;
         }
-        if (! isset($data['is_active'])) {
+        if (!isset($data['is_active'])) {
             $data['is_active'] = 0;
         }
-        if (! isset($data['staff_only'])) {
+        if (!isset($data['staff_only'])) {
             $data['staff_only'] = 0;
         }
 
@@ -390,7 +415,7 @@ class QueueService extends Service
 
         if (isset($data['check_text'])) {
             foreach ($data['check_text'] as $check) {
-                if (! isset($check)) {
+                if (!isset($check)) {
                     throw new \Exception('One of the checklist steps was not specified.');
                 }
             }
@@ -409,39 +434,5 @@ class QueueService extends Service
         }
 
         return $data;
-    }
-
-    /**
-     * Update the queue's type data.
-     *
-     * @param  array  $data
-     * @return bool
-     */
-    public function updateType($queue, $data)
-    {
-        DB::beginTransaction();
-
-        try {
-            if (isset($data['item_id'])) {
-                foreach ($data['item_id'] as $item) {
-                    if (! isset($item)) {
-                        throw new \Exception('One of the items was not specified.');
-                    }
-                }
-            }
-
-            $queue->data = $queue->service->updateData($queue, $data) +
-                [
-                'items' => isset($data['item_id']) ? $data['item_id'] : null,
-            ] + (isset($data['item_id']) ? [
-                'items' => $data['item_id'],
-            ] : []);
-            $queue->save();
-
-            return $this->commitReturn(true);
-        } catch (\Exception $e) {
-            $this->setError('error', $e->getMessage());
-        }
-        return $this->rollbackReturn(false);
     }
 }

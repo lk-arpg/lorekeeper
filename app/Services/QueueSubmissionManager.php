@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services;
 
 use App\Facades\Notifications;
@@ -17,8 +18,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 
-class QueueSubmissionManager extends Service
-{
+class QueueSubmissionManager extends Service {
     /*
     |--------------------------------------------------------------------------
     | Submission Manager
@@ -34,32 +34,32 @@ class QueueSubmissionManager extends Service
      * @param array $data
      * @param User  $user
      * @param mixed $isDraft
+     * @param mixed $queue
      *
      * @return mixed
      */
-    public function createSubmission($queue, $data, $user, $isDraft = false)
-    {
+    public function createSubmission($queue, $data, $user, $isDraft = false) {
         DB::beginTransaction();
 
         try {
             // 1. check that the queue can be submitted at this time
             // 2. check that the characters selected exist (are visible too)
             // 3. check that the currencies selected can be attached to characters
-            if (! Settings::get('is_queue_open')) {
+            if (!Settings::get('is_queue_open')) {
                 throw new \Exception('The queue is closed for submissions.');
             }
 
-            if ($queue->staff_only && ! $user->isStaff) {
+            if ($queue->staff_only && !$user->isStaff) {
                 throw new \Exception('This queue may only be submitted to by staff members.');
             }
 
-            if (! $queue->checkConcurrent($user)) {
-                throw new \Exception("This queue does not permit you to submit more submissions while you have " . $queue->limit_concurrent . " of them of them pending or in draft at the same time. Please wait for your submissions to be processed before trying to submit again.");
+            if (!$queue->checkConcurrent($user)) {
+                throw new \Exception('This queue does not permit you to submit more submissions while you have '.$queue->limit_concurrent.' of them of them pending or in draft at the same time. Please wait for your submissions to be processed before trying to submit again.');
             }
 
             if ($queue->limit) {
-                if (! $queue->checkLimit($user)) {
-                    throw new \Exception("You have already submitted to this queue the maximum number of times.");
+                if (!$queue->checkLimit($user)) {
+                    throw new \Exception('You have already submitted to this queue the maximum number of times.');
                 }
             }
 
@@ -79,27 +79,27 @@ class QueueSubmissionManager extends Service
                 'queue_id'        => $queue->id,
             ]);
 
-            $assets       = $this->createUserAttachments($submission, $data, $user);
+            $assets = $this->createUserAttachments($submission, $data, $user);
             $queueRewards = $assets['queueRewards'];
             if ($queue->configSet('item_consume')) {
                 // Set items that have been attached.
                 $userAssets = $assets['userAssets'];
             }
 
-            //carry out the initial processes when submitting the queue's form
+            // carry out the initial processes when submitting the queue's form
             $service = $queue->service;
 
             if ($queue->configSet('character_submit')) {
-                if (! $this->createCharacterAttachments($submission, $data, $service, $user)) {
-                    throw new \Exception("Failed to handle submission characters.");
+                if (!$this->createCharacterAttachments($submission, $data, $service, $user)) {
+                    throw new \Exception('Failed to handle submission characters.');
                 }
             }
             if (method_exists($queue->service, 'submit')) {
-                if (! $service->submit($queue, $data, $user, $submission)) {
+                if (!$service->submit($queue, $data, $user, $submission)) {
                     foreach ($service->errors()->getMessages()['error'] as $error) {
                         flash($error)->error();
                     }
-                    throw new \Exception("Failed to handle submission.");
+                    throw new \Exception('Failed to handle submission.');
                 }
             }
 
@@ -129,19 +129,18 @@ class QueueSubmissionManager extends Service
      *
      * @return mixed
      */
-    public function editSubmission($submission, $data, $user, $isSubmit = false)
-    {
+    public function editSubmission($submission, $data, $user, $isSubmit = false) {
         DB::beginTransaction();
 
         try {
             // 1. check that the queue can be submitted at this time
             // 2. check that the characters selected exist (are visible too)
             // 3. check that the currencies selected can be attached to characters
-            if (! Settings::get('is_queue_open')) {
+            if (!Settings::get('is_queue_open')) {
                 throw new \Exception('The queue is closed for submissions.');
             }
             $queue = $submission->queue;
-            if (! $queue) {
+            if (!$queue) {
                 throw new \Exception('Invalid queue selected.');
             }
 
@@ -159,7 +158,7 @@ class QueueSubmissionManager extends Service
                 $submission->update(['status' => 'Pending', 'submitted_at' => Carbon::now()]);
             }
 
-            $assets       = $this->createUserAttachments($submission, $data, $user);
+            $assets = $this->createUserAttachments($submission, $data, $user);
             $queueRewards = $assets['queueRewards'];
             if ($queue->configSet('item_consume')) {
                 // Then, re-attach everything fresh.
@@ -169,16 +168,16 @@ class QueueSubmissionManager extends Service
             $service = $queue->service;
 
             if ($queue->configSet('character_submit')) {
-                if (! $this->createCharacterAttachments($submission, $data, $service, $user)) {
-                    throw new \Exception("Failed to handle submission characters.");
+                if (!$this->createCharacterAttachments($submission, $data, $service, $user)) {
+                    throw new \Exception('Failed to handle submission characters.');
                 }
             }
             if (method_exists($queue->service, 'submit')) {
-                if (! $service->submit($queue, $data, $user, $submission)) {
+                if (!$service->submit($queue, $data, $user, $submission)) {
                     foreach ($service->errors()->getMessages()['error'] as $error) {
                         flash($error)->error();
                     }
-                    throw new \Exception("Failed to handle submission.");
+                    throw new \Exception('Failed to handle submission.');
                 }
             }
 
@@ -215,21 +214,20 @@ class QueueSubmissionManager extends Service
      * @param mixed $data the submission data
      * @param mixed $user the user performing the cancellation
      */
-    public function cancelSubmission($data, $user)
-    {
+    public function cancelSubmission($data, $user) {
         DB::beginTransaction();
 
         try {
             // 1. check that the submission exists
             // 2. check that the submission is pending
-            if (! isset($data['submission'])) {
+            if (!isset($data['submission'])) {
                 $submission = QueueSubmission::where('status', 'Pending')->where('id', $data['id'])->first();
             } elseif ($data['submission']->status == 'Pending') {
                 $submission = $data['submission'];
             } else {
                 $submission = null;
             }
-            if (! $submission) {
+            if (!$submission) {
                 throw new \Exception('Invalid submission.');
             }
 
@@ -267,7 +265,7 @@ class QueueSubmissionManager extends Service
                 ]);
 
                 Notifications::create('QUEUE_SUBMISSION_CANCELLED', $submission->user, [
-                    'queue_name'   => $submission->queue->name,
+                    'queue_name'    => $submission->queue->name,
                     'staff_url'     => $user->url,
                     'staff_name'    => $user->name,
                     'submission_id' => $submission->id,
@@ -301,22 +299,20 @@ class QueueSubmissionManager extends Service
      *
      * @return mixed
      */
-    public function rejectSubmission($data, $user)
-    {
+    public function rejectSubmission($data, $user) {
         DB::beginTransaction();
 
         try {
-
             // 1. check that the submission exists
             // 2. check that the submission is pending
-            if (! isset($data['submission'])) {
+            if (!isset($data['submission'])) {
                 $submission = QueueSubmission::where('status', 'Pending')->where('id', $data['id'])->first();
             } elseif ($data['submission']->status == 'Pending') {
                 $submission = $data['submission'];
             } else {
                 $submission = null;
             }
-            if (! $submission) {
+            if (!$submission) {
                 throw new \Exception('Invalid submission.');
             }
 
@@ -345,7 +341,7 @@ class QueueSubmissionManager extends Service
             ]);
 
             Notifications::create('QUEUE_SUBMISSION_REJECTED', $submission->user, [
-                'queue_name'   => $submission->queue->name,
+                'queue_name'    => $submission->queue->name,
                 'staff_url'     => $user->url,
                 'staff_name'    => $user->name,
                 'submission_id' => $submission->id,
@@ -373,34 +369,33 @@ class QueueSubmissionManager extends Service
      *
      * @return mixed
      */
-    public function approveSubmission($data, $user)
-    {
+    public function approveSubmission($data, $user) {
         DB::beginTransaction();
 
         try {
             // 1. check that the submission exists
             // 2. check that the submission is pending
             $submission = QueueSubmission::where('status', 'Pending')->where('id', $data['id'])->first();
-            if (! $submission) {
+            if (!$submission) {
                 throw new \Exception('Invalid submission.');
             }
 
-            $queue   = $submission->queue;
+            $queue = $submission->queue;
             $service = $queue->service;
 
             if ($queue->configSet('item_consume')) {
                 // Remove any added items, hold counts, and add logs
-                $addonData        = $submission->data['user'];
+                $addonData = $submission->data['user'];
                 $inventoryManager = new InventoryManager;
                 if (isset($addonData['user_items'])) {
                     $stacks = $addonData['user_items'];
                     foreach ($addonData['user_items'] as $userItemId => $quantity) {
                         $userItemRow = UserItem::find($userItemId);
-                        if (! $userItemRow) {
-                            throw new \Exception('Cannot return an invalid item. (' . $userItemId . ')');
+                        if (!$userItemRow) {
+                            throw new \Exception('Cannot return an invalid item. ('.$userItemId.')');
                         }
                         if ($userItemRow->submission_count < $quantity) {
-                            throw new \Exception('Cannot return more items than was held. (' . $userItemId . ')');
+                            throw new \Exception('Cannot return more items than was held. ('.$userItemId.')');
                         }
                         $userItemRow->submission_count -= $quantity;
                         $userItemRow->save();
@@ -411,8 +406,8 @@ class QueueSubmissionManager extends Service
 
                     foreach ($stacks as $stackId => $quantity) {
                         $stack = UserItem::find($stackId);
-                        $user  = User::find($submission->user_id);
-                        if (! $inventoryManager->debitStack($user, 'Queue Submission Approved', ['data' => 'Item used in submission (<a href="' . $submission->viewUrl . '">#' . $submission->id . '</a>)'], $stack, $quantity)) {
+                        $user = User::find($submission->user_id);
+                        if (!$inventoryManager->debitStack($user, 'Queue Submission Approved', ['data' => 'Item used in submission (<a href="'.$submission->viewUrl.'">#'.$submission->id.'</a>)'], $stack, $quantity)) {
                             throw new \Exception('Failed to create log for item stack.');
                         }
                     }
@@ -426,13 +421,13 @@ class QueueSubmissionManager extends Service
                 if (isset($addonData['currencies']) && $addonData['currencies']) {
                     foreach ($addonData['currencies'] as $currencyId => $quantity) {
                         $currency = Currency::find($currencyId);
-                        if (! $currencyManager->createLog(
+                        if (!$currencyManager->createLog(
                             $submission->user_id,
                             'User',
                             null,
                             null,
                             'Queue Submission Approved',
-                            'Used in submission (<a href="' . $submission->viewUrl . '">#' . $submission->id . '</a>)',
+                            'Used in submission (<a href="'.$submission->viewUrl.'">#'.$submission->id.'</a>)',
                             $currencyId,
                             $quantity
                         )) {
@@ -447,17 +442,16 @@ class QueueSubmissionManager extends Service
 
             // Logging data
             $queueLogType = 'Queue Rewards';
-            $queueData    = [
-                'data' => 'Received rewards for submission (<a href="' . $submission->viewUrl . '">#' . $submission->id . '</a>)',
+            $queueData = [
+                'data' => 'Received rewards for submission (<a href="'.$submission->viewUrl.'">#'.$submission->id.'</a>)',
             ];
 
             // Distribute user rewards
-            if (! $rewards = fillUserAssets($rewards, $user, $submission->user, $queueLogType, $queueData)) {
+            if (!$rewards = fillUserAssets($rewards, $user, $submission->user, $queueLogType, $queueData)) {
                 throw new \Exception('Failed to distribute rewards to user.');
             }
 
             if ($queue->configSet('character_submit')) {
-
                 // The character identification comes in both the slug field and as character IDs
                 // that key the reward ID/quantity arrays.
                 // We'll need to match characters to the rewards for them.
@@ -471,14 +465,13 @@ class QueueSubmissionManager extends Service
                     $characters = [];
                 }
 
-                //process any relevant data
+                // process any relevant data
                 if (method_exists($service, 'processCharacters')) {
-
-                    if (! $chardata = $service->processCharacters($submission->queue, $data, $submission)) {
+                    if (!$chardata = $service->processCharacters($submission->queue, $data, $submission)) {
                         foreach ($service->errors()->getMessages()['error'] as $error) {
                             flash($error)->error();
                         }
-                        throw new \Exception("Failed to handle submission characters.");
+                        throw new \Exception('Failed to handle submission characters.');
                     }
                 }
 
@@ -487,13 +480,12 @@ class QueueSubmissionManager extends Service
 
                 // Distribute character rewards
                 foreach ($characters as $c) {
-
                     if (method_exists($service, 'processCharacterAttachments')) {
-                        if (! $assets = $service->processCharacterAttachments($submission->queue, $data + ['character_id' => $c->id], $submission)) {
+                        if (!$assets = $service->processCharacterAttachments($submission->queue, $data + ['character_id' => $c->id], $submission)) {
                             foreach ($service->errors()->getMessages()['error'] as $error) {
                                 flash($error)->error();
                             }
-                            throw new \Exception("Failed to handle submission characters.");
+                            throw new \Exception('Failed to handle submission characters.');
                         }
                     }
 
@@ -511,18 +503,18 @@ class QueueSubmissionManager extends Service
                 $data['parsed_staff_comments'] = null;
             }
 
-            //carry out approval
+            // carry out approval
 
             if (method_exists($queue->service, 'approve')) {
-                if (! $service->approve($queue, $data, $user, $submission)) {
+                if (!$service->approve($queue, $data, $user, $submission)) {
                     foreach ($service->errors()->getMessages()['error'] as $error) {
                         flash($error)->error();
                     }
-                    throw new \Exception("Failed to handle submission.");
+                    throw new \Exception('Failed to handle submission.');
                 }
             }
 
-            //back up the data cus i realized it gets nuked on approval
+            // back up the data cus i realized it gets nuked on approval
             $savedData = $submission->data['queue'];
 
             // Finally, set:
@@ -543,7 +535,7 @@ class QueueSubmissionManager extends Service
             ]);
 
             Notifications::create('QUEUE_SUBMISSION_APPROVED', $submission->user, [
-                'queue_name'   => $submission->queue->name,
+                'queue_name'    => $submission->queue->name,
                 'staff_url'     => $user->url,
                 'staff_name'    => $user->name,
                 'submission_id' => $submission->id,
@@ -566,23 +558,23 @@ class QueueSubmissionManager extends Service
     /**
      * Deletes a submission.
      *
-     * @param mixed $data the data of the submission to be deleted
-     * @param mixed $user the user performing the deletion
+     * @param mixed $data       the data of the submission to be deleted
+     * @param mixed $user       the user performing the deletion
+     * @param mixed $submission
      */
-    public function deleteSubmission($submission, $data, $user)
-    {
+    public function deleteSubmission($submission, $data, $user) {
         DB::beginTransaction();
         try {
             // 1. check that the submission exists
             // 2. check that the submission is a draft
-            if (! isset($data['submission'])) {
+            if (!isset($data['submission'])) {
                 $submission = QueueSubmission::where('status', 'Draft')->where('id', $data['submission_id'])->first();
             } elseif ($data['submission']->status == 'Pending') {
                 $submission = $data['submission'];
             } else {
                 $submission = null;
             }
-            if (! $submission) {
+            if (!$submission) {
                 throw new \Exception('Invalid submission.');
             }
             if ($user->id != $submission->user_id) {
@@ -591,15 +583,15 @@ class QueueSubmissionManager extends Service
 
             $queue = $submission->queue;
 
-            //carry out custom deletions
+            // carry out custom deletions
             $service = $submission->queue->service;
 
             if (method_exists($queue->service, 'delete')) {
-                if (! $service->delete($queue, $data, $user, $submission)) {
+                if (!$service->delete($queue, $data, $user, $submission)) {
                     foreach ($service->errors()->getMessages()['error'] as $error) {
                         flash($error)->error();
                     }
-                    throw new \Exception("Failed to handle submission.");
+                    throw new \Exception('Failed to handle submission.');
                 }
             }
 
@@ -634,8 +626,7 @@ class QueueSubmissionManager extends Service
      * @param mixed $data       the data for creating the attachments
      * @param mixed $user       the user object
      */
-    private function createUserAttachments($submission, $data, $user)
-    {
+    private function createUserAttachments($submission, $data, $user) {
         $userAssets = createAssetsArray();
 
         // Attach items. Technically, the user doesn't lose ownership of the item - we're just adding an additional holding field.
@@ -643,10 +634,10 @@ class QueueSubmissionManager extends Service
         if (isset($data['stack_id'])) {
             foreach ($data['stack_id'] as $stackId) {
                 $stack = UserItem::with('item')->find($stackId);
-                if (! $stack || $stack->user_id != $user->id) {
+                if (!$stack || $stack->user_id != $user->id) {
                     throw new \Exception('Invalid item selected.');
                 }
-                if (! isset($data['stack_quantity'][$stackId])) {
+                if (!isset($data['stack_quantity'][$stackId])) {
                     throw new \Exception('Invalid quantity selected.');
                 }
                 $stack->submission_count += $data['stack_quantity'][$stackId];
@@ -659,22 +650,22 @@ class QueueSubmissionManager extends Service
         // Attach currencies.
         if (isset($data['currency_id'])) {
             foreach ($data['currency_id'] as $holderKey => $currencyIds) {
-                $holder     = explode('-', $holderKey);
+                $holder = explode('-', $holderKey);
                 $holderType = $holder[0];
-                $holderId   = $holder[1];
+                $holderId = $holder[1];
 
                 $holder = User::find($holderId);
 
                 $currencyManager = new CurrencyManager;
                 foreach ($currencyIds as $key => $currencyId) {
                     $currency = Currency::find($currencyId);
-                    if (! $currency) {
+                    if (!$currency) {
                         throw new \Exception('Invalid currency selected.');
                     }
                     if ($data['currency_quantity'][$holderKey][$key] < 0) {
                         throw new \Exception('Cannot attach a negative amount of currency.');
                     }
-                    if (! $currencyManager->debitCurrency($holder, null, null, null, $currency, $data['currency_quantity'][$holderKey][$key])) {
+                    if (!$currencyManager->debitCurrency($holder, null, null, null, $currency, $data['currency_quantity'][$holderKey][$key])) {
                         throw new \Exception('Invalid currency/quantity selected.');
                     }
 
@@ -707,9 +698,10 @@ class QueueSubmissionManager extends Service
      *
      * @param mixed $submission the submission object
      * @param mixed $data       the data for creating character attachments
+     * @param mixed $service
+     * @param mixed $user
      */
-    private function createCharacterAttachments($submission, $data, $service, $user)
-    {
+    private function createCharacterAttachments($submission, $data, $service, $user) {
         DB::beginTransaction();
 
         try {
@@ -725,25 +717,24 @@ class QueueSubmissionManager extends Service
             } else {
                 $characters = [];
             }
-            //process any relevant data
+            // process any relevant data
             if (method_exists($service, 'processCharacters')) {
-
-                if (! $chardata = $service->processCharacters($submission->queue, $data, $submission)) {
+                if (!$chardata = $service->processCharacters($submission->queue, $data, $submission)) {
                     foreach ($service->errors()->getMessages()['error'] as $error) {
                         flash($error)->error();
                     }
-                    throw new \Exception("Failed to handle submission characters.");
+                    throw new \Exception('Failed to handle submission characters.');
                 }
             }
             // Attach characters
             foreach ($characters as $c) {
-                //and for a specific character
+                // and for a specific character
                 if (method_exists($service, 'processCharacterAttachments')) {
-                    if (! $assets = $service->processCharacterAttachments($submission->queue, $data + ['character_id' => $c->id], $submission)) {
+                    if (!$assets = $service->processCharacterAttachments($submission->queue, $data + ['character_id' => $c->id], $submission)) {
                         foreach ($service->errors()->getMessages()['error'] as $error) {
                             flash($error)->error();
                         }
-                        throw new \Exception("Failed to handle submission characters.");
+                        throw new \Exception('Failed to handle submission characters.');
                     }
                 }
                 // Now we have a clean set of assets (redundant data is gone, duplicate entries are merged)
@@ -768,8 +759,7 @@ class QueueSubmissionManager extends Service
      *
      * @param mixed $submission the submission object
      */
-    private function removeAttachments($submission)
-    {
+    private function removeAttachments($submission) {
         // This occurs when a draft is edited or rejected.
 
         // Return all added items
@@ -777,11 +767,11 @@ class QueueSubmissionManager extends Service
         if (isset($addonData['user_items'])) {
             foreach ($addonData['user_items'] as $userItemId => $quantity) {
                 $userItemRow = UserItem::find($userItemId);
-                if (! $userItemRow) {
-                    throw new \Exception('Cannot return an invalid item. (' . $userItemId . ')');
+                if (!$userItemRow) {
+                    throw new \Exception('Cannot return an invalid item. ('.$userItemId.')');
                 }
                 if ($userItemRow->submission_count < $quantity) {
-                    throw new \Exception('Cannot return more items than was held. (' . $userItemId . ')');
+                    throw new \Exception('Cannot return more items than was held. ('.$userItemId.')');
                 }
                 $userItemRow->submission_count -= $quantity;
                 $userItemRow->save();
@@ -793,11 +783,11 @@ class QueueSubmissionManager extends Service
         if (isset($addonData['currencies']) && $addonData['currencies']) {
             foreach ($addonData['currencies'] as $currencyId => $quantity) {
                 $currency = Currency::find($currencyId);
-                if (! $currency) {
-                    throw new \Exception('Cannot return an invalid currency. (' . $currencyId . ')');
+                if (!$currency) {
+                    throw new \Exception('Cannot return an invalid currency. ('.$currencyId.')');
                 }
-                if (! $currencyManager->creditCurrency(null, $submission->user, null, null, $currency, $quantity)) {
-                    throw new \Exception('Could not return currency to user. (' . $currencyId . ')');
+                if (!$currencyManager->creditCurrency(null, $submission->user, null, null, $currency, $quantity)) {
+                    throw new \Exception('Could not return currency to user. ('.$currencyId.')');
                 }
             }
         }
@@ -812,8 +802,7 @@ class QueueSubmissionManager extends Service
      *
      * @return array
      */
-    private function processRewards($data, $isCharacter, $isStaff = false)
-    {
+    private function processRewards($data, $isCharacter, $isStaff = false) {
         if ($isCharacter) {
             $assets = createAssetsArray(true);
 
@@ -829,14 +818,14 @@ class QueueSubmissionManager extends Service
                 foreach ($data['character_rewardable_id'][$data['character_id']] as $key => $reward) {
                     switch ($data['character_rewardable_type'][$data['character_id']][$key]) {
                         case 'Currency':if ($data['character_rewardable_quantity'][$data['character_id']][$key]) {
-                                addAsset($assets, $data['currencies'][$reward], $data['character_rewardable_quantity'][$data['character_id']][$key]);
-                            }break;
+                            addAsset($assets, $data['currencies'][$reward], $data['character_rewardable_quantity'][$data['character_id']][$key]);
+                        }break;
                         case 'Item':if ($data['character_rewardable_quantity'][$data['character_id']][$key]) {
-                                addAsset($assets, $data['items'][$reward], $data['character_rewardable_quantity'][$data['character_id']][$key]);
-                            }break;
+                            addAsset($assets, $data['items'][$reward], $data['character_rewardable_quantity'][$data['character_id']][$key]);
+                        }break;
                         case 'LootTable':if ($data['character_rewardable_quantity'][$data['character_id']][$key]) {
-                                addAsset($assets, $data['tables'][$reward], $data['character_rewardable_quantity'][$data['character_id']][$key]);
-                            }break;
+                            addAsset($assets, $data['tables'][$reward], $data['character_rewardable_quantity'][$data['character_id']][$key]);
+                        }break;
                     }
                 }
             }
@@ -854,24 +843,24 @@ class QueueSubmissionManager extends Service
                             break;
                         case 'Currency':
                             $reward = Currency::find($data['rewardable_id'][$key]);
-                            if (! $reward->is_user_owned) {
+                            if (!$reward->is_user_owned) {
                                 throw new \Exception('Invalid currency selected.');
                             }
                             break;
                         case 'LootTable':
-                            if (! $isStaff) {
+                            if (!$isStaff) {
                                 break;
                             }
                             $reward = LootTable::find($data['rewardable_id'][$key]);
                             break;
                         case 'Raffle':
-                            if (! $isStaff) {
+                            if (!$isStaff) {
                                 break;
                             }
                             $reward = Raffle::find($data['rewardable_id'][$key]);
                             break;
                     }
-                    if (! $reward) {
+                    if (!$reward) {
                         continue;
                     }
                     addAsset($assets, $reward, $data['quantity'][$key]);
@@ -887,8 +876,7 @@ class QueueSubmissionManager extends Service
      *
      * @param mixed $submission the submission object
      */
-    private function removeQueueAttachments($submission)
-    {
+    private function removeQueueAttachments($submission) {
         $assets = $submission->data;
         // Get a list of rewards, then create the submission itself
         $queueRewards = createAssetsArray();

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Queue\Queue;
@@ -6,8 +7,7 @@ use App\Models\Queue\QueueCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class QueuesController extends Controller
-{
+class QueuesController extends Controller {
     /*
     |--------------------------------------------------------------------------
     | Queues Controller
@@ -23,8 +23,7 @@ class QueuesController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getIndex()
-    {
+    public function getIndex() {
         return view('queues.index');
     }
 
@@ -33,12 +32,11 @@ class QueuesController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getQueueCategories(Request $request)
-    {
+    public function getQueueCategories(Request $request) {
         $query = QueueCategory::display();
-        $name  = $request->get('name');
+        $name = $request->get('name');
         if ($name) {
-            $query->where('name', 'LIKE', '%' . $name . '%');
+            $query->where('name', 'LIKE', '%'.$name.'%');
         }
 
         return view('queues.queue_categories', [
@@ -51,10 +49,9 @@ class QueuesController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getQueues(Request $request)
-    {
+    public function getQueues(Request $request) {
         $query = Queue::splash()->active()->staffOnly(Auth::user() ?? null)->with('category');
-        $data  = $request->only(['queue_category_id', 'name', 'sort', 'open_queues']);
+        $data = $request->only(['queue_category_id', 'name', 'sort', 'open_queues']);
         if (isset($data['queue_category_id']) && $data['queue_category_id'] != 'none') {
             if ($data['queue_category_id'] == 'withoutOption') {
                 $query->whereNull('queue_category_id');
@@ -63,7 +60,7 @@ class QueuesController extends Controller
             }
         }
         if (isset($data['name'])) {
-            $query->where('name', 'LIKE', '%' . $data['name'] . '%');
+            $query->where('name', 'LIKE', '%'.$data['name'].'%');
         }
 
         if (isset($data['open_queues'])) {
@@ -128,11 +125,10 @@ class QueuesController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getQueue(Request $request, $id)
-    {
+    public function getQueue(Request $request, $id) {
         $queue = Queue::active()->where('id', $id)->first();
 
-        if (! $queue) {
+        if (!$queue) {
             abort(404);
         }
 
@@ -144,19 +140,19 @@ class QueuesController extends Controller
     /**
      * Shows the queue category with the given key.
      *
-     * @param  string  $key
+     * @param string $key
+     *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getQueueIndexPage(Request $request, $key)
-    {
+    public function getQueueIndexPage(Request $request, $key) {
         $category = QueueCategory::where('key', $key)->first();
-        if (! $category) {
+        if (!$category) {
             abort(404);
         }
 
         return view('queues.index_page', [
             'category' => $category,
-            'queues'   => $category->queues()->active()->staffOnly(Auth::user() ?? null)->paginate(20)
+            'queues'   => $category->queues()->active()->staffOnly(Auth::user() ?? null)->paginate(20),
         ]);
     }
 }

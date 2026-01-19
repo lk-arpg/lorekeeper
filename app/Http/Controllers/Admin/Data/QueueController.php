@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Admin\Data;
 
 use App\Http\Controllers\Controller;
@@ -7,12 +8,10 @@ use App\Models\Queue\Queue;
 use App\Models\Queue\QueueCategory;
 use App\Models\Rank\Rank;
 use App\Services\QueueService;
-use Config;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class QueueController extends Controller
-{
+class QueueController extends Controller {
     /*
     |--------------------------------------------------------------------------
     | Admin / Queue Controller
@@ -27,8 +26,7 @@ class QueueController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getIndex()
-    {
+    public function getIndex() {
         return view('admin.queues.queue_categories', [
             'categories' => QueueCategory::orderBy('sort', 'DESC')->get(),
         ]);
@@ -39,8 +37,7 @@ class QueueController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getCreateQueueCategory()
-    {
+    public function getCreateQueueCategory() {
         return view('admin.queues.create_edit_queue_category', [
             'category'      => new QueueCategory,
             'limit_periods' => [null => 'None', 'Hour' => 'Hour', 'Day' => 'Day', 'Week' => 'Week', 'Month' => 'Month', 'Year' => 'Year'],
@@ -54,10 +51,9 @@ class QueueController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getEditQueueCategory($id)
-    {
+    public function getEditQueueCategory($id) {
         $category = QueueCategory::find($id);
-        if (! $category) {
+        if (!$category) {
             abort(404);
         }
 
@@ -71,22 +67,21 @@ class QueueController extends Controller
      * Creates or edits a queue category.
      *
      * @param App\Services\QueueService $service
-     * @param int|null                   $id
+     * @param int|null                  $id
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postCreateEditQueueCategory(Request $request, QueueService $service, $id = null)
-    {
+    public function postCreateEditQueueCategory(Request $request, QueueService $service, $id = null) {
         $id ? $request->validate(QueueCategory::$updateRules) : $request->validate(QueueCategory::$createRules);
         $data = $request->only([
-            'name', 'description', 'image', 'remove_image', 'key', 'limit', 'limit_period', 'limit_concurrent','display'
+            'name', 'description', 'image', 'remove_image', 'key', 'limit', 'limit_period', 'limit_concurrent', 'display',
         ]);
         if ($id && $service->updateQueueCategory(QueueCategory::find($id), $data, Auth::user())) {
             flash('Category updated successfully.')->success();
-        } elseif (! $id && $category = $service->createQueueCategory($data, Auth::user())) {
+        } elseif (!$id && $category = $service->createQueueCategory($data, Auth::user())) {
             flash('Category created successfully.')->success();
 
-            return redirect()->to('admin/data/queue-categories/edit/' . $category->id);
+            return redirect()->to('admin/data/queue-categories/edit/'.$category->id);
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();
@@ -103,8 +98,7 @@ class QueueController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getDeleteQueueCategory($id)
-    {
+    public function getDeleteQueueCategory($id) {
         $category = QueueCategory::find($id);
 
         return view('admin.queues._delete_queue_category', [
@@ -116,12 +110,11 @@ class QueueController extends Controller
      * Deletes a queue category.
      *
      * @param App\Services\QueueService $service
-     * @param int                        $id
+     * @param int                       $id
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postDeleteQueueCategory(Request $request, QueueService $service, $id)
-    {
+    public function postDeleteQueueCategory(Request $request, QueueService $service, $id) {
         if ($id && $service->deleteQueueCategory(QueueCategory::find($id))) {
             flash('Category deleted successfully.')->success();
         } else {
@@ -140,8 +133,7 @@ class QueueController extends Controller
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postSortQueueCategory(Request $request, QueueService $service)
-    {
+    public function postSortQueueCategory(Request $request, QueueService $service) {
         if ($service->sortQueueCategory($request->get('sort'))) {
             flash('Category order updated successfully.')->success();
         } else {
@@ -164,15 +156,14 @@ class QueueController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getQueueIndex(Request $request)
-    {
+    public function getQueueIndex(Request $request) {
         $query = Queue::query();
-        $data  = $request->only(['queue_category_id', 'name']);
+        $data = $request->only(['queue_category_id', 'name']);
         if (isset($data['queue_category_id']) && $data['queue_category_id'] != 'none') {
             $query->where('queue_category_id', $data['queue_category_id']);
         }
         if (isset($data['name'])) {
-            $query->where('name', 'LIKE', '%' . $data['name'] . '%');
+            $query->where('name', 'LIKE', '%'.$data['name'].'%');
         }
 
         return view('admin.queues.queues', [
@@ -186,10 +177,8 @@ class QueueController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getCreateQueue()
-    {
-
-        $types  = config('lorekeeper.queue_types');
+    public function getCreateQueue() {
+        $types = config('lorekeeper.queue_types');
         $result = [];
         foreach ($types as $type => $typeData) {
             $result[$type] = $typeData['name'];
@@ -211,13 +200,12 @@ class QueueController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getEditQueue($id)
-    {
+    public function getEditQueue($id) {
         $queue = Queue::find($id);
-        if (! $queue) {
+        if (!$queue) {
             abort(404);
         }
-        $types  = config('lorekeeper.queue_types');
+        $types = config('lorekeeper.queue_types');
         $result = [];
         foreach ($types as $type => $typeData) {
             $result[$type] = $typeData['name'];
@@ -237,21 +225,20 @@ class QueueController extends Controller
      * Creates or edits a queue.
      *
      * @param App\Services\QueueService $service
-     * @param int|null                   $id
+     * @param int|null                  $id
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postCreateEditQueue(Request $request, QueueService $service, $id = null)
-    {
+    public function postCreateEditQueue(Request $request, QueueService $service, $id = null) {
         $id ? $request->validate(Queue::$updateRules) : $request->validate(Queue::$createRules);
-        $data = $request->only(['name', 'queue_category_id', 'staff_rank_id', 'summary', 'description', 'start_at', 'end_at', 'hide_before_start', 'hide_after_end', 'is_active', 'image', 'remove_image', 'prefix', 'hide_submissions', 'staff_only', 'form', 'queue_type', 'limit', 'limit_period', 'check_text', 'user_rewardable_type', 'user_rewardable_id', 'user_quantity', 'character_rewardable_type', 'character_rewardable_id', 'character_quantity', 'limit_concurrent'
+        $data = $request->only(['name', 'queue_category_id', 'staff_rank_id', 'summary', 'description', 'start_at', 'end_at', 'hide_before_start', 'hide_after_end', 'is_active', 'image', 'remove_image', 'prefix', 'hide_submissions', 'staff_only', 'form', 'queue_type', 'limit', 'limit_period', 'check_text', 'user_rewardable_type', 'user_rewardable_id', 'user_quantity', 'character_rewardable_type', 'character_rewardable_id', 'character_quantity', 'limit_concurrent',
         ]);
         if ($id && $service->updateQueue(Queue::find($id), $data, Auth::user())) {
             flash('Queue updated successfully.')->success();
-        } elseif (! $id && $queue = $service->createQueue($data, Auth::user())) {
+        } elseif (!$id && $queue = $service->createQueue($data, Auth::user())) {
             flash('Queue created successfully.')->success();
 
-            return redirect()->to('admin/data/queues/edit/' . $queue->id);
+            return redirect()->to('admin/data/queues/edit/'.$queue->id);
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();
@@ -268,8 +255,7 @@ class QueueController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getDeleteQueue($id)
-    {
+    public function getDeleteQueue($id) {
         $queue = Queue::find($id);
 
         return view('admin.queues._delete_queue', [
@@ -281,12 +267,11 @@ class QueueController extends Controller
      * Deletes a queue.
      *
      * @param App\Services\QueueService $service
-     * @param int                        $id
+     * @param int                       $id
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postDeleteQueue(Request $request, QueueService $service, $id)
-    {
+    public function postDeleteQueue(Request $request, QueueService $service, $id) {
         if ($id && $service->deleteQueue(Queue::find($id))) {
             flash('Queue deleted successfully.')->success();
         } else {
@@ -301,23 +286,23 @@ class QueueController extends Controller
     /**
      * Edits a queue's type data.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  App\Services\QueueService  $service
-     * @param  int                       $id
+     * @param App\Services\QueueService $service
+     * @param int                       $id
+     *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postEditType(Request $request, QueueService $service, $id)
-    {
+    public function postEditType(Request $request, QueueService $service, $id) {
         $data = $request->all();
         if ($service->updateType(Queue::find($id), $data)) {
             flash('Queue type settings updated successfully.')->success();
+
             return redirect()->back();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();
             }
-
         }
+
         return redirect()->back();
     }
 }

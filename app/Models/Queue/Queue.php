@@ -17,7 +17,7 @@ class Queue extends Model {
         'queue_category_id', 'name', 'summary', 'description', 'parsed_description', 'is_active',
         'start_at', 'end_at', 'hide_before_start', 'hide_after_end', 'has_image', 'prefix',
         'hide_submissions', 'staff_only', 'hash', 'form', 'parsed_form', 'queue_type', 'data', 'checklist', 'limit', 'limit_period', 'output', 'limit_concurrent',
-        'staff_rank_id'
+        'staff_rank_id',
     ];
 
     /**
@@ -83,12 +83,15 @@ class Queue extends Model {
 
     /**
      * Get the submissions that belong to this queue.
+     *
+     * @param mixed $status
      */
     public function submissions($status) {
-        if (isset($status))
+        if (isset($status)) {
             return $this->hasMany(QueueSubmission::class, 'queue_id')->where('status', ucfirst($status));
-        else
+        } else {
             return $this->hasMany(QueueSubmission::class, 'queue_id');
+        }
     }
 
     /**********************************************************************************************
@@ -111,10 +114,10 @@ class Queue extends Model {
                     $query->where('start_at', '>=', Carbon::now())->where('hide_before_start', 0);
                 });
             })->where(function ($query) {
-            $query->whereNull('end_at')->orWhere('end_at', '>', Carbon::now())->orWhere(function ($query) {
-                $query->where('end_at', '<=', Carbon::now())->where('hide_after_end', 0);
+                $query->whereNull('end_at')->orWhere('end_at', '>', Carbon::now())->orWhere(function ($query) {
+                    $query->where('end_at', '<=', Carbon::now())->where('hide_after_end', 0);
+                });
             });
-        });
     }
 
     /**
@@ -238,7 +241,6 @@ class Queue extends Model {
      * Scope a query to sort queues by end date.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param bool                                  $reverse
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -260,7 +262,7 @@ class Queue extends Model {
      * @return string
      */
     public function getDisplayNameAttribute() {
-        return '<a href="' . $this->url . '" class="display-queue">' . $this->name . '</a>';
+        return '<a href="'.$this->url.'" class="display-queue">'.$this->name.'</a>';
     }
 
     /**
@@ -278,7 +280,7 @@ class Queue extends Model {
      * @return string
      */
     public function getImageFileNameAttribute() {
-        return $this->id . '-' . $this->hash . '-image.png';
+        return $this->id.'-'.$this->hash.'-image.png';
     }
 
     /**
@@ -300,7 +302,7 @@ class Queue extends Model {
             return null;
         }
 
-        return asset($this->imageDirectory . '/' . $this->imageFileName);
+        return asset($this->imageDirectory.'/'.$this->imageFileName);
     }
 
     /**
@@ -309,7 +311,7 @@ class Queue extends Model {
      * @return string
      */
     public function getUrlAttribute() {
-        return url('queues/queues?name=' . $this->name);
+        return url('queues/queues?name='.$this->name);
     }
 
     /**
@@ -318,7 +320,7 @@ class Queue extends Model {
      * @return string
      */
     public function getIdUrlAttribute() {
-        return url('queues/' . $this->id);
+        return url('queues/'.$this->id);
     }
 
     /**
@@ -336,7 +338,7 @@ class Queue extends Model {
      * @return string
      */
     public function getAdminUrlAttribute() {
-        return url('admin/data/queues/edit/' . $this->id);
+        return url('admin/data/queues/edit/'.$this->id);
     }
 
     /**
@@ -354,17 +356,18 @@ class Queue extends Model {
      * @return mixed
      */
     public function getServiceAttribute() {
-        $class = 'App\Services\Queue\\' . str_replace(' ', '', ucwords(str_replace('_', ' ', $this->queue_type))) . 'Service';
-        return (new $class());
+        $class = 'App\Services\Queue\\'.str_replace(' ', '', ucwords(str_replace('_', ' ', $this->queue_type))).'Service';
+
+        return new $class;
     }
 
     /**
-     * Get the config data
+     * Get the config data.
      *
      * @return mixed
      */
     public function getConfigInfoAttribute() {
-        return config('lorekeeper.queue_types.' . $this->queue_type);
+        return config('lorekeeper.queue_types.'.$this->queue_type);
     }
 
     /**
@@ -379,10 +382,12 @@ class Queue extends Model {
     /**
      * Gets the file name of the model's image.
      *
+     * @param mixed $key
+     *
      * @return string
      */
     public function customImageFileName($key) {
-        return $this->id . '-' . $key . '.png';
+        return $this->id.'-'.$key.'.png';
     }
 
     /**
@@ -397,32 +402,38 @@ class Queue extends Model {
     /**
      * Gets the URL of the model's image.
      *
+     * @param mixed $key
+     *
      * @return string
      */
     public function customImageUrl($key) {
-        return asset($this->customImageDirectory . '/' . $this->CustomImageFileName($key));
+        return asset($this->customImageDirectory.'/'.$this->CustomImageFileName($key));
     }
 
     /**
-     * Check that custom image exists
+     * Check that custom image exists.
+     *
+     * @param mixed $key
      *
      * @return string
      */
     public function customImageExists($key) {
-        return file_exists($this->customImagePath . '/' . $this->CustomImageFileName($key));
+        return file_exists($this->customImagePath.'/'.$this->CustomImageFileName($key));
     }
 
     /**
-     * Get the general service
+     * Get the general service.
      *
      * @return mixed
      */
     public function getGeneralServiceAttribute() {
-        return (new GeneralService());
+        return new GeneralService;
     }
 
     /**
-     * Get the config data
+     * Get the config data.
+     *
+     * @param mixed $key
      *
      * @return mixed
      */
@@ -435,8 +446,7 @@ class Queue extends Model {
     }
 
     /**
-     * Retrieves any data that should be used in the holiday type on the user side
-     *
+     * Retrieves any data that should be used in the holiday type on the user side.
      */
     public function getItemsAttribute() {
         if (!isset($this->data['items'])) {
@@ -461,7 +471,7 @@ class Queue extends Model {
      **********************************************************************************************/
 
     public function checkLimit($user) {
-        //categories supersede all.
+        // categories supersede all.
         if ($this->queue_category_id && isset($this->category->limit)) {
             return $this->category->checkLimit($user);
         }
@@ -471,12 +481,12 @@ class Queue extends Model {
                 return false;
             }
         }
+
         return true;
     }
 
     public function logCount($user) {
         if (isset($this->limit)) {
-
             switch ($this->limit_period) {
                 case null:
                     return QueueSubmission::submitted($this->id, $user->id)->count();
@@ -498,11 +508,12 @@ class Queue extends Model {
                     break;
             }
         }
+
         return null;
     }
 
     public function checkConcurrent($user) {
-        //categories supersede all.
+        // categories supersede all.
         if ($this->queue_category_id && isset($this->category->limit_concurrent)) {
             return $this->category->checkConcurrent($user);
         }
@@ -512,11 +523,12 @@ class Queue extends Model {
                 return false;
             }
         }
+
         return true;
     }
 
     /**
-     * Gets the decoded output json
+     * Gets the decoded output json.
      *
      * @return array
      */
@@ -536,11 +548,12 @@ class Queue extends Model {
                 }
             }
         }
+
         return $rewards;
     }
 
     /**
-     * Interprets the json output and retrieves the corresponding items
+     * Interprets the json output and retrieves the corresponding items.
      *
      * @return array
      */
@@ -549,7 +562,7 @@ class Queue extends Model {
     }
 
     /**
-     * Gets the decoded output json
+     * Gets the decoded output json.
      *
      * @return array
      */
@@ -569,11 +582,12 @@ class Queue extends Model {
                 }
             }
         }
+
         return $rewards;
     }
 
     /**
-     * Interprets the json output and retrieves the corresponding items
+     * Interprets the json output and retrieves the corresponding items.
      *
      * @return array
      */

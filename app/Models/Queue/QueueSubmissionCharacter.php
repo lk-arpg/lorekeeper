@@ -58,15 +58,13 @@ class QueueSubmissionCharacter extends Model {
 
     **********************************************************************************************/
 
-
     /**
      * Get the artist of the item's image.
      *
      * @return string
      */
-    public function getIconArtistAttribute()
-    {
-        if (! isset($this->data['artist_id'])) {
+    public function getIconArtistAttribute() {
+        if (!isset($this->data['artist_id'])) {
             return null;
         }
 
@@ -74,8 +72,7 @@ class QueueSubmissionCharacter extends Model {
         if ($user) {
             return $user->displayName;
         }
+
         return null;
-
     }
-
 }

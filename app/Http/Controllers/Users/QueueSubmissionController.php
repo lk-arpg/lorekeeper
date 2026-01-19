@@ -1,10 +1,10 @@
 <?php
+
 namespace App\Http\Controllers\Users;
 
 use App\Facades\Settings;
 use App\Http\Controllers\Controller;
 use App\Models\Character\Character;
-use App\Models\Currency\Currency;
 use App\Models\Item\Item;
 use App\Models\Item\ItemCategory;
 use App\Models\Queue\Queue;
@@ -15,8 +15,7 @@ use App\Services\QueueSubmissionManager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class QueueSubmissionController extends Controller
-{
+class QueueSubmissionController extends Controller {
     /*
     |--------------------------------------------------------------------------
     | Submission Controller
@@ -35,28 +34,32 @@ class QueueSubmissionController extends Controller
     /**
      * Shows the user's submission log.
      *
+     * @param mixed|null $id
+     *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getIndex(Request $request, $id = null)
-    {
+    public function getIndex(Request $request, $id = null) {
         $submissions = QueueSubmission::with('queue')->where('user_id', Auth::user()->id)->whereNotNull('queue_id')->whereHas('queue', function ($query) {
             return $query->active()->staffOnly(Auth::user());
         });
-        $type        = $request->get('type');
-        if (! $type) {
+        $type = $request->get('type');
+        if (!$type) {
             $type = 'Pending';
         }
 
         $queue = Queue::active()->staffOnly(Auth::user())->find($id);
-        if (isset($id) && !$queue) abort(404);
-        if (isset($id))
+        if (isset($id) && !$queue) {
+            abort(404);
+        }
+        if (isset($id)) {
             $submissions = $submissions->where('queue_id', $id);
+        }
 
         $submissions = $submissions->where('status', ucfirst($type));
 
         return view('home.queues.submissions', [
             'submissions' => $submissions->orderBy('id', 'DESC')->paginate(20)->appends($request->query()),
-            'queue' => $queue,
+            'queue'       => $queue,
             'isClaims'    => false,
         ]);
     }
@@ -68,12 +71,11 @@ class QueueSubmissionController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getSubmission($id)
-    {
+    public function getSubmission($id) {
         $submission = QueueSubmission::viewable(Auth::user())->where('id', $id)->whereNotNull('queue_id')->first();
 
-        $inventory  = isset($submission->data['user']) ? parseAssetData($submission->data['user']) : null;
-        if (! $submission) {
+        $inventory = isset($submission->data['user']) ? parseAssetData($submission->data['user']) : null;
+        if (!$submission) {
             abort(404);
         }
 
@@ -87,7 +89,7 @@ class QueueSubmissionController extends Controller
             'user'       => $submission->user,
             'categories' => ItemCategory::orderBy('sort', 'DESC')->get(),
             'inventory'  => $inventory,
-            'itemsrow'   => Item::all()->keyBy('id'), //this keeps track of consumed items and will change if the prompt's items change so let's not change it
+            'itemsrow'   => Item::all()->keyBy('id'), // this keeps track of consumed items and will change if the prompt's items change so let's not change it
             'queue'      => $queue,
         ] + $queue->service->getActData($queue));
     }
@@ -95,13 +97,14 @@ class QueueSubmissionController extends Controller
     /**
      * Shows the submit page.
      *
+     * @param mixed $id
+     *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getNewSubmission(Request $request, $id)
-    {
-        $closed = ! Settings::get('is_queue_open');
+    public function getNewSubmission(Request $request, $id) {
+        $closed = !Settings::get('is_queue_open');
         $queue = Queue::active()->staffOnly(Auth::user())->find($id);
-        if (! $queue) {
+        if (!$queue) {
             abort(404);
         }
 
@@ -113,9 +116,9 @@ class QueueSubmissionController extends Controller
             'page'        => 'submission',
             'count'       => QueueSubmission::where('queue_id', $queue->id)->where('status', 'Approved')->where('user_id', Auth::user()->id)->count(),
         ] + $queue->service->getActData($queue) + ($queue->configSet('item_consume') ? [
-            'inventory'  => isset($queue->data['items']) ? UserItem::with('item')->whereNull('deleted_at')->where('count', '>', '0')->where('user_id', Auth::user()->id)->whereIn('item_id', $queue->data['items'])->get() : UserItem::with('item')->whereNull('deleted_at')->where('count', '>', '0')->where('user_id', Auth::user()->id)->get(),
-            'itemsrow'   => Item::all()->keyBy('id'),//this keeps track of consumed items and will change if the prompt's items change so let's not change it
-            'categories' => ItemCategory::orderBy('sort', 'DESC')->get(),
+            'inventory'   => isset($queue->data['items']) ? UserItem::with('item')->whereNull('deleted_at')->where('count', '>', '0')->where('user_id', Auth::user()->id)->whereIn('item_id', $queue->data['items'])->get() : UserItem::with('item')->whereNull('deleted_at')->where('count', '>', '0')->where('user_id', Auth::user()->id)->get(),
+            'itemsrow'    => Item::all()->keyBy('id'), // this keeps track of consumed items and will change if the prompt's items change so let's not change it
+            'categories'  => ItemCategory::orderBy('sort', 'DESC')->get(),
             'item_filter' => isset($queue->data['items']) ? Item::whereIn('id', $queue->data['items'])->get()->keyBy('id') : Item::orderBy('name')->released()->get()->keyBy('id'),
         ] : [])));
     }
@@ -127,31 +130,29 @@ class QueueSubmissionController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getEditSubmission(Request $request, $id)
-    {
-
-        $closed     = ! Settings::get('is_queue_open');
+    public function getEditSubmission(Request $request, $id) {
+        $closed = !Settings::get('is_queue_open');
         $submission = QueueSubmission::where('id', $id)->where('status', 'Draft')->where('user_id', Auth::user()->id)->first();
-        if (! $submission) {
+        if (!$submission) {
             abort(404);
         }
 
         $queue = $submission->queue;
-        if (! $queue) {
+        if (!$queue) {
             abort(404);
         }
 
         return view('home.queues.edit_submission', [
             'closed'  => $closed,
-            'queue'  => $queue,
+            'queue'   => $queue,
         ] + ($closed ? [] : [
             'submission'          => $submission,
             'count'               => QueueSubmission::where('queue_id', $submission->queue_id)->where('status', 'Approved')->where('user_id', $submission->user_id)->count(),
-        ]+ $queue->service->getActData($queue) + ($queue->configSet('item_consume') ? [
-            'inventory'  => isset($queue->data['items']) ? UserItem::with('item')->whereNull('deleted_at')->where('count', '>', '0')->where('user_id', Auth::user()->id)->whereIn('item_id', $queue->data['items'])->get() : UserItem::with('item')->whereNull('deleted_at')->where('count', '>', '0')->where('user_id', Auth::user()->id)->get(),
-            'itemsrow'   => Item::all()->keyBy('id'), //this keeps track of consumed items and will change if the prompt's items change so let's not change it
-            'categories' => ItemCategory::orderBy('sort', 'DESC')->get(),
-            'item_filter' => isset($queue->data['items']) ? Item::whereIn('id', $queue->data['items'])->get()->keyBy('id') : Item::orderBy('name')->released()->get()->keyBy('id'),
+        ] + $queue->service->getActData($queue) + ($queue->configSet('item_consume') ? [
+            'inventory'           => isset($queue->data['items']) ? UserItem::with('item')->whereNull('deleted_at')->where('count', '>', '0')->where('user_id', Auth::user()->id)->whereIn('item_id', $queue->data['items'])->get() : UserItem::with('item')->whereNull('deleted_at')->where('count', '>', '0')->where('user_id', Auth::user()->id)->get(),
+            'itemsrow'            => Item::all()->keyBy('id'), // this keeps track of consumed items and will change if the prompt's items change so let's not change it
+            'categories'          => ItemCategory::orderBy('sort', 'DESC')->get(),
+            'item_filter'         => isset($queue->data['items']) ? Item::whereIn('id', $queue->data['items'])->get()->keyBy('id') : Item::orderBy('name')->released()->get()->keyBy('id'),
             'page'                => 'queue-submission',
             'selectedInventory'   => isset($submission->data['user']) ? parseAssetData($submission->data['user']) : null,
         ] : [])));
@@ -164,8 +165,7 @@ class QueueSubmissionController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getCharacterInfo($slug)
-    {
+    public function getCharacterInfo($slug) {
         $character = Character::visible()->where('slug', $slug)->first();
 
         return view('home.queues._character', [
@@ -178,18 +178,19 @@ class QueueSubmissionController extends Controller
      *
      * @param App\Services\SubmissionManager $service
      * @param mixed                          $draft
+     * @param mixed                          $id
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postNewSubmission(Request $request, QueueSubmissionManager $service, $id, $draft = false)
-    {
+    public function postNewSubmission(Request $request, QueueSubmissionManager $service, $id, $draft = false) {
         $queue = Queue::active()->where('id', $id)->first();
-        if (! $queue) {
+        if (!$queue) {
             throw new \Exception('Invalid queue selected.');
         }
 
         $request->validate(QueueSubmission::$createRules);
-        if ($submission = $service->createSubmission($queue,
+        if ($submission = $service->createSubmission(
+            $queue,
             $request->all(),
             Auth::user(),
             $draft
@@ -197,11 +198,11 @@ class QueueSubmissionController extends Controller
             if ($submission->status == 'Draft') {
                 flash('Draft created successfully.')->success();
 
-                return redirect()->to('queue-submissions/draft/' . $submission->id);
+                return redirect()->to('queue-submissions/draft/'.$submission->id);
             } else {
                 flash('Queue submitted successfully.')->success();
 
-                return redirect()->to('queue-submissions/view/' . $submission->id);
+                return redirect()->to('queue-submissions/view/'.$submission->id);
             }
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
@@ -223,11 +224,9 @@ class QueueSubmissionController extends Controller
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postEditSubmission(Request $request, QueueSubmissionManager $service, $id, $submit = false)
-    {
-
+    public function postEditSubmission(Request $request, QueueSubmissionManager $service, $id, $submit = false) {
         $submission = QueueSubmission::where('id', $id)->where('status', 'Draft')->where('user_id', Auth::user()->id)->first();
-        if (! $submission) {
+        if (!$submission) {
             abort(404);
         }
 
@@ -246,7 +245,7 @@ class QueueSubmissionController extends Controller
             return redirect()->back()->withInput();
         }
 
-        return redirect()->to('queue-submissions/view/' . $submission->id);
+        return redirect()->to('queue-submissions/view/'.$submission->id);
     }
 
     /**
@@ -257,10 +256,9 @@ class QueueSubmissionController extends Controller
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postDeleteSubmission(Request $request, QueueSubmissionManager $service, $id)
-    {
+    public function postDeleteSubmission(Request $request, QueueSubmissionManager $service, $id) {
         $submission = QueueSubmission::where('id', $id)->where('status', 'Draft')->where('user_id', Auth::user()->id)->first();
-        if (! $submission) {
+        if (!$submission) {
             abort(404);
         }
 
@@ -285,10 +283,9 @@ class QueueSubmissionController extends Controller
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postCancelSubmission(Request $request, QueueSubmissionManager $service, $id)
-    {
+    public function postCancelSubmission(Request $request, QueueSubmissionManager $service, $id) {
         $submission = QueueSubmission::where('id', $id)->where('status', 'Pending')->where('user_id', Auth::user()->id)->first();
-        if (! $submission) {
+        if (!$submission) {
             abort(404);
         }
 
@@ -302,7 +299,6 @@ class QueueSubmissionController extends Controller
             return redirect()->back();
         }
 
-        return redirect()->to('queue-submissions/draft/' . $submission->id);
+        return redirect()->to('queue-submissions/draft/'.$submission->id);
     }
-
 }

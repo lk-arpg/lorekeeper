@@ -17,7 +17,7 @@ class Queue extends Model {
         'queue_category_id', 'name', 'summary', 'description', 'parsed_description', 'is_active',
         'start_at', 'end_at', 'hide_before_start', 'hide_after_end', 'has_image', 'prefix',
         'hide_submissions', 'staff_only', 'hash', 'form', 'parsed_form', 'queue_type', 'data', 'checklist', 'limit', 'limit_period', 'output', 'limit_concurrent',
-        'staff_rank_id',
+        'staff_rank_ids',
     ];
 
     /**

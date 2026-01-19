@@ -77,8 +77,8 @@ class AddQueueMaker extends Migration {
             // Staff rank restrictions
             $table->json('staff_rank_ids')->nullable()->default(null);
 
-            $table->longtext('output')->nullable()->default(null);
-            $table->longText('checklist')->nullable()->default(null);
+            $table->json('output')->nullable()->default(null);
+            $table->json('checklist')->nullable()->default(null);
 
             $table->integer('limit')->nullable()->default(null);
             $table->enum('limit_period', ['Hour', 'Day', 'Week', 'Month', 'Year'])->nullable()->default(null);

@@ -58,7 +58,7 @@
                         You have reached the submission cap or are not logged in.
                     </div>
                 @endif
-            </div>
-        @endif
-    </div>
+        </div>
+    @endif
+</div>
 </div>

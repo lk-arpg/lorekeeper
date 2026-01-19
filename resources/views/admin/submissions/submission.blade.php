@@ -36,9 +36,26 @@
                 </div>
                 <div class="row">
                     <div class="col-md-2 col-4">
-                        <h5>Previous Submissions</h5>
+                        <h5>Previous Submissions {!! add_help('This is the number of times the user has submitted this prompt before, pending or approved.') !!}</h5>
                     </div>
-                    <div class="col-md-10 col-8">{{ $count }} {!! add_help('This is the number of times the user has submitted this prompt before and had their submission approved.') !!}</div>
+                    <div class="col-md-10 col-8">
+                        <div class="row text-center">
+                            <div class="col"><strong>All Time</strong></div>
+                            <div class="col"><strong>Past Hour</strong></div>
+                            <div class="col"><strong>Past Day</strong></div>
+                            <div class="col"><strong>Past Week</strong></div>
+                            <div class="col"><strong>Past Month</strong></div>
+                            <div class="col"><strong>Past Year</strong></div>
+                        </div>
+                        <div class="row text-center">
+                            <div class="col">{{ $count['all'] }}</div>
+                            <div class="col">{{ $count['Hour'] }}</div>
+                            <div class="col">{{ $count['Day'] }}</div>
+                            <div class="col">{{ $count['Week'] }}</div>
+                            <div class="col">{{ $count['Month'] }}</div>
+                            <div class="col">{{ $count['Year'] }}</div>
+                        </div>
+                    </div>
                 </div>
             @endif
             <div class="row">

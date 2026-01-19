@@ -67,6 +67,13 @@
                 ])
             @endif
         </div>
+        <div class="text-right {{ $prompt->limit ? 'text-danger' : '' }}">
+            <p class="mb-1 mt-2">
+                {{ $prompt->limit ? 'You can submit this prompt ' . $prompt->limit . ' time(s)' : 'You can submit this prompt an unlimited number of times' }}
+                {{ $prompt->limit_period ? ' per ' . strtolower($prompt->limit_period) : '' }}
+                {{ $prompt->limit_character ? ' per character' : '' }}.
+            </p>
+        </div>
         <div class="text-right">
             @if ($prompt->end_at && $prompt->end_at->isPast())
                 <span class="text-secondary">This prompt has ended.</span>

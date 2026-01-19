@@ -166,6 +166,19 @@ class Submission extends Model {
         return $query->orderBy('id', $reverse ? 'ASC' : 'DESC');
     }
 
+    /**
+     * Scope a query to only include user's submissions.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param mixed                                 $prompt
+     * @param mixed                                 $user
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeSubmitted($query, $prompt, $user) {
+        return $query->where('prompt_id', $prompt)->where('status', '!=', 'Rejected')->where('user_id', $user);
+    }
+
     /**********************************************************************************************
 
         ACCESSORS

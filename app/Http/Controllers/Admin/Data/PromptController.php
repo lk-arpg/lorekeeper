@@ -37,7 +37,8 @@ class PromptController extends Controller {
      */
     public function getCreatePromptCategory() {
         return view('admin.prompts.create_edit_prompt_category', [
-            'category' => new PromptCategory,
+            'category'   => new PromptCategory,
+            'categories' => PromptCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
         ]);
     }
 
@@ -55,7 +56,8 @@ class PromptController extends Controller {
         }
 
         return view('admin.prompts.create_edit_prompt_category', [
-            'category' => $category,
+            'category'   => $category,
+            'categories' => PromptCategory::where('id', '!=', $category->id)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
         ]);
     }
 
@@ -70,7 +72,7 @@ class PromptController extends Controller {
     public function postCreateEditPromptCategory(Request $request, PromptService $service, $id = null) {
         $id ? $request->validate(PromptCategory::$updateRules) : $request->validate(PromptCategory::$createRules);
         $data = $request->only([
-            'name', 'description', 'image', 'remove_image',
+            'name', 'description', 'image', 'remove_image', 'parent_id',
         ]);
         if ($id && $service->updatePromptCategory(PromptCategory::find($id), $data, Auth::user())) {
             flash('Category updated successfully.')->success();
@@ -175,8 +177,9 @@ class PromptController extends Controller {
      */
     public function getCreatePrompt() {
         return view('admin.prompts.create_edit_prompt', [
-            'prompt'     => new Prompt,
-            'categories' => ['none' => 'No category'] + PromptCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'prompt'        => new Prompt,
+            'categories'    => ['none' => 'No category'] + PromptCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'limit_periods' => config('lorekeeper.extensions.limit_periods'),
         ]);
     }
 
@@ -194,8 +197,9 @@ class PromptController extends Controller {
         }
 
         return view('admin.prompts.create_edit_prompt', [
-            'prompt'     => $prompt,
-            'categories' => ['none' => 'No category'] + PromptCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'prompt'        => $prompt,
+            'categories'    => ['none' => 'No category'] + PromptCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'limit_periods' => config('lorekeeper.extensions.limit_periods'),
         ]);
     }
 
@@ -212,6 +216,7 @@ class PromptController extends Controller {
         $data = $request->only([
             'name', 'prompt_category_id', 'summary', 'description', 'start_at', 'end_at', 'hide_before_start', 'hide_after_end', 'is_active', 'image', 'remove_image', 'prefix', 'hide_submissions', 'staff_only',
             'rewardable_type', 'rewardable_id', 'quantity', 'rewardable_recipient',
+            'limit', 'limit_period', 'limit_character',
         ]);
         if ($id && $service->updatePrompt(Prompt::find($id), $data, Auth::user())) {
             flash('Prompt updated successfully.')->success();

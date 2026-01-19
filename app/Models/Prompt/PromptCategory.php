@@ -11,7 +11,7 @@ class PromptCategory extends Model {
      * @var array
      */
     protected $fillable = [
-        'name', 'sort', 'has_image', 'description', 'parsed_description', 'hash',
+        'name', 'sort', 'has_image', 'description', 'parsed_description', 'hash', 'parent_id',
     ];
 
     /**
@@ -41,6 +41,26 @@ class PromptCategory extends Model {
         'description' => 'nullable',
         'image'       => 'mimes:png',
     ];
+
+    /**********************************************************************************************
+
+        RELATIONSHIPS
+
+    **********************************************************************************************/
+
+    /**
+     * Gets the parent category of this category.
+     */
+    public function parent() {
+        return $this->belongsTo(self::class, 'parent_id');
+    }
+
+    /**
+     * Gets the child categories of this category.
+     */
+    public function children() {
+        return $this->hasMany(self::class, 'parent_id');
+    }
 
     /**********************************************************************************************
 

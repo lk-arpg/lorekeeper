@@ -25,10 +25,7 @@
             <div class="card-body">
                 @include('prompts._entry', [
                     'edit' => ['object' => $category, 'title' => 'Category'],
-                    'imageUrl' => $category->categoryImageUrl,
-                    'name' => $category->displayName,
-                    'description' => $category->parsed_description,
-                    'searchUrl' => $category->searchUrl,
+                    'category' => $category,
                 ])
             </div>
         </div>

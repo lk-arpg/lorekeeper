@@ -1,9 +1,7 @@
-<h3>Rewards</h3>
-<h4>User Rewards <i class="fas fa-user"></i></h4>
-@if (!$queue->rewards)
-    No user rewards.
+@if (!count($queue->rewards))
+    No rewards.
 @else
-    <table class="table table-sm">
+    <table class="table table-sm mb-0">
         <thead>
             <tr>
                 <th width="70%">Reward</th>
@@ -11,49 +9,15 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($queue->rewardItems as $key => $type)
-                @if (count($type))
-                    <tr>
-                        <td colspan="2"><strong>{!! strtoupper($key) !!}</strong></td>
-                    </tr>
-                    @foreach ($type as $asset)
-                        <tr>
-                            <td>{!! $asset['asset']->displayName !!}</td>
-                            <td>{{ $asset['quantity'] }}</td>
-                        </tr>
-                    @endforeach
-                @endif
+            @foreach ($queue->rewards as $reward)
+                <tr>
+                    <td>
+                        {!! $reward->rewardable_recipient == 'User' ? '<i class="fas fa-user" data-toggle="tooltip" title="User Reward"></i>' : '<i class="fas fa-paw" data-toggle="tooltip" title="Character Reward"></i>' !!}
+                        {!! $reward->reward ? $reward->reward->displayName : $reward->rewardable_type !!}
+                    </td>
+                    <td>{{ $reward->quantity }}</td>
+                </tr>
             @endforeach
         </tbody>
     </table>
-@endif
-@if ($queue->configSet('character_submit'))
-    <h4>Character Rewards <i class="fas fa-paw"></i></h4>
-    @if (!$queue->characterRewards)
-        No character rewards.
-    @else
-        <table class="table table-sm">
-            <thead>
-                <tr>
-                    <th width="70%">Reward</th>
-                    <th width="30%">Amount</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($queue->characterRewardItems as $key => $type)
-                    @if (count($type))
-                        <tr>
-                            <td colspan="2"><strong>{!! strtoupper($key) !!}</strong></td>
-                        </tr>
-                        @foreach ($type as $asset)
-                            <tr>
-                                <td>{!! $asset['asset']->displayName !!}</td>
-                                <td>{{ $asset['quantity'] }}</td>
-                            </tr>
-                        @endforeach
-                    @endif
-                @endforeach
-            </tbody>
-        </table>
-    @endif
 @endif

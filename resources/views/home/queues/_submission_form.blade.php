@@ -29,7 +29,6 @@
     {!! Form::textarea('comments', isset($submission->parsed_comments) ? $submission->parsed_comments : (old('comments') ? Request::get('comments') : ($queue->parsed_form ? $queue->parsed_form : null)), ['class' => 'form-control wysiwyg']) !!}
 </div>
 
-
 <div class="mb-3">
     @include('home.queues._queue', ['staffView' => false])
 </div>
@@ -62,7 +61,7 @@
     <div class="card mb-3">
         <div class="card-header h2">Characters</div>
         <div class="card-body">
-            <p>This queue does not use characters.</p>
+            <p class="mb-0">This queue does not use characters.</p>
         </div>
     </div>
 @endif
@@ -72,7 +71,7 @@
         Add-Ons
     </div>
     <div class="card-body">
-        @if ($queue->configSet('item_consume'))
+        @if ($queue->configSet('consume_items'))
             <p>If your submission consumes items, attach them here. Otherwise, this section can be left blank. These items will be removed from your inventory but refunded if your submission is
                 rejected.</p>
             @if (isset($queue->data['items']))
@@ -98,7 +97,7 @@
                 ])
             </div>
         @else
-            <p>This queue does not consume add-ons.</p>
+            <p class="mb-0">This queue does not consume add-ons.</p>
         @endif
     </div>
 </div>
@@ -156,3 +155,5 @@
 @if ($queue->configSet('character_submit') && View::exists('home.queues.types.characters.' . $queue->queue_type . '_select'))
     @include('home.queues.types.characters.' . $queue->queue_type . '_select')
 @endif
+
+@include('js._tinymce_wysiwyg')

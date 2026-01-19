@@ -68,7 +68,6 @@
             @include('home.queues._queue', ['queue' => $submission->queue, 'staffView' => true])
         </div>
 
-
         <div class="card mb-3">
             <div class="card-header h2">Characters</div>
             <div class="card-body">
@@ -92,57 +91,60 @@
             </div>
         </div>
 
-        <h2>Add-Ons</h2>
-        @if ($queue->configSet('item_consume'))
-            @if (isset($inventory['user_items']))
-                <p>These items have been removed from the submitter's inventory and will be refunded if the request is rejected or consumed if it is approved.</p>
-                <table class="table table-sm">
-                    <thead class="thead-light">
-                        <tr class="d-flex">
-                            <th class="col-2">Item</th>
-                            <th class="col-4">Source</th>
-                            <th class="col-4">Notes</th>
-                            <th class="col-2">Quantity</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($inventory['user_items'] as $itemRow)
-                            <tr class="d-flex">
-                                <td class="col-2">
-                                    @if (isset($itemsrow[$itemRow['asset']->item_id]->image_url))
-                                        <img class="small-icon" src="{{ $itemsrow[$itemRow['asset']->item_id]->image_url }}" alt="{{ $itemsrow[$itemRow['asset']->item_id]->name }}">
-                                    @endif {!! $itemsrow[$itemRow['asset']->item_id]->name !!}
-                                <td class="col-4">{!! array_key_exists('data', $itemRow['asset']->data) ? ($itemRow['asset']->data['data'] ? $itemRow['asset']->data['data'] : 'N/A') : 'N/A' !!}</td>
-                                <td class="col-4">{!! array_key_exists('notes', $itemRow['asset']->data) ? ($itemRow['asset']->data['notes'] ? $itemRow['asset']->data['notes'] : 'N/A') : 'N/A' !!}</td>
-                                <td class="col-2">{!! $itemRow['quantity'] !!}
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            @endif
-
-            @if (isset($inventory['currencies']))
-                <h3>{!! $submission->user->displayName !!}'s Bank</h3>
-                <table class="table table-sm mb-3">
-                    <thead>
-                        <tr>
-                            <th width="70%">Currency</th>
-                            <th width="30%">Quantity</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($inventory['currencies'] as $currency)
-                            <tr>
-                                <td>{!! $currency['asset']->name !!}</td>
-                                <td>{{ $currency['quantity'] }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            @endif
-        @else
-            <p>This queue does not consume add-ons.</p>
-        @endif
+        <div class="card mb-3">
+            <div class="card-header h2">Add-Ons</div>
+            <div class="card-body">
+                @if ($queue->configSet('consume_items'))
+                    @if (isset($inventory['user_items']))
+                        <p>These items have been removed from the submitter's inventory and will be refunded if the request is rejected or consumed if it is approved.</p>
+                        <table class="table table-sm">
+                            <thead class="thead-light">
+                                <tr class="d-flex">
+                                    <th class="col-2">Item</th>
+                                    <th class="col-4">Source</th>
+                                    <th class="col-4">Notes</th>
+                                    <th class="col-2">Quantity</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($inventory['user_items'] as $itemRow)
+                                    <tr class="d-flex">
+                                        <td class="col-2">
+                                            @if (isset($itemsrow[$itemRow['asset']->item_id]->image_url))
+                                                <img class="small-icon" src="{{ $itemsrow[$itemRow['asset']->item_id]->image_url }}" alt="{{ $itemsrow[$itemRow['asset']->item_id]->name }}">
+                                            @endif {!! $itemsrow[$itemRow['asset']->item_id]->name !!}
+                                        <td class="col-4">{!! array_key_exists('data', $itemRow['asset']->data) ? ($itemRow['asset']->data['data'] ? $itemRow['asset']->data['data'] : 'N/A') : 'N/A' !!}</td>
+                                        <td class="col-4">{!! array_key_exists('notes', $itemRow['asset']->data) ? ($itemRow['asset']->data['notes'] ? $itemRow['asset']->data['notes'] : 'N/A') : 'N/A' !!}</td>
+                                        <td class="col-2">{!! $itemRow['quantity'] !!}
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    @endif
+                    @if (isset($inventory['currencies']))
+                        <h3>{!! $submission->user->displayName !!}'s Bank</h3>
+                        <table class="table table-sm mb-3">
+                            <thead>
+                                <tr>
+                                    <th width="70%">Currency</th>
+                                    <th width="30%">Quantity</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($inventory['currencies'] as $currency)
+                                    <tr>
+                                        <td>{!! $currency['asset']->name !!}</td>
+                                        <td>{{ $currency['quantity'] }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    @endif
+                @else
+                    <p class="mb-0">This queue does not consume add-ons.</p>
+                @endif
+            </div>
+        </div>
 
         <div class="form-group">
             {!! Form::label('staff_comments', 'Staff Comments (Optional)') !!}
@@ -208,6 +210,7 @@
 
 @section('scripts')
     @parent
+    @include('js._tinymce_wysiwyg')
     @if ($submission->status == 'Pending')
         @include('js._loot_js', ['showLootTables' => true, 'showRaffles' => true])
         @if ($queue->configSet('character_submit') && View::exists('home.queues.types.characters.' . $queue->queue_type . '_select_js'))

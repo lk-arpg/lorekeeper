@@ -174,8 +174,8 @@ class QueueCategory extends Model {
      *
      * @return bool
      */
-    public function checkLimit($user) {
-        if (isset($this->limit)) {
+    public function checkSubmissionLimit($user) {
+        if ($this->limit) {
             if ($this->logCount($user) >= $this->limit) {
                 return false;
             }
@@ -191,8 +191,8 @@ class QueueCategory extends Model {
      *
      * @return int
      */
-    public function logCount($user) {
-        if (isset($this->limit)) {
+    public function submissionLogCount($user) {
+        if ($this->limit) {
             $final = null;
             foreach ($this->queues as $q) {
                 switch ($this->limit_period) {
@@ -208,8 +208,17 @@ class QueueCategory extends Model {
                     case 'Week':
                         $final = $final + QueueSubmission::submitted($q->id, $user->id)->where('created_at', '>=', now()->startOfWeek())->count();
                         break;
+                    case 'BiWeekly':
+                        $final = $final + QueueSubmission::submitted($q->id, $user->id)->where('created_at', '>=', now()->subWeeks(2))->count();
+                        break;
                     case 'Month':
                         $final = $final + QueueSubmission::submitted($q->id, $user->id)->where('created_at', '>=', now()->startOfMonth())->count();
+                        break;
+                    case 'BiMonthly':
+                        $final = $final + QueueSubmission::submitted($q->id, $user->id)->where('created_at', '>=', now()->subMonths(2))->count();
+                        break;
+                    case 'Quarter':
+                        $final = $final + QueueSubmission::submitted($q->id, $user->id)->where('created_at', '>=', now()->subMonths(3))->count();
                         break;
                     case 'Year':
                         $final = $final + QueueSubmission::submitted($q->id, $user->id)->where('created_at', '>=', now()->startOfYear())->count();
@@ -230,7 +239,7 @@ class QueueCategory extends Model {
      *
      * @return bool
      */
-    public function checkConcurrent($user) {
+    public function checkConcurrentSubmissionLimit($user) {
         if (isset($this->limit_concurrent)) {
             $final = null;
             foreach ($this->queues as $q) {

@@ -16,7 +16,7 @@ class AddQueueMaker extends Migration {
         Schema::create('queue_categories', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
-            $table->string('key', 30)->unique();
+            $table->string('key', 30)->unique()->nullable()->default(null);
 
             $table->string('name');
             $table->text('description')->nullable()->default(null);
@@ -63,7 +63,7 @@ class AddQueueMaker extends Migration {
             $table->text('form')->nullable()->default(null);
             $table->text('parsed_form')->nullable()->default(null);
 
-            $table->string('queue_type')->default('vanilla');
+            $table->string('queue_type')->nullable()->default(null);
             $table->json('data')->nullable()->default(null);
 
             $table->string('hash', 10)->nullable()->default(null);
@@ -81,7 +81,8 @@ class AddQueueMaker extends Migration {
             $table->json('checklist')->nullable()->default(null);
 
             $table->integer('limit')->nullable()->default(null);
-            $table->enum('limit_period', ['Hour', 'Day', 'Week', 'Month', 'Year'])->nullable()->default(null);
+            $table->text('limit_period')->nullable()->default(null);
+            $table->boolean('limit_character')->nullable()->default(null);
             $table->integer('limit_concurrent')->nullable()->default(null);
         });
 

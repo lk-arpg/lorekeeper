@@ -16,9 +16,12 @@
 
             @if (isset($category->limit))
                 <div class="alert alert-info text-center">
-                    You can submit to queues within this category {{ $category->limit }} {{ $category->limit > 1 ? 'times' : 'time' }}{{ $category->limit_period ? ' per ' . strtolower($category->limit_period) : '' }}. ( Submitted
-                    {{ $category->logCount(Auth::user()) }} /
-                    {{ $category->limit }} )
+                    You can submit to queues within this category {{ $category->limit }} {{ $category->limit > 1 ? 'times' : 'time' }}{{ $category->limit_period ? ' per ' . strtolower($category->limit_period) : '' }}.
+                    @if (Auth::check())
+                        (Submitted
+                        {{ $category->logCount(Auth::user()) ?? 0 }} /
+                        {{ $category->limit }})
+                    @endif
                 </div>
             @endif
             @if (isset($category->limit_concurrent))

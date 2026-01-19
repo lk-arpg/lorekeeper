@@ -61,7 +61,7 @@
     @endif
 </div>
 <div class="card mb-3">
-    <div class="card-header h2">Rewards</div>
+    <div class="card-header h2">Default Rewards</div>
     <div class="card-body">
         <table class="table table-sm">
             <thead>
@@ -115,7 +115,7 @@
 
 <div class="card mb-3">
     <div class="card-header h2">Add-Ons</div>
-    @if ($queue->configSet('item_consume'))
+    @if ($queue->configSet('consume_items'))
         <div class="card-body">
             @if (isset($inventory['user_items']) && array_filter($inventory['user_items']))
                 <p>These items have been removed from the submitter's inventory and will be refunded if the request is rejected or consumed if it is approved.</p>
@@ -169,7 +169,7 @@
         @endif
     @else
         <div class="card-body">
-            <p>This queue does not consume add-ons.</p>
+            <p class="mb-0">This queue does not consume add-ons.</p>
         </div>
     @endif
 </div>

@@ -7,6 +7,7 @@
             <p>You have completed this queue <strong>{{ $count }}</strong> time{{ $count == 1 ? '' : 's' }}.</p>
             @include('queues._queue_limits', ['staff' => false, 'user' => Auth::user()])
         @endif
+        <h3>Default Rewards</h3>
         @include('queues._queue_rewards')
         <hr>
         @if (View::exists('home.queues.types.' . $queue->queue_type))

@@ -30,7 +30,10 @@
 
     <div class="form-group">
         {!! Form::label('World Page Image (Optional)') !!} {!! add_help('This image is used only on the world information pages.') !!}
-        <div>{!! Form::file('image') !!}</div>
+        <div class="custom-file">
+            {!! Form::label('image', 'Choose file...', ['class' => 'custom-file-label']) !!}
+            {!! Form::file('image', ['class' => 'custom-file-input']) !!}
+        </div>
         <div class="text-muted">Recommended size: 100px x 100px</div>
         @if ($queue->has_image)
             <div class="form-check">
@@ -50,7 +53,7 @@
         <div class="col-md-6">
             <div class="form-group">
                 {!! Form::label('Associated Staff Ranks (Optional)') !!}{!! add_help('Queues are shown to all staff with the submission power by default. Setting this makes it so that only selected ranks will see this queue.') !!}
-                {!! Form::select('staff_rank_id[]', $ranks, $queue->staff_rank_id, ['class' => 'form-control selectize', 'multiple']) !!}
+                {!! Form::select('staff_rank_ids[]', $ranks, $queue->staff_rank_ids, ['class' => 'form-control selectize', 'multiple']) !!}
             </div>
         </div>
     </div>
@@ -103,94 +106,79 @@
         {!! Form::select('hide_submissions', [0 => 'Submissions Visible After Approval', 1 => 'Hide Submissions Until Queue Ends', 2 => 'Hide Submissions Always'], $queue->hide_submissions, ['class' => 'form-control']) !!}
     </div>
 
-    <div class="form-group">
-        {!! Form::label('User Form (Optional)') !!} {!! add_help('This is the template that will be shown in the comment section when a user select this queue in submission.') !!}
-        {!! Form::textarea('form', $queue->form, ['class' => 'form-control wysiwyg']) !!}
-    </div>
+    <div class="card mb-3">
+        <div class="card-header h3">Configuration Settings</div>
+        <div class="card-body">
 
-    <h3>Submission Limits (Optional)</h3>
-    <p>You can limit the amount of times a user can submit to this queue.</p>
-    <p>Set a number into number of submissions. This will be applied for all time if you leave period blank, or per time period (ex: once a month, twice a week) if selected.</p>
-    <div class="row">
-        <div class="col-md-4 form-group">
-            {!! Form::label('limit', 'Number of Submissions (Optional)') !!} {!! add_help('Enter a number to limit how many times a user can ubmit to this queue. Leave blank to allow endless submissions.') !!}
-            {!! Form::text('limit', $queue->limit, ['class' => 'form-control']) !!}
-        </div>
-        <div class="col-md-4 form-group">
-            {!! Form::label('limit_period', 'Limit Period') !!} {!! add_help('The time period that the limit is set for.') !!}
-            {!! Form::select('limit_period', $limit_periods, $queue->limit_period, ['class' => 'form-control', 'data-name' => 'limit_period']) !!}
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-4 form-group">
-            {!! Form::label('limit_concurrent', 'Concurrent Limit (Optional)') !!} {!! add_help(
-                'A limit to concurrent submissions (applies regardless of the limit above). This will check if the user has any pending or draft submissions and prevents them from making more after they hit the cap until they are processed. Leave blank to enforce no limit to concurrent submissions.',
-            ) !!}
-            {!! Form::text('limit_concurrent', $queue->limit_concurrent, ['class' => 'form-control']) !!}
-        </div>
-    </div>
+            <h5>User Form (Optional)</h5>
+            <p>This is the template that will be shown in the comment section when a user select this queue in submission.</p>
+            <div class="form-group">
+                {!! Form::label('User Form (Optional)') !!}
+                {!! Form::textarea('form', $queue->form, ['class' => 'form-control wysiwyg']) !!}
+            </div>
 
-    <h3>Checklist</h3>
-    <p>Create a checklist below to force users to acknowledge all necessary steps of submitting to the queue are complete. The user will not be able to submit until they have accepted that they have completed each step.</p>
-    <p>Each "line" represents one checkbox that will need to be ticked off.</p>
+            <hr />
 
-    <div class="text-right mb-3">
-        <a href="#" class="btn btn-info" id="addCheck">Add Step</a>
-    </div>
-    <table class="table table-sm" id="checkSeason">
-        <thead>
-            <tr>
-                <th width="40%">Step</th>
-                <th width="10%"></th>
-            </tr>
-        </thead>
-        <tbody id="checkSeasonBody">
-            @if ($queue->checklist)
-                @foreach ($queue->checklist as $check)
-                    <tr class="check-row">
-                        <td class="check-row-select">
-                            {!! Form::text('check_text[]', $check, [
-                                'class' => 'form-control',
-                                'placeholder' => 'Enter checklist text',
-                            ]) !!}
-                        </td>
-                        <td class="text-right"><a href="#" class="btn btn-danger remove-check-button">Remove</a>
-                        </td>
+            <h5>Queue Type</h5>
+            <p>Queue types change how the form changes in functionality.</p>
+            <div class="form-group">
+                {!! Form::select('queue_type', [null => 'Select a Type'] + $types, $queue->queue_type ?? null, ['class' => 'form-control']) !!}
+            </div>
+
+            <hr />
+
+            <h5>Checklist</h5>
+            <p>Create a checklist below to force users to acknowledge all necessary steps of submitting to the queue are complete. The user will not be able to submit until they have accepted that they have completed each step.</p>
+            <p>Each "line" represents one checkbox that will need to be ticked off.</p>
+
+            <div class="text-right mb-3">
+                <a href="#" class="btn btn-info" id="addCheck">Add Step</a>
+            </div>
+            <table class="table table-sm" id="checkList">
+                <thead>
+                    <tr>
+                        <th width="40%">Step</th>
+                        <th width="10%"></th>
                     </tr>
-                @endforeach
-            @endif
-        </tbody>
-    </table>
-
-    <h4 class="mt-5">Rewards</h4>
-    <p>Mods are able to modify the specific rewards granted at approval time.</p>
-    <p>You can add loot tables containing any kind of currencies (both user- and character-attached), but be sure to keep track of which are being distributed! Character-only currencies cannot be given to users.</p>
-
-    <h4>User Rewards <i class="fas fa-user"></i></h4>
-    <p>User rewards are credited on a per-user basis.</p>
-    @include('widgets._loot_select', ['loots' => $queue->rewards, 'showLootTables' => true, 'showRaffles' => true, 'prefix' => 'user_'])
-
-    @if (!$queue->id || $queue->configSet('character_submit'))
-        <h4>Character Rewards <i class="fas fa-paw"></i></h4>
-        <p>Character rewards are not currently functional and will need to be properly coded into a custom queue to suit its needs.</p>
-        @include('widgets._loot_select', ['loots' => $queue->characterRewards, 'showLootTables' => true, 'showRaffles' => true, 'prefix' => 'character_', 'isCharacter' => true])
-    @endif
-    <h3>Queue Type</h3>
-    <p>Queue types change how the form changes in functionality. If you are installing this extension blank, then select vanilla, as there is nothing else to swap to.</p>
-
-    <div class="form-group">
-        {!! Form::select('queue_type', [null => 'Select a Type'] + $types, $queue->queue_type ?? null, ['class' => 'form-control']) !!}
+                </thead>
+                <tbody id="checkListBody">
+                    @if ($queue->checklist)
+                        @foreach ($queue->checklist as $check)
+                            <tr class="check-row">
+                                <td class="check-row-select">
+                                    {!! Form::text('check_text[]', $check, [
+                                        'class' => 'form-control',
+                                        'placeholder' => 'Enter checklist text',
+                                    ]) !!}
+                                </td>
+                                <td class="text-right"><a href="#" class="btn btn-danger remove-check-button">Remove</a>
+                                </td>
+                            </tr>
+                        @endforeach
+                    @endif
+                </tbody>
+            </table>
+        </div>
     </div>
 
+    @include('widgets._add_submission_limits', ['object' => $queue])
+
+    {{-- blade-formatter-disable --}}
+    @include('widgets._add_rewards', [
+        'object' => $queue,
+        'useForm' => false,
+        'showRaffles' => true,
+        'showLootTables' => true,
+        'showRecipient' => $queue->configSet('can_character_submit') ?? false,
+        'info' => '<p>User rewards are credited on a per-user basis, character rewards are rewarded to all characters attached. Mods are able to modify the specific rewards granted at approval time.</p><p class="mb-0">You can add loot tables containing any kind of currencies (both user- and character-attached), but be sure to keep track of which are being distributed! <strong>Character-only currencies cannot be given to users.</strong></p>',
+    ])
+    {{-- blade-formatter-enable --}}
 
     <div class="text-right">
         {!! Form::submit($queue->id ? 'Edit' : 'Create', ['class' => 'btn btn-primary']) !!}
     </div>
 
     {!! Form::close() !!}
-
-    @include('widgets._loot_select_row', ['showLootTables' => true, 'showRaffles' => true, 'prefix' => 'user_'])
-    @include('widgets._loot_select_row', ['showLootTables' => true, 'showRaffles' => true, 'prefix' => 'character_', 'isCharacter' => true])
 
     <div id="checkRowData" class="hide">
         <table class="table table-sm">
@@ -212,7 +200,7 @@
             @include('admin.queues.types.' . $queue->queue_type, ['data' => $queue->data])
         @endif
 
-        @if ($queue->configSet('item_consume'))
+        @if ($queue->configSet('consume_items'))
             <h3>Item Preset</h3>
             <p>This queue consumes items, so you have the option to select which items the user may attach to their submission when they make it.</p>
             <div class="text-right mb-3">
@@ -250,7 +238,7 @@
 
         {!! Form::close() !!}
 
-        @if ($queue->configSet('item_consume'))
+        @if ($queue->configSet('consume_items'))
             <div id="presetRowData" class="hide">
                 <table class="table table-sm">
                     <tbody id="presetRow">
@@ -306,8 +294,12 @@
         <hr>
     @endif
 
-
     @if ($queue->id)
+        @include('widgets._add_limits', [
+            'object' => $queue,
+            'hideAutoUnlock' => true,
+        ])
+
         <h3>Preview</h3>
         <div class="card mb-3">
             <div class="card-body">
@@ -319,11 +311,11 @@
 
 @section('scripts')
     @parent
+    @include('widgets._datetimepicker_js')
+    @include('js._tinymce_wysiwyg')
     @if (View::exists('admin.queues.types.' . $queue->queue_type . '_js'))
         @include('admin.queues.types.' . $queue->queue_type . '_js', ['data' => $queue->data])
     @endif
-    @include('js._loot_js', ['showLootTables' => true, 'showRaffles' => true, 'prefix' => 'user_'])
-    @include('js._loot_js', ['showLootTables' => true, 'showRaffles' => true, 'prefix' => 'character_', 'isCharacter' => true])
     <script>
         $('.selectize').selectize();
 
@@ -338,16 +330,16 @@
                 timeFormat: 'HH:mm:ss',
             });
 
-            var $checkSeason = $('#checkSeasonBody');
+            var $checkList = $('#checkListBody');
             var $checkRow = $('#checkRow').find('.check-row');
             var $itemSelect = $('#checkRowData').find('.item-select');
 
-            $('#checkSeasonBody .selectize').selectize();
-            attachRemoveCheckListener($('#checkSeasonBody .remove-check-button'));
+            $('#checkListBody .selectize').selectize();
+            attachRemoveCheckListener($('#checkListBody .remove-check-button'));
             $('#addCheck').on('click', function(e) {
                 e.preventDefault();
                 var $clone = $checkRow.clone();
-                $checkSeason.append($clone);
+                $checkList.append($clone);
                 $clone.find('.selectize').selectize();
                 attachRemoveCheckListener($clone.find('.remove-check-button'));
             });

@@ -38,13 +38,14 @@
                 @elseif($queue->hide_submissions == 2)
                     <p class="text-info">Submissions to this queue are hidden.</p>
                 @endif
+                <h3>Default Rewards</h3>
                 @include('queues._queue_rewards')
                 @include('queues._queue_limits', ['staff' => false, 'user' => Auth::user()])
             </div>
         </div>
         @if (Auth::check())
             <div class="text-right">
-                @if ($queue->checkConcurrent(Auth::user()) && $queue->checkLimit(Auth::user()))
+                @if ($queue->checkConcurrentSubmissionLimit(Auth::user()) && $queue->checkSubmissionLimit(Auth::user()))
                     @if ($queue->end_at && $queue->end_at->isPast())
                         <span class="text-secondary">This queue has ended.</span>
                     @elseif($queue->start_at && $queue->start_at->isFuture())
@@ -57,7 +58,7 @@
                         You have reached the submission cap or are not logged in.
                     </div>
                 @endif
-        </div>
-    @endif
-</div>
+            </div>
+        @endif
+    </div>
 </div>

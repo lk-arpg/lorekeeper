@@ -85,12 +85,12 @@
                         <div class="col-6 col-md-3">
                             <div class="logs-table-cell">{!! pretty_date($submission->created_at) !!}</div>
                         </div>
-                        <div class="col-3 col-md-1">
+                        <div class="col-6 col-md-4">
                             <div class="logs-table-cell">
                                 <span class="btn btn-{{ $submission->status == 'Pending' ? 'secondary' : ($submission->status == 'Approved' ? 'success' : 'danger') }} btn-sm py-0 px-1">{{ $submission->status }}</span>
                             </div>
                         </div>
-                        <div class="col-3 col-md-1">
+                        <div class="col-6 col-md-1">
                             <div class="logs-table-cell"><a href="{{ $submission->adminUrl }}" class="btn btn-primary btn-sm py-0 px-1">Details</a></div>
                         </div>
                     </div>

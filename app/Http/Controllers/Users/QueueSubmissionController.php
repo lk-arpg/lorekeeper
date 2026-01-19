@@ -91,7 +91,7 @@ class QueueSubmissionController extends Controller {
             'inventory'  => $inventory,
             'itemsrow'   => Item::all()->keyBy('id'), // this keeps track of consumed items and will change if the prompt's items change so let's not change it
             'queue'      => $queue,
-        ] + $queue->service->getActData($queue));
+        ] + ($queue->service?->getActData($queue) ?? []));
     }
 
     /**
@@ -115,7 +115,8 @@ class QueueSubmissionController extends Controller {
             'submission'  => new QueueSubmission,
             'page'        => 'submission',
             'count'       => QueueSubmission::where('queue_id', $queue->id)->where('status', 'Approved')->where('user_id', Auth::user()->id)->count(),
-        ] + $queue->service->getActData($queue) + ($queue->configSet('item_consume') ? [
+        ] + ($queue->service?->getActData($queue) ?? [])
+        + ($queue->configSet('consume_items') ? [
             'inventory'   => isset($queue->data['items']) ? UserItem::with('item')->whereNull('deleted_at')->where('count', '>', '0')->where('user_id', Auth::user()->id)->whereIn('item_id', $queue->data['items'])->get() : UserItem::with('item')->whereNull('deleted_at')->where('count', '>', '0')->where('user_id', Auth::user()->id)->get(),
             'itemsrow'    => Item::all()->keyBy('id'), // this keeps track of consumed items and will change if the prompt's items change so let's not change it
             'categories'  => ItemCategory::orderBy('sort', 'DESC')->get(),
@@ -148,7 +149,8 @@ class QueueSubmissionController extends Controller {
         ] + ($closed ? [] : [
             'submission'          => $submission,
             'count'               => QueueSubmission::where('queue_id', $submission->queue_id)->where('status', 'Approved')->where('user_id', $submission->user_id)->count(),
-        ] + $queue->service->getActData($queue) + ($queue->configSet('item_consume') ? [
+        ] + ($queue->service?->getActData($queue) ?? [])
+        + ($queue->configSet('consume_items') ? [
             'inventory'           => isset($queue->data['items']) ? UserItem::with('item')->whereNull('deleted_at')->where('count', '>', '0')->where('user_id', Auth::user()->id)->whereIn('item_id', $queue->data['items'])->get() : UserItem::with('item')->whereNull('deleted_at')->where('count', '>', '0')->where('user_id', Auth::user()->id)->get(),
             'itemsrow'            => Item::all()->keyBy('id'), // this keeps track of consumed items and will change if the prompt's items change so let's not change it
             'categories'          => ItemCategory::orderBy('sort', 'DESC')->get(),

@@ -4,7 +4,7 @@ namespace App\Models\Queue;
 
 use App\Models\Item\Item;
 use App\Models\Model;
-use App\Services\Queue\GeneralService;
+use App\Models\Reward\Reward;
 use Carbon\Carbon;
 
 class Queue extends Model {
@@ -33,11 +33,12 @@ class Queue extends Model {
      * @var array
      */
     protected $casts = [
-        'start_at'  => 'datetime',
-        'end_at'    => 'datetime',
-        'data'      => 'array',
-        'checklist' => 'array',
-        'output'    => 'array',
+        'start_at'       => 'datetime',
+        'end_at'         => 'datetime',
+        'data'           => 'array',
+        'checklist'      => 'array',
+        'output'         => 'array',
+        'staff_rank_ids' => 'array',
     ];
 
     /**
@@ -92,6 +93,13 @@ class Queue extends Model {
         } else {
             return $this->hasMany(QueueSubmission::class, 'queue_id');
         }
+    }
+
+    /**
+     * Get the rewards attached to this prompt.
+     */
+    public function rewards() {
+        return $this->morphMany(Reward::class, 'object', 'object_model', 'object_id');
     }
 
     /**********************************************************************************************
@@ -356,6 +364,15 @@ class Queue extends Model {
      * @return mixed
      */
     public function getServiceAttribute() {
+        if (!$this->queue_type) {
+            return null;
+        }
+
+        // check class exists
+        if (!class_exists('App\Services\Queue\\'.str_replace(' ', '', ucwords(str_replace('_', ' ', $this->queue_type))).'Service')) {
+            return null;
+        }
+
         $class = 'App\Services\Queue\\'.str_replace(' ', '', ucwords(str_replace('_', ' ', $this->queue_type))).'Service';
 
         return new $class;
@@ -422,15 +439,6 @@ class Queue extends Model {
     }
 
     /**
-     * Get the general service.
-     *
-     * @return mixed
-     */
-    public function getGeneralServiceAttribute() {
-        return new GeneralService;
-    }
-
-    /**
      * Get the config data.
      *
      * @param mixed $key
@@ -461,23 +469,27 @@ class Queue extends Model {
         return $final;
     }
 
-    /** Gets the staff rank id as a list of ids */
-    public function getStaffRankIdAttribute($value) {
-        return json_decode($value);
-    }
-
     /**********************************************************************************************
-    OTHER
-     **********************************************************************************************/
 
-    public function checkLimit($user) {
+        OTHER FUNCTIONS
+
+    **********************************************************************************************/
+
+    /**
+     * Determine if the user has exceeded the submission limit for a queue.
+     *
+     * @param mixed $user
+     *
+     * @return bool
+     */
+    public function checkSubmissionLimit($user) {
         // categories supersede all.
         if ($this->queue_category_id && isset($this->category->limit)) {
-            return $this->category->checkLimit($user);
+            return $this->category->checkSubmissionLimit($user);
         }
 
         if (isset($this->limit)) {
-            if ($this->logCount($user) >= $this->limit) {
+            if ($this->submissionLogCount($user) >= $this->limit) {
                 return false;
             }
         }
@@ -485,8 +497,13 @@ class Queue extends Model {
         return true;
     }
 
-    public function logCount($user) {
-        if (isset($this->limit)) {
+    /**
+     * Get the count of total submissions for this queue.
+     *
+     * @param mixed $user
+     */
+    public function submissionLogCount($user) {
+        if ($this->limit) {
             switch ($this->limit_period) {
                 case null:
                     return QueueSubmission::submitted($this->id, $user->id)->count();
@@ -500,8 +517,17 @@ class Queue extends Model {
                 case 'Week':
                     return QueueSubmission::submitted($this->id, $user->id)->where('created_at', '>=', now()->startOfWeek())->count();
                     break;
+                case 'BiWeekly':
+                    return QueueSubmission::submitted($this->id, $user->id)->where('created_at', '>=', now()->subWeeks(2))->count();
+                    break;
                 case 'Month':
                     return QueueSubmission::submitted($this->id, $user->id)->where('created_at', '>=', now()->startOfMonth())->count();
+                    break;
+                case 'BiMonthly':
+                    return QueueSubmission::submitted($this->id, $user->id)->where('created_at', '>=', now()->subMonths(2))->count();
+                    break;
+                case 'Quarter':
+                    return QueueSubmission::submitted($this->id, $user->id)->where('created_at', '>=', now()->subMonths(3))->count();
                     break;
                 case 'Year':
                     return QueueSubmission::submitted($this->id, $user->id)->where('created_at', '>=', now()->startOfYear())->count();
@@ -512,10 +538,17 @@ class Queue extends Model {
         return null;
     }
 
-    public function checkConcurrent($user) {
+    /**
+     * Determine if the user has exceeded the concurrent submission limit for a queue.
+     *
+     * @param mixed $user
+     *
+     * @return bool
+     */
+    public function checkConcurrentSubmissionLimit($user) {
         // categories supersede all.
         if ($this->queue_category_id && isset($this->category->limit_concurrent)) {
-            return $this->category->checkConcurrent($user);
+            return $this->category->checkConcurrentSubmissionLimit($user);
         }
 
         if (isset($this->limit_concurrent)) {
@@ -525,73 +558,5 @@ class Queue extends Model {
         }
 
         return true;
-    }
-
-    /**
-     * Gets the decoded output json.
-     *
-     * @return array
-     */
-    public function getRewardsAttribute() {
-        $rewards = [];
-        if (isset($this->output['users'])) {
-            $assets = $this->getRewardItemsAttribute();
-
-            foreach ($assets as $type => $a) {
-                $class = getAssetModelString($type, false);
-                foreach ($a as $id => $asset) {
-                    $rewards[] = (object) [
-                        'rewardable_type' => $class,
-                        'rewardable_id'   => $id,
-                        'quantity'        => $asset['quantity'],
-                    ];
-                }
-            }
-        }
-
-        return $rewards;
-    }
-
-    /**
-     * Interprets the json output and retrieves the corresponding items.
-     *
-     * @return array
-     */
-    public function getRewardItemsAttribute() {
-        return parseAssetData($this->output['users']);
-    }
-
-    /**
-     * Gets the decoded output json.
-     *
-     * @return array
-     */
-    public function getCharacterRewardsAttribute() {
-        $rewards = [];
-        if (isset($this->output['characters'])) {
-            $assets = $this->getCharacterRewardItemsAttribute();
-
-            foreach ($assets as $type => $a) {
-                $class = getAssetModelString($type, false);
-                foreach ($a as $id => $asset) {
-                    $rewards[] = (object) [
-                        'rewardable_type' => $class,
-                        'rewardable_id'   => $id,
-                        'quantity'        => $asset['quantity'],
-                    ];
-                }
-            }
-        }
-
-        return $rewards;
-    }
-
-    /**
-     * Interprets the json output and retrieves the corresponding items.
-     *
-     * @return array
-     */
-    public function getCharacterRewardItemsAttribute() {
-        return parseAssetData($this->output['characters']);
     }
 }

@@ -105,7 +105,8 @@ class QueueSubmissionController extends Controller {
             'itemsrow'         => Item::all()->keyBy('id'),
             'page'             => 'submission',
             'characters'       => Character::visible(Auth::user() ?? null)->myo(0)->orderBy('slug', 'DESC')->get()->pluck('fullName', 'slug')->toArray(),
-        ] + $queue->service->getActData($queue) + ($submission->status == 'Pending' ? [
+        ] + ($queue->service?->getActData($queue) ?? [])
+        + ($submission->status == 'Pending' ? [
             'count'               => QueueSubmission::where('queue_id', $submission->queue_id)->where('status', 'Approved')->where('user_id', $submission->user_id)->count(),
         ] : []));
     }

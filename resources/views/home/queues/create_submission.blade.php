@@ -64,7 +64,7 @@
         @if ($queue->configSet('character_submit') && View::exists('home.queues.types.characters.' . $queue->queue_type . '_select_js'))
             @include('home.queues.types.characters.' . $queue->queue_type . '_select_js')
         @endif
-        @if ($queue->configSet('item_consume'))
+        @if ($queue->configSet('consume_items'))
             @include('widgets._inventory_select_js')
             @include('widgets._bank_select_row', ['owners' => [Auth::user()]])
             @include('widgets._bank_select_js', [])

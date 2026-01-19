@@ -15,7 +15,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 
-class QueueSubmissionManager extends Service {
+class QueueSubmissionManager extends CommonSubmissionManager {
     /*
     |--------------------------------------------------------------------------
     | Submission Manager
@@ -50,12 +50,12 @@ class QueueSubmissionManager extends Service {
                 throw new \Exception('This queue may only be submitted to by staff members.');
             }
 
-            if (!$queue->checkConcurrent($user)) {
+            if (!$queue->checkConcurrentSubmissionLimit($user)) {
                 throw new \Exception('This queue does not permit you to submit more submissions while you have '.$queue->limit_concurrent.' of them of them pending or in draft at the same time. Please wait for your submissions to be processed before trying to submit again.');
             }
 
             if ($queue->limit) {
-                if (!$queue->checkLimit($user)) {
+                if (!$queue->checkSubmissionLimit($user)) {
                     throw new \Exception('You have already submitted to this queue the maximum number of times.');
                 }
             }
@@ -76,22 +76,14 @@ class QueueSubmissionManager extends Service {
                 'queue_id'        => $queue->id,
             ]);
 
+            // Then, re-attach everything fresh.
             $assets = $this->createUserAttachments($submission, $data, $user);
-            $queueRewards = $assets['queueRewards'];
-            if ($queue->configSet('item_consume')) {
-                // Set items that have been attached.
-                $userAssets = $assets['userAssets'];
-            }
+            $userAssets = $queue->configSet('consume_items') ? $assets['userAssets'] : [];
+            $queueRewards = $assets['promptRewards'];
+            $characterRewards = $queue->configSet('character_submit') ? $assets['characterRewards'] : [];
 
             // carry out the initial processes when submitting the queue's form
-            $service = $queue->service;
-
-            if ($queue->configSet('character_submit')) {
-                if (!$this->createCharacterAttachments($submission, $data, $service, $user)) {
-                    throw new \Exception('Failed to handle submission characters.');
-                }
-            }
-            if (method_exists($queue->service, 'submit')) {
+            if ($queue->service && method_exists($queue->service, 'submit')) {
                 if (!$service->submit($queue, $data, $user, $submission)) {
                     foreach ($service->errors()->getMessages()['error'] as $error) {
                         flash($error)->error();
@@ -102,11 +94,20 @@ class QueueSubmissionManager extends Service {
 
             $submission->update([
                 'data' => [
-                    'user'    => $queue->configSet('item_consume') ? Arr::only(getDataReadyAssets($userAssets), ['user_items', 'currencies']) : null,
-                    'queue'   => method_exists($queue->service, 'processSubmit') ? $queue->service->processSubmit($queue, $data, $user, $submission) : null,
-                    'rewards' => getDataReadyAssets($queueRewards),
+                    'user'              => $queue->configSet('consume_items') ?
+                        Arr::only(getDataReadyAssets($userAssets), ['user_items', 'currencies']) : [],
+                    'rewards'           => getDataReadyAssets($queueRewards),
+                    'character_rewards' => getDataReadyAssets($characterRewards),
+                    'queue'             => ($queue->service && method_exists($queue->service, 'processSubmission')) ?
+                        $queue->service->processSubmission($queue, $data, $user, $submission) : null,
                 ],
             ]);
+
+            if ($queue->configSet('character_submit')) {
+                if (!$this->createCharacterAttachments($submission, $data, [], $service)) {
+                    throw new \Exception('Failed to handle submission characters.');
+                }
+            }
 
             return $this->commitReturn($submission);
         } catch (\Exception $e) {
@@ -143,7 +144,7 @@ class QueueSubmissionManager extends Service {
 
             // First, return all items and currency applied.
             // Also, as this is an edit, delete all attached characters to be re-applied later.
-            if ($queue->configSet('item_consume')) {
+            if ($queue->configSet('consume_items')) {
                 $this->removeAttachments($submission);
             }
 
@@ -155,21 +156,19 @@ class QueueSubmissionManager extends Service {
                 $submission->update(['status' => 'Pending', 'submitted_at' => Carbon::now()]);
             }
 
+            // Then, re-attach everything fresh.
             $assets = $this->createUserAttachments($submission, $data, $user);
-            $queueRewards = $assets['queueRewards'];
-            if ($queue->configSet('item_consume')) {
-                // Then, re-attach everything fresh.
-                $userAssets = $assets['userAssets'];
-            }
-
-            $service = $queue->service;
-
+            $userAssets = $queue->configSet('consume_items') ? $assets['userAssets'] : [];
+            $queueRewards = $assets['promptRewards'];
+            $characterRewards = $queue->configSet('character_submit') ? $assets['characterRewards'] : [];
             if ($queue->configSet('character_submit')) {
-                if (!$this->createCharacterAttachments($submission, $data, $service, $user)) {
+                if (!$this->createCharacterAttachments($submission, $data, null, $service)) {
                     throw new \Exception('Failed to handle submission characters.');
                 }
             }
-            if (method_exists($queue->service, 'submit')) {
+
+            // carry out the initial processes when submitting the queue's form
+            if ($queue->service && method_exists($queue->service, 'submit')) {
                 if (!$service->submit($queue, $data, $user, $submission)) {
                     foreach ($service->errors()->getMessages()['error'] as $error) {
                         flash($error)->error();
@@ -191,8 +190,9 @@ class QueueSubmissionManager extends Service {
                 'parsed_comments' => $data['parsed_comments'],
                 'queue_id'        => $queue->id,
                 'data'            => [
-                    'user'    => $queue->configSet('item_consume') ? Arr::only(getDataReadyAssets($userAssets), ['user_items', 'currencies']) : null,
-                    'queue'   => method_exists($queue->service, 'processSubmit') ? $queue->service->processSubmit($queue, $data, $user, $submission) : null,
+                    'user'    => $queue->configSet('consume_items') ? Arr::only(getDataReadyAssets($userAssets), ['user_items', 'currencies']) : [],
+                    'queue'   => ($queue->service && method_exists($queue->service, 'processSubmission')) ?
+                        $queue->service->processSubmission($queue, $data, $user, $submission) : null,
                     'rewards' => getDataReadyAssets($queueRewards),
                 ],
             ]);
@@ -236,7 +236,7 @@ class QueueSubmissionManager extends Service {
             }
 
             $assets = $submission->data;
-            if ($submission->queue->configSet('item_consume')) {
+            if ($submission->queue->configSet('consume_items')) {
                 $userAssets = $assets['user'];
             }
             $qAssets = $assets['queue'];
@@ -255,7 +255,7 @@ class QueueSubmissionManager extends Service {
                     'staff_id'              => $user->id,
                     'status'                => 'Draft',
                     'data'                  => [
-                        'user'    => $submission->queue->configSet('item_consume') ? $userAssets : null,
+                        'user'    => $submission->queue->configSet('consume_items') ? $userAssets : null,
                         'queue'   => $qAssets,
                         'rewards' => getDataReadyAssets($queueRewards),
                     ],
@@ -273,7 +273,7 @@ class QueueSubmissionManager extends Service {
                     'status'     => 'Draft',
                     'updated_at' => Carbon::now(),
                     'data'       => [
-                        'user'    => $submission->queue->configSet('item_consume') ? $userAssets : null,
+                        'user'    => $submission->queue->configSet('consume_items') ? $userAssets : null,
                         'queue'   => $qAssets,
                         'rewards' => getDataReadyAssets($queueRewards),
                     ],
@@ -315,7 +315,7 @@ class QueueSubmissionManager extends Service {
 
             $queue = $submission->queue;
 
-            if ($queue->configSet('item_consume')) {
+            if ($queue->configSet('consume_items')) {
                 // Return all items and currency applied.
                 $this->removeAttachments($submission);
             }
@@ -344,11 +344,9 @@ class QueueSubmissionManager extends Service {
                 'submission_id' => $submission->id,
             ]);
 
-            /*
-                if (!$this->logAdminAction($user, 'Submission Rejected', 'Rejected submission <a href="'.$submission->viewurl.'">#'.$submission->id.'</a>')) {
-                    throw new \Exception('Failed to log admin action.');
-                }
-            */
+            if (!$this->logAdminAction($user, 'Submission Rejected', 'Rejected submission <a href="'.$submission->viewurl.'">#'.$submission->id.'</a>')) {
+                throw new \Exception('Failed to log admin action.');
+            }
 
             return $this->commitReturn($submission);
         } catch (\Exception $e) {
@@ -378,9 +376,7 @@ class QueueSubmissionManager extends Service {
             }
 
             $queue = $submission->queue;
-            $service = $queue->service;
-
-            if ($queue->configSet('item_consume')) {
+            if ($queue->configSet('consume_items')) {
                 // Remove any added items, hold counts, and add logs
                 $addonData = $submission->data['user'];
                 $inventoryManager = new InventoryManager;
@@ -477,19 +473,27 @@ class QueueSubmissionManager extends Service {
 
                 // Distribute character rewards
                 foreach ($characters as $c) {
-                    if (method_exists($service, 'processCharacterAttachments')) {
-                        if (!$assets = $service->processCharacterAttachments($submission->queue, $data + ['character_id' => $c->id], $submission)) {
-                            foreach ($service->errors()->getMessages()['error'] as $error) {
+                    if ($queue->service && method_exists($queue->service, 'processCharacterAttachments')) {
+                        if (!$assets = $queue->service->processCharacterAttachments($submission->queue, $data + ['character_id' => $c->id], $submission)) {
+                            foreach ($queue->service->errors()->getMessages()['error'] as $error) {
                                 flash($error)->error();
                             }
                             throw new \Exception('Failed to handle submission characters.');
+                        }
+                    } else {
+                        // Users might not pass in clean arrays (may contain redundant data) so we need to clean that up
+                        $assets = $this->processRewards($data + ['character_id' => $c->id, 'currencies' => $currencies, 'items' => $items, 'tables' => $tables], true);
+
+                        if (!$assets = fillCharacterAssets($assets, $user, $c, $promptLogType, $promptData, $submission->user)) {
+                            throw new \Exception('Failed to distribute rewards to character.');
                         }
                     }
 
                     QueueSubmissionCharacter::create([
                         'character_id'        => $c->id,
                         'queue_submission_id' => $submission->id,
-                        'data'                => method_exists($service, 'finalizeCharacterAttachments') ? $service->finalizeCharacterAttachments($submission->queue, $data + ['character_id' => $c->id], $submission, $user) : null,
+                        'data'                => $queue->service && method_exists($queue->service, 'finalizeCharacterAttachments') ?
+                            $queue->service->finalizeCharacterAttachments($submission->queue, $data + ['character_id' => $c->id], $submission, $user) : null,
                     ]);
                 }
             }
@@ -500,9 +504,7 @@ class QueueSubmissionManager extends Service {
                 $data['parsed_staff_comments'] = null;
             }
 
-            // carry out approval
-
-            if (method_exists($queue->service, 'approve')) {
+            if ($queue->service && method_exists($queue->service, 'approve')) {
                 if (!$service->approve($queue, $data, $user, $submission)) {
                     foreach ($service->errors()->getMessages()['error'] as $error) {
                         flash($error)->error();
@@ -510,9 +512,6 @@ class QueueSubmissionManager extends Service {
                     throw new \Exception('Failed to handle submission.');
                 }
             }
-
-            // back up the data cus i realized it gets nuked on approval
-            $savedData = $submission->data['queue'];
 
             // Finally, set:
             // 1. staff comments
@@ -525,8 +524,9 @@ class QueueSubmissionManager extends Service {
                 'staff_id'              => $user->id,
                 'status'                => 'Approved',
                 'data'                  => [
-                    'user'    => $queue->configSet('item_consume') ? $addonData : null,
-                    'queue'   => method_exists($queue->service, 'processApprove') ? $queue->service->processApprove($queue, $data, $user, $submission) : $savedData,
+                    'user'    => $queue->configSet('consume_items') ? $addonData : null,
+                    'queue'   => ($queue->service && method_exists($queue->service, 'processApprove')) ?
+                        $queue->service->processApprove($queue, $data, $user, $submission) : $submission->data['queue'],
                     'rewards' => getDataReadyAssets($rewards),
                 ], // list of rewards
             ]);
@@ -538,11 +538,9 @@ class QueueSubmissionManager extends Service {
                 'submission_id' => $submission->id,
             ]);
 
-            /*
-                if (!$this->logAdminAction($user, 'Submission Approved', 'Approved submission <a href="'.$submission->viewurl.'">#'.$submission->id.'</a>')) {
-                    throw new \Exception('Failed to log admin action.');
-                }
-            */
+            if (!$this->logAdminAction($user, 'Submission Approved', 'Approved submission <a href="'.$submission->viewurl.'">#'.$submission->id.'</a>')) {
+                throw new \Exception('Failed to log admin action.');
+            }
 
             return $this->commitReturn($submission);
         } catch (\Exception $e) {
@@ -597,7 +595,7 @@ class QueueSubmissionManager extends Service {
                 QueueSubmissionCharacter::where('queue_submission_id', $submission->id)->delete();
             }
 
-            if ($submission->queue->configSet('item_consume')) {
+            if ($submission->queue->configSet('consume_items')) {
                 $this->removeAttachments($submission);
             }
             $submission->delete();

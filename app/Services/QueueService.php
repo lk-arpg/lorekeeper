@@ -380,10 +380,6 @@ class QueueService extends Service {
      * @return array
      */
     private function populateData($data, $queue = null) {
-        if (!$data['queue_type']) {
-            throw new \Exception('You must select a queue type. Choose vanilla if you want a blank queue.');
-        }
-
         if (isset($data['description']) && $data['description']) {
             $data['parsed_description'] = parse($data['description']);
         }

@@ -25,3 +25,10 @@
         </div>
     @endif
 @endif
+@if (count(getLimits($queue)))
+    <hr />
+    @include('widgets._limits', [
+        'object' => $queue,
+        'hideUnlock' => true,
+    ])
+@endif

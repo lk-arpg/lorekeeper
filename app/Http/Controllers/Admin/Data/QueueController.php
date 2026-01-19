@@ -40,7 +40,6 @@ class QueueController extends Controller {
     public function getCreateQueueCategory() {
         return view('admin.queues.create_edit_queue_category', [
             'category'      => new QueueCategory,
-            'limit_periods' => [null => 'None', 'Hour' => 'Hour', 'Day' => 'Day', 'Week' => 'Week', 'Month' => 'Month', 'Year' => 'Year'],
         ]);
     }
 
@@ -59,7 +58,6 @@ class QueueController extends Controller {
 
         return view('admin.queues.create_edit_queue_category', [
             'category'      => $category,
-            'limit_periods' => [null => 'None', 'Hour' => 'Hour', 'Day' => 'Day', 'Week' => 'Week', 'Month' => 'Month', 'Year' => 'Year'],
         ]);
     }
 
@@ -188,7 +186,6 @@ class QueueController extends Controller {
             'queue'         => new Queue,
             'categories'    => ['none' => 'No category'] + QueueCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'types'         => $result,
-            'limit_periods' => [null => 'None', 'Hour' => 'Hour', 'Day' => 'Day', 'Week' => 'Week', 'Month' => 'Month', 'Year' => 'Year'],
             'ranks'         => ['none' => 'All Staff with Submissions Power'] + Rank::pluck('name', 'id')->toArray(),
         ]);
     }
@@ -215,10 +212,9 @@ class QueueController extends Controller {
             'queue'         => $queue,
             'categories'    => ['none' => 'No category'] + QueueCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'types'         => $result,
-            'item_limits'   => $queue->configSet('item_consume') ? Item::orderBy('name')->pluck('name', 'id') : [],
-            'limit_periods' => [null => 'None', 'Hour' => 'Hour', 'Day' => 'Day', 'Week' => 'Week', 'Month' => 'Month', 'Year' => 'Year'],
+            'item_limits'   => $queue->configSet('consume_items') ? Item::orderBy('name')->pluck('name', 'id') : [],
             'ranks'         => Rank::pluck('name', 'id')->toArray(),
-        ] + $queue->service->getEditData());
+        ] + ($queue->service?->getEditData() ?? []));
     }
 
     /**

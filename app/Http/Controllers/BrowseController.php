@@ -196,9 +196,11 @@ class BrowseController extends Controller {
 
         if ($request->get('owner')) {
             $owner = User::find($request->get('owner'));
-            $query->where(function ($query) use ($owner) {
-                $query->where('user_id', $owner->id);
-            });
+            if ($owner) {
+                $query->where(function ($query) use ($owner) {
+                    $query->where('user_id', $owner->id);
+                });
+            }
         }
         if ($request->get('owner_url')) {
             $ownerUrl = $request->get('owner_url');
@@ -229,15 +231,19 @@ class BrowseController extends Controller {
         }
         if ($request->get('artist')) {
             $artist = User::find($request->get('artist'));
-            $imageQuery->whereHas('artists', function ($query) use ($artist) {
-                $query->where('user_id', $artist->id);
-            });
+            if ($artist) {
+                $imageQuery->whereHas('artists', function ($query) use ($artist) {
+                    $query->where('user_id', $artist->id);
+                });
+            }
         }
         if ($request->get('designer')) {
             $designer = User::find($request->get('designer'));
-            $imageQuery->whereHas('designers', function ($query) use ($designer) {
-                $query->where('user_id', $designer->id);
-            });
+            if ($designer) {
+                $imageQuery->whereHas('designers', function ($query) use ($designer) {
+                    $query->where('user_id', $designer->id);
+                });
+            }
         }
         if ($request->get('artist_url')) {
             $artistUrl = $request->get('artist_url');
@@ -363,9 +369,11 @@ class BrowseController extends Controller {
 
         if ($request->get('owner')) {
             $owner = User::find($request->get('owner'));
-            $query->where(function ($query) use ($owner) {
-                $query->where('user_id', $owner->id);
-            });
+            if ($owner) {
+                $query->where(function ($query) use ($owner) {
+                    $query->where('user_id', $owner->id);
+                });
+            }
         }
         if ($request->get('owner_url')) {
             $ownerUrl = $request->get('owner_url');
@@ -385,15 +393,19 @@ class BrowseController extends Controller {
         }
         if ($request->get('artist')) {
             $artist = User::find($request->get('artist'));
-            $imageQuery->whereHas('artists', function ($query) use ($artist) {
-                $query->where('user_id', $artist->id);
-            });
+            if ($artist) {
+                $imageQuery->whereHas('artists', function ($query) use ($artist) {
+                    $query->where('user_id', $artist->id);
+                });
+            }
         }
         if ($request->get('designer')) {
             $designer = User::find($request->get('designer'));
-            $imageQuery->whereHas('designers', function ($query) use ($designer) {
-                $query->where('user_id', $designer->id);
-            });
+            if ($designer) {
+                $imageQuery->whereHas('designers', function ($query) use ($designer) {
+                    $query->where('user_id', $designer->id);
+                });
+            }
         }
         if ($request->get('artist_url')) {
             $artistUrl = $request->get('artist_url');
@@ -536,9 +548,11 @@ class BrowseController extends Controller {
 
         if ($request->get('owner')) {
             $owner = User::find($request->get('owner'));
-            $query->where(function ($query) use ($owner) {
-                $query->where('user_id', $owner->id);
-            });
+            if ($owner) {
+                $query->where(function ($query) use ($owner) {
+                    $query->where('user_id', $owner->id);
+                });
+            }
         }
         if ($request->get('owner_url')) {
             $ownerUrl = $request->get('owner_url');
@@ -569,15 +583,19 @@ class BrowseController extends Controller {
         }
         if ($request->get('artist')) {
             $artist = User::find($request->get('artist'));
-            $imageQuery->whereHas('artists', function ($query) use ($artist) {
-                $query->where('user_id', $artist->id);
-            });
+            if ($artist) {
+                $imageQuery->whereHas('artists', function ($query) use ($artist) {
+                    $query->where('user_id', $artist->id);
+                });
+            }
         }
         if ($request->get('designer')) {
             $designer = User::find($request->get('designer'));
-            $imageQuery->whereHas('designers', function ($query) use ($designer) {
-                $query->where('user_id', $designer->id);
-            });
+            if ($designer) {
+                $imageQuery->whereHas('designers', function ($query) use ($designer) {
+                    $query->where('user_id', $designer->id);
+                });
+            }
         }
         if ($request->get('artist_url')) {
             $artistUrl = $request->get('artist_url');

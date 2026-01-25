@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Models\Loot\Loot;
 use App\Models\Loot\LootTable;
-use App\Models\Prompt\PromptReward;
+use App\Models\Reward\Reward;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 
@@ -127,7 +127,7 @@ class LootService extends Service {
             // Check first if the table is currently in use
             // - Prompts
             // - Box rewards (unfortunately this can't be checked easily)
-            if (PromptReward::where('rewardable_type', 'LootTable')->where('rewardable_id', $table->id)->exists()) {
+            if (Reward::where('rewardable_type', 'LootTable')->where('rewardable_id', $table->id)->exists()) {
                 throw new \Exception('A prompt uses this table to distribute rewards. Please remove it from the rewards list first.');
             }
 

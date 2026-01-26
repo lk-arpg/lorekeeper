@@ -30,7 +30,7 @@ class LootTableController extends Controller {
         $query = LootTable::query();
 
         $data = $request->only(['name', 'namespec', 'sort']);
-        if (isset($data['name')) {
+        if (isset($data['name'])) {
             if (isset($data['namespec']) && $data['namespec'] == 'display-name') {
                 $query->where('display_name', 'LIKE', '%'.$request->get('name').'%');
             } elseif (isset($data['namespec']) && $data['namespec'] == 'both') {

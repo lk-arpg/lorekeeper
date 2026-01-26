@@ -35,7 +35,7 @@ class SalesController extends Controller {
             Auth::user()->update(['is_sales_unread' => 0]);
         }
 
-        $query = Sales::visible();
+        $query = Sales::visible(Auth::user() ?? null);
         $data = $request->only(['title', 'is_open', 'sort']);
         if (isset($data['is_open']) && $data['is_open'] != 'none') {
             $query->where('is_open', $data['is_open']);

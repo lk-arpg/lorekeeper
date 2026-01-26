@@ -15,7 +15,7 @@ class SalesController extends Controller {
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getIndex() {
+    public function getIndex(Request $request) {
         $query = Sales::visible(Auth::user() ?? null);
         $data = $request->only(['title', 'is_open', 'sort']);
         if (isset($data['is_open']) && $data['is_open'] != 'none') {

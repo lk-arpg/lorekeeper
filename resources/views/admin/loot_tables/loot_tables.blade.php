@@ -29,6 +29,7 @@
                 Request::get('namespec') ?: 'Search for Name',
                 ['class' => 'form-control'],
             ) !!}
+        </div>
             <div class="form-group ml-3">
                 {!! Form::select(
                     'sort',

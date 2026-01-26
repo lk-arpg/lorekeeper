@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\News;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 
@@ -28,7 +29,7 @@ class NewsController extends Controller {
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getIndex() {
+    public function getIndex(Request $request) {
         if (Auth::check() && Auth::user()->is_news_unread) {
             Auth::user()->update(['is_news_unread' => 0]);
         }

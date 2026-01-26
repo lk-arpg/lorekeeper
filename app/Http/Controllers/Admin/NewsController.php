@@ -14,9 +14,7 @@ class NewsController extends Controller {
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getIndex() {
-        return view('admin.news.news', [
-
+    public function getIndex(Request $request) {
         $query = News::visible(Auth::user() ?? null);
         $data = $request->only(['title', 'sort']);
         if (isset($data['title'])) {

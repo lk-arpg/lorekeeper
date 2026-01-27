@@ -229,7 +229,7 @@ class Prompt extends Model {
      * @return string
      */
     public function getDisplayNameAttribute() {
-        return '<a href="'.$this->url.'" class="display-prompt">'.$this->name.'</a>';
+        return '<a href="'.$this->idUrl.'" class="display-prompt">'.$this->name.'</a>';
     }
 
     /**

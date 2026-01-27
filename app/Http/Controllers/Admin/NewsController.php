@@ -14,9 +14,40 @@ class NewsController extends Controller {
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getIndex() {
-        return view('admin.news.news', [
-            'newses' => News::orderBy('updated_at', 'DESC')->paginate(20),
+    public function getIndex(Request $request) {
+        $query = News::visible(Auth::user() ?? null);
+        $data = $request->only(['title', 'sort']);
+        if (isset($data['title'])) {
+            $query->where('title', 'LIKE', '%'.$data['title'].'%');
+        }
+
+        if (isset($data['sort'])) {
+            switch ($data['sort']) {
+                case 'alpha':
+                    $query->sortAlphabetical();
+                    break;
+                case 'alpha-reverse':
+                    $query->sortAlphabetical(true);
+                    break;
+                case 'newest':
+                    $query->sortNewest();
+                    break;
+                case 'oldest':
+                    $query->sortNewest(true);
+                    break;
+                case 'bump':
+                    $query->sortBump();
+                    break;
+                case 'bump-reverse':
+                    $query->sortBump(true);
+                    break;
+            }
+        } else {
+            $query->sortBump(true);
+        }
+
+        return view('news.index', [
+            'newses' => $query->paginate(20)->appends($request->query()),
         ]);
     }
 

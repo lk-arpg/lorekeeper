@@ -150,23 +150,76 @@ class PromptController extends Controller {
     **********************************************************************************************/
 
     /**
-     * Shows the prompt category index.
+     * Shows the prompt index.
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getPromptIndex(Request $request) {
-        $query = Prompt::query();
-        $data = $request->only(['prompt_category_id', 'name']);
+        $query = Prompt::query()->with('category');
+        $data = $request->only(['prompt_category_id', 'name', 'sort', 'open_prompts']);
         if (isset($data['prompt_category_id']) && $data['prompt_category_id'] != 'none') {
-            $query->where('prompt_category_id', $data['prompt_category_id']);
+            if ($data['prompt_category_id'] == 'withoutOption') {
+                $query->whereNull('prompt_category_id');
+            } else {
+                $query->where('prompt_category_id', $data['prompt_category_id']);
+            }
         }
         if (isset($data['name'])) {
             $query->where('name', 'LIKE', '%'.$data['name'].'%');
         }
 
+        if (isset($data['open_prompts'])) {
+            switch ($data['open_prompts']) {
+                case 'open':
+                    $query->open(true);
+                    break;
+                case 'closed':
+                    $query->open(false);
+                    break;
+                case 'any':
+                default:
+                    // Don't filter
+                    break;
+            }
+        }
+
+        if (isset($data['sort'])) {
+            switch ($data['sort']) {
+                case 'alpha':
+                    $query->sortAlphabetical();
+                    break;
+                case 'alpha-reverse':
+                    $query->sortAlphabetical(true);
+                    break;
+                case 'category':
+                    $query->sortCategory();
+                    break;
+                case 'newest':
+                    $query->sortNewest();
+                    break;
+                case 'oldest':
+                    $query->sortNewest(true);
+                    break;
+                case 'start':
+                    $query->sortStart();
+                    break;
+                case 'start-reverse':
+                    $query->sortStart(true);
+                    break;
+                case 'end':
+                    $query->sortEnd();
+                    break;
+                case 'end-reverse':
+                    $query->sortEnd(true);
+                    break;
+            }
+        } else {
+            $query->sortCategory();
+        }
+
         return view('admin.prompts.prompts', [
             'prompts'    => $query->paginate(20)->appends($request->query()),
-            'categories' => ['none' => 'Any Category'] + PromptCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'categories' => ['none' => 'Any Category'] + ['withoutOption' => 'Without Category'] + PromptCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
         ]);
     }
 

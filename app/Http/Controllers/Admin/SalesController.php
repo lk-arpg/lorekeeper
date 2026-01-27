@@ -15,9 +15,43 @@ class SalesController extends Controller {
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getIndex() {
+    public function getIndex(Request $request) {
+        $query = Sales::visible(Auth::user() ?? null);
+        $data = $request->only(['title', 'is_open', 'sort']);
+        if (isset($data['is_open']) && $data['is_open'] != 'none') {
+            $query->where('is_open', $data['is_open']);
+        }
+        if (isset($data['title'])) {
+            $query->where('title', 'LIKE', '%'.$data['title'].'%');
+        }
+
+        if (isset($data['sort'])) {
+            switch ($data['sort']) {
+                case 'alpha':
+                    $query->sortAlphabetical();
+                    break;
+                case 'alpha-reverse':
+                    $query->sortAlphabetical(true);
+                    break;
+                case 'newest':
+                    $query->sortNewest();
+                    break;
+                case 'oldest':
+                    $query->sortNewest(true);
+                    break;
+                case 'bump':
+                    $query->sortBump();
+                    break;
+                case 'bump-reverse':
+                    $query->sortBump(true);
+                    break;
+            }
+        } else {
+            $query->sortBump(true);
+        }
+
         return view('admin.sales.sales', [
-            'saleses' => Sales::orderBy('post_at', 'DESC')->paginate(20),
+            'saleses' => $query->paginate(20)->appends($request->query()),
         ]);
     }
 

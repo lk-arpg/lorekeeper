@@ -26,7 +26,7 @@
                     'display-name' => 'Search for DisplayName',
                     'both' => 'Search for both',
                 ],
-                Request::get('namespec') ?: 'Search for Name',
+                Request::get('namespec') ?: 'name',
                 ['class' => 'form-control'],
             ) !!}
         </div>
@@ -41,7 +41,7 @@
                     'alpha-dn' => 'Sort Alphabetically (A-Z) on DisplayName',
                     'alpha-dn-reverse' => 'Sort Alphabetically (Z-A) on DisplayName',
                 ],
-                Request::get('sort') ?: 'Created Oldest',
+                Request::get('sort') ?: 'oldest',
                 ['class' => 'form-control'],
             ) !!}
         </div>

@@ -26,7 +26,7 @@
     <h3>{{ ucFirst($type) }}s</h3>
 
     <p>
-        You can add {{ $type }}s to this object by clicking "Add {{ ucfirst($type) }}" & selecting a {{  $type }} from the dropdown below.
+        You can add {{ $type }}s to this object by clicking "Add {{ ucfirst($type) }}" & selecting a {{ $type }} from the dropdown below.
         <br />
         <br /><b>Note that the checks for {{ $type }}s are automatic, but their granting needs to be defined in the code.</b>
     </p>

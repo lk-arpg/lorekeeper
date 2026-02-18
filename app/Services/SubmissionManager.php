@@ -170,7 +170,12 @@ class SubmissionManager extends Service {
                 }
 
                 // check that the prompt limit hasn't been hit
-                if ($prompt->limit && !($submission->status == 'Draft' && $submission->prompt_id && $submission->staff_comments)) {
+                if ($prompt->limit &&
+                    // allow any draft to be submitted if it was sent back by staff
+                    !($submission->status == 'Draft' && $submission->prompt_id && $submission->staff_comments ||
+                    // only allow drafts of active prompts to be submitted from first principle
+                    ($submission->status == 'Draft' && $submission->prompt && Prompt::active()->where('id', $submission->prompt_id)->exists())) 
+                ) {
                     // check that the user hasn't hit the prompt submission limit
                     // filter the submissions by hour/day/week/etc and count
                     $count['all'] = Submission::submitted($prompt->id, $user->id)->count();

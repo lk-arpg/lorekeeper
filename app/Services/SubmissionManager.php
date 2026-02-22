@@ -773,7 +773,7 @@ class SubmissionManager extends Service {
 
         // Get a list of rewards, then create the submission itself
         $promptRewards = createAssetsArray();
-        $characterRewards = createAssetsArray();
+        $characterRewards = createAssetsArray(true);
         if ($submission->status == 'Pending' && isset($submission->prompt_id) && $submission->prompt_id) {
             foreach ($submission->prompt->rewards as $reward) {
                 if ($reward->rewardable_recipient == 'User') {

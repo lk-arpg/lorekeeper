@@ -179,11 +179,12 @@ function createAssetsArray($isCharacter = false) {
  *
  * @param array $first
  * @param array $second
+ * @param mixed $isCharacter
  *
  * @return array
  */
-function mergeAssetsArrays($first, $second) {
-    $keys = getAssetKeys();
+function mergeAssetsArrays($first, $second, $isCharacter = false) {
+    $keys = getAssetKeys($isCharacter);
     foreach ($keys as $key) {
         foreach ($second[$key] as $item) {
             addAsset($first, $item['asset'], $item['quantity']);
@@ -262,11 +263,12 @@ function getDataReadyAssets($array, $isCharacter = false) {
  * basically reversing the above function.
  *
  * @param array $array
+ * @param mixed $isCharacter
  *
  * @return array
  */
-function parseAssetData($array) {
-    $assets = createAssetsArray();
+function parseAssetData($array, $isCharacter = false) {
+    $assets = createAssetsArray($isCharacter);
     foreach ($array as $key => $contents) {
         $model = getAssetModelString($key);
         if ($model) {

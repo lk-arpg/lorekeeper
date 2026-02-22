@@ -52,7 +52,7 @@
             <tr class="loot-row">
                 @if ($showRecipient)
                     <td>
-                        {!! Form::select($prefix . 'rewardable_recipient[]', $rewardableRecipients, $showRecipient ? null : $recipient, [
+                        {!! Form::select($prefix . 'rewardable_recipient[]', $rewardableRecipients, null, [
                             'class' => 'form-control recipient-type',
                             'placeholder' => 'Select Recipient Type',
                         ]) !!}

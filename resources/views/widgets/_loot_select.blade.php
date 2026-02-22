@@ -31,8 +31,6 @@
             'showRaffles' => isset($showRaffles) && $showRaffles ? $showRaffles : false,
         ];
 
-
-
     // Fetch reward data, defined in AssetHelpers
     // All previous code that defines available asset IDs should now be moved to getRewardLootData
     if ($showRecipient) {

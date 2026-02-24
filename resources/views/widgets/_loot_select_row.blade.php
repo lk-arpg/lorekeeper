@@ -60,7 +60,7 @@
                 @endif
                 <td class="{{ $prefix }}loot-row-type">
                     {{-- The long array of key value pairs is now defined in getRewardTypes and data should be moved there --}}
-                    {!! Form::select($prefix . 'rewardable_type[]', [], null, [
+                    {!! Form::select($prefix . 'rewardable_type[]', $showRecipient ? [] : $rewardTypes, null, [
                         'class' => 'form-control reward-type',
                         'placeholder' => 'Select ' . $type . ' Type',
                     ]) !!}

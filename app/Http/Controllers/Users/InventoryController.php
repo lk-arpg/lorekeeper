@@ -9,6 +9,7 @@ use App\Models\Character\CharacterDesignUpdate;
 use App\Models\Character\CharacterItem;
 use App\Models\Item\Item;
 use App\Models\Item\ItemCategory;
+use App\Models\Queue\QueueSubmission;
 use App\Models\Rarity;
 use App\Models\Submission\Submission;
 use App\Models\Trade\Trade;
@@ -210,17 +211,19 @@ class InventoryController extends Controller {
             $designUpdates = CharacterDesignUpdate::where('user_id', $user->id)->whereNotNull('data')->get();
             $trades = Trade::where('sender_id', $user->id)->orWhere('recipient_id', $user->id)->get();
             $submissions = Submission::where('user_id', $user->id)->whereNotNull('data')->get();
+            $queuesubmissions = QueueSubmission::where('user_id', $user->id)->whereNotNull('data')->get();
         }
 
         return view('home.account_search', [
-            'item'           => $item ? $item : null,
-            'items'          => Item::orderBy('name')->released()->pluck('name', 'id'),
-            'userItems'      => $item ? $userItems : null,
-            'characterItems' => $item ? $characterItems : null,
-            'characters'     => $item ? $characters : null,
-            'designUpdates'  => $item ? $designUpdates : null,
-            'trades'         => $item ? $trades : null,
-            'submissions'    => $item ? $submissions : null,
+            'item'             => $item ? $item : null,
+            'items'            => Item::orderBy('name')->released()->pluck('name', 'id'),
+            'userItems'        => $item ? $userItems : null,
+            'characterItems'   => $item ? $characterItems : null,
+            'characters'       => $item ? $characters : null,
+            'designUpdates'    => $item ? $designUpdates : null,
+            'trades'           => $item ? $trades : null,
+            'submissions'      => $item ? $submissions : null,
+            'queuesubmissions' => $item ? $queuesubmissions : null,
         ]);
     }
 

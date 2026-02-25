@@ -103,6 +103,10 @@ return [
                 'name' => 'Trades',
                 'url'  => 'admin/trades/incoming',
             ],
+            [
+                'name' => 'Queue Submissions',
+                'url'  => 'admin/queue-submissions',
+            ],
         ],
     ],
     'Grants'     => [
@@ -201,6 +205,10 @@ return [
             [
                 'name' => 'Dynamic Limits',
                 'url'  => 'admin/data/limits',
+            ],
+            [
+                'name' => 'Queues',
+                'url'  => 'admin/data/queues',
             ],
         ],
     ],

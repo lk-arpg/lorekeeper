@@ -231,6 +231,20 @@ Route::group(['prefix' => 'designs', 'namespace' => 'Characters'], function () {
     Route::post('{id}/cancel', 'DesignController@postCancel');
 });
 
+Route::group(['prefix' => 'queue-submissions', 'namespace' => 'Users'], function () {
+    Route::get('/', 'QueueSubmissionController@getIndex');
+    Route::get('/{id}', 'QueueSubmissionController@getIndex');
+    Route::get('new/{id}', 'QueueSubmissionController@getNewSubmission')->where(['id' => '[0-9]+']);
+    Route::get('new/character/{slug}', 'QueueSubmissionController@getCharacterInfo');
+    Route::post('new/{id}', 'QueueSubmissionController@postNewSubmission');
+    Route::post('new/{id}/{draft}', 'QueueSubmissionController@postNewSubmission')->where('draft', 'draft');
+    Route::get('draft/{id}', 'QueueSubmissionController@getEditSubmission');
+    Route::post('draft/{id}', 'QueueSubmissionController@postEditSubmission');
+    Route::post('draft/{id}/{submit}', 'QueueSubmissionController@postEditSubmission')->where('submit', 'submit');
+    Route::post('draft/{id}/delete', 'QueueSubmissionController@postDeleteSubmission');
+    Route::post('draft/{id}/cancel', 'QueueSubmissionController@postCancelSubmission');
+});
+
 /**************************************************************************************************
     Shops
 **************************************************************************************************/

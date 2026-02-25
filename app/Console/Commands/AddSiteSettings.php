@@ -81,6 +81,8 @@ class AddSiteSettings extends Command {
 
         $this->addSiteSetting('is_maintenance_mode', 0, '0: Site is normal, 1: Users without the Has Maintenance Access power will be redirected to the home page.');
 
+        $this->addSiteSetting('is_queue_open', 1, '0: New queue submissions cannot be made (mods can work on the queue still), 1: Queue is submittable.');
+
         $this->addSiteSetting('deactivated_privacy', 0, 'Who can view the deactivated list? 0: Admin only, 1: Staff only, 2: Members only, 3: Public.');
 
         $this->addSiteSetting('deactivated_link', 0, '0: No link to the deactivated list is displayed anywhere, 1: Link to the deactivated list is shown on the user list.');

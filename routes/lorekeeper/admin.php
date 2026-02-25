@@ -278,6 +278,25 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     Route::post('limits/create', 'LimitController@postCreateEditLimit');
     Route::post('limits/edit/{id?}', 'LimitController@postCreateEditLimit');
     Route::post('limits/delete/{id}', 'LimitController@postDeleteLimit');
+
+    // QUEUES
+    Route::get('queue-categories', 'QueueController@getIndex');
+    Route::get('queue-categories/create', 'QueueController@getCreateQueueCategory');
+    Route::get('queue-categories/edit/{id}', 'QueueController@getEditQueueCategory');
+    Route::get('queue-categories/delete/{id}', 'QueueController@getDeleteQueueCategory');
+    Route::post('queue-categories/create', 'QueueController@postCreateEditQueueCategory');
+    Route::post('queue-categories/edit/{id?}', 'QueueController@postCreateEditQueueCategory');
+    Route::post('queue-categories/delete/{id}', 'QueueController@postDeleteQueueCategory');
+    Route::post('queue-categories/sort', 'QueueController@postSortQueueCategory');
+
+    Route::get('queues', 'QueueController@getQueueIndex');
+    Route::get('queues/create', 'QueueController@getCreateQueue');
+    Route::get('queues/edit/{id}', 'QueueController@getEditQueue');
+    Route::get('queues/delete/{id}', 'QueueController@getDeleteQueue');
+    Route::post('queues/create', 'QueueController@postCreateEditQueue');
+    Route::post('queues/edit/{id?}', 'QueueController@postCreateEditQueue');
+    Route::post('queues/delete/{id}', 'QueueController@postDeleteQueue');
+    Route::post('queues/types/{id}', 'QueueController@postEditType');
 });
 
 // PAGES
@@ -502,4 +521,14 @@ Route::group(['prefix' => 'limits', 'middleware' => 'power:manage_data'], functi
 // REWARDS
 Route::group(['prefix' => 'rewards', 'middleware' => 'power:manage_data'], function () {
     Route::post('/', 'RewardController@postPopulateRewards');
+});
+
+// QUEUE SUBMISSIONS
+Route::group(['prefix' => 'queue-submissions', 'middleware' => 'power:manage_submissions'], function () {
+    Route::get('/', 'QueueSubmissionController@getSubmissionIndex');
+    Route::get('/{status}', 'QueueSubmissionController@getSubmissionIndex')->where('status', 'pending|approved|rejected');
+    Route::get('/{id}', 'QueueSubmissionController@getQueueSubmissionIndex');
+    Route::get('/{id}/{status}', 'QueueSubmissionController@getQueueSubmissionIndex')->where('status', 'pending|approved|rejected');
+    Route::get('edit/{id}', 'QueueSubmissionController@getSubmission');
+    Route::post('edit/{id}/{action}', 'QueueSubmissionController@postSubmission')->where('action', 'approve|reject|cancel');
 });

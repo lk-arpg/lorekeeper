@@ -504,6 +504,13 @@ class UserService extends Service {
                     $tradeManager->rejectTrade(['trade' => $trade, 'reason' => 'User has been banned from site activity.'], $staff);
                 }
 
+                // 6. Queues
+                $qsubmissionManager = new QueueSubmissionManager;
+                $qsubmissions = QueueSubmission::where('user_id', $user->id)->where('status', 'Pending')->get();
+                foreach ($qsubmissions as $qsubmission) {
+                    $qsubmissionManager->rejectSubmission(['submission' => $qsubmission, 'staff_comments' => 'User has been banned from site activity.'], $staff);
+                }
+
                 UserUpdateLog::create(['staff_id' => $staff->id, 'user_id' => $user->id, 'data' => ['is_banned' => 'Yes', 'ban_reason' => $data['ban_reason'] ?? null], 'type' => 'Ban']);
 
                 $user->settings->banned_at = Carbon::now();

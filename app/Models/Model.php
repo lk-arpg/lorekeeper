@@ -28,6 +28,12 @@ class Model extends EloquentModel {
                     }
                     $object = Prompt::find($model->prompt_id);
                     break;
+                case QueueSubmission::class:
+                    if ($model->status == 'Pending') {
+                        return true;
+                    }
+                    $object = $model->queue;
+                    break;
             }
 
             if (!$object) {
@@ -46,6 +52,12 @@ class Model extends EloquentModel {
                         return true;
                     }
                     $object = Prompt::find($model->prompt_id);
+                    break;
+                case QueueSubmission::class:
+                    if ($model->status != 'Pending' || $model->staff_comments || $model->staff_id) {
+                        return true;
+                    }
+                    $object = $model->queue;
                     break;
             }
 

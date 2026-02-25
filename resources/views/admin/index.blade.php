@@ -8,7 +8,8 @@
     {!! breadcrumbs(['Admin Panel' => 'admin', 'Home' => 'admin']) !!}
 
     <h1>
-        Admin Dashboard</h1>
+        Admin Dashboard
+    </h1>
     <div class="row">
         @if (Auth::user()->hasPower('manage_submissions'))
             <div class="col-sm-6">
@@ -47,6 +48,54 @@
                         </p>
                         <div class="text-right">
                             <a href="{{ url('admin/claims/pending') }}" class="card-link">View Queue <span class="fas fa-caret-right ml-1"></span></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
+        @if (config('lorekeeper.extensions.queue_creator.expand_in_admin_index'))
+            @foreach ($queues as $queue)
+                @if ($queue->staff_rank_id || in_array(Auth::user()->rank_id, $queue->staff_rank_id))
+                    <div class="col-sm-6">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                @php $queueCount = $queue->submissions('pending')->count(); @endphp
+                                <h5 class="card-title">{{ $queue->name }} Submissions @if ($queueCount)
+                                        <span class="badge badge-primary">{{ $queueCount }}</span>
+                                    @endif
+                                </h5>
+                                <p class="card-text">
+                                    @if ($queueCount)
+                                        {{ $queueCount }} {{ $queue->name }} submission{{ $queueCount == 1 ? '' : 's' }} awaiting processing.
+                                    @else
+                                        The {{ $queue->name }} submission queue is clear. Hooray!
+                                    @endif
+                                </p>
+                                <div class="text-right">
+                                    <a href="{{ url('admin/queue-submissions/' . $queue->id . '/pending') }}" class="card-link">View Queue <span class="fas fa-caret-right ml-1"></span></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+            @endforeach
+        @else
+            <div class="col-sm-6">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Queue Submissions @if ($queueCount)
+                                <span class="badge badge-primary">{{ $queueCount }}</span>
+                            @endif
+                        </h5>
+                        <p class="card-text">
+                            @if ($queueCount)
+                                {{ $queueCount }} custom submission{{ $queueCount == 1 ? '' : 's' }} awaiting processing.
+                            @else
+                                The custom submission queue is clear. Hooray!
+                            @endif
+                        </p>
+                        <div class="text-right">
+                            <a href="{{ url('admin/queue-submissions/pending') }}" class="card-link">View Queue <span class="fas fa-caret-right ml-1"></span></a>
                         </div>
                     </div>
                 </div>

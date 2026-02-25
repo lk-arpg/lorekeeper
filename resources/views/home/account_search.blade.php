@@ -86,6 +86,11 @@
                                         array_push($held, '<a href="' . App\Models\Submission\Submission::find($submission)->viewUrl . '">Submission #' . App\Models\Submission\Submission::find($submission)->id . '</a>' . ' (' . $quantity . ')');
                                     }
                                 }
+                                if (isset($holdLocations['queuesubmissions'])) {
+                                    foreach ($holdLocations['queuesubmissions'] as $queuesubmission => $quantity) {
+                                        array_push($held, '<a href="' . App\Models\Queue\QueueSubmission::find($queuesubmission)->viewUrl . '">Submission #' . App\Models\Queue\QueueSubmission::find($queuesubmission)->id . '</a>' . ' (' . $quantity . ')');
+                                    }
+                                }
                                 ?>
                                 @foreach ($held as $location)
                                     <li>

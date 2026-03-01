@@ -52,6 +52,12 @@
             var $rewardIdsCell = $(this).parent().parent().find('.{{ $prefix }}loot-row-select');
             var $recipient = $(this).val();
 
+            if ($recipient === '') {
+                $rewardTypeCell.html('');
+                $rewardIdsCell.html('');
+                return;
+            }
+
             //Update the lootRow with the new types
             $.ajax({
                 type: "POST",

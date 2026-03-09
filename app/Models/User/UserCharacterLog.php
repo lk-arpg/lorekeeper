@@ -31,18 +31,6 @@ class UserCharacterLog extends Model {
      */
     public $timestamps = true;
 
-    /**
-     * The "booted" method of the model.
-     */
-    protected static function booted(): void
-    {
-        static::addGlobalScope('visible', function (Builder $builder) {
-            if(!(Auth::check()) || !(Auth::user()->hasPower('manage_characters'))) {
-                $builder->whereRelation('character', 'is_visible', 1);
-            }
-        });
-    }
-
     /**********************************************************************************************
 
         RELATIONS
@@ -92,5 +80,16 @@ class UserCharacterLog extends Model {
      */
     public function getDisplayRecipientAliasAttribute() {
         return prettyProfileLink($this->recipient_url);
+    }
+
+    /**
+     * The "booted" method of the model.
+     */
+    protected static function booted(): void {
+        static::addGlobalScope('visible', function (Builder $builder) {
+            if (!(Auth::check()) || !(Auth::user()->hasPower('manage_characters'))) {
+                $builder->whereRelation('character', 'is_visible', 1);
+            }
+        });
     }
 }

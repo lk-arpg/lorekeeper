@@ -1,4 +1,4 @@
-@if ($log->character && $log->character->is_visible == 1)
+@if ($log->character)
     <div class="row flex-wrap">
         <div class="col-6 col-md">
             <div class="logs-table-cell">
@@ -15,7 +15,10 @@
         @if (isset($showCharacter))
             <div class="col-6 col-md">
                 <div class="logs-table-cell">
-                    {!! $log->character ? $log->character->displayName : '---' !!}
+                    @if (!$log->character->is_visible)
+                        <i class="fas fa-eye-slash"></i>
+                    @endif
+                    {!! $log->character->displayName !!}
                 </div>
             </div>
         @endif

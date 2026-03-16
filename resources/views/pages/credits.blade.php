@@ -107,6 +107,9 @@
             <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:Trade_Listings"><strong>Trade Listings</strong></a> by <a href="https://github.com/itinerare">itinerare</a> & <a href="https://github.com/ScuffedNewt">ScuffedNewt</a>
         </p>
         <p class="mb-0 col-md-4">
+            <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:Raffle_Options"><strong>Raffle Options</strong></a> by <a href="https://github.com/ScuffedNewt">ScuffedNewt</a> & <a href="https://github.com/liwoyadan">liwoyadan</a>
+        </p>
+        <p class="mb-0 col-md-4">
             <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:Aliases_on_Userpage"><strong>Aliases on Userpage</strong></a> by <a href="https://github.com/SpeedyD">Speedy</a>
             ({{ config('lorekeeper.extensions.aliases_on_userpage') ? 'Enabled' : 'Disabled' }})
         </p>

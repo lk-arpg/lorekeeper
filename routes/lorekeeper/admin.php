@@ -442,6 +442,8 @@ Route::group(['prefix' => 'raffles', 'middleware' => 'power:manage_raffles'], fu
     Route::post('edit/group/{id?}', 'RaffleController@postCreateEditRaffleGroup');
     Route::get('edit/raffle/{id?}', 'RaffleController@getCreateEditRaffle');
     Route::post('edit/raffle/{id?}', 'RaffleController@postCreateEditRaffle');
+    Route::get('edit/reroll/{id}', 'RaffleController@getRerollTicket');
+    Route::post('edit/reroll/{id}', 'RaffleController@rerollTicket');
 
     Route::get('view/{id}', 'RaffleController@getRaffleTickets');
     Route::post('view/ticket/{id}', 'RaffleController@postCreateRaffleTickets');

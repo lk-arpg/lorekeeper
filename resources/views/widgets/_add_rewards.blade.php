@@ -6,6 +6,12 @@
     if (!isset($useForm)) {
         $useForm = true;
     }
+    if (!isset($title)) {
+        $title = 'Rewards';
+    }
+    if (!isset($loots)) {
+        $loots = null;
+    }
 
     // View options
     if (!isset($showRecipient)) {
@@ -20,7 +26,7 @@
 @endphp
 
 <div class="card p-4 mb-3 mt-3" id="reward-card">
-    <h3>Rewards</h3>
+    <h3>{{ $title }}</h3>
 
     <p>
         You can add rewards to this object by clicking "Add Reward" & selecting a reward from the dropdown below.
@@ -36,7 +42,7 @@
 
         @include('widgets._loot_select', [
             'prefix' => $prefix ?? '',
-            'loots' => getRewards($object),
+            'loots' => $loots ?? getRewards($object),
             'showRecipient' => $showRecipient,
             'showRaffles' => $showRaffles,
             'showLootTables' => $showLootTables,
@@ -53,7 +59,7 @@
     @else
         @include('widgets._loot_select', [
             'prefix' => $prefix ?? '',
-            'loots' => getRewards($object),
+            'loots' => $loots ?? getRewards($object),
             'showRecipient' => $showRecipient,
             'showRaffles' => $showRaffles,
             'showLootTables' => $showLootTables,

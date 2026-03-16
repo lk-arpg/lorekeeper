@@ -53,6 +53,28 @@ class ConvertRewards extends Command {
             $this->info('No prompt rewards to convert.');
         }
 
+        if (Schema::hasTable('raffle_entry_rewards')) {
+            $raffleRewards = DB::table('raffle_entry_rewards')->get();
+            $bar = $this->output->createProgressBar(count($raffleRewards));
+            $bar->start();
+            foreach ($raffleRewards as $raffleReward) {
+                Reward::create([
+                    'object_model'    => 'App\Models\Raffle\Raffle',
+                    'object_id'       => $raffleReward->raffle_id,
+                    'rewardable_type' => $raffleReward->rewardable_type,
+                    'rewardable_id'   => $raffleReward->rewardable_id,
+                    'quantity'        => $raffleReward->quantity,
+                ]);
+
+                $bar->advance();
+            }
+            $bar->finish();
+            $this->info("\nDone!");
+            Schema::dropIfExists('raffle_entry_rewards');
+        } else {
+            $this->info('No raffle entry rewards to convert.');
+        }
+
         // Add other object types here as needed...
 
         $this->info("\nAll done!");

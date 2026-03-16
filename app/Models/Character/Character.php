@@ -391,6 +391,17 @@ class Character extends Model {
         return ' ・ <i class="fas fa-info-circle help-icon m-0" data-toggle="tooltip" data-html="true" title="'.$nonMyoSection.$tradingSection.'"></i>';
     }
 
+    /**
+     * Returns the image URL of the character's thumbnail, or the full image if no thumbnail exists.
+     */
+    public function getImageUrlAttribute() {
+        if ($this->image) {
+            return $this->image->thumbnail_url ?? $this->image->url;
+        }
+
+        return null;
+    }
+
     /**********************************************************************************************
 
         OTHER FUNCTIONS

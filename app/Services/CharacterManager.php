@@ -1891,6 +1891,8 @@ class CharacterManager extends Service {
             $data,
             'user'
         );
+
+        return true;
     }
 
     /**

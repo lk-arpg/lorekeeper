@@ -514,11 +514,17 @@ function hasUnlockedLimits($user, $object) {
  * Returns the given objects rewards, if any.
  *
  * @param mixed $object
+ * @param mixed $query
  *
  * @return bool
  */
-function getRewards($object) {
-    return App\Models\Reward\Reward::where('object_model', get_class($object))->where('object_id', $object->id)->get();
+function getRewards($object, $query = false) {
+    $rewards = App\Models\Reward\Reward::where('object_model', get_class($object))->where('object_id', $object->id);
+    if ($query) {
+        return $rewards;
+    }
+
+    return $rewards->get();
 }
 
 /**

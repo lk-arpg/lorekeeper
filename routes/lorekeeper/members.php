@@ -266,3 +266,6 @@ Route::group(['prefix' => 'limits'], function () {
 Route::group(['prefix' => 'rewards'], function () {
     Route::post('/types', 'RewardController@postRewardTypes');
 });
+
+// RAFFLE SELF ENTRY - NEWT
+Route::post('/raffles/enter/{id}', 'RaffleController@selfEnter');

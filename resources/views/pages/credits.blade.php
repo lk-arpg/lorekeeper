@@ -88,9 +88,6 @@
             <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:Submission_Drafts"><strong>Submission Drafts</strong></a> by <a href="https://github.com/preimpression/">Preimpression</a>
         </p>
         <p class="mb-0 col-md-4">
-            <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:TinyMCE_Code_Editor"><strong>TinyMCE Code Editor</strong></a> by <a href="https://github.com/AW0005">Moif</a>
-        </p>
-        <p class="mb-0 col-md-4">
             <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:Touchscreen_Sortable"><strong>Touchscreen Sortable</strong></a> by <a href="https://github.com/liwoyadan">liwoyadan</a> (via <a
                 href="https://github.com/furf/jquery-ui-touch-punch">Touch Punch</a>)
         </p>

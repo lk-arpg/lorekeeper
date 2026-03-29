@@ -30,7 +30,8 @@
             <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:Character_Items"><strong>Character Items</strong></a> by <a href="https://github.com/itinerare">itinerare</a>
         </p>
         <p class="mb-0 col-md-4">
-            <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:Character_Warnings"><strong>Character Warnings</strong></a> by <a href="https://github.com/redcr0wz">Lexi</a>, <a href="https://github.com/SpeedyD">Speedy</a>, <a href="https://github.com/ScuffedNewt">ScuffedNewt</a>, & <a href="https://github.com/itinerare">itinerare</a>
+            <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:Character_Warnings"><strong>Character Warnings</strong></a> by <a href="https://github.com/redcr0wz">Lexi</a>, <a href="https://github.com/SpeedyD">Speedy</a>, <a
+                href="https://github.com/ScuffedNewt">ScuffedNewt</a>, & <a href="https://github.com/itinerare">itinerare</a>
         </p>
         <p class="mb-0 col-md-4">
             <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:Comments"><strong>Comments</strong></a> by <a href="https://github.com/preimpression">Preimpression</a> & <a href="https://github.com/ScuffedNewt">ScuffedNewt</a>
@@ -90,7 +91,8 @@
             <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:TinyMCE_Code_Editor"><strong>TinyMCE Code Editor</strong></a> by <a href="https://github.com/AW0005">Moif</a>
         </p>
         <p class="mb-0 col-md-4">
-            <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:Touchscreen_Sortable"><strong>Touchscreen Sortable</strong></a> by <a href="https://github.com/liwoyadan">liwoyadan</a> (via <a href="https://github.com/furf/jquery-ui-touch-punch">Touch Punch</a>)
+            <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:Touchscreen_Sortable"><strong>Touchscreen Sortable</strong></a> by <a href="https://github.com/liwoyadan">liwoyadan</a> (via <a
+                href="https://github.com/furf/jquery-ui-touch-punch">Touch Punch</a>)
         </p>
         <p class="mb-0 col-md-4">
             <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:Trade_Listings"><strong>Trade Listings</strong></a> by <a href="https://github.com/itinerare">itinerare</a> & <a href="https://github.com/ScuffedNewt">ScuffedNewt</a>

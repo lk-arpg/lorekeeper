@@ -10,7 +10,7 @@
                 $slicedParentComments = $parentComments->slice($page * $perPage, $perPage);
 
                 $m = config('comments.model'); // This has to be done like this, otherwise it will complain.
-                $modelKeyName = (new $m())->getKeyName(); // This defaults to 'id' if not changed.
+                $modelKeyName = new $m()->getKeyName(); // This defaults to 'id' if not changed.
 
                 $slicedParentCommentsIds = $slicedParentComments->pluck($modelKeyName)->toArray();
 

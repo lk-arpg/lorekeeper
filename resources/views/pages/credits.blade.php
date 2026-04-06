@@ -61,7 +61,7 @@
             <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:Masterlist_Sublists"><strong>Masterlist Sublists</strong></a> by <a href="https://github.com/junijwi">Junijwi</a>
         </p>
         <p class="mb-0 col-md-4">
-            <a href="https://wiki.lorekeeper.me/index.php?title=Extensions:Multiple_Trait_Subtypes"><strong>Multiple Trait Subtypes</strong></a> by <a href="https://github.com/Draconizations">Fulmine</a>
+            <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:Multiple_Trait_Subtypes"><strong>Multiple Trait Subtypes</strong></a> by <a href="https://github.com/Draconizations">Fulmine</a>
         </p>
         <p class="mb-0 col-md-4">
             <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:MYO_Item_Tag"><strong>MYO Item Tag</strong></a> by <a href="https://github.com/junijwi">Junijwi</a>
@@ -92,19 +92,10 @@
                 href="https://github.com/furf/jquery-ui-touch-punch">Touch Punch</a>)
         </p>
         <p class="mb-0 col-md-4">
-            <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:User_Transfer_Reasons"><strong>User Transfer Reasons</strong></a> by <a href="https://github.com/snupsplus">Snupsplus</a>
-        </p>
-        <p class="mb-0 col-md-4">
-            <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:Shop_Features"><strong>Shop Features</strong></a> by <a href="https://github.com/ScuffedNewt">ScuffedNewt</a>
-        </p>
-        <p class="mb-0 col-md-4">
-            <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:Dynamic_Limits"><strong>Dynamic Limits</strong></a> by <a href="https://github.com/ScuffedNewt">ScuffedNewt</a>
-        </p>
-        <p class="mb-0 col-md-4">
-            <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:TinyMCE_Code_Editor"><strong>TinyMCE Code Editor</strong></a> by <a href="https://github.com/AW0005">Moif</a>
-        </p>
-        <p class="mb-0 col-md-4">
             <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:Trade_Listings"><strong>Trade Listings</strong></a> by <a href="https://github.com/itinerare">itinerare</a> & <a href="https://github.com/ScuffedNewt">ScuffedNewt</a>
+        </p>
+        <p class="mb-0 col-md-4">
+            <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:User_Transfer_Reasons"><strong>User Transfer Reasons</strong></a> by <a href="https://github.com/snupsplus">Snupsplus</a>
         </p>
         <p class="mb-0 col-md-4">
             <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:Aliases_on_Userpage"><strong>Aliases on Userpage</strong></a> by <a href="https://github.com/SpeedyD">Speedy</a>

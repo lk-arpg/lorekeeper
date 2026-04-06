@@ -29,7 +29,7 @@
                     'alpha' => 'Sort Alphabetically (A-Z)',
                     'alpha-reverse' => 'Sort Alphabetically (Z-A)',
                 ],
-                Request::get('sort') ?: 'Updated Newest',
+                Request::get('sort') ?: 'bump-reverse',
                 ['class' => 'form-control'],
             ) !!}
         </div>

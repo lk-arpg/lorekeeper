@@ -46,7 +46,7 @@ class NewsController extends Controller {
             $query->sortBump(true);
         }
 
-        return view('news.index', [
+        return view('admin.news.news', [
             'newses' => $query->paginate(20)->appends($request->query()),
         ]);
     }

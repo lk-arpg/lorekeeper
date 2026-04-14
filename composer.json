@@ -28,7 +28,7 @@
         "laravel/tinker": "^2.0",
         "laravel/ui": "^3.1.0",
         "laravelcollective/html": "^6.0",
-        "socialiteproviders/deviantart": "4.2",
+        "socialiteproviders/deviantart": "^4.2",
         "socialiteproviders/imgur": "^4.1",
         "socialiteproviders/instagram": "^4.1",
         "socialiteproviders/tumblr": "^4.1",

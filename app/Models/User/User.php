@@ -430,7 +430,7 @@ class User extends Authenticatable implements MustVerifyEmail {
             return url('images/profileimgs/default.png');
         }
 
-        return url('images/profileimgs/'.$this->profile_img);
+        return url('images/profileimgs/'.$this->profile_img.'?v='.filemtime(public_path('images/profileimgs/'.$this->profile_img)));
     }
 
     /**

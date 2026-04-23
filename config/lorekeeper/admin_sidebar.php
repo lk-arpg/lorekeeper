@@ -31,6 +31,15 @@ return [
             ],
         ],
     ],
+    'API'      => [
+        'power' => 'api_access',
+        'links' => [
+            [
+                'name' => 'API Tokens',
+                'url'  => 'admin/api',
+            ],
+        ],
+    ],
     'Reports'    => [
         'power' => 'manage_reports',
         'links' => [

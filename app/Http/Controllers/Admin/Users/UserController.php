@@ -421,4 +421,41 @@ class UserController extends Controller {
 
         return redirect()->back();
     }
+
+    /**
+     * Show a user's token revokation page.
+     *
+     * @param mixed $name
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getRevokeTokensConfirmation($name) {
+        $user = User::where('name', $name)->with('settings')->first();
+
+        if (!$user) {
+            abort(404);
+        }
+
+        return view('admin.users._user_revoke_token_confirmation', [
+            'user' => $user,
+        ]);
+    }
+
+    public function postRevokeTokens(Request $request, UserService $service, $name) {
+        $user = User::where('name', $name)->first();
+
+        if (!$user) {
+            flash('Invalid user.')->error();
+        } elseif (!Auth::user()->canEditRank($user->rank)) {
+            flash('You cannot edit the information of a user that has a higher rank than yourself.')->error();
+        } elseif ($service->revokeTokens($user, Auth::user())) {
+            flash('Revoked all user API tokens successfully.')->success();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
+        }
+
+        return redirect()->back();
+    }
 }

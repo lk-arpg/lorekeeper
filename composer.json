@@ -19,6 +19,7 @@
         "laravel/fortify": "^1.25",
         "laravel/framework": "^10.0",
         "laravel/helpers": "^1.4",
+        "laravel/sanctum": "^3.3",
         "laravel/socialite": "^5.2",
         "laravel/tinker": "^2.0",
         "laravelcollective/html": "^6.0",

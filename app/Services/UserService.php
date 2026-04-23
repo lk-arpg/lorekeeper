@@ -14,6 +14,7 @@ use App\Models\Trade\Trade;
 use App\Models\User\User;
 use App\Models\User\UserUpdateLog;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
@@ -81,7 +82,8 @@ class UserService extends Service {
             'agreement' => ['required', 'accepted'],
             'password'  => ($socialite ? [] : ['required']) + ['string', 'min:8', 'confirmed'],
             'dob'       => [
-                'required', function ($attribute, $value, $fail) {
+                'required',
+                function ($attribute, $value, $fail) {
                     $formatDate = Carbon::createFromFormat('Y-m-d', $value);
                     $now = Carbon::now();
                     if ($formatDate->diffInYears($now) < 13) {
@@ -89,17 +91,19 @@ class UserService extends Service {
                     }
                 },
             ],
-            'code'                 => ['string', function ($attribute, $value, $fail) {
-                if (!Settings::get('is_registration_open')) {
-                    if (!$value) {
-                        $fail('An invitation code is required to register an account.');
+            'code'                 => [
+                'string',
+                function ($attribute, $value, $fail) {
+                    if (!Settings::get('is_registration_open')) {
+                        if (!$value) {
+                            $fail('An invitation code is required to register an account.');
+                        }
+                        $invitation = Invitation::where('code', $value)->whereNull('recipient_id')->first();
+                        if (!$invitation) {
+                            $fail('Invalid code entered.');
+                        }
                     }
-                    $invitation = Invitation::where('code', $value)->whereNull('recipient_id')->first();
-                    if (!$invitation) {
-                        $fail('Invalid code entered.');
-                    }
-                }
-            },
+                },
             ],
         ] + (config('app.env') == 'production' && config('lorekeeper.extensions.use_recaptcha') ? [
             'g-recaptcha-response' => 'required|recaptchav3:register,0.5',
@@ -415,7 +419,7 @@ class UserService extends Service {
                 if ($last_change && $last_change->created_at->diffInDays(Carbon::now()) < config('lorekeeper.settings.username_change_cooldown')) {
                     throw new \Exception('You must wait '
                         .config('lorekeeper.settings.username_change_cooldown') - $last_change->created_at->diffInDays(Carbon::now()).
-                    ' days before changing your username again.');
+                        ' days before changing your username again.');
                 }
             }
 
@@ -695,5 +699,72 @@ class UserService extends Service {
         }
 
         return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Generate a "public" API token for the user.
+     *
+     * @param User $user
+     *
+     * @return bool
+     */
+    public function generateToken($user) {
+        try {
+            $user->tokens()->where('personal_access_tokens.name', 'token')->delete();
+
+            $token = $user->createToken('token')->plainTextToken;
+
+            UserUpdateLog::create(['staff_id' => $user->id, 'user_id' => $user->id, 'data' => json_encode([]), 'type' => 'Generated API Token']);
+
+            flash('Token created successfully:')->success();
+            flash($token)->success();
+            flash('Copy this down! It will NOT be shown again.')->warning();
+
+            return true;
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return false;
+    }
+
+    /**
+     * Revokes all of a user's API tokens.
+     *
+     * @param User $user
+     * @param User $staff
+     *
+     * @return bool
+     */
+    public function revokeTokens($user, $staff = null) {
+        try {
+            $user->tokens()->delete();
+
+            UserUpdateLog::create(['staff_id' => $staff ? $staff->id : $user->id, 'user_id' => $user->id, 'data' => json_encode([]), 'type' => 'Tokens Revoked']);
+
+            return true;
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return false;
+    }
+
+    /**
+     * Generate a "hidden" API token for the user and return it as plain text.
+     *
+     * @return mixed
+     */
+    public function generateTokenAPI() {
+        try {
+            Auth::user()->tokens()->where('personal_access_tokens.name', 'hidden')->delete();
+            $token = Auth::user()->createToken('hidden')->plainTextToken;
+
+            UserUpdateLog::create(['staff_id' => Auth::user()->id, 'user_id' => Auth::user()->id, 'data' => json_encode([]), 'type' => 'Generated API Token w/o CSRF']);
+
+            return $token;
+        } catch (\Exception $e) {
+            return response()->json($e);
+        }
     }
 }

@@ -42,6 +42,9 @@ Route::group(['prefix' => 'users', 'namespace' => 'Users'], function () {
         Route::post('{name}/deactivate', 'UserController@postDeactivate');
         Route::get('{name}/reactivate-confirm', 'UserController@getReactivateConfirmation');
         Route::post('{name}/reactivate', 'UserController@postReactivate');
+
+        Route::get('{name}/revoke-confirm', 'UserController@getRevokeTokensConfirmation');
+        Route::post('{name}/revoke', 'UserController@postRevokeTokens');
     });
 
     // RANKS

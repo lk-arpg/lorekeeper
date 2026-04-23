@@ -56,6 +56,10 @@ Route::group(['prefix' => 'account', 'namespace' => 'Users'], function () {
     Route::post('bookmarks/edit/{id}', 'BookmarkController@postCreateEditBookmark');
     Route::get('bookmarks/delete/{id}', 'BookmarkController@getDeleteBookmark');
     Route::post('bookmarks/delete/{id}', 'BookmarkController@postDeleteBookmark');
+
+    Route::post('api/token', 'ApiController@postGenerateToken');
+    Route::get('api/token', 'ApiController@getGenerateToken');
+    Route::post('api/revoke', 'ApiController@postRevokeToken');
 });
 
 Route::group(['prefix' => 'inventory', 'namespace' => 'Users'], function () {

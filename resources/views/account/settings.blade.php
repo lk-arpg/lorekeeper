@@ -220,6 +220,42 @@
             {!! Form::close() !!}
         @endif
     </div>
+
+    @if (Settings::get('allow_users_to_generate_tokens'))
+        <div class="card p-3 mb-2">
+            <h3>API Token</h3>
+
+            <p>Here you may generate personal access (API) tokens for your account. It will have the same site permissions as you.</p>
+            <div class="alert alert-warning">Be warned: giving away this token is like giving away your password!</div>
+
+            @if (Auth::user()->tokens->count())
+                <div class="card p-3 mb-2">
+                    <h3>Regenerate Token</h3>
+                    <p>You already have an API token generated. You may regenerate this token with the button below. It will create a new token, <b>not</b> show you your current one.</p>
+                    {!! Form::open(['url' => 'account/api/token']) !!}
+                    {!! Form::submit('Regenerate Token', ['class' => 'btn btn-warning']) !!}
+                    {!! Form::close() !!}
+                </div>
+                <div class="card p-3 mb-2">
+                    <h3>Revoke Token</h3>
+                    <p>Click the below button to <b>revoke</b> (delete) your current API token. <b>This can not be undone!</b></p>
+                    {!! Form::open(['url' => 'account/api/revoke']) !!}
+                    {!! Form::submit('Revoke Token', ['class' => 'btn btn-danger']) !!}
+                    {!! Form::close() !!}
+
+                </div>
+            @else
+                <div class="card p-3 mb-2">
+                    <h3>Generate Token</h3>
+                    <p>Clicking the below button will generate a token for your account. This token will only display ONCE. Be sure to copy it down!</p>
+                    {!! Form::open(['url' => 'account/api/token']) !!}
+                    {!! Form::submit('Generate Token', ['class' => 'btn btn-primary']) !!}
+                    {!! Form::close() !!}
+                </div>
+            @endif
+        </div>
+    @endif
+
 @endsection
 @section('scripts')
     @include('js._tinymce_wysiwyg')

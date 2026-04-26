@@ -13,7 +13,6 @@ use App\Models\Gallery\GalleryFavorite;
 use App\Models\Gallery\GallerySubmission;
 use App\Models\Prompt\Prompt;
 use App\Models\User\User;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Intervention\Image\Facades\Image;
 
@@ -792,41 +791,29 @@ class GalleryManager extends Service {
      * @return array
      */
     private function processImage($data, $submission) {
+        $imageFile = $data['image'];
+
         if (isset($submission->hash)) {
-            unlink($submission->imagePath.'/'.$submission->imageFileName);
-            unlink($submission->imagePath.'/'.$submission->thumbnailFileName);
+            $this->deleteImage($submission->imagePath, $submission->imageFileName);
+            $this->deleteImage($submission->thumbnailPath, $submission->thumbnailFileName);
         }
+
         $submission->hash = randomString(10);
-        $submission->extension = config('lorekeeper.settings.gallery_images_format') ?? $data['image']->getClientOriginalExtension();
+        $submission->extension = config('lorekeeper.settings.gallery_images_format') ?? $imageFile->getClientOriginalExtension();
 
         // Save image itself
-        $this->handleImage($data['image'], $submission->imagePath, $submission->imageFileName);
+        $this->handleImage($imageFile, $submission->imagePath, $submission->imageFileName);
 
-        $imageProperties = getimagesize($submission->imagePath.'/'.$submission->imageFileName);
-        if ($imageProperties[0] > 2000 || $imageProperties[1] > 2000) {
-            // For large images (in terms of dimensions),
-            // use imagick instead, as it's better at handling them
-            Config::set('image.driver', 'imagick');
-        }
+        // Configure image driver based on dimensions
+        $this->configureImageDriver($submission->imagePath.'/'.$submission->imageFileName);
 
+        // Process image: resize/format if needed using consolidated method
         if (config('lorekeeper.settings.gallery_images_cap') || config('lorekeeper.settings.gallery_images_format')) {
             $image = Image::make($submission->imagePath.'/'.$submission->imageFileName);
 
             // Scale the image if desired/necessary
             if (config('lorekeeper.settings.gallery_images_cap') && ($imageProperties[0] > config('lorekeeper.settings.gallery_images_cap') || $imageProperties[1] > config('lorekeeper.settings.gallery_images_cap'))) {
-                if ($image->width() > $image->height()) {
-                    // Landscape
-                    $image->resize(config('lorekeeper.settings.gallery_images_cap'), null, function ($constraint) {
-                        $constraint->aspectRatio();
-                        $constraint->upsize();
-                    });
-                } else {
-                    // Portrait
-                    $image->resize(null, config('lorekeeper.settings.gallery_images_cap'), function ($constraint) {
-                        $constraint->aspectRatio();
-                        $constraint->upsize();
-                    });
-                }
+                $image = $this->resizeImage($image, config('lorekeeper.settings.gallery_images_cap'), 'max');
             }
 
             // Save the processed image

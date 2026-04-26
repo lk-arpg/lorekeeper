@@ -85,6 +85,12 @@ class ItemService extends Service {
 
             $data = $this->populateCategoryData($data, $category);
 
+            // Store old image filename before updating hash
+            $oldImageFileName = null;
+            if ($category->has_image) {
+                $oldImageFileName = $category->categoryImageFileName;
+            }
+
             $image = null;
             if (isset($data['image']) && $data['image']) {
                 $data['has_image'] = 1;
@@ -99,8 +105,9 @@ class ItemService extends Service {
                 throw new \Exception('Failed to log admin action.');
             }
 
-            if ($category) {
-                $this->handleImage($image, $category->categoryImagePath, $category->categoryImageFileName);
+            if ($image) {
+                // Pass old filename so it gets properly cleaned up
+                $this->handleImage($image, $category->categoryImagePath, $category->categoryImageFileName, $oldImageFileName);
             }
 
             return $this->commitReturn($category);
@@ -131,9 +138,7 @@ class ItemService extends Service {
                 throw new \Exception('Failed to log admin action.');
             }
 
-            if ($category->has_image) {
-                $this->deleteImage($category->categoryImagePath, $category->categoryImageFileName);
-            }
+            $this->deleteImage($category->categoryImagePath, $category->categoryImageFileName);
             $category->delete();
 
             return $this->commitReturn(true);
@@ -263,6 +268,11 @@ class ItemService extends Service {
 
             $data = $this->populateData($data, $item);
 
+            $oldImageFileName = null;
+            if ($item->has_image) {
+                $oldImageFileName = $item->imageFileName;
+            }
+
             $image = null;
             if (isset($data['image']) && $data['image']) {
                 $data['has_image'] = 1;
@@ -287,8 +297,8 @@ class ItemService extends Service {
                 ], // rarity, availability info (original source, purchase locations, drop locations)
             ]);
 
-            if ($item) {
-                $this->handleImage($image, $item->imagePath, $item->imageFileName);
+            if ($image) {
+                $this->handleImage($image, $item->imagePath, $item->imageFileName, $oldImageFileName);
             }
 
             return $this->commitReturn($item);
@@ -336,9 +346,7 @@ class ItemService extends Service {
             DB::table('user_items')->where('item_id', $item->id)->delete();
             DB::table('character_items')->where('item_id', $item->id)->delete();
             $item->tags()->delete();
-            if ($item->has_image) {
-                $this->deleteImage($item->imagePath, $item->imageFileName);
-            }
+            $this->deleteImage($item->imagePath, $item->imageFileName);
             $item->delete();
 
             return $this->commitReturn(true);

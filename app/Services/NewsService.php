@@ -93,6 +93,11 @@ class NewsService extends Service {
                 $this->alertUsers();
             }
 
+            $oldImageFileName = null;
+            if ($news->has_image) {
+                $oldImageFileName = $news->imageFileName;
+            }
+
             $image = null;
             if (isset($data['image']) && $data['image']) {
                 $data['has_image'] = 1;
@@ -112,8 +117,8 @@ class NewsService extends Service {
                 unset($data['remove_image']);
             }
 
-            if ($news) {
-                $this->handleImage($image, $news->imagePath, $news->imageFileName);
+            if ($image) {
+                $this->handleImage($image, $news->imagePath, $news->imageFileName, $oldImageFileName);
             }
 
             return $this->commitReturn($news);
@@ -135,10 +140,7 @@ class NewsService extends Service {
         DB::beginTransaction();
 
         try {
-            if ($news->has_image) {
-                $this->deleteImage($news->imagePath, $news->imageFileName);
-            }
-
+            $this->deleteImage($news->imagePath, $news->imageFileName);
             $news->delete();
 
             return $this->commitReturn(true);

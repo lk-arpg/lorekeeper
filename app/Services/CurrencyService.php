@@ -86,6 +86,11 @@ class CurrencyService extends Service {
 
             $data = $this->populateCategoryData($data, $category);
 
+            $oldImageFileName = null;
+            if ($category->has_image) {
+                $oldImageFileName = $category->categoryImageFileName;
+            }
+
             $image = null;
             if (isset($data['image']) && $data['image']) {
                 $data['has_image'] = 1;
@@ -101,7 +106,7 @@ class CurrencyService extends Service {
             }
 
             if ($category) {
-                $this->handleImage($image, $category->categoryImagePath, $category->categoryImageFileName);
+                $this->handleImage($image, $category->categoryImagePath, $category->categoryImageFileName, $oldImageFileName);
             }
 
             return $this->commitReturn($category);
@@ -132,9 +137,7 @@ class CurrencyService extends Service {
                 throw new \Exception('Failed to log admin action.');
             }
 
-            if ($category->has_image) {
-                $this->deleteImage($category->categoryImagePath, $category->categoryImageFileName);
-            }
+            $this->deleteImage($category->categoryImagePath, $category->categoryImageFileName);
             $category->delete();
 
             return $this->commitReturn(true);
@@ -268,6 +271,15 @@ class CurrencyService extends Service {
 
             $data = $this->populateData($data, $currency);
 
+            $oldImageFileName = null;
+            $oldIconFileName = null;
+            if ($currency->has_image) {
+                $oldImageFileName = $currency->currencyImageFileName;
+            }
+            if ($currency->has_icon) {
+                $oldIconFileName = $currency->currencyIconFileName;
+            }
+
             $icon = $image = null;
             if (isset($data['icon']) && $data['icon']) {
                 $data['has_icon'] = 1;
@@ -291,10 +303,10 @@ class CurrencyService extends Service {
             }
 
             if ($icon) {
-                $this->handleImage($icon, $currency->currencyIconPath, $currency->currencyIconFileName);
+                $this->handleImage($icon, $currency->currencyIconPath, $currency->currencyIconFileName, $oldIconFileName);
             }
             if ($image) {
-                $this->handleImage($image, $currency->currencyImagePath, $currency->currencyImageFileName);
+                $this->handleImage($image, $currency->currencyImagePath, $currency->currencyImageFileName, $oldImageFileName);
             }
 
             return $this->commitReturn($currency);
@@ -340,12 +352,8 @@ class CurrencyService extends Service {
 
             UserCurrency::where('currency_id', $currency->id)->delete();
             CharacterCurrency::where('currency_id', $currency->id)->delete();
-            if ($currency->has_image) {
-                $this->deleteImage($currency->currencyImagePath, $currency->currencyImageFileName);
-            }
-            if ($currency->has_icon) {
-                $this->deleteImage($currency->currencyIconPath, $currency->currencyIconFileName);
-            }
+            $this->deleteImage($currency->currencyImagePath, $currency->currencyImageFileName);
+            $this->deleteImage($currency->currencyIconPath, $currency->currencyIconFileName);
             $currency->delete();
 
             return $this->commitReturn(true);

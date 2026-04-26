@@ -75,6 +75,11 @@ class RarityService extends Service {
 
             $data = $this->populateData($data, $rarity);
 
+            $oldImageFileName = null;
+            if ($rarity->has_image) {
+                $oldImageFileName = $rarity->rarityImageFileName;
+            }
+
             $image = null;
             if (isset($data['image']) && $data['image']) {
                 $data['has_image'] = 1;
@@ -85,8 +90,8 @@ class RarityService extends Service {
 
             $rarity->update($data);
 
-            if ($rarity) {
-                $this->handleImage($image, $rarity->rarityImagePath, $rarity->rarityImageFileName);
+            if ($image) {
+                $this->handleImage($image, $rarity->rarityImagePath, $rarity->rarityImageFileName, $oldImageFileName);
             }
 
             return $this->commitReturn($rarity);
@@ -113,9 +118,7 @@ class RarityService extends Service {
                 throw new \Exception('A character or character image with this rarity exists. Please change its rarity first.');
             }
 
-            if ($rarity->has_image) {
-                $this->deleteImage($rarity->rarityImagePath, $rarity->rarityImageFileName);
-            }
+            $this->deleteImage($rarity->rarityImagePath, $rarity->rarityImageFileName);
             $rarity->delete();
 
             return $this->commitReturn(true);

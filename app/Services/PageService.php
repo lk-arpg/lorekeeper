@@ -102,6 +102,10 @@ class PageService extends Service {
                 $data['allow_dislikes'] = 0;
             }
 
+            $oldImageFileName = null;
+            if ($page->has_image) {
+                $oldImageFileName = $page->imageFileName;
+            }
             $image = null;
             if (isset($data['image']) && $data['image']) {
                 $data['has_image'] = 1;
@@ -121,8 +125,8 @@ class PageService extends Service {
                 unset($data['remove_image']);
             }
 
-            if ($page) {
-                $this->handleImage($image, $page->imagePath, $page->imageFileName);
+            if ($image) {
+                $this->handleImage($image, $page->imagePath, $page->imageFileName, $oldImageFileName);
             }
 
             return $this->commitReturn($page);
@@ -149,10 +153,7 @@ class PageService extends Service {
                 throw new \Exception('You cannot delete this page.');
             }
 
-            if ($page->has_image) {
-                $this->deleteImage($page->imagePath, $page->imageFileName);
-            }
-
+            $this->deleteImage($page->imagePath, $page->imageFileName);
             $page->delete();
 
             return $this->commitReturn(true);

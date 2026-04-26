@@ -22,7 +22,7 @@
         "laravel/socialite": "^5.2",
         "laravel/tinker": "^2.0",
         "laravelcollective/html": "^6.0",
-        "socialiteproviders/deviantart": "^4.2",
+        "socialiteproviders/deviantart": "4.2",
         "socialiteproviders/discord": "^4.1",
         "socialiteproviders/imgur": "^4.1",
         "socialiteproviders/instagram": "^5.0",
@@ -34,6 +34,7 @@
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
+        "fruitcake/laravel-debugbar": "*",
         "laravel/pint": "^1.0",
         "mockery/mockery": "^1.4.4",
         "nunomaduro/collision": "^7.0",

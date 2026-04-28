@@ -469,9 +469,11 @@ class Character extends Model {
     public function getCurrencyLogs($limit = 10) {
         $character = $this;
         $query = CurrencyLog::with('currency')->where(function ($query) use ($character) {
-            $query->with('sender.rank')->where('sender_type', 'Character')->where('sender_id', $character->id)->where('log_type', '!=', 'Staff Grant');
-        })->orWhere(function ($query) use ($character) {
-            $query->with('recipient.rank')->where('recipient_type', 'Character')->where('recipient_id', $character->id)->where('log_type', '!=', 'Staff Removal');
+            $query->where(function ($query) use ($character) {
+                $query->with('sender.rank')->where('sender_type', 'Character')->where('sender_id', $character->id)->where('log_type', '!=', 'Staff Grant');
+            })->orWhere(function ($query) use ($character) {
+                $query->with('recipient.rank')->where('recipient_type', 'Character')->where('recipient_id', $character->id)->where('log_type', '!=', 'Staff Removal');
+            });
         })->orderBy('id', 'DESC');
 
         if ($limit) {

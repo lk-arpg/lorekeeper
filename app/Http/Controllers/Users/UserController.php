@@ -288,7 +288,11 @@ class UserController extends Controller {
         }
         if ($request->get('user_id')) {
             $query->where(function ($query) use ($request) {
-                $query->where('sender_id', $request->get('user_id'))->orWhere('recipient_id', $request->get('user_id'));
+                $query->where(function ($query) use ($request) {
+                    $query->where('sender_id', intval($request->get('user_id')));
+                })->orWhere(function ($query) use ($request) {
+                    $query->where('recipient_id', intval($request->get('user_id')));
+                });
             });
         }
         if ($request->get('sort')) {

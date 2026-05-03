@@ -381,6 +381,34 @@ abstract class Service {
         }
     }
 
+    /**
+     * Makes an image square by applying a background fill to the shorter dimension.
+     *
+     * @param mixed $image Image instance from Intervention Image
+     *
+     * @return mixed Image instance with applied resizing
+     */
+    public function makeImageSquare($image) {
+        try {
+            $imageWidth = $image->width();
+            $imageHeight = $image->height();
+
+            if ($imageWidth > $imageHeight) {
+                // Landscape
+                $canvas = Image::canvas($image->width(), $image->width());
+                $image = $canvas->insert($image, 'center');
+            } else {
+                // Portrait
+                $canvas = Image::canvas($image->height(), $image->height());
+                $image = $canvas->insert($image, 'center');
+            }
+
+            return $image;
+        } catch (\Exception $e) {
+            return $image; // return unmodified image on error
+        }
+    }
+
     /**********************************************************************************************
 
         END PUBLIC IMAGE HANDLING METHODS

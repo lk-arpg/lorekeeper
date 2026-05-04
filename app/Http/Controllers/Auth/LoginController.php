@@ -68,7 +68,7 @@ class LoginController extends Controller {
             return redirect('/register/'.$provider)->with(['userData' => $result]);
         }
 
-        Auth::login($user->user);
+        Auth::login($user->user, true);
 
         return redirect($this->redirectTo);
     }

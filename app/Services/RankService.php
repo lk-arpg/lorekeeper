@@ -39,6 +39,10 @@ class RankService extends Service {
                     if (!config('lorekeeper.powers.'.$power)) {
                         throw new \Exception('Invalid power selected.');
                     }
+
+                    if ($power == 'admin') {
+                        $data['is_secondary_admin'] = true;
+                    }
                 }
 
                 $powers = array_unique($data['powers']);
@@ -98,6 +102,10 @@ class RankService extends Service {
                 foreach ($data['powers'] as $power) {
                     if (!config('lorekeeper.powers.'.$power)) {
                         throw new \Exception('Invalid power selected.');
+                    }
+
+                    if ($power == 'admin') {
+                        $data['is_secondary_admin'] = true;
                     }
                 }
 

@@ -13,7 +13,7 @@ class Rank extends Model {
      */
     protected $fillable = [
         'name', 'description', 'parsed_description', 'sort', 'color', 'icon',
-        'is_admin',
+        'is_admin', 'is_secondary_admin',
     ];
 
     /**
@@ -22,6 +22,15 @@ class Rank extends Model {
      * @var string
      */
     protected $table = 'ranks';
+
+    /**
+     * The relationships that should always be loaded.
+     *
+     * @var array
+     */
+    protected $with = [
+        'powers',
+    ];
 
     /**
      * Validation rules for ranks.
@@ -73,7 +82,7 @@ class Rank extends Model {
      * @return bool
      */
     public function getIsAdminAttribute() {
-        return $this->attributes['is_admin'];
+        return $this->attributes['is_admin'] || $this->attributes['is_secondary_admin'];
     }
 
     /**********************************************************************************************
@@ -95,6 +104,15 @@ class Rank extends Model {
         }
         if ($this->hasPower('edit_ranks')) {
             if ($this->isAdmin) {
+                // editing a false admin rank
+                if ($rank->powers()->where('power', 'admin')->exists()) {
+                    if ($this->attributes['is_admin']) {
+                        return 3; // must remove admin power to edit more granularly
+                    } else {
+                        return 4; // false admin rank, cannot edit
+                    }
+                }
+
                 if ($rank->id != $this->id) {
                     return 1;
                 } // can edit everything

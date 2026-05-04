@@ -33,12 +33,19 @@
         </div>
     </div>
 
-    @if ($editable != 2)
-        {{-- Powers --}}
-        <div class="form-group">
-            <div class="row">
+    @if ($editable == 2)
+        <div class="card bg-light mb-3">
+            <div class="card-body">Powers for the admin rank cannot be edited. {!! add_help('The admin rank has the ability to edit any editable information on the site, and is always highest-ranked (cannot be edited by any other user).') !!}</div>
+        </div>
+    @elseif ($editable == 3)
+        <div class="card bg-light mb-3">
+            <div class="card-body">
+                This rank has the "Admin" power granted to it, meaning it has all powers. If you want to edit this rank, you must remove the "Admin" power first.
                 @foreach ($powers as $key => $power)
-                    <div class="col-md-6 form-check">
+                    @if ($key != 'admin')
+                        @continue
+                    @endif
+                    <div class="col-md-6 form-group ml-1 mt-2 mb-0">
                         {!! Form::checkbox('powers[' . $key . ']', $key, $rankPowers ? isset($rankPowers[$key]) : false, ['class' => 'form-check-input', 'id' => 'powers[' . $key . ']']) !!}
                         {!! Form::label('powers[' . $key . ']', $power['name'], ['class' => 'form-check-label']) !!}
                         {!! add_help($power['description']) !!}
@@ -46,9 +53,24 @@
                 @endforeach
             </div>
         </div>
-    @else
+    @elseif ($editable == 4)
         <div class="card bg-light mb-3">
-            <div class="card-body">Powers for the admin rank cannot be edited. {!! add_help('The admin rank has the ability to edit any editable information on the site, and is always highest-ranked (cannot be edited by any other user).') !!}</div>
+            <div class="card-body">
+                You cannot edit this rank's powers.
+            </div>
+        </div>
+    @else
+        {{-- Powers --}}
+        <div class="row">
+            @foreach ($powers as $key => $power)
+                <div class="col-md-6">
+                    <div class="form-check">
+                        {!! Form::checkbox('powers[' . $key . ']', $key, $rankPowers ? isset($rankPowers[$key]) : false, ['class' => 'form-check-input', 'id' => 'powers[' . $key . ']']) !!}
+                        {!! Form::label('powers[' . $key . ']', $power['name'], ['class' => 'form-check-label']) !!}
+                        {!! add_help($power['description']) !!}
+                    </div>
+                </div>
+            @endforeach
         </div>
     @endif
 

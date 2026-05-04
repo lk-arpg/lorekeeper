@@ -11,6 +11,10 @@ return [
     |
     */
 
+    'admin' => [
+        'name'        => 'Administrator Access',
+        'description' => 'Grants all powers automatically. Grant this power wisely.',
+    ],
     'edit_site_settings' => [
         'name'        => 'Edit Site Settings',
         'description' => 'Allow rank to modify site settings and upload new images to replace the site layout images.',

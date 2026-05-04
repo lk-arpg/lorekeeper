@@ -26,7 +26,9 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Laravel\Fortify\TwoFactorAuthenticatable;
+use Throwable;
 
 class User extends Authenticatable implements MustVerifyEmail {
     use Commenter, Notifiable, TwoFactorAuthenticatable;
@@ -84,6 +86,19 @@ class User extends Authenticatable implements MustVerifyEmail {
      * @var string
      */
     public $timestamps = true;
+
+    /**
+     * Send the email verification notification.
+     *
+     * @throws \Exception
+     */
+    public function sendEmailVerificationNotification() {
+        try {
+            parent::sendEmailVerificationNotification();
+        } catch (Throwable $e) {
+            throw new \Exception('Failed to send verification email. Please try again or contact an administrator.');
+        }
+    }
 
     /**********************************************************************************************
 

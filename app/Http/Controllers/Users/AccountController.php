@@ -163,6 +163,8 @@ class AccountController extends Controller {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();
             }
+
+            return redirect()->to('email/verify');
         }
 
         return redirect()->back();

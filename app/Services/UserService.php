@@ -168,7 +168,13 @@ class UserService extends Service {
         $user->email_verified_at = null;
         $user->save();
 
-        $user->sendEmailVerificationNotification();
+        try {
+            $user->sendEmailVerificationNotification();
+        } catch (\Exception $e) {
+            $this->setError('error', 'Email updated successfully! However, we couldn\'t send the verification email due to email configuration issues. Please contact an administrator to verify your email manually.');
+
+            return false;
+        }
 
         return true;
     }

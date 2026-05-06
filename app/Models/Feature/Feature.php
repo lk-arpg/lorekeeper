@@ -390,7 +390,7 @@ class Feature extends Model {
                     ).
                     ( // rarity
                         config('lorekeeper.extensions.organised_traits_dropdown.rarity.enable') && $feature['rarity'] ?
-                        ' (<span '.($feature['rarity']['color'] ? 'style="color: #'.$feature['rarity']['color'].';"' : '').'>'.Rarity::find($feature['rarity']['id'])->name.'</span>)'
+                        ' (<span '.($feature['rarity']['color'] ? 'style="color: #'.$feature['rarity']['color'].';"' : '').'>'.$feature['rarity']['name'].'</span>)'
                         : ''
                     );
                 }

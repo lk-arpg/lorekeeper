@@ -32,6 +32,13 @@ class Subtype extends Model {
     ];
 
     /**
+     * The relationships that should always be loaded.
+     *
+     * @var array
+     */
+    protected $with = ['species'];
+
+    /**
      * Validation rules for creation.
      *
      * @var array

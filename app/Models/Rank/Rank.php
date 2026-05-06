@@ -87,7 +87,7 @@ class Rank extends Model {
     /**
      * Checks if the current rank is high enough to edit a given rank.
      *
-     * @param \App\Models\Rank\Rank $rank
+     * @param Rank $rank
      *
      * @return int
      */
@@ -114,7 +114,7 @@ class Rank extends Model {
     /**
      * Checks if the rank has a given power.
      *
-     * @param \App\Models\Rank\RankPower $power
+     * @param RankPower $power
      *
      * @return bool
      */

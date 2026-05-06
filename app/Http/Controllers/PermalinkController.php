@@ -17,7 +17,7 @@ class PermalinkController extends Controller {
      */
     public function getComment($id) {
         $comments = Comment::withTrashed();
-        //$comments = $comments->sortByDesc('created_at');
+        // $comments = $comments->sortByDesc('created_at');
         $comment = $comments->find($id);
 
         if (!$comment) {

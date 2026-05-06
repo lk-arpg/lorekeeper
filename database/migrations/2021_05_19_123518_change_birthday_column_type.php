@@ -19,7 +19,7 @@ class ChangeBirthdayColumnType extends Migration {
      * Reverse the migrations.
      */
     public function down() {
-        //#
+        // #
         Schema::table('users', function (Blueprint $table) {
             $table->timestamp('birthday')->default(null)->change();
         });

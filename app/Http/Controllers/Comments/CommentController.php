@@ -98,7 +98,7 @@ class CommentController extends Controller {
         $recipient = null;
         $post = null;
         $model_type = $comment->commentable_type;
-        //getting user who commented
+        // getting user who commented
         $sender = User::find($comment->commenter_id);
         $type = $comment->type;
 

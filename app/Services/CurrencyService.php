@@ -23,7 +23,7 @@ class CurrencyService extends Service {
      * @param array                 $data
      * @param \App\Models\User\User $user
      *
-     * @return \App\Models\Currency\Currency|bool
+     * @return bool|Currency
      */
     public function createCurrency($data, $user) {
         DB::beginTransaction();
@@ -78,11 +78,11 @@ class CurrencyService extends Service {
     /**
      * Updates a currency.
      *
-     * @param \App\Models\Currency\Currency $currency
-     * @param array                         $data
-     * @param \App\Models\User\User         $user
+     * @param Currency              $currency
+     * @param array                 $data
+     * @param \App\Models\User\User $user
      *
-     * @return \App\Models\Currency\Currency|bool
+     * @return bool|Currency
      */
     public function updateCurrency($currency, $data, $user) {
         DB::beginTransaction();
@@ -139,8 +139,8 @@ class CurrencyService extends Service {
     /**
      * Deletes a currency.
      *
-     * @param \App\Models\Currency\Currency $currency
-     * @param mixed                         $user
+     * @param Currency $currency
+     * @param mixed    $user
      *
      * @return bool
      */
@@ -217,8 +217,8 @@ class CurrencyService extends Service {
     /**
      * Processes user input for creating/updating a currency.
      *
-     * @param array                         $data
-     * @param \App\Models\Currency\Currency $currency
+     * @param array    $data
+     * @param Currency $currency
      *
      * @return array
      */

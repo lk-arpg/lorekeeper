@@ -89,7 +89,7 @@ return [
     |
     */
 
-    'middleware' => ['web', \Spatie\Honeypot\ProtectAgainstSpam::class],
+    'middleware' => ['web', Spatie\Honeypot\ProtectAgainstSpam::class],
 
     /*
     |--------------------------------------------------------------------------

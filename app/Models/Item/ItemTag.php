@@ -119,7 +119,7 @@ class ItemTag extends Model {
     public function getServiceAttribute() {
         $class = 'App\Services\Item\\'.str_replace(' ', '', ucwords(str_replace('_', ' ', $this->tag))).'Service';
 
-        return new $class();
+        return new $class;
     }
 
     /**********************************************************************************************

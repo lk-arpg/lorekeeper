@@ -9,7 +9,7 @@ class ParsePostRequestFields {
     /**
      * Handle an incoming request.
      *
-     * @param \Closure(\Illuminate\Http\Request): (\Illuminate\Http\RedirectResponse|\Illuminate\Http\Response) $next
+     * @param Closure(Request): (\Illuminate\Http\RedirectResponse|\Illuminate\Http\Response) $next
      *
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\Response
      */

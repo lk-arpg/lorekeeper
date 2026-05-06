@@ -19,10 +19,10 @@ class NewsService extends Service {
     /**
      * Creates a news post.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $user
+     * @param array $data
+     * @param User  $user
      *
-     * @return \App\Models\News|bool
+     * @return bool|News
      */
     public function createNews($data, $user) {
         DB::beginTransaction();
@@ -51,11 +51,11 @@ class NewsService extends Service {
     /**
      * Updates a news post.
      *
-     * @param \App\Models\News      $news
-     * @param array                 $data
-     * @param \App\Models\User\User $user
+     * @param News  $news
+     * @param array $data
+     * @param User  $user
      *
-     * @return \App\Models\News|bool
+     * @return bool|News
      */
     public function updateNews($news, $data, $user) {
         DB::beginTransaction();
@@ -83,7 +83,7 @@ class NewsService extends Service {
     /**
      * Deletes a news post.
      *
-     * @param \App\Models\News $news
+     * @param News $news
      *
      * @return bool
      */

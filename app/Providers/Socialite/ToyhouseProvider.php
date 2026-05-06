@@ -57,7 +57,7 @@ class ToyhouseProvider extends AbstractProvider implements ProviderInterface {
     /**
      * Map the raw user array to a Socialite User instance.
      *
-     * @return \Laravel\Socialite\Two\User
+     * @return User
      */
     protected function mapUserToObject(array $user) {
         return (new User)->setRaw($user)->map([

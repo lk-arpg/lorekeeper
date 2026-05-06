@@ -29,7 +29,7 @@ class SublistService extends Service {
      * @param array $data
      * @param array $contents
      *
-     * @return \App\Models\Character\Sublist|bool
+     * @return bool|Sublist
      */
     public function createSublist($data, $contents) {
         DB::beginTransaction();
@@ -37,7 +37,7 @@ class SublistService extends Service {
         try {
             $sublist = Sublist::create($data);
 
-            //update categories and species
+            // update categories and species
             if (isset($contents['categories']) && $contents['categories']) {
                 CharacterCategory::whereIn('id', $contents['categories'])->update(['masterlist_sub_id' => $sublist->id]);
             }
@@ -56,11 +56,11 @@ class SublistService extends Service {
     /**
      * Update a sublist.
      *
-     * @param \App\Models\Character\Sublist $sublist
-     * @param array                         $data
-     * @param array                         $contents
+     * @param Sublist $sublist
+     * @param array   $data
+     * @param array   $contents
      *
-     * @return \App\Models\Character\Sublist|bool
+     * @return bool|Sublist
      */
     public function updateSublist($sublist, $data, $contents) {
         DB::beginTransaction();
@@ -71,10 +71,10 @@ class SublistService extends Service {
                 throw new \Exception('The name has already been taken.');
             }
 
-            //update sublist
+            // update sublist
             $sublist->update($data);
 
-            //update categories and species
+            // update categories and species
             CharacterCategory::where('masterlist_sub_id', $sublist->id)->update(['masterlist_sub_id' => 0]);
             Species::where('masterlist_sub_id', $sublist->id)->update(['masterlist_sub_id' => 0]);
             if (isset($contents['categories'])) {
@@ -95,7 +95,7 @@ class SublistService extends Service {
     /**
      * Delete a sublist.
      *
-     * @param \App\Models\Character\Sublist $sublist
+     * @param Sublist $sublist
      *
      * @return bool
      */

@@ -23,7 +23,7 @@ class SpeciesService extends Service {
      * @param array                 $data
      * @param \App\Models\User\User $user
      *
-     * @return \App\Models\Species\Species|bool
+     * @return bool|Species
      */
     public function createSpecies($data, $user) {
         DB::beginTransaction();
@@ -58,11 +58,11 @@ class SpeciesService extends Service {
     /**
      * Updates a species.
      *
-     * @param \App\Models\Species\Species $species
-     * @param array                       $data
-     * @param \App\Models\User\User       $user
+     * @param Species               $species
+     * @param array                 $data
+     * @param \App\Models\User\User $user
      *
-     * @return \App\Models\Species\Species|bool
+     * @return bool|Species
      */
     public function updateSpecies($species, $data, $user) {
         DB::beginTransaction();
@@ -100,7 +100,7 @@ class SpeciesService extends Service {
     /**
      * Deletes a species.
      *
-     * @param \App\Models\Species\Species $species
+     * @param Species $species
      *
      * @return bool
      */
@@ -158,7 +158,7 @@ class SpeciesService extends Service {
      * @param array                 $data
      * @param \App\Models\User\User $user
      *
-     * @return \App\Models\Species\Subtype|bool
+     * @return bool|Subtype
      */
     public function createSubtype($data, $user) {
         DB::beginTransaction();
@@ -193,11 +193,11 @@ class SpeciesService extends Service {
     /**
      * Updates a subtype.
      *
-     * @param \App\Models\Species\Subtype $subtype
-     * @param array                       $data
-     * @param \App\Models\User\User       $user
+     * @param Subtype               $subtype
+     * @param array                 $data
+     * @param \App\Models\User\User $user
      *
-     * @return \App\Models\Species\Subtype|bool
+     * @return bool|Subtype
      */
     public function updateSubtype($subtype, $data, $user) {
         DB::beginTransaction();
@@ -230,7 +230,7 @@ class SpeciesService extends Service {
     /**
      * Deletes a subtype.
      *
-     * @param \App\Models\Species\Subtype $subtype
+     * @param Subtype $subtype
      *
      * @return bool
      */
@@ -285,8 +285,8 @@ class SpeciesService extends Service {
     /**
      * Processes user input for creating/updating a species.
      *
-     * @param array                       $data
-     * @param \App\Models\Species\Species $species
+     * @param array   $data
+     * @param Species $species
      *
      * @return array
      */
@@ -312,8 +312,8 @@ class SpeciesService extends Service {
     /**
      * Processes user input for creating/updating a subtype.
      *
-     * @param array                       $data
-     * @param \App\Models\Species\Subtype $subtype
+     * @param array   $data
+     * @param Subtype $subtype
      *
      * @return array
      */

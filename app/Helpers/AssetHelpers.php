@@ -277,11 +277,11 @@ function parseAssetData($array) {
  * Distributes the assets in an assets array to the given recipient (user).
  * Loot tables will be rolled before distribution.
  *
- * @param array                 $assets
- * @param \App\Models\User\User $sender
- * @param \App\Models\User\User $recipient
- * @param string                $logType
- * @param string                $data
+ * @param array                $assets
+ * @param App\Models\User\User $sender
+ * @param App\Models\User\User $recipient
+ * @param string               $logType
+ * @param string               $data
  *
  * @return array
  */
@@ -296,35 +296,35 @@ function fillUserAssets($assets, $sender, $recipient, $logType, $data) {
 
     foreach ($assets as $key => $contents) {
         if ($key == 'items' && count($contents)) {
-            $service = new \App\Services\InventoryManager;
+            $service = new App\Services\InventoryManager;
             foreach ($contents as $asset) {
                 if (!$service->creditItem($sender, $recipient, $logType, $data, $asset['asset'], $asset['quantity'])) {
                     return false;
                 }
             }
         } elseif ($key == 'currencies' && count($contents)) {
-            $service = new \App\Services\CurrencyManager;
+            $service = new App\Services\CurrencyManager;
             foreach ($contents as $asset) {
                 if (!$service->creditCurrency($sender, $recipient, $logType, $data['data'], $asset['asset'], $asset['quantity'])) {
                     return false;
                 }
             }
         } elseif ($key == 'raffle_tickets' && count($contents)) {
-            $service = new \App\Services\RaffleManager;
+            $service = new App\Services\RaffleManager;
             foreach ($contents as $asset) {
                 if (!$service->addTicket($recipient, $asset['asset'], $asset['quantity'])) {
                     return false;
                 }
             }
         } elseif ($key == 'user_items' && count($contents)) {
-            $service = new \App\Services\InventoryManager;
+            $service = new App\Services\InventoryManager;
             foreach ($contents as $asset) {
                 if (!$service->moveStack($sender, $recipient, $logType, $data, $asset['asset'])) {
                     return false;
                 }
             }
         } elseif ($key == 'characters' && count($contents)) {
-            $service = new \App\Services\CharacterManager;
+            $service = new App\Services\CharacterManager;
             foreach ($contents as $asset) {
                 if (!$service->moveCharacter($asset['asset'], $recipient, $data, $asset['quantity'], $logType)) {
                     return false;
@@ -340,12 +340,12 @@ function fillUserAssets($assets, $sender, $recipient, $logType, $data) {
  * Distributes the assets in an assets array to the given recipient (character).
  * Loot tables will be rolled before distribution.
  *
- * @param array                           $assets
- * @param \App\Models\User\User           $sender
- * @param \App\Models\Character\Character $recipient
- * @param string                          $logType
- * @param string                          $data
- * @param mixed|null                      $submitter
+ * @param array                          $assets
+ * @param App\Models\User\User           $sender
+ * @param App\Models\Character\Character $recipient
+ * @param string                         $logType
+ * @param string                         $data
+ * @param mixed|null                     $submitter
  *
  * @return array
  */
@@ -366,14 +366,14 @@ function fillCharacterAssets($assets, $sender, $recipient, $logType, $data, $sub
 
     foreach ($assets as $key => $contents) {
         if ($key == 'currencies' && count($contents)) {
-            $service = new \App\Services\CurrencyManager;
+            $service = new App\Services\CurrencyManager;
             foreach ($contents as $asset) {
                 if (!$service->creditCurrency($sender, ($asset['asset']->is_character_owned ? $recipient : $item_recipient), $logType, $data['data'], $asset['asset'], $asset['quantity'])) {
                     return false;
                 }
             }
         } elseif ($key == 'items' && count($contents)) {
-            $service = new \App\Services\InventoryManager;
+            $service = new App\Services\InventoryManager;
             foreach ($contents as $asset) {
                 if (!$service->creditItem($sender, (($asset['asset']->category && $asset['asset']->category->is_character_owned) ? $recipient : $item_recipient), $logType, $data, $asset['asset'], $asset['quantity'])) {
                     return false;

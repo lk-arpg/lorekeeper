@@ -22,15 +22,6 @@ class Subtype extends Model {
     protected $table = 'subtypes';
 
     /**
-     * Accessors to append to the model.
-     *
-     * @var array
-     */
-    protected $appends = [
-        'name_with_species',
-    ];
-
-    /**
      * Validation rules for creation.
      *
      * @var array

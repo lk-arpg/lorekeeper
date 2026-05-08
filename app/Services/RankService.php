@@ -113,6 +113,10 @@ class RankService extends Service {
                 unset($data['powers']);
             }
 
+            if (!isset($data['is_secondary_admin']) || !in_array('admin', $powers)) {
+                $data['is_secondary_admin'] = false;
+            }
+
             $data['color'] = isset($data['color']) ? str_replace('#', '', $data['color']) : null;
             if (isset($data['description']) && $data['description']) {
                 $data['parsed_description'] = parse($data['description']);

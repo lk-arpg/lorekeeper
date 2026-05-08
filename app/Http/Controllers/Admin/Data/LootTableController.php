@@ -32,11 +32,14 @@ class LootTableController extends Controller {
         $data = $request->only(['name', 'namespec', 'sort']);
         if (isset($data['name'])) {
             if (isset($data['namespec']) && $data['namespec'] == 'display-name') {
-                $query->where('display_name', 'LIKE', '%'.$request->get('name').'%');
+                $query->where('display_name', 'LIKE', '%'.$data['name'].'%');
             } elseif (isset($data['namespec']) && $data['namespec'] == 'both') {
-                $query->where('name', 'LIKE', '%'.$request->get('name').'%')->orWhere('display_name', 'LIKE', '%'.$request->get('name').'%');
+                $query->where(function ($q) use ($data) {
+                    $q->where('name', 'LIKE', '%'.$data['name'].'%')
+                    ->orWhere('display_name', 'LIKE', '%'.$data['name'].'%');
+                });
             } else {
-                $query->where('name', 'LIKE', '%'.$request->get('name').'%');
+                $query->where('name', 'LIKE', '%'.$data['name'].'%');
             }
         }
 

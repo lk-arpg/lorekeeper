@@ -36,7 +36,7 @@ class LootTableController extends Controller {
             } elseif (isset($data['namespec']) && $data['namespec'] == 'both') {
                 $query->where(function ($q) use ($data) {
                     $q->where('name', 'LIKE', '%'.$data['name'].'%')
-                    ->orWhere('display_name', 'LIKE', '%'.$data['name'].'%');
+                        ->orWhere('display_name', 'LIKE', '%'.$data['name'].'%');
                 });
             } else {
                 $query->where('name', 'LIKE', '%'.$data['name'].'%');

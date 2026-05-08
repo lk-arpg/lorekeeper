@@ -15,7 +15,7 @@ class SendEmailVerificationNotification {
             try {
                 $event->user->sendEmailVerificationNotification();
             } catch (Throwable $e) {
-                flash('Account created successfully! However, we couldn\'t send the verification email due to email configuration issues. Please contact an administrator to verify your email manually.')->warning();
+                flash('Account created successfully! However, we couldn\'t send the verification email due to email configuration issues. Please contact an administrator.')->warning();
             }
         }
     }

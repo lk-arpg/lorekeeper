@@ -52,7 +52,7 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation {
         try {
             $user->sendEmailVerificationNotification();
         } catch (\Throwable $e) {
-            flash('Profile updated successfully! However, we couldn\'t send the verification email due to email configuration issues. Please contact an administrator to verify your email manually.')->warning();
+            flash('Profile updated successfully! However, we couldn\'t send the verification email due to email configuration issues. Please contact an administrator.')->warning();
 
             return;
         }

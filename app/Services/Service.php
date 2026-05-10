@@ -270,6 +270,8 @@ abstract class Service {
         }
 
         try {
+            // ensure matching drivers for watermark and image to prevent errors
+            $this->configureImageDriver($image->basePath());
             $watermark = Image::make($watermarkPath);
 
             if ($resizeWatermark) {
@@ -297,7 +299,7 @@ abstract class Service {
             $image->insert($watermark, 'center');
 
             return $image;
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return $image; // Return unmodified image on error
         }
     }

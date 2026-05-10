@@ -812,7 +812,10 @@ class GalleryManager extends Service {
             $image = Image::make($submission->imagePath.'/'.$submission->imageFileName);
 
             // Scale the image if desired/necessary
-            if (config('lorekeeper.settings.gallery_images_cap') && ($imageProperties[0] > config('lorekeeper.settings.gallery_images_cap') || $imageProperties[1] > config('lorekeeper.settings.gallery_images_cap'))) {
+            $imageWidth = $image->width();
+            $imageHeight = $image->height();
+            $applyCap = config('lorekeeper.settings.gallery_images_cap') && !in_array(strtolower($submission->extension), config('lorekeeper.settings.gallery_images_exclude_formats'));
+            if ($applyCap && ($imageWidth > config('lorekeeper.settings.gallery_images_cap') || $imageHeight > config('lorekeeper.settings.gallery_images_cap'))) {
                 $image = $this->resizeImage($image, config('lorekeeper.settings.gallery_images_cap'), 'max');
             }
 

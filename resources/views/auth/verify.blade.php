@@ -20,4 +20,11 @@
             {{ __('click here to request another') }}
         </button>.
     </form>
+
+    @if (config('lorekeeper.settings.allow_unverified_users_to_modify_emails'))
+        <div class="alert alert-warning mt-3" role="alert">
+            {{ __('If you need to change your email address, you can do so') }}
+            <a href="{{ url('email/update') }}">{{ __('here') }}</a>.
+        </div>
+    @endif
 @endsection

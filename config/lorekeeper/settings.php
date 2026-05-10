@@ -429,4 +429,14 @@ return [
     |
     */
     'enable_character_content_warnings'                 => 1,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Allow Unverified Users to Modify their Email Addresses
+    |--------------------------------------------------------------------------
+    |
+    | Allows users who have not yet verified their email addresses
+    | to modify their email address, in order to correct mistakes.
+    */
+    'allow_unverified_users_to_modify_emails'           => 1,
 ];

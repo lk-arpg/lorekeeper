@@ -21,8 +21,10 @@
                     content_css: [
                         '{{ asset('css/app.css') }}',
                         '{{ asset('css/lorekeeper.css') }}'
+                        '{{ asset('css/all.min.css') }}', //fontawesome
                     ],
                     spoiler_caption: 'Toggle Spoiler',
+                    extended_valid_elements: '#i[class],#em[class]',
                     target_list: false
                 });
 			});
@@ -69,8 +71,10 @@
                     content_css: [
                         '{{ asset('css/app.css') }}',
                         '{{ asset('css/lorekeeper.css') }}'
+                        '{{ asset('css/all.min.css') }}', //fontawesome
                     ],
                     spoiler_caption: 'Toggle Spoiler',
+                    extended_valid_elements: '#i[class],#em[class]',
                     target_list: false
                 });
 			});

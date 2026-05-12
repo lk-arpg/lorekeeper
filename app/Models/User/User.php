@@ -83,6 +83,24 @@ class User extends Authenticatable implements MustVerifyEmail {
      */
     public $timestamps = true;
 
+    /**
+     * Validation rules for avatar creation.
+     *
+     * @var array
+     */
+    public static $createRules = [
+        'avatar'      => 'required|mimes:jpeg,jpg,gif,png,webp|max:1024',
+    ];
+
+    /**
+     * Validation rules for avatar updating.
+     *
+     * @var array
+     */
+    public static $updateRules = [
+        'avatar'        => 'mimes:jpeg,jpg,gif,png,webp|max:1024',
+    ];
+
     /**********************************************************************************************
 
         RELATIONS

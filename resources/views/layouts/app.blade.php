@@ -170,9 +170,11 @@
                     toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | spoiler-add spoiler-remove | removeformat | code',
                     content_css: [
                         '{{ asset('css/app.css') }}',
-                        '{{ asset('css/lorekeeper.css') }}'
+                        '{{ asset('css/lorekeeper.css') }}',
+                        '{{ asset('css/all.min.css') }}', // fontawesome
                     ],
                     spoiler_caption: 'Toggle Spoiler',
+                    extended_valid_elements: '#i[class],#em[class]', // # <- sets autopadding with &nbsp;
                     target_list: false
                 });
                 bsCustomFileInput.init();

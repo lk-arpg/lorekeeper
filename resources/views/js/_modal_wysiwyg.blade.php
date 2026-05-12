@@ -8,9 +8,11 @@ plugins: [
 'insertdatetime media table paste code help wordcount'
 ],
 toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | code',
+extended_valid_elements: '#i[class],#em[class]',
 content_css: [
 '//www.tiny.cloud/css/codepen.min.css',
 '{{ asset('css/app.css') }}',
-'{{ asset('css/lorekeeper.css') }}'
+'{{ asset('css/lorekeeper.css') }}',
+'{{ asset('css/all.min.css') }}', // fontawesome
 ]
 });

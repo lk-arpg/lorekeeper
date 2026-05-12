@@ -88,8 +88,8 @@ class User extends Authenticatable implements MustVerifyEmail {
      *
      * @var array
      */
-    public static $updateRules = [
-        'avatar'      => 'nullable|mimes:jpeg,jpg,gif,png,webp|max:1024',
+    public static $avatarUpdateRules = [
+        'avatar'      => 'required|mimes:jpeg,jpg,gif,png,webp|max:1024',
     ];
 
     /**********************************************************************************************

@@ -4,10 +4,6 @@ namespace App\Services;
 
 use App\Facades\Notifications;
 use App\Models\Character\Character;
-use App\Models\Currency\Currency;
-use App\Models\Item\Item;
-use App\Models\Loot\LootTable;
-use App\Models\Raffle\Raffle;
 use App\Models\User\User;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
@@ -61,24 +57,7 @@ class RewardManager extends Service {
             // add assets first
             if (isset($data['rewardable_type'])) {
                 foreach ($data['rewardable_type'] as $key => $assetType) {
-                    $reward = null;
-                    switch ($assetType) {
-                        case 'Item':
-                            $reward = Item::find($data['rewardable_id'][$key]);
-                            break;
-                        case 'Currency':
-                            $reward = Currency::find($data['rewardable_id'][$key]);
-                            if ($type == 'character' && !$reward->is_user_owned) {
-                                throw new \Exception('Invalid currency selected.');
-                            }
-                            break;
-                        case 'LootTable':
-                            $reward = LootTable::find($data['rewardable_id'][$key]);
-                            break;
-                        case 'Raffle':
-                            $reward = Raffle::find($data['rewardable_id'][$key]);
-                            break;
-                    }
+                    $reward = getAssetModelString(strtolower($data['rewardable_type'][$key]))::find($data['rewardable_id'][$key]);
                     if (!$reward) {
                         continue;
                     }

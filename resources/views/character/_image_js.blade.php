@@ -70,6 +70,7 @@
                         '{{ asset('css/all.min.css') }}', // fontawesome
                     ],
                     spoiler_caption: 'Toggle Spoiler',
+                    extended_valid_elements: '#i[class],#em[class]',
                     target_list: false
                 });
             });

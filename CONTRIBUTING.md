@@ -29,7 +29,7 @@ Please see the full [Contribution Guide](http://wiki.lorekeeper.me/index.php?tit
 ### AI Policy
 
 - **Lorekeeper maintains a strict no-GenAI policy.** This includes tools such as Claude, Copilot, ChatGPT, and other GenAI/LLM-powered tools.
-- Our community is an AI-hostile environment. Projects that include AI features or developers who use AI to code are not welcome.
+- Our community is an AI-hostile environment. Developers who utilize AI at any point in their process (whether that's code review, writing code, bug fixing, or any other usage) are not welcome.
 - **Contributions/PRs that include AI generated code will not be accepted.** While it is difficult to enforce the exclusion of AI code in third-party extensions, it is overall deeply frowned upon by our community to use AI as part of your development process.
 
 ### About abandoned pull requests

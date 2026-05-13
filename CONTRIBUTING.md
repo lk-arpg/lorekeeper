@@ -33,6 +33,7 @@ Please see the full [Contribution Guide](http://wiki.lorekeeper.me/index.php?tit
     - What is considered "using AI in the development process" includes, but is not limited to:
         - Code reviews with AI
         - Fixing bugs with AI
+        - Analyzing/explaining errors with AI
         - Writing documentation/text with AI
         - Creating new code features with AI
         - Generating visual assets with AI

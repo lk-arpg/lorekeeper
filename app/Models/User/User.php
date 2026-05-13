@@ -15,7 +15,6 @@ use App\Models\Item\Item;
 use App\Models\Item\ItemLog;
 use App\Models\Notification;
 use App\Models\Rank\Rank;
-use App\Models\Rank\RankPower;
 use App\Models\Shop\ShopLog;
 use App\Models\Submission\Submission;
 use App\Traits\Commenter;

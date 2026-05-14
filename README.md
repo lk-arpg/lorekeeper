@@ -36,7 +36,7 @@ Please refer to the [Wiki](http://wiki.lorekeeper.me/index.php?title=Tutorial:_S
         - Writing documentation/text with AI
         - Creating new code features with AI
         - Generating visual assets with AI
-- **Contributions/PRs that include AI generated code will not be accepted.** While it is difficult to enforce the exclusion of AI code in third-party extensions, it is overall deeply frowned upon by our community to use AI as part of your development process.
+- **Contributions/PRs that include AI generated code will not be accepted.** While we have no explicit control over third party extensions, extensions found to be using AI generated code are not allowed to be advertised within our community. Any extensions found to be using AI generated code will be removed from the Wiki and Discord release channels.
 
 ## Contact
 

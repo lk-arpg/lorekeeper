@@ -18,7 +18,7 @@ File bugs in the [issue tracker](https://github.com/corowne/Lorekeeper/issues). 
 
 ### Feature requests
 
-It's recommended to discuss potential new features in the [support Discord](https://discord.gg/U4JZfsu) before creating an issue, as this helps check that it is valid for a feature request and if it would be useful to others-- something which increases its likelihood of being implemented. Please also check that your request has not already been posted on the [issue tracker](https://github.com/corowne/Lorekeeper/issues).
+It's recommended to discuss potential new features in the [support Discord](https://discord.gg/U4JZfsu) before creating an issue, as this helps check that it is valid for a feature request and if it would be useful to others-- something which increases its likelihood of being implemented. Please also check that your request has not already been posted on the [issue tracker](https://github.com/lk-aprg/Lorekeeper/issues).
 
 Avoid listing multiple requests in one issue. One issue per request makes it easier to track and discuss it. If need be, you may make multiple issues (within reason), but do not spam. Do not make multiple issues for the same request.
 
@@ -37,7 +37,7 @@ Please see the full [Contribution Guide](http://wiki.lorekeeper.me/index.php?tit
         - Writing documentation/text with AI
         - Creating new code features with AI
         - Generating visual assets with AI
-- **Contributions/PRs that include AI generated code will not be accepted.** While it is difficult to enforce the exclusion of AI code in third-party extensions, it is overall deeply frowned upon by our community to use AI as part of your development process.
+- **Contributions/PRs that include AI generated code will not be accepted.** While we have no explicit control over third party extensions, extensions found to be using AI generated code are not allowed to be advertised within our community. Any extensions found to be using AI generated code will be removed from the Wiki and Discord release channels.
 
 ### About abandoned pull requests
 

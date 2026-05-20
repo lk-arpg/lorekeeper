@@ -456,6 +456,9 @@ main > .row {
     height: 2rem;
     padding-right: .5rem;
 }
+.text-wrap {
+    text-wrap: auto;
+}
 
 /* NOTIFICATIONS *********************************************************************************/
 

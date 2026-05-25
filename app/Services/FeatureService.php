@@ -305,7 +305,7 @@ class FeatureService extends Service {
                 throw new \Exception('Failed to log admin action.');
             }
 
-            if ($feature) {
+            if ($image) {
                 $this->handleImage($image, $feature->imagePath, $feature->imageFileName);
             }
 

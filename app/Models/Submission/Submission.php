@@ -132,24 +132,26 @@ class Submission extends Model {
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeViewable($query, $user = null) {
-        $forbiddenSubmissions = $this
-            ->whereHas('prompt', function ($q) {
-                $q->where('hide_submissions', 1)->whereNotNull('end_at')->where('end_at', '>', Carbon::now());
-            })
-            ->orWhereHas('prompt', function ($q) {
-                $q->where('hide_submissions', 2);
-            })
-            ->orWhere('status', '!=', 'Approved')->pluck('id')->toArray();
-
         if ($user && $user->hasPower('manage_submissions')) {
             return $query;
         } else {
-            return $query->where(function ($query) use ($user, $forbiddenSubmissions) {
-                if ($user) {
-                    $query->whereNotIn('id', $forbiddenSubmissions)->orWhere('user_id', $user->id);
-                } else {
-                    $query->whereNotIn('id', $forbiddenSubmissions);
-                }
+            return $query->where(function ($query) use ($user) {
+                $query
+                    ->where('status', 'Approved')
+                    ->where(function ($q) {
+                        $q
+                            ->whereHas('prompt', function ($q) {
+                                $q->where('hide_submissions', 0);
+                            })
+                            ->orWhereHas('prompt', function ($q) {
+                                $q->where('hide_submissions', 1)->whereNotNull('end_at')->where('end_at', '<', Carbon::now());
+                            });
+                    })
+                    ->orWhere(function ($q) use ($user) {
+                        if ($user) {
+                            $q->where('user_id', $user->id);
+                        }
+                    });
             });
         }
     }

@@ -6,7 +6,7 @@
             @if ($count['all'])
                 <p>The user has completed this prompt <strong>{{ $count['all'] }}</strong> time{{ $count['all'] == 1 ? '' : 's' }} overall.</p>
                 @if ($prompt->limit)
-                    <p>They have now submitted this prompt {{ $prompt->limit_period ? $count[$prompt->limit_period] : $count['all'] }} out of {{ $limit }} times
+                    <p>They have now submitted this prompt {{ $prompt->limit_period ? $count[$prompt->limit_period] : $count['all'] }} out of {{ $prompt->limit }} times
                         {{ $prompt->limit_period ? 'for this ' . strtolower($prompt->limit_period) : '' }}.
                 @endif
             @endif
@@ -20,7 +20,7 @@
             @if ($count['all'])
                 <p>You have completed this prompt <strong>{{ $count['all'] }}</strong> time{{ $count['all'] == 1 ? '' : 's' }} overall.</p>
                 @if ($prompt->limit)
-                    <p>You have already submitted this prompt {{ $prompt->limit_period ? $count[$prompt->limit_period] : $count['all'] }} out of {{ $limit }} times
+                    <p>You have already submitted this prompt {{ $prompt->limit_period ? $count[$prompt->limit_period] : $count['all'] }} out of {{ $prompt->limit }} times
                         {{ $prompt->limit_period ? 'for this ' . strtolower($prompt->limit_period) : '' }}.
                 @endif
             @endif

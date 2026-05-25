@@ -16,6 +16,9 @@
             <div class="alert alert-info">For admins - note that .GIF avatars leave a tmp file in the directory (e.g php2471.tmp). There is an automatic schedule to delete these files.
             </div>
         @endif
+        <div class="alert alert-info">
+            Allowed avatar image types: jpeg, jpg, gif, png, webp. Max upload size is 1 MB.
+        </div>
         {!! Form::open(['url' => 'account/avatar', 'files' => true]) !!}
         <div class="card mb-3 hide" id="avatarCrop">
             <div class="card-body">

@@ -57,6 +57,48 @@ class LootTable extends Model {
 
     /**********************************************************************************************
 
+        SCOPES
+
+    **********************************************************************************************/
+
+    /**
+     * Scope a query to sort sales in alphabetical order, by name.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param bool                                  $reverse
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeSortAlphabetical($query, $reverse = false) {
+        return $query->orderBy('name', $reverse ? 'DESC' : 'ASC');
+    }
+
+    /**
+     * Scope a query to sort sales in alphabetical order, by display name.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param bool                                  $reverse
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function sortAlphabeticalDisplayName($query, $reverse = false) {
+        return $query->orderBy('display_name', $reverse ? 'DESC' : 'ASC');
+    }
+
+    /**
+     * Scope a query to sort sales by newest first.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param mixed                                 $reverse
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeSortNewest($query, $reverse = false) {
+        return $query->orderBy('id', $reverse ? 'ASC' : 'DESC');
+    }
+
+    /**********************************************************************************************
+
         ACCESSORS
 
     **********************************************************************************************/

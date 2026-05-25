@@ -193,6 +193,24 @@ class Character extends Model {
         return $this->belongsToMany(Item::class, 'character_items')->withPivot('count', 'data', 'updated_at', 'id', 'stack_name')->whereNull('character_items.deleted_at');
     }
 
+    /**
+     * Gets the character's associated sublists.
+     *
+     * @return object
+     */
+    public function sublists() {
+        if (!$this->is_myo_slot) {
+            $categorySub = $this->category->masterlist_sub_id ?? null;
+            $speciesSub = $this->image->species->masterlist_sub_id ?? null;
+
+            $result = Sublist::where('id', $categorySub)->orWhere('id', $speciesSub)->get() ?? null;
+
+            return $result;
+        }
+
+        return null;
+    }
+
     /**********************************************************************************************
 
         SCOPES
@@ -469,9 +487,11 @@ class Character extends Model {
     public function getCurrencyLogs($limit = 10) {
         $character = $this;
         $query = CurrencyLog::with('currency')->where(function ($query) use ($character) {
-            $query->with('sender.rank')->where('sender_type', 'Character')->where('sender_id', $character->id)->where('log_type', '!=', 'Staff Grant');
-        })->orWhere(function ($query) use ($character) {
-            $query->with('recipient.rank')->where('recipient_type', 'Character')->where('recipient_id', $character->id)->where('log_type', '!=', 'Staff Removal');
+            $query->where(function ($query) use ($character) {
+                $query->with('sender.rank')->where('sender_type', 'Character')->where('sender_id', $character->id)->where('log_type', '!=', 'Staff Grant');
+            })->orWhere(function ($query) use ($character) {
+                $query->with('recipient.rank')->where('recipient_type', 'Character')->where('recipient_id', $character->id)->where('log_type', '!=', 'Staff Removal');
+            });
         })->orderBy('id', 'DESC');
 
         if ($limit) {

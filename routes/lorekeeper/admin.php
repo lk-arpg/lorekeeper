@@ -337,6 +337,10 @@ Route::group(['prefix' => 'grants', 'namespace' => 'Users', 'middleware' => 'pow
 
     Route::get('loot-tables', 'GrantController@getLootTables');
     Route::post('loot-tables', 'GrantController@postLootTables');
+
+    Route::get('user-rewards', 'GrantController@getUserRewardGrant');
+    Route::get('character-rewards', 'GrantController@getCharacterRewardGrant');
+    Route::post('rewards/{type}', 'GrantController@postRewardGrant')->where('type', 'user|character');
 });
 
 // TRADES

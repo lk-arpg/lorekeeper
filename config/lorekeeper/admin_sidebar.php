@@ -120,6 +120,14 @@ return [
                 'name' => 'Loot Table Grants',
                 'url'  => 'admin/grants/loot-tables',
             ],
+            [
+                'name' => 'User Reward Grants',
+                'url'  => 'admin/grants/user-rewards',
+            ],
+            [
+                'name' => 'Character Reward Grants',
+                'url'  => 'admin/grants/character-rewards',
+            ],
         ],
     ],
     'Masterlist' => [

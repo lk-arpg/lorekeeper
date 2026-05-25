@@ -115,6 +115,11 @@ class SalesService extends Service {
                 $data['is_open'] = 0;
             }
 
+            $oldImageFileName = null;
+            if ($sales->has_image) {
+                $oldImageFileName = $sales->imageFileName;
+            }
+
             $image = null;
             if (isset($data['image']) && $data['image']) {
                 $data['has_image'] = 1;
@@ -155,8 +160,8 @@ class SalesService extends Service {
                 unset($data['remove_image']);
             }
 
-            if ($sales) {
-                $this->handleImage($image, $sales->imagePath, $sales->imageFileName);
+            if ($image) {
+                $this->handleImage($image, $sales->imagePath, $sales->imageFileName, $oldImageFileName);
             }
 
             return $this->commitReturn($sales);
@@ -178,10 +183,7 @@ class SalesService extends Service {
         DB::beginTransaction();
 
         try {
-            if ($sales->has_image) {
-                $this->deleteImage($sales->imagePath, $sales->imageFileName);
-            }
-
+            $this->deleteImage($sales->imagePath, $sales->imageFileName);
             $sales->delete();
 
             return $this->commitReturn(true);

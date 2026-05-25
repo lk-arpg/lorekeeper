@@ -27,6 +27,12 @@ require_once __DIR__.'/lorekeeper/browse.php';
 
 Route::feeds('feeds');
 
+// Updating email from verification notice
+Route::middleware('auth')->group(function () {
+    Route::get('/email/update', 'HomeController@getEmail');
+    Route::post('/email/update', 'HomeController@postEmail');
+});
+
 /**************************************************************************************************
     Routes that require login
 **************************************************************************************************/

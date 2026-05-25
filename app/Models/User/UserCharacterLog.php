@@ -4,6 +4,8 @@ namespace App\Models\User;
 
 use App\Models\Character\Character;
 use App\Models\Model;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 
 class UserCharacterLog extends Model {
     /**
@@ -78,5 +80,16 @@ class UserCharacterLog extends Model {
      */
     public function getDisplayRecipientAliasAttribute() {
         return prettyProfileLink($this->recipient_url);
+    }
+
+    /**
+     * The "booted" method of the model.
+     */
+    protected static function booted(): void {
+        static::addGlobalScope('visible', function (Builder $builder) {
+            if (!(Auth::check()) || !(Auth::user()->hasPower('manage_characters'))) {
+                $builder->whereRelation('character', 'is_visible', 1);
+            }
+        });
     }
 }

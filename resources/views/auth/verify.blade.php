@@ -12,6 +12,12 @@
         </div>
     @endif
 
+    @if (session('error'))
+        <div class="alert alert-danger mb-2" role="alert">
+            {{ session('error') }}
+        </div>
+    @endif
+
     {{ __('Before proceeding, please check your email for a verification link.') }}
     {{ __('If you did not receive the email') }},
     <form class="d-inline" method="POST" action="{{ url('email/verification-notification') }}">
@@ -20,4 +26,11 @@
             {{ __('click here to request another') }}
         </button>.
     </form>
+
+    @if (config('lorekeeper.settings.allow_unverified_users_to_modify_emails'))
+        <div class="alert alert-warning mt-3" role="alert">
+            {{ __('If you need to change your email address, you can do so') }}
+            <a href="{{ url('email/update') }}">{{ __('here') }}</a>.
+        </div>
+    @endif
 @endsection

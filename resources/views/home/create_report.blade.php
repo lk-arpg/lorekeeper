@@ -19,7 +19,7 @@
         {!! Form::open(['url' => 'reports/new', 'id' => 'submissionForm']) !!}
         <div class="br-form-group alert alert-warning" style="display: none">
             <div class="form-check">
-                When submitting a bug report, please use the 'URL / Title' section to briefly summarise the bug. Inlcude any links in the 'Comments' section. This is to allow an easy search.
+                When submitting a bug report, please use the 'URL / Title' section to briefly summarise the bug. Include any links in the 'Comments' section. This is to allow an easy search.
             </div>
         </div>
         <div class="form-group">

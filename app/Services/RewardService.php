@@ -25,7 +25,7 @@ class RewardService extends Service {
     **********************************************************************************************/
 
     /**
-     * Processes user input for creating/updating prompt rewards.
+     * Processes user input for creating/updating object rewards.
      *
      * @param mixed $data
      * @param mixed $object_model

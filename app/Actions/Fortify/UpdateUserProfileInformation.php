@@ -49,6 +49,12 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation {
             'email_verified_at' => null,
         ])->save();
 
-        $user->sendEmailVerificationNotification();
+        try {
+            $user->sendEmailVerificationNotification();
+        } catch (\Throwable $e) {
+            flash('Profile updated successfully! However, we couldn\'t send the verification email due to email configuration issues. Please contact an administrator.')->warning();
+
+            return;
+        }
     }
 }

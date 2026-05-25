@@ -29,8 +29,43 @@ class LootTableController extends Controller {
     public function getIndex(Request $request) {
         $query = LootTable::query();
 
-        if ($request->get('name')) {
-            $query->where('name', 'LIKE', '%'.$request->get('name').'%');
+        $data = $request->only(['name', 'namespec', 'sort']);
+        if (isset($data['name'])) {
+            if (isset($data['namespec']) && $data['namespec'] == 'display-name') {
+                $query->where('display_name', 'LIKE', '%'.$data['name'].'%');
+            } elseif (isset($data['namespec']) && $data['namespec'] == 'both') {
+                $query->where(function ($q) use ($data) {
+                    $q->where('name', 'LIKE', '%'.$data['name'].'%')
+                        ->orWhere('display_name', 'LIKE', '%'.$data['name'].'%');
+                });
+            } else {
+                $query->where('name', 'LIKE', '%'.$data['name'].'%');
+            }
+        }
+
+        if (isset($data['sort'])) {
+            switch ($data['sort']) {
+                case 'alpha':
+                    $query->sortAlphabetical();
+                    break;
+                case 'alpha-reverse':
+                    $query->sortAlphabetical(true);
+                    break;
+                case 'alpha-dn':
+                    $query->sortAlphabeticalDisplayName();
+                    break;
+                case 'alpha-dn-reverse':
+                    $query->sortAlphabeticalDisplayName(true);
+                    break;
+                case 'newest':
+                    $query->sortNewest();
+                    break;
+                case 'oldest':
+                    $query->sortNewest(true);
+                    break;
+            }
+        } else {
+            $query->sortNewest(true);
         }
 
         return view('admin.loot_tables.loot_tables', [

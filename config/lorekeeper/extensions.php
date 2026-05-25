@@ -97,7 +97,7 @@ return [
     // Previous & Next buttons on Character pages - Speedy
     // Adds buttons linking to the previous character as well as the next character on all character pages.
     'previous_and_next_characters' => [
-        'display' => 0,
+        'display' => 1,
         'reverse' => 0, // By default, 0 has the lower number on the 'Next' side and the higher number on the 'Previous' side, reflecting the default masterlist order. Setting this to 1 reverses this.
     ],
 
@@ -156,4 +156,7 @@ return [
         'Quarter'   => 'Quarter', // This is once every three months.
         'Year'      => 'Year',
     ],
+
+    // Limit Userpage Sublists to Characters - Speedy
+    'limit_userpage_sublists_to_characters' => 0, // If enabled, will only show sub masterlists on user pages that the characters owned by the user belong to.
 ];

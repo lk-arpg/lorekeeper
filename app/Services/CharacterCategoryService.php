@@ -80,6 +80,11 @@ class CharacterCategoryService extends Service {
 
             $data = $this->populateCategoryData($data, $category);
 
+            $oldImageFileName = null;
+            if ($category->has_image) {
+                $oldImageFileName = $category->categoryImageFileName;
+            }
+
             $image = null;
             if (isset($data['image']) && $data['image']) {
                 $data['has_image'] = 1;
@@ -94,8 +99,8 @@ class CharacterCategoryService extends Service {
                 throw new \Exception('Failed to log admin action.');
             }
 
-            if ($category) {
-                $this->handleImage($image, $category->categoryImagePath, $category->categoryImageFileName);
+            if ($image) {
+                $this->handleImage($image, $category->categoryImagePath, $category->categoryImageFileName, $oldImageFileName);
             }
 
             return $this->commitReturn($category);
@@ -127,9 +132,7 @@ class CharacterCategoryService extends Service {
                 throw new \Exception('Failed to log admin action.');
             }
 
-            if ($category->has_image) {
-                $this->deleteImage($category->categoryImagePath, $category->categoryImageFileName);
-            }
+            $this->deleteImage($category->categoryImagePath, $category->categoryImageFileName);
             $category->delete();
 
             return $this->commitReturn(true);

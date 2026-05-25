@@ -48,7 +48,21 @@ class UserController extends Controller {
             abort(404);
         }
 
-        View::share('sublists', Sublist::orderBy('sort', 'DESC')->get());
+        if (config('lorekeeper.extensions.limit_userpage_sublists_to_characters')) {
+            $characters = $this->user->characters()->get();
+            $userSublists = [];
+            foreach ($characters as $character) {
+                foreach ($character->sublists() as $sublist) {
+                    array_push($userSublists, $sublist->id);
+                }
+            }
+
+            $userSublists = array_unique($userSublists);
+
+            View::share('sublists', Sublist::whereIn('id', $userSublists)->orderBy('sort', 'DESC')->get());
+        } else {
+            View::share('sublists', Sublist::orderBy('sort', 'DESC')->get());
+        }
 
         $this->user->updateCharacters();
         $this->user->updateArtDesignCredits();
@@ -288,7 +302,11 @@ class UserController extends Controller {
         }
         if ($request->get('user_id')) {
             $query->where(function ($query) use ($request) {
-                $query->where('sender_id', $request->get('user_id'))->orWhere('recipient_id', $request->get('user_id'));
+                $query->where(function ($query) use ($request) {
+                    $query->where('sender_id', intval($request->get('user_id')));
+                })->orWhere(function ($query) use ($request) {
+                    $query->where('recipient_id', intval($request->get('user_id')));
+                });
             });
         }
         if ($request->get('sort')) {

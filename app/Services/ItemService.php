@@ -287,7 +287,7 @@ class ItemService extends Service {
                 ]), // rarity, availability info (original source, purchase locations, drop locations)
             ]);
 
-            if ($item) {
+            if ($image) {
                 $this->handleImage($image, $item->imagePath, $item->imageFileName);
             }
 

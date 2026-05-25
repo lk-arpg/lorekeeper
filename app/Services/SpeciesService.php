@@ -85,7 +85,7 @@ class SpeciesService extends Service {
 
             $species->update($data);
 
-            if ($species) {
+            if ($image) {
                 $this->handleImage($image, $species->speciesImagePath, $species->speciesImageFileName);
             }
 
@@ -215,7 +215,7 @@ class SpeciesService extends Service {
 
             $subtype->update($data);
 
-            if ($subtype) {
+            if ($image) {
                 $this->handleImage($image, $subtype->subtypeImagePath, $subtype->subtypeImageFileName);
             }
 

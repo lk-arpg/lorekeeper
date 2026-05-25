@@ -85,7 +85,7 @@ class RarityService extends Service {
 
             $rarity->update($data);
 
-            if ($rarity) {
+            if ($image) {
                 $this->handleImage($image, $rarity->rarityImagePath, $rarity->rarityImageFileName);
             }
 

@@ -89,7 +89,7 @@ class ShopService extends Service {
 
             $shop->update($data);
 
-            if ($shop) {
+            if ($image) {
                 $this->handleImage($image, $shop->shopImagePath, $shop->shopImageFileName);
             }
 

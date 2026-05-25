@@ -20,6 +20,9 @@
     if (!isset($showLootTables)) {
         $showLootTables = false;
     }
+    if (!isset($loots)) {
+        $loots = getRewards($object);
+    }
 @endphp
 
 <div class="card p-4 mb-3 mt-3" id="reward-card">
@@ -39,7 +42,7 @@
 
         @include('widgets._loot_select', [
             'prefix' => $prefix ?? '',
-            'loots' => getRewards($object),
+            'loots' => $loots,
             'showRecipient' => $showRecipient,
             'showRaffles' => $showRaffles,
             'showLootTables' => $showLootTables,
@@ -57,7 +60,7 @@
     @else
         @include('widgets._loot_select', [
             'prefix' => $prefix ?? '',
-            'loots' => getRewards($object),
+            'loots' => $loots,
             'showRecipient' => $showRecipient,
             'showRaffles' => $showRaffles,
             'showLootTables' => $showLootTables,

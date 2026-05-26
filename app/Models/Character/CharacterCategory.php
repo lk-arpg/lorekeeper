@@ -31,6 +31,7 @@ class CharacterCategory extends Model {
         'name'        => 'required|unique:character_categories|between:3,100',
         'code'        => 'required|unique:character_categories|between:1,25',
         'description' => 'nullable',
+        'image'       => 'mimes:png,gif,jpg,jpeg,webp,apng',
     ];
 
     /**
@@ -42,6 +43,7 @@ class CharacterCategory extends Model {
         'name'        => 'required|between:3,100',
         'code'        => 'required|between:1,25',
         'description' => 'nullable',
+        'image'       => 'mimes:png,gif,jpg,jpeg,webp,apng',
     ];
 
     /**********************************************************************************************

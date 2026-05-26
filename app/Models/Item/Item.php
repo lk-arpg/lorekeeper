@@ -56,11 +56,13 @@ class Item extends Model {
         'item_category_id'   => 'nullable',
         'name'               => 'required|unique:items|between:3,100',
         'description'        => 'nullable',
+        'image'              => 'mimes:png,gif,jpg,jpeg,webp,apng',
         'rarity_id'          => 'nullable',
         'reference_url'      => 'nullable|between:3,200',
         'uses'               => 'nullable|between:3,250',
         'release'            => 'nullable|between:3,100',
         'currency_quantity'  => 'nullable|integer|min:1',
+
     ];
 
     /**
@@ -72,6 +74,7 @@ class Item extends Model {
         'item_category_id'  => 'nullable',
         'name'              => 'required|between:3,100',
         'description'       => 'nullable',
+        'image'             => 'mimes:png,gif,jpg,jpeg,webp,apng',
         'reference_url'     => 'nullable|between:3,200',
         'uses'              => 'nullable|between:3,250',
         'release'           => 'nullable|between:3,100',

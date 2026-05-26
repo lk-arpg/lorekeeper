@@ -48,6 +48,7 @@ class Prompt extends Model {
         'prefix'             => 'nullable|unique:prompts|between:2,10',
         'summary'            => 'nullable',
         'description'        => 'nullable',
+        'image'              => 'mimes:png,gif,jpg,jpeg,webp,apng',
     ];
 
     /**
@@ -61,6 +62,7 @@ class Prompt extends Model {
         'prefix'             => 'nullable|between:2,10',
         'summary'            => 'nullable',
         'description'        => 'nullable',
+        'image'              => 'mimes:png,gif,jpg,jpeg,webp,apng',
     ];
 
     /**********************************************************************************************

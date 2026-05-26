@@ -45,6 +45,7 @@ class Shop extends Model {
     public static $createRules = [
         'name'        => 'required|unique:shops|between:3,100',
         'description' => 'nullable',
+        'image'       => 'mimes:png,gif,jpg,jpeg,webp,apng',
     ];
 
     /**
@@ -55,6 +56,7 @@ class Shop extends Model {
     public static $updateRules = [
         'name'        => 'required|between:3,100',
         'description' => 'nullable',
+        'image'       => 'mimes:png,gif,jpg,jpeg,webp,apng',
     ];
 
     /**********************************************************************************************

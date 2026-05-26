@@ -28,6 +28,7 @@ class Rarity extends Model {
         'name'        => 'required|unique:rarities|between:3,100',
         'color'       => 'nullable|regex:/^#?[0-9a-fA-F]{6}$/i',
         'description' => 'nullable',
+        'image'       => 'mimes:png,gif,jpg,jpeg,webp,apng',
     ];
 
     /**
@@ -39,6 +40,7 @@ class Rarity extends Model {
         'name'        => 'required|between:3,100',
         'color'       => 'nullable|regex:/^#?[0-9a-fA-F]{6}$/i',
         'description' => 'nullable',
+        'image'       => 'mimes:png,gif,jpg,jpeg,webp,apng',
     ];
 
     /**********************************************************************************************

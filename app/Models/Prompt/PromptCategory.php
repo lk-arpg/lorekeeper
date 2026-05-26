@@ -29,6 +29,7 @@ class PromptCategory extends Model {
     public static $createRules = [
         'name'        => 'required|unique:prompt_categories|between:3,100',
         'description' => 'nullable',
+        'image'       => 'mimes:png,gif,jpg,jpeg,webp,apng',
     ];
 
     /**
@@ -39,6 +40,7 @@ class PromptCategory extends Model {
     public static $updateRules = [
         'name'        => 'required|between:3,100',
         'description' => 'nullable',
+        'image'       => 'mimes:png,gif,jpg,jpeg,webp,apng',
     ];
 
     /**********************************************************************************************

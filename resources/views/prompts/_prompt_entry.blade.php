@@ -34,6 +34,13 @@
                 @elseif($prompt->hide_submissions == 2)
                     <p class="text-info">Submissions to this prompt are hidden.</p>
                 @endif
+                @if (hasAttachments($prompt))
+                    <hr />
+                    <h5>Attachments</h5>
+                    @include('widgets._attachments', [
+                        'object' => $prompt,
+                    ])
+                @endif
             </div>
             <h3>Rewards</h3>
             @if (!count($prompt->rewards))

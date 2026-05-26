@@ -140,6 +140,13 @@
                     @endif
                 </div>
             @endif
+            @if (hasAttachments($item))
+                <hr />
+                <h5>Attachments</h5>
+                @include('widgets._attachments', [
+                    'object' => $item,
+                ])
+            @endif
         </div>
     </div>
 </div>

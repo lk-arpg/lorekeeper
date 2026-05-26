@@ -701,3 +701,95 @@ function getRewardLootData($showData, $recipient = 'User', $useCustomSelectize =
 
     return $rewardLootData;
 }
+
+/**********************************************************************************************
+
+    ATTACHMENTS
+    Similar functionality to the above rewards but agnostic of recipient and other filters.
+
+**********************************************************************************************/
+
+/**
+ * Gets the valid attachment types.
+ *
+ * @return array
+ */
+function getAttachmentTypes() {
+    return [
+        'Item'      => 'Item',
+        'Currency'  => 'Currency',
+        'Character' => 'Character',
+        'Prompt'    => 'Prompt',
+        'News'      => 'News',
+        'Sales'     => 'Sales',
+        'LootTable' => 'Loot Table',
+        'Raffle'    => 'Raffle Ticket',
+        'Shop'      => 'Shop',
+    ];
+}
+
+/**
+ * Gets the attachment data needed for selection blades.
+ *
+ * @return array
+ */
+function getAttachmentData() {
+    $attachmentTypes = getAttachmentTypes();
+
+    $attachmentLootData = [];
+
+    // Iterate through each valid key in $attachmentTypes and get the data associated with it
+    foreach ($attachmentTypes as $attachmentKey => $attachmentType) {
+        $query = null;
+
+        switch ($attachmentKey) {
+            case 'Item':
+                $query = App\Models\Item\Item::orderBy('name');
+                break;
+            case 'Currency':
+                $query = App\Models\Currency\Currency::query()->orderBy('sort_character', 'DESC');
+                break;
+            case 'LootTable':
+                $query = App\Models\Loot\LootTable::orderBy('name');
+                break;
+            case 'Raffle':
+                $query = App\Models\Raffle\Raffle::where('rolled_at', null)->where('is_active', 1)->orderBy('name');
+                break;
+            case 'Character':
+                $query = App\Models\Character\Character::orderBy('slug');
+                break;
+            case 'Prompt':
+                $query = App\Models\Prompt\Prompt::orderBy('name');
+                break;
+            case 'News':
+                $query = App\Models\News::orderBy('title');
+                break;
+            case 'Sales':
+                $query = App\Models\Sales\Sales::orderBy('title');
+                break;
+            case 'Shop':
+                $query = App\Models\Shop\Shop::orderBy('name');
+                break;
+                // Add the query builder for your other assets here, set with the matching key in getAttachmentTypes
+                // If your asset type does not have a model, you may need to add special handling here.
+                //
+                // case 'Example':
+                //  $query = \App\Models\Example::orderby('name');
+                //  break;
+        }
+
+        $data = $query->get()->mapWithKeys(function ($item) {
+            return [
+                $item->id => json_encode([
+                    'name'      => $item->title ?? ($item->fullName ?? $item->name),
+                    'image_url' => $item->imageUrl ?? null,
+                ]),
+            ];
+        });
+
+        // Finally, add the data to the array.
+        $attachmentLootData[$attachmentKey] = $data;
+    }
+
+    return $attachmentLootData;
+}

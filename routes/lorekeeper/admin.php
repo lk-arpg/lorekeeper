@@ -507,3 +507,8 @@ Route::group(['prefix' => 'limits', 'middleware' => 'power:manage_data'], functi
 Route::group(['prefix' => 'rewards', 'middleware' => 'power:manage_data'], function () {
     Route::post('/', 'RewardController@postPopulateRewards');
 });
+
+// ATTACHMENTS
+Route::group(['prefix' => 'attachments', 'middleware' => 'power:manage_data'], function () {
+    Route::post('/', 'AttachmentController@postCreateEditAttachments');
+});

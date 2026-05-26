@@ -161,6 +161,10 @@
             <a href="{{ url('admin/data/items/tag/' . $item->id) }}" class="btn btn-outline-primary">Add a Tag</a>
         </div>
 
+        @include('widgets._add_attachments', [
+            'object' => $item,
+        ])
+
         <h3>Preview</h3>
         <div class="card mb-3">
             <div class="card-body">

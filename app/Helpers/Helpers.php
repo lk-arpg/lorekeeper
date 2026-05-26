@@ -529,3 +529,23 @@ function getRewards($object) {
 function hasRewards($object) {
     return App\Models\Reward\Reward::where('object_model', get_class($object))->where('object_id', $object->id)->exists();
 }
+
+/**
+ * Returns the given objects attachments, if any.
+ *
+ * @param mixed $object
+ *
+ * @return bool
+ */
+function getAttachments($object) {
+    return App\Models\Attachment::where('parent_model', get_class($object))->where('parent_id', $object->id)->get();
+}
+
+/**
+ * checks if a certain object has any attachments.
+ *
+ * @param mixed $object
+ */
+function hasAttachments($object) {
+    return App\Models\Attachment::where('parent_model', get_class($object))->where('parent_id', $object->id)->exists();
+}

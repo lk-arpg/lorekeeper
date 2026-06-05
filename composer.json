@@ -51,7 +51,8 @@
         "policy": {
             "advisories": {
                 "ignore-id": {
-                    "PKSA-mdq4-51ck-6kdq": "Hotfixed using custom sanitization middleware."
+                    "PKSA-mdq4-51ck-6kdq": "Hotfixed using custom sanitization middleware.",
+                    "PKSA-8qx3-n5y5-vvnd": "Resolved in laravel/framework 10.48.23. Do not use wildcard validation with files in Laravel v8/Lorekeeper v2."
                 }
             }
         }

@@ -47,7 +47,14 @@
     "config": {
         "optimize-autoloader": true,
         "preferred-install": "dist",
-        "sort-packages": true
+        "sort-packages": true,
+        "policy": {
+            "advisories": {
+                "ignore-id": {
+                    "PKSA-mdq4-51ck-6kdq": "Hotfixed using custom sanitization middleware."
+                }
+            }
+        }
     },
     "extra": {
         "laravel": {

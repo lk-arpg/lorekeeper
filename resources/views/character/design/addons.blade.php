@@ -33,7 +33,7 @@
             <div class="card mb-3">
                 <div class="card-body">
                     <table class="table table-sm">
-                        <thead class="thead-light">
+                        <thead>
                             <tr class="d-flex">
                                 <th class="col-2">Item</th>
                                 <th class="col-4">Source</th>

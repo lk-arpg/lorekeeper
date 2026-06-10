@@ -17,7 +17,7 @@
         </div>
         <div class="col-6 col-md-1">
             <div class="logs-table-cell">
-                {!! Settings::get('gallery_submissions_reward_currency') ? ($gallery->currency_enabled ? '<i class="text-success fas fa-check"></i>' : '-') : '' !!}
+                {!! $gallery->criteria->count() > 0 ? '<i class="text-success fas fa-check"></i>' : '-' !!}
             </div>
         </div>
         <div class="col-6 col-md-2">

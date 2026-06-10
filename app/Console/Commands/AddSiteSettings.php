@@ -73,6 +73,8 @@ class AddSiteSettings extends Command {
 
         $this->addSiteSetting('gallery_submissions_open', 1, '0: Gallery submissions closed, 1: Gallery submissions open.');
 
+        $this->addSiteSetting('gallery_rewards_divided', 1, '0: Gallery criteria rewards will be rewarded to each collaborator, 1: Gallery criteria rewards will be divided between collaborators.');
+
         $this->addSiteSetting('gallery_submissions_require_approval', 1, '0: Gallery submissions do not require approval, 1: Gallery submissions require approval.');
 
         $this->addSiteSetting('gallery_submissions_reward_currency', 0, '0: Gallery submissions do not reward currency, 1: Gallery submissions reward currency.');

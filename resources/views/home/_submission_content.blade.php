@@ -103,6 +103,49 @@
     </div>
 @endif
 
+@if ($submission->prompt_id)
+    <div class="card mb-3">
+        <div class="card-header h2">Criteria Rewards</div>
+        <div class="card-body">
+            @if (isset($submission->data['criterion']))
+                @foreach ($submission->data['criterion'] as $criterionData)
+                    <div class="card p-3 mb-2">
+                        @php $criterion = \App\Models\Criteria\Criterion::where('id', $criterionData['id'])->first() @endphp
+                        <h3>
+                            {!! $criterion->displayName !!}
+                            <span class="text-secondary"> - {!! isset($criterionData['criterion_currency_id'])
+                                ? \App\Models\Currency\Currency::find($criterionData['criterion_currency_id'])->display($criterion->calculateReward($criterionData))
+                                : $criterion->currency->display($criterion->calculateReward($criterionData)) !!}
+                            </span>
+                        </h3>
+                        @foreach ($criterion->steps->where('is_active', 1) as $step)
+                            <div class="d-flex">
+                                <span class="mr-1 text-secondary">{{ $step->name }}:</span>
+                                @if (isset($criterionData[$step->id]))
+                                    @if ($step->type === 'options')
+                                        @php $stepOption = $step->options->where('id', $criterionData[$step->id])->first() @endphp
+                                        <span>{{ isset($stepOption) ? $stepOption->name : 'Not Selected' }}</span>
+                                    @elseif($step->type === 'boolean')
+                                        <span>{{ isset($criterionData[$step->id]) ? 'On' : 'Off' }}</span>
+                                    @elseif($step->type === 'input')
+                                        <span>{{ $criterionData[$step->id] ?? 0 }}</span>
+                                    @endif
+                                @else
+                                    <span>Not Set.</span>
+                                @endif
+                            </div>
+                        @endforeach
+                    </div>
+                @endforeach
+            @else
+                <div class="alert alert-info mb-0">
+                    No criteria rewards have been added to this submission.
+                </div>
+            @endif
+        </div>
+    </div>
+@endif
+
 <div class="card mb-3">
     <div class="card-header h2">Characters</div>
     <div class="card-body">
@@ -112,14 +155,16 @@
             </div>
         @endif
         @foreach ($submission->characters()->with('character', 'character.image')->whereRelation('character', 'deleted_at', null)->get() as $character)
-            <div class="submission-character-row mb-2">
+            <div class="submission-character-row mb-2 d-flex align-items-center">
                 <div class="submission-character-thumbnail">
                     <a href="{{ $character->character->url }}"><img src="{{ $character->character->image->thumbnailUrl }}" class="img-thumbnail" alt="Thumbnail for {{ $character->character->fullName }}" /></a>
                 </div>
                 <div class="submission-character-info card ml-2">
                     <div class="card-body">
                         <div class="submission-character-info-content">
-                            <h3 class="mb-2 submission-character-info-header"><a href="{{ $character->character->url }}">{{ $character->character->fullName }}</a></h3>
+                            <h3 class="mb-2 submission-character-info-header">
+                                <a href="{{ $character->character->url }}">{{ $character->character->fullName }}</a>
+                            </h3>
                             <div class="submission-character-info-body">
                                 @if (array_filter(parseAssetData($character->data)))
                                     <table class="table table-sm mb-0">
@@ -162,6 +207,40 @@
                                     <p>
                                         No rewards set.
                                     </p>
+                                @endif
+                                @if ($character->criterion)
+                                    <div class="mt-2">
+                                        <h3>Criteria Rewards:</h3>
+                                        @foreach ($character->criterion as $criterionData)
+                                            <div class="card p-3 {{ $loop->last ? '' : 'mb-2' }}">
+                                                @php $criterion = \App\Models\Criteria\Criterion::where('id', $criterionData['id'])->first() @endphp
+                                                <h5>
+                                                    {!! $criterion->displayName !!}
+                                                    <span class="text-secondary"> - {!! isset($criterionData['criterion_currency_id'])
+                                                        ? \App\Models\Currency\Currency::find($criterionData['criterion_currency_id'])->display($criterion->calculateReward($criterionData))
+                                                        : $criterion->currency->display($criterion->calculateReward($criterionData)) !!}
+                                                    </span>
+                                                </h5>
+                                                @foreach ($criterion->steps->where('is_active', 1) as $step)
+                                                    <div class="d-flex">
+                                                        <span class="mr-1 text-secondary">{{ $step->name }}:</span>
+                                                        @if (isset($criterionData[$step->id]))
+                                                            @if ($step->type === 'options')
+                                                                @php $stepOption = $step->options->where('id', $criterionData[$step->id])->first() @endphp
+                                                                <span>{{ isset($stepOption) ? $stepOption->name : 'Not Selected' }}</span>
+                                                            @elseif($step->type === 'boolean')
+                                                                <span>{{ isset($criterionData[$step->id]) ? 'On' : 'Off' }}</span>
+                                                            @elseif($step->type === 'input')
+                                                                <span>{{ $criterionData[$step->id] ?? 0 }}</span>
+                                                            @endif
+                                                        @else
+                                                            <span>Not Set.</span>
+                                                        @endif
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        @endforeach
+                                    </div>
                                 @endif
                             </div>
                         </div>

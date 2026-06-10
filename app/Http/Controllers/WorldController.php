@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Character\CharacterCategory;
+use App\Models\Criteria\Criterion;
 use App\Models\Currency\Currency;
 use App\Models\Currency\CurrencyCategory;
 use App\Models\Feature\Feature;
@@ -635,6 +636,38 @@ class WorldController extends Controller {
 
         return view('world.character_categories', [
             'categories' => $query->visible(Auth::user() ?? null)->orderBy('sort', 'DESC')->orderBy('id')->paginate(20)->appends($request->query()),
+        ]);
+    }
+
+    /**
+     * returns a criterion's guide page.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getCriterionGuides(Request $request) {
+        $criterions = Criterion::orderBy('name')->where('is_guide_active', 1)->get();
+
+        return view('world.criteria_guides', [
+            'criterions' => $criterions,
+        ]);
+    }
+
+    /**
+     * returns a criterion's guide page.
+     *
+     * @param mixed $id
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getCriterionGuide($id) {
+        $criterion = Criterion::where('id', $id)->first();
+
+        if (!$criterion->is_guide_active) {
+            abort(404);
+        }
+
+        return view('world.criteria_guide', [
+            'criterion' => $criterion,
         ]);
     }
 }

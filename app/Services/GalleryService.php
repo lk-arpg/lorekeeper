@@ -3,7 +3,9 @@
 namespace App\Services;
 
 use App\Models\Gallery\Gallery;
+use App\Models\Gallery\GalleryCriterion;
 use App\Models\Gallery\GallerySubmission;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 
 class GalleryService extends Service {
@@ -45,6 +47,8 @@ class GalleryService extends Service {
             }
 
             $gallery = Gallery::create($data);
+
+            (new CriterionService)->populateCriteria(Arr::only($data, ['criterion_id', 'criterion', 'criterion_currency_id', 'default_criteria']), $gallery, GalleryCriterion::class);
 
             if (!$this->logAdminAction($user, 'Created Gallery', 'Created '.$gallery->displayName)) {
                 throw new \Exception('Failed to log admin action.');
@@ -97,6 +101,8 @@ class GalleryService extends Service {
             }
 
             $gallery->update($data);
+
+            (new CriterionService)->populateCriteria(Arr::only($data, ['criterion_id', 'criterion', 'criterion_currency_id', 'default_criteria']), $gallery, GalleryCriterion::class);
 
             return $this->commitReturn($gallery);
         } catch (\Exception $e) {

@@ -45,6 +45,14 @@
                             <a href="#" class="btn btn-outline-primary btn-sm add-reward">Add Reward</a>
                         </div>
                     </div>
+                    @if (!$isClaim)
+                        <div class="criterion-character-section hide">
+                            <hr />
+                            <h4 class="mb-3">Character Criteria <a class="btn btn-outline-info float-right add-character-calc" type="button">Add Criterion</a></h4>
+                            <div id="character-criteria">
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>

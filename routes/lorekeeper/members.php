@@ -160,6 +160,7 @@ Route::group(['prefix' => 'gallery'], function () {
     Route::get('submit/character/{slug}', 'GalleryController@getCharacterInfo');
     Route::get('edit/{id}', 'GalleryController@getEditGallerySubmission');
     Route::get('queue/{id}', 'GalleryController@getSubmissionLog');
+    Route::post('queue/totals/{id}', 'GalleryController@postSubmissionTotals');
     Route::post('submit', 'GalleryController@postCreateEditGallerySubmission');
     Route::post('edit/{id}', 'GalleryController@postCreateEditGallerySubmission');
 
@@ -265,4 +266,16 @@ Route::group(['prefix' => 'limits'], function () {
 **************************************************************************************************/
 Route::group(['prefix' => 'rewards'], function () {
     Route::post('/types', 'RewardController@postRewardTypes');
+});
+
+/**************************************************************************************************
+    Criteria
+**************************************************************************************************/
+Route::group(['prefix' => 'criteria'], function () {
+    Route::get('{entity}/{id}', 'CriterionController@getCriterionSelector')->where('entity', 'prompt|gallery');
+    Route::get('{entity}/{id}/{entity_id}/{form_id}', 'CriterionController@getCriterionForm')->where('entity', 'prompt|gallery');
+    Route::get('/character/{entity}/{id}', 'CriterionController@getCharacterCriterionSelector')->where('entity', 'prompt|gallery');
+    Route::get('/character/{slug}/{entity}/{id}/{entity_id}/{form_id}', 'CriterionController@getCharacterCriterionForm')->where('entity', 'prompt|gallery');
+    Route::get('{id}', 'CriterionController@getCriterionFormLimited');
+    Route::post('rewards/{id}', 'CriterionController@postCriterionRewards');
 });

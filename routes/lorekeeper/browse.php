@@ -119,6 +119,8 @@ Route::group(['prefix' => 'world'], function () {
     Route::get('traits', 'WorldController@getFeatures');
     Route::get('traits/modal/{id}', 'WorldController@getFeatureDetail')->where(['id' => '[0-9]+']);
     Route::get('character-categories', 'WorldController@getCharacterCategories');
+    Route::get('criteria-guides', 'WorldController@getCriterionGuides');
+    Route::get('criteria-guides/{id}', 'WorldController@getCriterionGuide');
 });
 
 Route::group(['prefix' => 'prompts'], function () {

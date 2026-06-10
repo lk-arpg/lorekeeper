@@ -96,13 +96,47 @@
             </div>
         @endif
 
-        {!! Form::open(['url' => url()->current(), 'id' => 'submissionForm']) !!}
+        {!! Form::open(['url' => url()->current(), 'id' => 'submissionForm', 'onsubmit' => "$(this).find('input').prop('disabled', false)"]) !!}
 
-        <h2>Rewards</h2>
+
+        <h2 class="mt-4">Rewards</h2>
         @include('widgets._loot_select', ['loots' => $submission->rewards, 'showLootTables' => true, 'showRaffles' => true])
         @if ($submission->prompt_id)
             <div class="mb-3">
                 @include('home._prompt', ['prompt' => $submission->prompt, 'staffView' => true])
+            </div>
+
+            <h2 id="criterion-section" class="mt-5">
+                Criteria Rewards <button class="btn  btn-outline-info float-right add-calc" type="button">Add Criterion</a>
+            </h2>
+            <div id="criteria">
+                @if (isset($submission->data['criterion']))
+                    @foreach ($submission->data['criterion'] ?? [] as $key => $criterionData)
+                        <div class="card p-3 mb-2">
+                            @php $criterion = \App\Models\Criteria\Criterion::where('id', $criterionData['id'])->first() @endphp
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="h3">{!! $criterion->displayName !!}</div>
+                                <div class="text-right btn btn-danger delete-calc">
+                                    <i class="fas fa-trash"></i>
+                                </div>
+                            </div>
+                            {!! Form::hidden('criterion[' . $key . '][id]', $criterionData['id']) !!}
+                            @include('criteria._minimum_requirements', [
+                                'criterion' => $criterion,
+                                'values' => $criterionData,
+                                'minRequirements' => $submission->prompt->criteria->where('criterion_id', $criterionData['id'])->first()->minRequirements ?? null,
+                                'title' => 'Selections',
+                                'limitByMinReq' => true,
+                                'id' => $key,
+                                'criterion_currency' => isset($criterionData['criterion_currency_id']) ? $criterionData['criterion_currency_id'] : $criterion->currency_id,
+                            ])
+                        </div>
+                    @endforeach
+                @else
+                    <div class="alert alert-info">
+                        No criteria rewards have been added to this submission.
+                    </div>
+                @endif
             </div>
         @endif
 
@@ -306,6 +340,20 @@
                 </div>
             </div>
         </div>
+
+        @if ($submission->prompt_id)
+            <div id="copy-calc" class="card p-3 mb-2 pl-0 hide">
+                @if (isset($criteria))
+                    @include('criteria._criterion_selector', ['criteria' => $criteria])
+                @endif
+            </div>
+
+            <div id="copy-character-calc" class="card p-3 mb-2 pl-0 hide">
+                @if (isset($characterCriteria))
+                    @include('criteria._criterion_character_selector', ['criteria' => $characterCriteria])
+                @endif
+            </div>
+        @endif
     @else
         <div class="alert alert-danger">This {{ $submission->prompt_id ? 'submission' : 'claim' }} has already been processed.</div>
         @include('home._submission_content', ['submission' => $submission])
@@ -377,6 +425,52 @@
                     $submissionForm.attr('action', '{{ url()->current() }}/cancel');
                     $submissionForm.submit();
                 });
+
+                @if ($submission->prompt_id)
+                    $('.add-calc').on('click', function(e) {
+                        e.preventDefault();
+                        var clone = $('#copy-calc').clone();
+                        clone.removeClass('hide');
+                        var input = clone.find('[name*=criterion]');
+                        var count = $('.criterion-select').length;
+                        input.attr('name', input.attr('name').replace('#', count))
+                        clone.find('.criterion-select').on('change', loadForm);
+                        clone.find('.delete-calc').on('click', deleteCriterion);
+                        clone.removeAttr('id');
+                        $('#criteria').append(clone);
+                    });
+
+                    $('.delete-calc').on('click', deleteCriterion);
+
+                    function deleteCriterion(e) {
+                        e.preventDefault();
+                        var toDelete = $(this).closest('.card');
+                        toDelete.remove();
+                    }
+
+                    function loadForm(e) {
+                        var id = $(this).val();
+                        var promptId = "{{ $submission->prompt_id }}";
+                        var formId = $(this).attr('name').split('[')[1].replace(']', '');
+
+                        if (id) {
+                            var form = $(this).closest('.card').find('.form');
+                            form.load("{{ url('criteria/prompt') }}/" + id + "/" + promptId + "/" + formId, (response, status, xhr) => {
+                                if (status == "error") {
+                                    var msg = "Error: ";
+                                    console.error(msg + xhr.status + " " + xhr.statusText);
+                                } else {
+                                    form.find('[data-toggle=tooltip]').tooltip({
+                                        html: true
+                                    });
+                                    form.find('[data-toggle=toggle]').bootstrapToggle();
+                                }
+                            });
+                        }
+                    }
+
+                    $('.criterion-select').on('change', loadForm);
+                @endif
             });
         </script>
     @endif

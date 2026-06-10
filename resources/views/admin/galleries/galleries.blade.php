@@ -28,7 +28,7 @@
                         <div class="logs-table-cell">Name</div>
                     </div>
                     <div class="col-6 col-md-1">
-                        <div class="logs-table-cell">{{ Settings::get('gallery_submissions_reward_currency') ? 'Rewards' : '' }}</div>
+                        <div class="logs-table-cell">Rewards</div>
                     </div>
                     <div class="col-6 col-md-2">
                         <div class="logs-table-cell">{{ Settings::get('gallery_submissions_require_approval') ? 'Votes Needed' : '' }}</div>

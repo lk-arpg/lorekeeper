@@ -17,6 +17,7 @@
             attachRewardTypeListener($clone.find('.character-rewardable-type'));
             $characters.append($clone);
             $clone.find('.character-code').selectize();
+            $clone.find('.criterion-character-section').removeClass('hide');
             count++;
         });
 
@@ -50,6 +51,21 @@
                 attachRewardTypeListener(node.find('.character-rewardable-type'));
             });
             attachRewardTypeListener(node.find('.character-rewardable-type'));
+
+            //criterias
+            node.find('.add-character-calc').on('click', function(e) {
+                e.preventDefault();
+                var clone = $('#copy-character-calc').clone();
+                clone.removeClass('hide');
+                var input = clone.find('[name*=criterion]');
+                var count = $('.criterion-select').length;
+                input.attr('name', input.attr('name').replace('slug', node.find('.character-code').val()));
+                input.attr('name', input.attr('name').replace('#', count))
+                clone.find('.criterion-select').on('change', loadForm);
+                clone.find('.delete-calc').on('click', deleteCriterion);
+                clone.removeAttr('id');
+                $(this).parent().parent().append(clone);
+            });
         }
 
         function attachRewardTypeListener(node) {
@@ -82,5 +98,34 @@
             node.find('.character-item-id').attr('name', 'character_rewardable_id[' + id + '][]');
             node.find('.character-table-id').attr('name', 'character_rewardable_id[' + id + '][]');
         }
+
+        // start criteria
+        function loadForm(e) {
+            var id = $(this).val();
+            var promptId = $('#prompt').val();
+            var formId = $(this).attr('name').split('[')[2].replace(']', '');
+
+            if (id) {
+                var form = $(this).closest('.card').find('.form');
+                form.load("{{ url('criteria/character/') }}/" + $(this).closest('.submission-character').find('.character-code').val() + "/prompt/" + id + "/" + promptId + "/" + formId, (response, status, xhr) => {
+                    if (status == "error") {
+                        var msg = "Error: ";
+                        console.error(msg + xhr.status + " " + xhr.statusText);
+                    } else {
+                        form.find('[data-toggle=tooltip]').tooltip({
+                            html: true
+                        });
+                        form.find('[data-toggle=toggle]').bootstrapToggle();
+                    }
+                });
+            }
+        }
+
+        function deleteCriterion(e) {
+            e.preventDefault();
+            var toDelete = $(this).closest('.card');
+            toDelete.remove();
+        }
+        //end criteria
     });
 </script>

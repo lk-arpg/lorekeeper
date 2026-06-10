@@ -81,6 +81,33 @@
                         <a href="#" class="btn btn-outline-primary btn-sm add-reward">Add Reward</a>
                     </div>
                 </div>
+                <hr>
+                <div class="criterion-character-section {{ Request::get('prompt_id') || $submission->prompt_id ? '' : 'hide' }}">
+                    <h4 class="mb-3">Character Criteria <a class="btn btn-outline-info float-right add-character-calc" type="button">Add Criterion</a></h4>
+                    <div id="character-criteria">
+                        @if ($character->character && $character->criterion)
+                            @foreach ($character->criterion as $i => $criterionData)
+                                @php $criterion = \App\Models\Criteria\Criterion::where('id', $criterionData['id'])->first() @endphp
+                                <div class="card p-3 mb-2 pl-0">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <a class="col-1 p-0" data-toggle="collapse" href="#collapsable-{{ $criterion->id }}" aria-expanded="true">
+                                            <i class="fas fa-angle-down" style="font-size: 24px"></i>
+                                        </a>
+                                        <div class="flex-grow-1 mr-2">
+                                            {!! Form::select('character_criterion[' . $character->character->slug . '][' . $i . '][id]', $criteria, $criterion->id, ['class' => 'form-control criterion-select', 'placeholder' => 'Select a Criterion to set Minimum Requirements']) !!}
+                                        </div>
+                                        <div>
+                                            <button class="btn btn-danger delete-calc" type="button"><i class="fas fa-trash"></i></button>
+                                        </div>
+                                    </div>
+                                    <div id="collapsable-{{ $criterion->id }}" class="form collapse show">
+                                        @include('criteria._minimum_character_requirements', ['criterion' => $criterion, 'values' => $criterionData, 'id' => $i, 'character' => $character->character->slug])
+                                    </div>
+                                </div>
+                            @endforeach
+                        @endif
+                    </div>
+                </div>
             </div>
         </div>
     </div>

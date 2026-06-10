@@ -113,29 +113,6 @@
                 @if (!$submission->id)
                     {!! Form::hidden('gallery_id', $gallery->id) !!}
                 @endif
-
-                <h3>Characters</h3>
-                <p>
-                    Add the characters included in this piece.
-                    @if (Settings::get('gallery_submissions_reward_currency'))
-                        This helps the staff processing your submission award {!! $currency->displayName !!} for it, so be sure to add every character.
-                    @endif
-                </p>
-                <div id="characters" class="mb-3">
-                    @if ($submission->id)
-                        @foreach ($submission->characters as $character)
-                            @include('galleries._character_select_entry', ['character' => $character])
-                        @endforeach
-                    @endif
-                    @if (old('slug'))
-                        @foreach (array_unique(old('slug')) as $slug)
-                            @include('galleries._character_select_entry', ['character' => \App\Models\Character\Character::where('slug', $slug)->first()])
-                        @endforeach
-                    @endif
-                </div>
-                <div class="text-right mb-3">
-                    <a href="#" class="btn btn-outline-info" id="addCharacter">Add Character</a>
-                </div>
             </div>
             @if (!$submission->id || $submission->status == 'Pending')
                 <div class="col-md-4">
@@ -144,8 +121,15 @@
                             <h5>Collaborators</h5>
                         </div>
                         <div class="card-body">
-                            <p>If this piece is a collaboration, add collaborators and their roles here, including yourself. <strong>Otherwise, leave this blank</strong>. You <strong>will not</strong> be able to edit this once the submission has been
-                                accepted, but will while it is still pending.</p>
+                            <p>
+                                If this piece is a collaboration, add collaborators and their roles here.
+                                <strong>Otherwise, leave this blank</strong>.
+                                You <strong>will not</strong> be able to edit this once the submission has been
+                                accepted, but will while it is still pending.
+                            <div class="alert alert-info">
+                                <strong>You must also add yourself to the collaborators list if you worked on the submission.</strong>
+                            </div>
+                            </p>
                             @if (!$submission->id || $submission->status == 'Pending')
                                 <div class="text-right mb-3">
                                     <a href="#" class="btn btn-outline-info" id="add-collaborator">Add Collaborator</a>
@@ -202,10 +186,7 @@
                                             <div class="mb-2">
                                                 <div class="d-flex">{!! Form::select('participant_id[]', $users, $participant->user_id, ['class' => 'form-control mr-2 participant-select original', 'placeholder' => 'Select User']) !!}</div>
                                                 <div class="d-flex">
-                                                    {!! Form::select('participant_type[]', ['Gift' => 'Gift For', 'Trade' => 'Traded For', 'Comm' => 'Commissioned', 'Comm (Currency)' => 'Commissioned (' . $currency->name . ')'], $participant->type, [
-                                                        'class' => 'form-control mr-2',
-                                                        'placeholder' => 'Select Role',
-                                                    ]) !!}
+                                                    {!! Form::select('participant_type[]', ['Gift' => 'Gift For', 'Trade' => 'Traded For', 'Comm' => 'Commissioned'], $participant->type, ['class' => 'form-control mr-2', 'placeholder' => 'Select Role', 'required']) !!}
                                                     <a href="#" class="remove-participant btn btn-danger mb-2">×</a>
                                                 </div>
                                             </div>
@@ -216,10 +197,7 @@
                                             <div class="mb-2">
                                                 <div class="d-flex">{!! Form::select('participant_id[]', $users, $participant, ['class' => 'form-control mr-2 participant-select original', 'placeholder' => 'Select User']) !!}</div>
                                                 <div class="d-flex">
-                                                    {!! Form::select('participant_type[]', ['Gift' => 'Gift For', 'Trade' => 'Traded For', 'Comm' => 'Commissioned', 'Comm (Currency)' => 'Commissioned (' . $currency->name . ')'], old('participant_type')[$key], [
-                                                        'class' => 'form-control mr-2',
-                                                        'placeholder' => 'Select Role',
-                                                    ]) !!}
+                                                    {!! Form::select('participant_type[]', ['Gift' => 'Gift For', 'Trade' => 'Traded For', 'Comm' => 'Commissioned'], old('participant_type')[$key], ['class' => 'form-control mr-2', 'placeholder' => 'Select Role', 'required']) !!}
                                                     <a href="#" class="remove-participant btn btn-danger mb-2">×</a>
                                                 </div>
                                             </div>
@@ -237,45 +215,58 @@
                             @endif
                         </div>
                     </div>
-                    @if (Settings::get('gallery_submissions_reward_currency') && $gallery->currency_enabled && !$submission->id)
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <h5>{!! $currency->name !!} Awards</h5>
-                            </div>
-                            <div class="card-body">
-                                <p>Please select options as appropriate for this piece. This will help the staff processing your submission award {!! $currency->displayName !!} for it. You <strong>will not</strong> be able to edit this after creating the
-                                    submission.</p>
-
-                                @foreach (config('lorekeeper.group_currency_form') as $key => $field)
-                                    <div class="form-group">
-                                        @if ($field['type'] == 'checkbox')
-                                            <input class="form-check-input ml-0 pr-4" name="{{ $key }}" type="checkbox" value="{{ isset($field['value']) ? $field['value'] : 1 }}">
-                                        @endif
-                                        @if (isset($field['label']))
-                                            {!! Form::label(isset($field['multiple']) && $field['multiple'] ? $key . '[]' : $key, $field['label'], [
-                                                'class' => 'label-class' . ($field['type'] == 'checkbox' ? ' ml-3' : '') . (isset($field['rules']) && $field['rules'] ? ' ' . $field['rules'] : ''),
-                                            ]) !!}
-                                        @endif
-                                        @if ($field['type'] == 'choice' && isset($field['choices']))
-                                            @foreach ($field['choices'] as $value => $choice)
-                                                <div class="choice-wrapper">
-                                                    <input class="form-check-input ml-0 pr-4" name="{{ isset($field['multiple']) && $field['multiple'] ? $key . '[]' : $key }}"
-                                                        id="{{ isset($field['multiple']) && $field['multiple'] ? $key . '[]' : $key . '_' . $value }}" type="{{ isset($field['multiple']) && $field['multiple'] ? 'checkbox' : 'radio' }}"
-                                                        value="{{ $value }}">
-                                                    <label for="{{ $key }}[]" class="label-class ml-3">{{ $choice }}</label>
-                                                </div>
-                                            @endforeach
-                                        @elseif($field['type'] != 'checkbox')
-                                            <input class="form-control" name="{{ $key }}" type="{{ $field['type'] }}" id="{{ $key }}">
-                                        @endif
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    @endif
                 </div>
             @endif
         </div>
+
+        <h3>Characters</h3>
+        <p>
+            Add the characters included in this piece.
+            @if ($gallery->criteria)
+                This helps the staff processing your submission award currency for it, so be sure to add every character.
+            @endif
+        </p>
+        <div id="characters" class="mb-3">
+            @if ($submission->id)
+                @foreach ($submission->characters as $character)
+                    @include('galleries._character_select_entry', ['character' => $character])
+                @endforeach
+            @endif
+        </div>
+        <div class="text-right mb-3">
+            <a href="#" class="btn btn-outline-info" id="addCharacter">Add Character</a>
+        </div>
+
+        @if ($gallery->criteria->count() > 0)
+            <h2 id="criterion-section" class="mt-5">
+                Criteria Rewards
+                <button class="btn  btn-outline-info float-right add-calc" type="button">Add Criterion</a>
+            </h2>
+            <div id="criteria">
+                @foreach ($submission->data['criterion'] ?? [] as $key => $criterionData)
+                    <div class="card p-3 mb-2">
+                        @php $criterion = \App\Models\Criteria\Criterion::where('id', $criterionData['id'])->first() @endphp
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="h3">{!! $criterion->displayName !!}</div>
+                            <div class="text-right btn btn-danger delete-calc">
+                                <i class="fas fa-trash"></i>
+                            </div>
+                        </div>
+                        {!! Form::hidden('criterion[' . $key . '][id]', $criterionData['id'], ['class' => 'criterion-select']) !!}
+                        @include('criteria._minimum_requirements', [
+                            'criterion' => $criterion,
+                            'values' => $criterionData,
+                            'minRequirements' => $submission->gallery->criteria->where('criterion_id', $criterionData['id'])->first()->minRequirements ?? null,
+                            'title' => 'Selections',
+                            'limitByMinReq' => true,
+                            'id' => $key,
+                            'criterion_currency' => isset($criterionData['criterion_currency_id']) ? $criterionData['criterion_currency_id'] : $criterion->currency_id,
+                        ])
+                    </div>
+                @endforeach
+            </div>
+            <div class="mb-4"></div>
+        @endif
 
         @if ($submission->id && Auth::user()->id != $submission->user->id && Auth::user()->hasPower('manage_submissions'))
             <div class="form-group">
@@ -289,6 +280,12 @@
         </div>
         {!! Form::close() !!}
 
+        <div id="copy-calc" class="card p-3 mb-2 pl-0 hide">
+            @if (isset($criteria))
+                @include('criteria._criterion_selector', ['criteria' => $criteria])
+            @endif
+        </div>
+
         @include('galleries._character_select')
         <div class="collaborator-row hide mb-2">
             {!! Form::select('collaborator_id[]', $users, null, ['class' => 'form-control mr-2 collaborator-select', 'placeholder' => 'Select User']) !!}
@@ -300,7 +297,7 @@
         <div class="participant-row hide mb-2">
             {!! Form::select('participant_id[]', $users, null, ['class' => 'form-control mr-2 participant-select', 'placeholder' => 'Select User']) !!}
             <div class="d-flex">
-                {!! Form::select('participant_type[]', ['Gift' => 'Gift For', 'Trade' => 'Traded For', 'Comm' => 'Commissioned', 'Comm (Currency)' => 'Commissioned (' . $currency->name . ')'], null, [
+                {!! Form::select('participant_type[]', ['Gift' => 'Gift For', 'Trade' => 'Traded For', 'Comm' => 'Commissioned'], null, [
                     'class' => 'form-control mr-2',
                     'placeholder' => 'Select Role',
                 ]) !!}
@@ -333,9 +330,7 @@
             </div>
         </div>
     @endif
-
 @endsection
-
 @section('scripts')
     @parent
     @if (!$closed || ($submission->id && $submission->status != 'Rejected'))
@@ -447,6 +442,49 @@
                 @endif
 
                 $('.original.gallery-select').selectize();
+
+                $('.add-calc').on('click', function(e) {
+                    e.preventDefault();
+                    var clone = $('#copy-calc').clone();
+                    clone.removeClass('hide');
+                    var input = clone.find('[name*=criterion]');
+                    var count = $('.criterion-select').length;
+                    input.attr('name', input.attr('name').replace('#', count))
+                    clone.find('.criterion-select').on('change', loadForm);
+                    clone.find('.delete-calc').on('click', deleteCriterion);
+                    clone.removeAttr('id');
+                    $('#criteria').append(clone);
+                });
+
+                $('.delete-calc').on('click', deleteCriterion);
+
+                function deleteCriterion(e) {
+                    e.preventDefault();
+                    var toDelete = $(this).closest('.card');
+                    toDelete.remove();
+                }
+
+                function loadForm(e) {
+                    var id = $(this).val();
+                    var formId = $(this).attr('name').split('[')[1].replace(']', '');
+
+                    if (id) {
+                        var form = $(this).closest('.card').find('.form');
+                        form.load("{{ url('criteria/gallery') }}/" + id + "/{{ $gallery->id }}/" + formId, (response, status, xhr) => {
+                            if (status == "error") {
+                                var msg = "Error: ";
+                                console.error(msg + xhr.status + " " + xhr.statusText);
+                            } else {
+                                form.find('[data-toggle=tooltip]').tooltip({
+                                    html: true
+                                });
+                                form.find('[data-toggle=toggle]').bootstrapToggle();
+                            }
+                        });
+                    }
+                }
+
+                $('.criterion-select').on('change', loadForm);
             });
         </script>
     @endif

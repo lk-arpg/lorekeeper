@@ -192,14 +192,12 @@ class RankService extends Service {
                 if (!is_numeric($s) || !is_numeric($key)) {
                     throw new \Exception('Invalid sort order.');
                 }
-                if ($s == $adminRank->id) {
-                    throw new \Exception('The sort order of the admin rank cannot be changed.');
+                if ($s == $adminRank->id && $key == 0) {
+                    throw new \Exception('The admin rank cannot be sorted to become the default user rank.');
                 }
 
                 Rank::where('id', $s)->update(['sort' => $key]);
-                $count++;
             }
-            $adminRank->update(['sort'=> $count]);
 
             return $this->commitReturn(true);
         } catch (\Exception $e) {

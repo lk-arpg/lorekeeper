@@ -26,22 +26,27 @@
         </thead>
         <tbody id="sortable" class="sortable">
             @foreach ($ranks as $rank)
-                <tr {{ !$rank->isAdmin ? 'class=sort-item' : '' }} data-id="{{ $rank->id }}">
+                <tr class=sort-item data-id="{{ $rank->id }}">
                     <td>
-                        @if (!$rank->isAdmin)
-                            <a class="fas fa-arrows-alt-v handle" href="#"></a>
-                        @endif
+                        <a class="fas fa-arrows-alt-v handle" href="#"></a>
                     </td>
                     <td><i class="{!! $rank->icon ? $rank->icon . ' mr-2' : '' !!} "></i>{!! $rank->displayName !!}</td>
                     <td>{!! $rank->parsed_description !!}</td>
                     <td>
-                        @foreach ($rank->getPowers() as $power)
-                            <div>{{ $power['name'] }}</div>
-                        @endforeach
+                        @if (!$rank->isAdmin)
+                            @foreach ($rank->getPowers() as $power)
+                                <div>{{ $power['name'] }}</div>
+                            @endforeach
+                        @else
+                            <div><em>{{ $rank->getPowers()['admin']['name'] }} {!! add_help('This rank has the &quot;Admin&quot; power granted to it, meaning it has all powers.') !!}</em></div>
+                        @endif
+                        @if ($loop->last)
+                            <div><em>Default user rank {!! add_help('As this is the rank sorted lowest it will be automatically given to new users.') !!}</em></div>
+                        @endif
                     </td>
                     <td>
                         <a href="#" class="btn btn-primary edit-rank-button" data-id="{{ $rank->id }}">Edit</a>
-                        @if (!$rank->isAdmin)
+                        @if (!$rank->isAdmin && !$loop->last)
                             <a href="#" class="btn btn-danger delete-rank-button" data-id="{{ $rank->id }}">Delete</a>
                         @endif
                     </td>

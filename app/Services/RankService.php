@@ -196,7 +196,7 @@ class RankService extends Service {
                     throw new \Exception('The sort order of the admin rank cannot be changed.');
                 }
 
-                Rank::where('id', $s)->update(['sort' => $key+1]);
+                Rank::where('id', $s)->update(['sort' => $key + 1]);
                 $count++;
             }
             $adminRank->update(['sort'=> $count]);

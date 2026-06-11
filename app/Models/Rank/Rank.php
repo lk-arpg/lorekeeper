@@ -103,6 +103,7 @@ class Rank extends Model {
         if ($this->sort == 0) {
             return true;
         }
+
         return false;
     }
 
@@ -115,6 +116,7 @@ class Rank extends Model {
         if ($this->attributes['is_admin'] || $this->isDefaultRank) {
             return false;
         }
+
         return true;
     }
 
@@ -145,19 +147,15 @@ class Rank extends Model {
                     if ($this->sort > $rank->sort) {
                         if ($rank->IsSecondaryAdmin) {
                             return 3; // editing a false admin rank, must remove admin power to edit more granularly
-                        }
-                        else {
+                        } else {
                             return 1; // can edit everything, as admin
                         }
-                    }
-                    else {
+                    } else {
                         return 4; // cannot edit higher rank
                     }
-                }
-                else {
+                } else {
                     return 4; // cannot edit own rank
                 }
-
             } elseif ($this->sort > $rank->sort) {
                 return 1; // can edit everything, rank is higher
             }

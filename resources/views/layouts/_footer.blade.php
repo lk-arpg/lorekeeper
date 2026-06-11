@@ -1,5 +1,5 @@
 <nav class="navbar navbar-expand-md navbar-light">
-    <ul class="navbar-nav ml-auto mr-auto">
+    <ul class="navbar-nav ml-auto mr-auto flex-wrap justify-content-center">
         <li class="nav-item"><a href="{{ url('info/about') }}" class="nav-link">About</a></li>
         <li class="nav-item"><a href="{{ url('info/terms') }}" class="nav-link">Terms</a></li>
         <li class="nav-item"><a href="{{ url('info/privacy') }}" class="nav-link">Privacy</a></li>

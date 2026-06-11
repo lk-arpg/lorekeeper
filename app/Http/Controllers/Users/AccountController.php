@@ -516,4 +516,24 @@ class AccountController extends Controller {
 
         return redirect()->back();
     }
+
+    /**
+     * Changes user font settings.
+     *
+     * @param App\Services\UserService $service
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postFont(Request $request, UserService $service) {
+        $data = $request->only(['font_size', 'site_fonts_disabled', 'letter_spacing', 'word_spacing', 'line_height']);
+        if ($service->updateFontSetting($data, Auth::user())) {
+            flash('Setting updated successfully.')->success();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
+        }
+
+        return redirect()->back();
+    }
 }

@@ -702,4 +702,29 @@ class UserService extends Service {
 
         return $this->rollbackReturn(false);
     }
+
+    /**
+     * Updates user's font settings.
+     *
+     * @param mixed $data
+     * @param mixed $user
+     */
+    public function updateFontSetting($data, $user) {
+        DB::beginTransaction();
+
+        try {
+            $user->settings->font_size = $data['font_size'];
+            $user->settings->site_fonts_disabled = $data['site_fonts_disabled'];
+            $user->settings->letter_spacing = $data['letter_spacing'];
+            $user->settings->word_spacing = $data['word_spacing'];
+            $user->settings->line_height = $data['line_height'];
+            $user->settings->save();
+
+            return $this->commitReturn(true);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
+    }
 }

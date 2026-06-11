@@ -317,6 +317,25 @@ class AccountController extends Controller {
     }
 
     /**
+     * Changes admin notifications visibility settings.
+     *
+     * @param App\Services\UserService $service
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postAdminNotificationSettings(Request $request, UserService $service) {
+        if ($service->updateAdminNotificationSettings($request->only(['admin_notifs', 'admin_notifs_nr_size']), Auth::user())) {
+            flash('Setting updated successfully.')->success();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
+        }
+
+        return redirect()->back();
+    }
+
+    /**
      * Shows the notifications page.
      *
      * @return \Illuminate\Contracts\Support\Renderable

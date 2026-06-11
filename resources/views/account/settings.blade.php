@@ -144,6 +144,29 @@
         {!! Form::close() !!}
     </div>
 
+    @if (Auth::user()->isStaff && Config::get('lorekeeper.extensions.admin_notifications') && Auth::user()->hasAdminNotification(Auth::user()))
+        <div class="card p-3 mb-2">
+            <h3>Admin Notifications</h3>
+            {!! Form::open(['url' => 'account/admin-notifs']) !!}
+            <div class="form-group row">
+                <label class="col-md-2 col-form-label">Setting</label>
+                <div class="col-md-10">
+                    {!! Form::select('admin_notifs', ['0' => '0: Do not show number of notifications.', '1' => '1: Show number of waiting notifications.'], Auth::user()->settings->admin_notifs, ['class' => 'form-control']) !!}
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-md-2 col-form-label">Compact Number</label>
+                <div class="col-md-10">
+                    {!! Form::select('admin_notifs_nr_size', ['0' => '0: Do not make number more compact.', '1' => '1: Make notification number more compact.'], Auth::user()->settings->admin_notifs_nr_size, ['class' => 'form-control']) !!}
+                </div>
+            </div>
+            <div class="text-right">
+                {!! Form::submit('Edit', ['class' => 'btn btn-primary']) !!}
+            </div>
+            {!! Form::close() !!}
+        </div>
+    @endif
+
     <div class="card p-3 mb-2">
         <h3>Email Address</h3>
         <p>Changing your email address will require you to re-verify your email address.</p>

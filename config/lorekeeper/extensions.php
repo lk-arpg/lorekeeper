@@ -157,6 +157,9 @@ return [
         'Year'      => 'Year',
     ],
 
+    // Admin Notifications - Uri, port by Speedy
+    'admin_notifications' => 1, // If enabled, will show a number next to the admin crown signifying the number of items waiting in queue. (Can be turned off per user.)
+
     // Limit Userpage Sublists to Characters - Speedy
     'limit_userpage_sublists_to_characters' => 0, // If enabled, will only show sub masterlists on user pages that the characters owned by the user belong to.
 ];

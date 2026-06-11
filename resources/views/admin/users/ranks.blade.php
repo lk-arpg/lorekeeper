@@ -8,7 +8,8 @@
     {!! breadcrumbs(['Admin Panel' => 'admin', 'User Ranks' => 'admin/users/ranks']) !!}
 
     <h1>
-        User Ranks</h1>
+        User Ranks
+    </h1>
 
     <p>You can create and edit ranks to assign to users here. Ranks can have powers attached, which allows users with the rank to view and edit data on certain parts of the site. To assign a rank to a user, find their admin page from the <a
             href="{{ url('admin/users') }}">User Index</a> and change their rank there.</p>
@@ -26,9 +27,11 @@
         </thead>
         <tbody id="sortable" class="sortable">
             @foreach ($ranks as $rank)
-                <tr class=sort-item data-id="{{ $rank->id }}">
+                <tr {{ $rank->isSortable ? 'class=sort-item' : '' }} data-id="{{ $rank->id }}">
                     <td>
-                        <a class="fas fa-arrows-alt-v handle" href="#"></a>
+                        @if ($rank->isSortable)
+                            <a class="fas fa-arrows-alt-v handle" href="#"></a>
+                        @endif
                     </td>
                     <td><i class="{!! $rank->icon ? $rank->icon . ' mr-2' : '' !!} "></i>{!! $rank->displayName !!}</td>
                     <td>{!! $rank->parsed_description !!}</td>
@@ -40,13 +43,13 @@
                         @else
                             <div><em>{{ $rank->getPowers()['admin']['name'] }} {!! add_help('This rank has the &quot;Admin&quot; power granted to it, meaning it has all powers.') !!}</em></div>
                         @endif
-                        @if ($loop->last)
-                            <div><em>Default user rank {!! add_help('As this is the rank sorted lowest it will be automatically given to new users.') !!}</em></div>
+                        @if ($rank->isDefaultRank)
+                            <div><em>Default user rank {!! add_help('This is the default user rank. It can not have any powers. You can not delete this.') !!}</em></div>
                         @endif
                     </td>
                     <td>
                         <a href="#" class="btn btn-primary edit-rank-button" data-id="{{ $rank->id }}">Edit</a>
-                        @if (!$rank->isAdmin && !$loop->last)
+                        @if (!$rank->isAdmin && !$rank->isDefaultRank)
                             <a href="#" class="btn btn-danger delete-rank-button" data-id="{{ $rank->id }}">Delete</a>
                         @endif
                     </td>

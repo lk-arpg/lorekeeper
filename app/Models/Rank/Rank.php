@@ -85,6 +85,39 @@ class Rank extends Model {
         return $this->attributes['is_admin'] || $this->attributes['is_secondary_admin'];
     }
 
+    /**
+     * Check if the rank is a secondary admin rank.
+     *
+     * @return bool
+     */
+    public function getIsSecondaryAdminAttribute() {
+        return $this->attributes['is_secondary_admin'];
+    }
+
+    /**
+     * Check if the rank is the default user rank.
+     *
+     * @return bool
+     */
+    public function getIsDefaultRankAttribute() {
+        if ($this->sort == 0) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Check if the rank can be sorted.
+     *
+     * @return bool
+     */
+    public function getIsSortableAttribute() {
+        if ($this->attributes['is_admin'] || $this->isDefaultRank) {
+            return false;
+        }
+        return true;
+    }
+
     /**********************************************************************************************
 
         OTHER FUNCTIONS
@@ -104,23 +137,29 @@ class Rank extends Model {
         }
         if ($this->hasPower('edit_ranks')) {
             if ($this->isAdmin) {
-                // editing a false admin rank
-                if ($rank->powers()->where('power', 'admin')->exists()) {
-                    if ($this->attributes['is_admin']) {
-                        return 3; // must remove admin power to edit more granularly
-                    } else {
-                        return 4; // false admin rank, cannot edit
-                    }
+                if ($rank->attributes['is_admin']) {
+                    return 2; // is admin, cannot edit
                 }
 
                 if ($rank->id != $this->id) {
-                    return 1;
-                } // can edit everything
+                    if ($this->sort > $rank->sort) {
+                        if ($rank->IsSecondaryAdmin) {
+                            return 3; // editing a false admin rank, must remove admin power to edit more granularly
+                        }
+                        else {
+                            return 1; // can edit everything, as admin
+                        }
+                    }
+                    else {
+                        return 4; // cannot edit higher rank
+                    }
+                }
                 else {
-                    return 2;
-                } // limited edit: cannot edit sort order/powers
+                    return 4; // cannot edit own rank
+                }
+
             } elseif ($this->sort > $rank->sort) {
-                return 1;
+                return 1; // can edit everything, rank is higher
             }
         }
 

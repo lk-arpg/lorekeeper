@@ -59,6 +59,12 @@
                 You cannot edit this rank's powers.
             </div>
         </div>
+    @elseif ($rank->isDefaultRank)
+        <div class="card bg-light mb-3">
+            <div class="card-body">
+                Powers for the default user rank cannot be edited. {!! add_help('The default user rank should always be the lowest sorted rank and can not have any specific powers.') !!}
+            </div>
+        </div>
     @else
         {{-- Powers --}}
         <div class="row">

@@ -41,6 +41,7 @@ class CurrencyService extends Service {
             $image = null;
             if (isset($data['image']) && $data['image']) {
                 $data['has_image'] = 1;
+                $data['image_extension'] = $data['image']->getClientOriginalExtension();
                 $data['hash'] = randomString(10);
                 $image = $data['image'];
                 unset($data['image']);
@@ -94,6 +95,7 @@ class CurrencyService extends Service {
             $image = null;
             if (isset($data['image']) && $data['image']) {
                 $data['has_image'] = 1;
+                $data['image_extension'] = $data['image']->getClientOriginalExtension();
                 $data['hash'] = randomString(10);
                 $image = $data['image'];
                 unset($data['image']);
@@ -203,17 +205,20 @@ class CurrencyService extends Service {
 
             $data = $this->populateData($data);
 
-            $icon = $image = null;
+            $icon = null;
             if (isset($data['icon']) && $data['icon']) {
                 $data['has_icon'] = 1;
+                $data['icon_extension'] = $data['icon']->getClientOriginalExtension();
                 $icon = $data['icon'];
                 unset($data['icon']);
             } else {
                 $data['has_icon'] = 0;
             }
 
+            $image = null;
             if (isset($data['image']) && $data['image']) {
                 $data['has_image'] = 1;
+                $data['image_extension'] = $data['image']->getClientOriginalExtension();
                 $data['hash'] = randomString(10);
                 $image = $data['image'];
                 unset($data['image']);
@@ -280,13 +285,15 @@ class CurrencyService extends Service {
                 $oldIconFileName = $currency->currencyIconFileName;
             }
 
-            $icon = $image = null;
+            $icon = null;
             if (isset($data['icon']) && $data['icon']) {
                 $data['has_icon'] = 1;
+                $data['icon_extension'] = $data['icon']->getClientOriginalExtension();
                 $icon = $data['icon'];
                 unset($data['icon']);
             }
 
+            $image = null;
             if (isset($data['image']) && $data['image']) {
                 $data['has_image'] = 1;
                 $data['hash'] = randomString(10);

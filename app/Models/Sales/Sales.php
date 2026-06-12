@@ -21,6 +21,7 @@ class Sales extends Model implements Feedable {
         'user_id', 'text', 'parsed_text', 'title', 'is_visible', 'post_at',
         'is_open', 'comments_open_at',
         'has_image', 'hash',
+        'image_extension',
     ];
 
     /**
@@ -55,7 +56,7 @@ class Sales extends Model implements Feedable {
     public static $createRules = [
         'title' => 'required|between:3,100',
         'text'  => 'required',
-        'image' => 'mimes:png',
+        'image' => 'mimes:png,gif,jpg,jpeg,webp,apng',
     ];
 
     /**
@@ -66,7 +67,7 @@ class Sales extends Model implements Feedable {
     public static $updateRules = [
         'title' => 'required|between:3,100',
         'text'  => 'required',
-        'image' => 'mimes:png',
+        'image' => 'mimes:png,gif,jpg,jpeg,webp,apng',
     ];
 
     /**********************************************************************************************
@@ -197,7 +198,7 @@ class Sales extends Model implements Feedable {
      * @return string
      */
     public function getImageFileNameAttribute() {
-        return $this->id.'-'.$this->hash.'-image.png';
+        return $this->id.'-'.$this->hash.'-image.'.$this->image_extension;
     }
 
     /**

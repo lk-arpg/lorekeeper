@@ -16,7 +16,7 @@ class Feature extends Model {
      * @var array
      */
     protected $fillable = [
-        'feature_category_id', 'species_id', 'rarity_id', 'name', 'has_image', 'description', 'parsed_description', 'is_visible', 'hash',
+        'feature_category_id', 'species_id', 'rarity_id', 'name', 'has_image', 'image_extension', 'description', 'parsed_description', 'is_visible', 'hash',
     ];
 
     /**
@@ -36,7 +36,7 @@ class Feature extends Model {
         'rarity_id'           => 'required|exists:rarities,id',
         'name'                => 'required|unique:features|between:3,100',
         'description'         => 'nullable',
-        'image'               => 'mimes:png',
+        'image'               => 'mimes:png,gif,jpg,jpeg,webp,apng',
     ];
 
     /**
@@ -50,7 +50,7 @@ class Feature extends Model {
         'rarity_id'           => 'required|exists:rarities,id',
         'name'                => 'required|between:3,100',
         'description'         => 'nullable',
-        'image'               => 'mimes:png',
+        'image'               => 'mimes:png,gif,jpg,jpeg,webp,apng',
     ];
 
     /**********************************************************************************************
@@ -225,7 +225,7 @@ class Feature extends Model {
      * @return string
      */
     public function getImageFileNameAttribute() {
-        return $this->id.'-'.$this->hash.'-image.png';
+        return $this->id.'-'.$this->hash.'-image.'.$this->image_extension;
     }
 
     /**

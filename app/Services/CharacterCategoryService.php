@@ -33,6 +33,7 @@ class CharacterCategoryService extends Service {
             $image = null;
             if (isset($data['image']) && $data['image']) {
                 $data['has_image'] = 1;
+                $data['image_extension'] = $data['image']->getClientOriginalExtension();
                 $data['hash'] = randomString(10);
                 $image = $data['image'];
                 unset($data['image']);
@@ -88,6 +89,7 @@ class CharacterCategoryService extends Service {
             $image = null;
             if (isset($data['image']) && $data['image']) {
                 $data['has_image'] = 1;
+                $data['image_extension'] = $data['image']->getClientOriginalExtension();
                 $data['hash'] = randomString(10);
                 $image = $data['image'];
                 unset($data['image']);

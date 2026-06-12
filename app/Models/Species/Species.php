@@ -14,6 +14,7 @@ class Species extends Model {
      */
     protected $fillable = [
         'name', 'sort', 'has_image', 'description', 'parsed_description', 'masterlist_sub_id', 'is_visible', 'hash',
+        'image_extension',
     ];
 
     /**
@@ -30,7 +31,7 @@ class Species extends Model {
     public static $createRules = [
         'name'        => 'required|unique:specieses|between:3,100',
         'description' => 'nullable',
-        'image'       => 'mimes:png',
+        'image'       => 'mimes:png,gif,jpg,jpeg,webp,apng',
     ];
 
     /**
@@ -41,7 +42,7 @@ class Species extends Model {
     public static $updateRules = [
         'name'        => 'required|between:3,100',
         'description' => 'nullable',
-        'image'       => 'mimes:png',
+        'image'       => 'mimes:png,gif,jpg,jpeg,webp,apng',
     ];
 
     /**********************************************************************************************

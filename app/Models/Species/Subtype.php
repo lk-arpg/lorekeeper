@@ -13,6 +13,7 @@ class Subtype extends Model {
      */
     protected $fillable = [
         'species_id', 'name', 'sort', 'has_image', 'description', 'parsed_description', 'is_visible', 'hash',
+        'image_extension',
     ];
 
     /**
@@ -31,7 +32,7 @@ class Subtype extends Model {
         'species_id'  => 'required',
         'name'        => 'required|between:3,100',
         'description' => 'nullable',
-        'image'       => 'mimes:png',
+        'image'       => 'mimes:png,gif,jpg,jpeg,webp,apng',
     ];
 
     /**
@@ -43,7 +44,7 @@ class Subtype extends Model {
         'species_id'  => 'required',
         'name'        => 'required|between:3,100',
         'description' => 'nullable',
-        'image'       => 'mimes:png',
+        'image'       => 'mimes:png,gif,jpg,jpeg,webp,apng',
     ];
 
     /**********************************************************************************************
@@ -176,7 +177,7 @@ class Subtype extends Model {
      * @return string
      */
     public function getSubtypeImageFileNameAttribute() {
-        return $this->id.'-'.$this->hash.'-image.png';
+        return $this->id.'-'.$this->hash.'-image.'.$this->image_extension;
     }
 
     /**

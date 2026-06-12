@@ -12,6 +12,7 @@ class ItemCategory extends Model {
      */
     protected $fillable = [
         'name', 'sort', 'has_image', 'description', 'parsed_description', 'is_character_owned', 'character_limit', 'can_name', 'is_visible', 'hash',
+        'image_extension',
     ];
 
     /**
@@ -29,7 +30,7 @@ class ItemCategory extends Model {
     public static $createRules = [
         'name'        => 'required|unique:item_categories|between:3,100',
         'description' => 'nullable',
-        'image'       => 'mimes:png',
+        'image'       => 'mimes:png,gif,jpg,jpeg,webp,apng',
     ];
 
     /**
@@ -40,7 +41,7 @@ class ItemCategory extends Model {
     public static $updateRules = [
         'name'        => 'required|between:3,100',
         'description' => 'nullable',
-        'image'       => 'mimes:png',
+        'image'       => 'mimes:png,gif,jpg,jpeg,webp,apng',
     ];
 
     /**********************************************************************************************
@@ -95,7 +96,7 @@ class ItemCategory extends Model {
      * @return string
      */
     public function getCategoryImageFileNameAttribute() {
-        return $this->id.'-'.$this->hash.'-image.png';
+        return $this->id.'-'.$this->hash.'-image.'.$this->image_extension;
     }
 
     /**

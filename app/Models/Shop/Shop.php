@@ -13,8 +13,9 @@ class Shop extends Model {
      * @var array
      */
     protected $fillable = [
-        'name', 'sort', 'has_image', 'description', 'parsed_description', 'is_active', 'hash', 'is_staff', 'use_coupons', 'is_fto', 'allowed_coupons', 'is_timed_shop', 'start_at', 'end_at',
-        'is_hidden', 'data',
+        'name', 'sort', 'has_image', 'description', 'parsed_description', 'is_active', 'hash', 'is_staff',
+        'use_coupons', 'is_fto', 'allowed_coupons', 'is_timed_shop', 'start_at', 'end_at',
+        'is_hidden', 'data', 'image_extension',
     ];
 
     /**
@@ -44,7 +45,7 @@ class Shop extends Model {
     public static $createRules = [
         'name'        => 'required|unique:shops|between:3,100',
         'description' => 'nullable',
-        'image'       => 'mimes:png',
+        'image'       => 'mimes:png,gif,jpg,jpeg,webp,apng',
     ];
 
     /**
@@ -55,7 +56,7 @@ class Shop extends Model {
     public static $updateRules = [
         'name'        => 'required|between:3,100',
         'description' => 'nullable',
-        'image'       => 'mimes:png',
+        'image'       => 'mimes:png,gif,jpg,jpeg,webp,apng',
     ];
 
     /**********************************************************************************************
@@ -129,7 +130,7 @@ class Shop extends Model {
      * @return string
      */
     public function getShopImageFileNameAttribute() {
-        return $this->id.'-'.$this->hash.'-image.png';
+        return $this->id.'-'.$this->hash.'-image.'.$this->image_extension;
     }
 
     /**

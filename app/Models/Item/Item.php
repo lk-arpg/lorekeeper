@@ -194,7 +194,7 @@ class Item extends Model {
      * @return string
      */
     public function getDisplayNameAttribute() {
-        return '<a href="'.$this->url.'" class="display-item">'.$this->name.'</a>';
+        return '<a href="'.$this->idUrl.'" class="display-item">'.$this->name.'</a>';
     }
 
     /**

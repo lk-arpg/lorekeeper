@@ -470,6 +470,25 @@ class WorldController extends Controller {
     }
 
     /**
+     * Shows an individual trait's page.
+     *
+     * @param int $id
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getFeature($id) {
+        $$feature = Feature::visible(Auth::user() ?? null)->where('id', $id)->with('species', 'subtypes', 'rarity')->first();
+
+        if (!$feature) {
+            abort(404);
+        }
+
+        return view('world.feature_page', [
+            'feature' => $feature,
+        ]);
+    }
+
+    /**
      * Provides a single trait's description html for use in a modal.
      *
      * @param mixed $id

@@ -1,0 +1,74 @@
+@extends('world.layout')
+
+@section('world-title')
+    {{ $feature->name }}
+@endsection
+
+@section('meta-img')
+    {{ $feature->imageUrl }}
+@endsection
+
+@section('meta-desc')
+    {!! isset($feature->category) && $feature->category ? '(Category: ' . $feature->category->name . ')' : '' !!} {!! isset($feature->rarity) && $feature->rarity ? '(Rarity: ' . $feature->rarity . ')' : '' !!} {!! substr(strip_tags($feature->description), 0, 200) !!} {!! isset($feature->uses) && $feature->uses ? '(Uses: ' . $feature->uses . ')' : '' !!}
+@endsection
+
+@section('content')
+    {!! breadcrumbs(['World' => 'world', 'Items' => 'world/items', $feature->name => $feature->idUrl]) !!}
+
+    <div class="row">
+        <div class="col-sm">
+        </div>
+        <div class="col-lg-6 col-lg-10">
+            <div class="card mb-3">
+                <div class="card-body">
+                    @if (config('lorekeeper.extensions.unmerge_feature_page_and_entry'))
+                        <div class="row world-entry">
+                            @if ($feature->has_image)
+                                <div class="col-md-3 world-entry-image">
+                                    <a href="{{ $feature->imageUrl }}" data-lightbox="entry" data-title="{{ $feature->name }}">
+                                        <img src="{{ $feature->imageUrl }}" class="world-entry-image" alt="{{ $feature->name }}" />
+                                    </a>
+                                </div>
+                            @endif
+                            <div class="{{ $feature->has_image ? 'col-md-9' : 'col-12' }}">
+                                <x-admin-edit title="Trait" :object="$feature" />
+                                <h3>
+                                    @if (!$feature->is_visible)
+                                        <i class="fas fa-eye-slash mr-1"></i>
+                                    @endif
+                                    {!! $feature->displayName !!}
+                                    <a href="{{ $feature->url }}" class="world-entry-search text-muted">
+                                        <i class="fa-solid fa-filter" data-toggle="tooltip" title="Search in Encyclopedia"></i>
+                                    </a>
+                                    <a href="{{ $feature->searchUrl }}" class="world-entry-search text-muted">
+                                        <i class="fas fa-search" data-toggle="tooltip" title="Search in Masterlist"></i>
+                                    </a>
+                                </h3>
+                                @if ($feature->feature_category_id)
+                                    <div>
+                                        <strong>Category:</strong> {!! $feature->category->displayName !!}
+                                    </div>
+                                @endif
+                                @if ($feature->species_id)
+                                    <div>
+                                        <strong>Species:</strong> {!! $feature->species->displayName !!}
+                                        @if (count($feature->getSubtypes(Auth::User() ?? null)))
+                                            ({!! $feature->displaySubtypes(Auth::User() ?? null) !!})
+                                        @endif
+                                    </div>
+                                @endif
+                                <div class="world-entry-text parsed-text">
+                                    {!! $feature->parsed_description !!}
+                                </div>
+                            </div>
+                        </div>
+                    @else
+                        @include('world._feature_entry', ['feature' => $feature, 'isPage' => true])
+                    @endif
+                </div>
+            </div>
+        </div>
+        <div class="col-sm">
+        </div>
+    </div>
+@endsection

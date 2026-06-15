@@ -259,7 +259,6 @@ class Feature extends Model {
         return url('world/traits?name='.$this->name);
     }
 
-
     /**
      * Gets the URL of the individual trait's page, by ID.
      *

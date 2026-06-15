@@ -140,7 +140,7 @@ return [
 
     // Unmerge Item Page and Item Entry - Speedy
     'unmerge_item_page_and_entry' => 0, // If enabled, uses the html on world/item_page.blade.php instead of the include that links to world/_item_entry.blade.php
-    
+
     // Unmerge Trait Page and Trait Entry - Speedy
     'unmerge_feature_page_and_entry' => 0, // If enabled, uses the html on world/feature_page.blade.php instead of the include that links to world/_feature_entry.blade.php
 

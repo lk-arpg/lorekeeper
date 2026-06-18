@@ -13,7 +13,7 @@
 @endsection
 
 @section('content')
-    {!! breadcrumbs(['World' => 'world', 'Items' => 'world/items', $feature->name => $feature->idUrl]) !!}
+    {!! breadcrumbs(['World' => 'world', 'Traits' => 'world/traits', $feature->name => $feature->idUrl]) !!}
 
     <div class="row">
         <div class="col-sm">

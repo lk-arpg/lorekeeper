@@ -19,6 +19,7 @@ use App\Models\Item\ItemLog;
 use App\Models\Limit\UserUnlockedLimit;
 use App\Models\Notification;
 use App\Models\Rank\Rank;
+use App\Models\Report\Report;
 use App\Models\Shop\ShopLog;
 use App\Models\Submission\Submission;
 use App\Models\Trade\Trade;
@@ -28,6 +29,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Throwable;
@@ -757,18 +759,34 @@ class User extends Authenticatable implements MustVerifyEmail {
      * @return int
      */
     public function hasAdminNotification($user) {
-        $count = [];
-        $count[] = $this->hasPower('manage_submissions') ? Submission::where('status', 'Pending')->whereNotNull('prompt_id')->count() : 0; // submissionCount
-        $count[] = $this->hasPower('manage_submissions') ? Submission::where('status', 'Pending')->whereNull('prompt_id')->count() : 0; // claimCount
-        $count[] = $this->hasPower('manage_characters') ? CharacterDesignUpdate::characters()->where('status', 'Pending')->count() : 0; // designCount
-        $count[] = $this->hasPower('manage_characters') ? CharacterDesignUpdate::myos()->where('status', 'Pending')->count() : 0; // myoCount
-        $count[] = $this->hasPower('manage_characters') ? CharacterTransfer::active()->where('is_approved', 0)->count() : 0; // transferCount
-        $count[] = $this->hasPower('manage_characters') ? Trade::where('status', 'Pending')->count() : 0; // tradeCount
-        $count[] = $this->hasPower('manage_characters') ? Trade::where('status', 'Pending')->count() : 0; // tradeCount
-        $count[] = $this->hasPower('manage_submissions') ? GallerySubmission::pending()->collaboratorApproved()->count() : 0; // galleryCount
-        $count[] = $this->hasPower('manage_reports') ? Report::where('status', 'Pending')->count() : 0; // reportCount
-        $count[] = $this->hasPower('manage_reports') ? Report::assignedToMe($this)->count() : 0; // assignedReportCount
+        // This caches and remembers the admin notif count for this given user
+        // for 2 minutes, and then will refresh whenever the function hits again
+        // after 2 minutes from last cache (Laravel's default cache driver is file)
 
-        return array_sum($count);
+        return Cache::remember('admin_notif_'.$this->id, now()->addMinutes(2), function () {
+            $count = [];
+            // So the power isn't requeried every single time...
+            $manageSubmissions = $this->hasPower('manage_submissions');
+            $manageCharacters = $this->hasPower('manage_characters');
+            $manageReports = $this->hasPower('manage_reports');
+
+            if ($manageSubmissions) {
+                $count[] = Submission::where('status', 'Pending')->count(); // submissionCount & claimCount
+                $count[] = GallerySubmission::pending()->collaboratorApproved()->count(); // galleryCount
+            }
+
+            if ($manageCharacters) {
+                $count[] = CharacterDesignUpdate::where('status', 'Pending')->count(); // designCount & myoCount
+                $count[] = CharacterTransfer::active()->where('is_approved', 0)->count(); // transferCount
+                $count[] = Trade::where('status', 'Pending')->count(); // tradeCount
+            }
+
+            if ($manageReports) {
+                $count[] = Report::where('status', 'Pending')->count(); // reportCount
+                $count[] = Report::assignedToMe($this)->count(); // assignedReportCount
+            }
+
+            return array_sum($count);
+        });
     }
 }

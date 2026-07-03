@@ -34,7 +34,7 @@ class Limit extends Model {
      * get the object of this type.
      */
     public function object() {
-        return $this->belongsTo($this->object_model, 'object_id');
+        return $this->morphTo(__FUNCTION__, 'object_model', 'object_id');
     }
 
     /**

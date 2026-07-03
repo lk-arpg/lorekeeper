@@ -63,8 +63,6 @@ class AppServiceProvider extends ServiceProvider {
         // Finally, combine it all into a final morph map of alias => model string
         $morphMap = array_merge($morphMap, array_combine(array_map(fn ($model) => class_basename($model), $modelStrings), $modelStrings));
 
-
-
         Relation::morphMap($morphMap);
     }
 

@@ -42,7 +42,7 @@ class LimitService extends Service {
                 throw new \Exception('Object not found.');
             }
 
-            $limits = hasLimits($object) ? getLimits($object) : [];
+            $limits = $object->limits;
             if (count($limits) > 0) {
                 $limits->each(function ($limit) {
                     $limit->delete();

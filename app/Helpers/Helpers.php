@@ -478,11 +478,11 @@ function faVersion() {
  *
  * @param mixed $object
  *
- * @return bool
+ * @return mixed
  */
 function getLimits($object) {
     if(in_array(\App\Traits\Limitable::class, class_uses_recursive(get_class($object)))) {
-        return $object->hasLimits;
+        return $object->limits;
     } else {
         return null;
     }
@@ -492,12 +492,14 @@ function getLimits($object) {
  * checks if a certain object has any limits.
  *
  * @param mixed $object
+ * 
+ * @return bool
  */
 function hasLimits($object) {
     if(in_array(\App\Traits\Limitable::class, class_uses_recursive(get_class($object)))) {
         return $object->hasLimits;
     } else {
-        return null;
+        return false;
     }
 }
 
@@ -542,6 +544,6 @@ function hasRewards($object) {
     if(in_array(\App\Traits\Rewardable::class, class_uses_recursive(get_class($object)))) {
         return $object->hasRewards;
     } else {
-        return null;
+        return false;
     }
 }

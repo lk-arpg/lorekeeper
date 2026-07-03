@@ -5,7 +5,7 @@
     $limitTypes = collect(config('lorekeeper.limits.limit_types'))->map(function ($value, $key) {
         return $value['name'];
     });
-    $limits = hasLimits($object) ? getLimits($object) : null;
+    $limits = $object->limits;
 
     $prompts = \App\Models\Prompt\Prompt::orderBy('name')->pluck('name', 'id')->toArray();
     $items = \App\Models\Item\Item::orderBy('name')->pluck('name', 'id')->toArray();

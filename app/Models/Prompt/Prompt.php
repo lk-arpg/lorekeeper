@@ -5,9 +5,13 @@ namespace App\Models\Prompt;
 use App\Models\Model;
 use App\Models\Reward\Reward;
 use App\Models\Submission\Submission;
+use App\Traits\Limitable;
+use App\Traits\Rewardable;
 use Carbon\Carbon;
 
 class Prompt extends Model {
+    use Rewardable, Limitable;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -76,13 +80,6 @@ class Prompt extends Model {
      */
     public function category() {
         return $this->belongsTo(PromptCategory::class, 'prompt_category_id');
-    }
-
-    /**
-     * Get the rewards attached to this prompt.
-     */
-    public function rewards() {
-        return $this->morphMany(Reward::class, 'object', 'object_model', 'object_id');
     }
 
     /**********************************************************************************************

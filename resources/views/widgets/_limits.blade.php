@@ -2,7 +2,7 @@
     $limitTypes = collect(config('lorekeeper.limits.limit_types'))->map(function ($value, $key) {
         return $value['name'];
     });
-    $limits = hasLimits($object) ? getLimits($object) : null;
+    $limits = $object->limits;
     if (!isset($hideUnlock)) {
         $hideUnlock = false;
     }
@@ -11,7 +11,7 @@
     }
 @endphp
 
-@if ($limits)
+@if (count($limits))
     @if (!isset($compact) || !$compact)
         <h4 class="my-3">{!! $object->displayName !!}'s Requirements</h4>
         <p>

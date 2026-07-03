@@ -481,7 +481,11 @@ function faVersion() {
  * @return bool
  */
 function getLimits($object) {
-    return App\Models\Limit\Limit::where('object_model', get_class($object))->where('object_id', $object->id)->get();
+    if(in_array(\App\Traits\Limitable::class, class_uses_recursive(get_class($object)))) {
+        return $object->hasLimits;
+    } else {
+        return null;
+    }
 }
 
 /**
@@ -490,7 +494,11 @@ function getLimits($object) {
  * @param mixed $object
  */
 function hasLimits($object) {
-    return App\Models\Limit\Limit::where('object_model', get_class($object))->where('object_id', $object->id)->exists();
+    if(in_array(\App\Traits\Limitable::class, class_uses_recursive(get_class($object)))) {
+        return $object->hasLimits;
+    } else {
+        return null;
+    }
 }
 
 /**
@@ -504,11 +512,11 @@ function hasUnlockedLimits($user, $object) {
         return true;
     }
 
-    return App\Models\Limit\UserUnlockedLimit::where('user_id', $user->id)
+    return $user->unlockedLimits
         ->where('object_model', get_class($object))
         ->where('object_id', $object->id)
-        ->exists();
-}
+        ->count();
+    }
 
 /**
  * Returns the given objects rewards, if any.
@@ -518,7 +526,11 @@ function hasUnlockedLimits($user, $object) {
  * @return bool
  */
 function getRewards($object) {
-    return App\Models\Reward\Reward::where('object_model', get_class($object))->where('object_id', $object->id)->get();
+    if(in_array(\App\Traits\Rewardable::class, class_uses_recursive(get_class($object)))) {
+        return $object->rewards;
+    } else {
+        return null;
+    }
 }
 
 /**
@@ -527,5 +539,9 @@ function getRewards($object) {
  * @param mixed $object
  */
 function hasRewards($object) {
-    return App\Models\Reward\Reward::where('object_model', get_class($object))->where('object_id', $object->id)->exists();
+    if(in_array(\App\Traits\Rewardable::class, class_uses_recursive(get_class($object)))) {
+        return $object->hasRewards;
+    } else {
+        return null;
+    }
 }

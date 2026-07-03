@@ -152,15 +152,15 @@ function getAssetModelString($type, $namespaced = true) {
                 return 'Prompt';
             }
             break;
-            
-        case 'dynamic': 
+
+        case 'dynamic':
             if ($namespaced) {
                 return '\App\Models\Limit\DynamicLimit';
             } else {
                 return 'DynamicLimit';
             }
             break;
-        
+
         case 'itemcategory': case 'itemcategoryrarity':
             if ($namespaced) {
                 return '\App\Models\Item\ItemCategory';

@@ -2,9 +2,6 @@
 
 namespace App\Models\Loot;
 
-use App\Models\Currency\Currency;
-use App\Models\Item\Item;
-use App\Models\Item\ItemCategory;
 use App\Models\Model;
 
 class Loot extends Model {

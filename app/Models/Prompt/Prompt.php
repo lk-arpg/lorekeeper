@@ -3,14 +3,13 @@
 namespace App\Models\Prompt;
 
 use App\Models\Model;
-use App\Models\Reward\Reward;
 use App\Models\Submission\Submission;
 use App\Traits\Limitable;
 use App\Traits\Rewardable;
 use Carbon\Carbon;
 
 class Prompt extends Model {
-    use Rewardable, Limitable;
+    use Limitable, Rewardable;
 
     /**
      * The attributes that are mass assignable.

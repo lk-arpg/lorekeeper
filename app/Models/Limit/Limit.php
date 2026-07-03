@@ -2,11 +2,7 @@
 
 namespace App\Models\Limit;
 
-use App\Models\Currency\Currency;
-use App\Models\Item\Item;
 use App\Models\Model;
-use App\Models\Prompt\Prompt;
-use Illuminate\Database\Eloquent\Relations\Relation;
 
 class Limit extends Model {
     /**
@@ -60,12 +56,12 @@ class Limit extends Model {
     public function limit() {
         return $this->morphTo('limit', 'limit_type', 'limit_id');
 
-        /* 
+        /*
          * If you have specific logic per limit_type (such as, if you have multiple limits that share the same model),
          * you can use ->constrain([]) to handle that extra logic.
-         * 
+         *
          * For example, if you were to have a generic "Model" that needs to be separated between character and user:
-         * 
+         *
          * ->constrain([
          *     Model::class => function ($query) {
          *         if ($this->limit_type === 'user_model') {
@@ -75,7 +71,7 @@ class Limit extends Model {
          *         }
          *     }
          * ]);
-         * 
+         *
          */
     }
 

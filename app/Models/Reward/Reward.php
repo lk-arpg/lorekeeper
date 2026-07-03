@@ -29,7 +29,7 @@ class Reward extends Model {
     protected $casts = [
         'data' => 'array',
     ];
-    
+
     /**
      * The relationships that should always be loaded.
      *

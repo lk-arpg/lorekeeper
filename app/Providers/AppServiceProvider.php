@@ -61,7 +61,7 @@ class AppServiceProvider extends ServiceProvider {
         // Take all the model strings above and pair them with their class base name
         $modelStrings = array_map('getAssetModelString', array_map('strtolower', array_values($models)));
         // Finally, combine it all into a final morph map of alias => model string
-        $morphMap = array_merge($morphMap, array_combine(array_map(fn($model) => class_basename($model), $modelStrings), $modelStrings));
+        $morphMap = array_merge($morphMap, array_combine(array_map(fn ($model) => class_basename($model), $modelStrings), $modelStrings));
 
         Relation::morphMap($morphMap);
     }

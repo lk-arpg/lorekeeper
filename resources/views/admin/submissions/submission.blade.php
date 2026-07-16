@@ -36,7 +36,13 @@
                 </div>
                 <div class="row">
                     <div class="col-md-2 col-4">
-                        <h5>Previous Submissions {!! add_help('This is the number of times the user has submitted this prompt before, pending or approved.') !!}</h5>
+                        <h5>
+                            @if($prompt->limit_character)
+                                Previous Submissions{!! add_help('This is the number of times the user has submitted this prompt before with the attached characters, pending or approved.') !!}
+                            @else
+                                Previous Submissions{!! add_help('This is the number of times the user has submitted this prompt before, pending or approved.') !!}
+                            @endif
+                        </h5>
                     </div>
                     <div class="col-md-10 col-8">
                         <div class="row text-center">

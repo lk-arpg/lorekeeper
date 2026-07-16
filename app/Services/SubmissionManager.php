@@ -66,14 +66,16 @@ class SubmissionManager extends Service {
                 if ($prompt->limit) {
                     // check that the user hasn't hit the prompt submission limit
                     // filter the submissions by hour/day/week/etc and count
-                    $count = $prompt->getCount($user);
 
-                    // if limit by character is on... multiply by # of chars. otherwise, don't
+                    // if limit by character is on, filter submission count by attached characters. otherwise, don't
                     if ($prompt->limit_character) {
-                        $limit = $prompt->limit * Character::visible()->where('is_myo_slot', 0)->where('user_id', $user->id)->count();
+                        $characters = Character::myo(0)->visible()->whereIn('slug', $data['slug'])->get();
+                        $count = $prompt->getCount($user, $characters);
                     } else {
-                        $limit = $prompt->limit;
+                        $count = $prompt->getCount($user);
                     }
+                    $limit = $prompt->limit;
+
                     // if limit by time period is on
                     if ($prompt->limit_period) {
                         if ($count[$prompt->limit_period] >= $limit) {
@@ -170,14 +172,16 @@ class SubmissionManager extends Service {
                 ) {
                     // check that the user hasn't hit the prompt submission limit
                     // filter the submissions by hour/day/week/etc and count
-                    $count = $prompt->getCount($user);
 
-                    // if limit by character is on... multiply by # of chars. otherwise, don't
+                    // if limit by character is on, filter submission count by attached characters. otherwise, don't
                     if ($prompt->limit_character) {
-                        $limit = $prompt->limit * Character::visible()->where('is_myo_slot', 0)->where('user_id', $user->id)->count();
+                        $characters = Character::myo(0)->visible()->whereIn('slug', $data['slug'])->get();
+                        $count = $prompt->getCount($user, $characters);
                     } else {
-                        $limit = $prompt->limit;
+                        $count = $prompt->getCount($user);
                     }
+                    $limit = $prompt->limit;
+
                     // if limit by time period is on
                     if ($prompt->limit_period) {
                         if ($count[$prompt->limit_period] >= $limit) {

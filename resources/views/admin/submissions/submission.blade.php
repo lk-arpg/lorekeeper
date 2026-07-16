@@ -37,7 +37,7 @@
                 <div class="row">
                     <div class="col-md-2 col-4">
                         <h5>
-                            @if($prompt->limit_character)
+                            @if ($prompt->limit_character)
                                 Previous Submissions{!! add_help('This is the number of times the user has submitted this prompt before with the attached characters, pending or approved.') !!}
                             @else
                                 Previous Submissions{!! add_help('This is the number of times the user has submitted this prompt before, pending or approved.') !!}

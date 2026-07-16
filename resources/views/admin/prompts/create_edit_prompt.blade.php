@@ -109,7 +109,8 @@
                 </div>
             </div>
             <div class="alert alert-info">
-                <strong>If you turn 'per character' on, then a user will be able to submit that many times per character.</strong> On submissions with multiple characters, it will check for the number of times <em>any</em> of those characters have been attached to a submission.
+                <strong>If you turn 'per character' on, then a user will be able to submit that many times per character.</strong> On submissions with multiple characters, it will check for the number of times <em>any</em> of those characters have been
+                attached to a submission.
                 <br />
                 <br />
                 For example: If Character A is in 1 submission and Character B is in 2 submissions, then the "previous submission count" on a submission with <em>both</em> characters will total 3.

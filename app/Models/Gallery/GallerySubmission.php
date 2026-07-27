@@ -41,7 +41,7 @@ class GallerySubmission extends Model {
      * @var array
      */
     protected $with = [
-        'user', 'collaborators', 'prompt:id,name,prefix', 'favorites', 'comments:id,commentable_type,commentable_id,type',
+        'user', 'comments:id,commentable_type,commentable_id,type',
     ];
 
     /**
@@ -50,7 +50,7 @@ class GallerySubmission extends Model {
      * @var array
      */
     protected $withCount = [
-        'favorites',
+        'favorites', 'userComments',
     ];
 
     /**
@@ -150,6 +150,13 @@ class GallerySubmission extends Model {
      */
     public function comments() {
         return $this->morphMany(Comment::class, 'commentable');
+    }
+
+    /**
+     * Get comments made on this submission of type User-User.
+     */
+    public function userComments() {
+        return $this->morphMany(Comment::class, 'commentable')->where('type', 'User-User');
     }
 
     /**********************************************************************************************

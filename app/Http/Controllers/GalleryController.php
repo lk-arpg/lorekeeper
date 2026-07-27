@@ -38,7 +38,7 @@ class GalleryController extends Controller {
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getGalleryIndex() {
-        $galleries = Gallery::whereNull('parent_id')->active()->sort()->with('children', 'children.submissions', 'submissions')->withCount('submissions', 'children');
+        $galleries = Gallery::whereNull('parent_id')->active()->sort()->with('children')->withCount('submissions', 'children');
 
         return view('galleries.index', [
             'galleries'       => $galleries->paginate(10),
@@ -61,7 +61,7 @@ class GalleryController extends Controller {
             abort(404);
         }
 
-        $query = GallerySubmission::where('gallery_id', $gallery->id)->visible(Auth::check() ? Auth::user() : null);
+        $query = GallerySubmission::where('gallery_id', $gallery->id)->visible(Auth::user() ?? null);
         $sort = $request->only(['sort']);
 
         if ($request->get('title')) {
@@ -102,7 +102,7 @@ class GalleryController extends Controller {
             'gallery'          => $gallery,
             'submissions'      => $query->paginate(20)->appends($request->query()),
             'prompts'          => [0 => 'Any Prompt'] + Prompt::whereIn('id', GallerySubmission::where('gallery_id', $gallery->id)->withOnly('prompt')->visible(Auth::user() ?? null)->whereNotNull('prompt_id')->select('prompt_id')->distinct()->pluck('prompt_id')->toArray())->orderBy('name')->pluck('name', 'id')->toArray(),
-            'childSubmissions' => $gallery->through('children')->has('submissions')->where('is_visible', 1)->where('status', 'Accepted'),
+            'childSubmissions' => $gallery->through('children')->has('submissions')->visible(),
             'galleryPage'      => true,
             'sideGallery'      => $gallery,
         ]);
@@ -118,7 +118,7 @@ class GalleryController extends Controller {
             abort(404);
         }
 
-        $query = GallerySubmission::visible(Auth::check() ? Auth::user() : null)->accepted();
+        $query = GallerySubmission::visible(Auth::user() ?? null)->accepted();
         $sort = $request->only(['sort']);
 
         if ($request->get('title')) {
@@ -203,6 +203,9 @@ class GalleryController extends Controller {
      */
     public function getSubmissionFavorites($id) {
         $submission = GallerySubmission::where('id', $id)->withOnly('favorites')->first();
+        if (!$submission) {
+            abort(404);
+        }
         $favorites = $submission->favorites()->with('user')->get();
 
         return view('galleries._submission_favorites', [

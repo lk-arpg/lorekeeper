@@ -16,7 +16,7 @@
         </a>
     </div>
     <div class="small">
-        @if (Auth::check() && ($submission->user->id != Auth::user()->id && $submission->collaborators->where('user_id', Auth::user()->id)->first() == null) && $submission->isVisible)
+        @if (Auth::check() && ($submission->user->id != Auth::user()->id && !$submission->collaborators->contains('user_id', Auth::user()->id)) && $submission->isVisible)
             {!! Form::open(['url' => '/gallery/favorite/' . $submission->id]) !!}
             @if (isset($gallery) && !$gallery)
                 In {!! $submission->gallery->displayName !!} ・
@@ -29,12 +29,12 @@
             @endif
             {{ $submission->favorites_count }} {!! Form::button('<i class="fas fa-star"></i> ', [
                 'style' => 'border:0; border-radius:.5em;',
-                'class' => $submission->favorites->where('user_id', Auth::user()->id)->first() != null ? 'btn-success' : '',
+                'class' => $submission->favorites->contains('user_id', Auth::user()->id) ? 'btn-success' : '',
                 'data-toggle' => 'tooltip',
-                'title' => ($submission->favorites->where('user_id', Auth::user()->id)->first() == null ? 'Add to' : 'Remove from') . ' your Favorites',
+                'title' => (!$submission->favorites->contains('user_id', Auth::user()->id) ? 'Add to' : 'Remove from') . ' your Favorites',
                 'type' => 'submit',
             ]) !!} ・
-            {{ $submission->comments->where('type', 'User-User')->count() }}
+            {{ $submission->user_comments_count }}
             <i class="fas fa-comment"></i>
             {!! Form::close() !!}
         @else
@@ -48,7 +48,7 @@
                 ・
             @endif
             {{ $submission->favorites_count }} <i class="fas fa-star" data-toggle="tooltip" title="Favorites"></i> ・
-            {{ $submission->comments->where('type', 'User-User')->count() }} <i class="fas fa-comment" data-toggle="tooltip" title="Comments"></i>
+            {{ $submission->user_comments_count }} <i class="fas fa-comment" data-toggle="tooltip" title="Comments"></i>
         @endif
     </div>
 </div>

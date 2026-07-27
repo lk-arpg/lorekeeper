@@ -96,8 +96,7 @@
                                     ]) !!} ・ {{ $submission->user_comments_count }} <i class="fas fa-comment"></i>
                                     {!! Form::close() !!}
                                 @else
-                                    {{ $submission->favorites_count }} <i class="fas fa-star" data-toggle="tooltip" title="Favorites"></i> ・ {{ $submission->user_comments_count }} <i class="fas fa-comment"
-                                        data-toggle="tooltip" title="Comments"></i>
+                                    {{ $submission->favorites_count }} <i class="fas fa-star" data-toggle="tooltip" title="Favorites"></i> ・ {{ $submission->user_comments_count }} <i class="fas fa-comment" data-toggle="tooltip" title="Comments"></i>
                                 @endif
                             </div>
                             In {!! $submission->gallery->displayName !!} ・ By {!! $submission->credits !!}

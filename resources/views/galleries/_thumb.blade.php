@@ -1,10 +1,10 @@
 <div class="flex-fill text-center mb-1">
     <a href="{{ $submission->url }}">@include('widgets._gallery_thumb', ['submission' => $submission])</a>
-    <?php if (isset($submission->hash) && !isset($submission->content_warning)) {
-        $width = Image::make($submission->imagePath . '/' . $submission->thumbnailFileName)->width();
-    } else {
-        $width = 200;
-    } ?>
+    @php
+        $thumb = $submission->imagePath.'/'.$submission->thumbnailFileName;
+        $dimensions = (isset($submission->hash) && !isset($submission->content_warning) && is_file($thumb)) ? getimagesize($thumb) : false;
+        $width = $dimensions ? $dimensions[0] : 200;
+    @endphp
     <div class="mt-1 mx-auto" style="max-width:{{ max(200, $width) }}px; overflow: hidden; text-overflow: ellipsis;">
         @if (isset($submission->content_warning))
             <p><span class="text-danger"><strong>Content Warning:</strong></span> {!! nl2br(htmlentities($submission->content_warning)) !!}</p>

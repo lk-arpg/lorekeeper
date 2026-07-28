@@ -1,8 +1,8 @@
 <div class="flex-fill text-center mb-1">
     <a href="{{ $submission->url }}">@include('widgets._gallery_thumb', ['submission' => $submission])</a>
     @php
-        $thumb = $submission->imagePath.'/'.$submission->thumbnailFileName;
-        $dimensions = (isset($submission->hash) && !isset($submission->content_warning) && is_file($thumb)) ? getimagesize($thumb) : false;
+        $thumb = $submission->imagePath . '/' . $submission->thumbnailFileName;
+        $dimensions = isset($submission->hash) && !isset($submission->content_warning) && is_file($thumb) ? getimagesize($thumb) : false;
         $width = $dimensions ? $dimensions[0] : 200;
     @endphp
     <div class="mt-1 mx-auto" style="max-width:{{ max(200, $width) }}px; overflow: hidden; text-overflow: ellipsis;">

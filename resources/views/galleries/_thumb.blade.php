@@ -16,7 +16,7 @@
         </a>
     </div>
     <div class="small">
-        @if (Auth::check() && ($submission->user->id != Auth::user()->id && !$submission->collaborators->contains('user_id', Auth::user()->id)) && $submission->isVisible)
+        @if (Auth::check() && ($submission->user->id != Auth::user()->id && !$submission->is_collaborator) && $submission->isVisible)
             {!! Form::open(['url' => '/gallery/favorite/' . $submission->id]) !!}
             @if (isset($gallery) && !$gallery)
                 In {!! $submission->gallery->displayName !!} ・
@@ -29,9 +29,9 @@
             @endif
             {{ $submission->favorites_count }} {!! Form::button('<i class="fas fa-star"></i> ', [
                 'style' => 'border:0; border-radius:.5em;',
-                'class' => $submission->favorites->contains('user_id', Auth::user()->id) ? 'btn-success' : '',
+                'class' => $submission->favorited ? 'btn-success' : '',
                 'data-toggle' => 'tooltip',
-                'title' => (!$submission->favorites->contains('user_id', Auth::user()->id) ? 'Add to' : 'Remove from') . ' your Favorites',
+                'title' => (!$submission->favorited ? 'Add to' : 'Remove from') . ' your Favorites',
                 'type' => 'submit',
             ]) !!} ・
             {{ $submission->user_comments_count }}

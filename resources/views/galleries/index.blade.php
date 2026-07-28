@@ -53,7 +53,7 @@
                 <div class="card-body">
                     @if ($gallery->submissions_count)
                         <div class="row">
-                            @foreach ($gallery->submissions()->limit(4)->get() as $submission)
+                            @foreach ($gallery->submissions()->withDisplayData(Auth::user() ?? null)->limit(4)->get() as $submission)
                                 <div class="col-md-3 text-center align-self-center">
                                     @include('galleries._thumb', ['submission' => $submission, 'gallery' => true])
                                 </div>
@@ -64,9 +64,9 @@
                         @endif
                     @elseif(
                         $gallery->children_count &&
-                            $gallery->through('children')->has('submissions')->exists())
+                            $gallery->through('children')->has('submissions')->visible()->exists())
                         <div class="row">
-                            @foreach ($gallery->through('children')->has('submissions')->visible()->orderBy('created_at', 'DESC')->limit(4)->get() as $submission)
+                            @foreach ($gallery->through('children')->has('submissions')->visible()->withDisplayData(Auth::user() ?? null)->orderBy('created_at', 'DESC')->limit(4)->get() as $submission)
                                 <div class="col-md-3 text-center align-self-center">
                                     @include('galleries._thumb', ['submission' => $submission, 'gallery' => false])
                                 </div>

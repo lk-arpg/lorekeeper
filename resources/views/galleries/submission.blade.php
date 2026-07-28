@@ -18,11 +18,11 @@
         <div class="float-right">
             @if (Auth::check())
                 {!! Form::open(['url' => '/gallery/favorite/' . $submission->id]) !!}
-                @if ($submission->user->id != Auth::user()->id && !$submission->collaborators->contains('user_id', Auth::user()->id) && $submission->isVisible)
+                @if ($submission->user->id != Auth::user()->id && !$submission->is_collaborator && $submission->isVisible)
                     {!! Form::button('<i class="fas fa-star"></i> ', [
-                        'class' => 'btn ' . (!$submission->favorites->contains('user_id', Auth::user()->id) ? 'btn-outline-primary' : 'btn-primary'),
+                        'class' => 'btn ' . (!$submission->favorited ? 'btn-outline-primary' : 'btn-primary'),
                         'data-toggle' => 'tooltip',
-                        'title' => (!$submission->favorites->contains('user_id', Auth::user()->id) ? 'Add to' : 'Remove from') . ' your Favorites',
+                        'title' => (!$submission->favorited ? 'Add to' : 'Remove from') . ' your Favorites',
                         'type' => 'submit',
                     ]) !!}
                 @endif
@@ -85,13 +85,13 @@
                                 <a class="float-right" href="{{ url('reports/new?url=') . $submission->url }}"><i class="fas fa-exclamation-triangle" data-toggle="tooltip" title="Click here to report this submission." style="opacity: 50%;"></i></a>
                             </h5>
                             <div class="float-right">
-                                @if (Auth::check() && ($submission->user->id != Auth::user()->id && !$submission->collaborators->contains('user_id', Auth::user()->id)) && $submission->isVisible)
+                                @if (Auth::check() && ($submission->user->id != Auth::user()->id && !$submission->is_collaborator) && $submission->isVisible)
                                     {!! Form::open(['url' => '/gallery/favorite/' . $submission->id]) !!}
                                     {{ $submission->favorites_count }} {!! Form::button('<i class="fas fa-star"></i> ', [
                                         'style' => 'border:0; border-radius:.5em;',
-                                        'class' => $submission->favorites->contains('user_id', Auth::user()->id) ? 'btn-success' : '',
+                                        'class' => $submission->favorited ? 'btn-success' : '',
                                         'data-toggle' => 'tooltip',
-                                        'title' => (!$submission->favorites->contains('user_id', Auth::user()->id) ? 'Add to' : 'Remove from') . ' your Favorites',
+                                        'title' => (!$submission->favorited ? 'Add to' : 'Remove from') . ' your Favorites',
                                         'type' => 'submit',
                                     ]) !!} ・ {{ $submission->user_comments_count }} <i class="fas fa-comment"></i>
                                     {!! Form::close() !!}
@@ -133,7 +133,7 @@
                         <h5>Collaborators</h5>
                     </div>
                     <div class="card-body">
-                        @if ($submission->status == 'Pending' && Auth::check() && $submission->collaborators->contains('user_id', Auth::user()->id))
+                        @if ($submission->status == 'Pending' && Auth::check() && $submission->is_collaborator)
                             <p>Check that your role in the collaboration is correct as listed, and if not, make any changes. You can also remove yourself from the collaborator list if necessary. When you are done, or if the record is already accurate,
                                 press "submit" to make any changes and mark yourself as having approved. You will be able to edit this until the submission is approved.</p>
                             {!! Form::open(['url' => '/gallery/collaborator/' . $submission->id]) !!}

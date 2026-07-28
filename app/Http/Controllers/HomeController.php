@@ -28,8 +28,8 @@ class HomeController extends Controller {
      */
     public function getIndex() {
         if (config('lorekeeper.extensions.show_all_recent_submissions.enable')) {
-            $query = GallerySubmission::visible(Auth::check() ? Auth::user() : null)->accepted()->orderBy('created_at', 'DESC');
-            $gallerySubmissions = $query->get()->take(8);
+            $query = GallerySubmission::visible(Auth::user() ?? null)->accepted()->orderBy('created_at', 'DESC');
+            $gallerySubmissions = $query->take(8)->withDisplayData(Auth::user() ?? null)->get();
         } else {
             $gallerySubmissions = [];
         }

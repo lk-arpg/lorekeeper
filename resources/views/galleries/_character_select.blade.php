@@ -1,10 +1,12 @@
 @php
-    $characters = \App\Models\Character\Character::visible(Auth::check() ? Auth::user() : null)
-        ->myo(0)
-        ->orderBy('slug', 'DESC')
-        ->get()
-        ->pluck('fullName', 'slug')
-        ->toArray();
+    if (!isset($characters)) {
+        $characters = \App\Models\Character\Character::visible(Auth::check() ? Auth::user() : null)
+            ->myo(0)
+            ->orderBy('slug', 'DESC')
+            ->get()
+            ->pluck('fullName', 'slug')
+            ->toArray();
+    }
 @endphp
 
 <div id="characterComponents" class="hide">

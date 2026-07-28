@@ -283,8 +283,8 @@ class GallerySubmission extends Model {
      */
     public function scopeWithDisplayData($query, $user = null) {
         return $query->favoritedCount($user)
-        ->collaboratedBy($user)
-        ->withCommentCount();
+            ->collaboratedBy($user)
+            ->withCommentCount();
     }
 
     /**
@@ -302,7 +302,7 @@ class GallerySubmission extends Model {
                 'favorites',
                 'favorites as favorited' => function ($q) use ($user) {
                     $q->where('user_id', $user->id);
-                }
+                },
             ]);
         }
 

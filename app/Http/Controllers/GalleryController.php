@@ -298,7 +298,7 @@ class GalleryController extends Controller {
             'currency'    => Currency::find(Settings::get('group_currency')),
             'galleryPage' => true,
             'sideGallery' => $gallery,
-            'characters' => $characters,
+            'characters'  => $characters,
         ]));
     }
 
@@ -342,7 +342,7 @@ class GalleryController extends Controller {
             'currency'       => Currency::find(Settings::get('group_currency')),
             'galleryPage'    => true,
             'sideGallery'    => $submission->gallery,
-            'characters' => $characters,
+            'characters'     => $characters,
         ]);
     }
 

@@ -4,7 +4,6 @@ namespace App\Models\Gallery;
 
 use App\Models\Model;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Auth;
 
 class Gallery extends Model {
     /**
@@ -106,10 +105,10 @@ class Gallery extends Model {
 
     /**
      * Get the submissions that belong specifically
-     * to children of this gallery. 
+     * to children of this gallery.
      * (This is a builder, not a relation. Just put
-     * up here to be next to the submissions relation.)
-     * 
+     * up here to be next to the submissions relation.).
+     *
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function childSubmissions() {

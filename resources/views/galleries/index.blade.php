@@ -62,8 +62,7 @@
                         @if ($gallery->submissions_count > 4)
                             <div class="text-right"><a href="{{ url('gallery/' . $gallery->id) }}">See More...</a></div>
                         @endif
-                    @elseif(
-                        $gallery->children_count && $gallery->childSubmissions()->exists())
+                    @elseif($gallery->children_count && $gallery->childSubmissions()->exists())
                         <div class="row">
                             @foreach ($gallery->childSubmissions()->with('gallery', 'collaborators', 'participants')->withDisplayData(Auth::user() ?? null)->limit(4)->get() as $submission)
                                 <div class="col-md-3 text-center align-self-center">

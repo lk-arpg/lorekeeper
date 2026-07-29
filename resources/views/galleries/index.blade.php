@@ -43,7 +43,7 @@
                             {{ $gallery->children_count && (isset($gallery->start_at) || isset($gallery->end_at)) ? ' ・ ' : '' }}
                             @if ($gallery->children_count)
                                 Sub-galleries:
-                                @foreach ($gallery->children()->visible()->get() as $child)
+                                @foreach ($gallery->children as $child)
                                     {!! $child->displayName !!}{{ !$loop->last ? ', ' : '' }}
                                 @endforeach
                             @endif
@@ -53,7 +53,7 @@
                 <div class="card-body">
                     @if ($gallery->submissions_count)
                         <div class="row">
-                            @foreach ($gallery->submissions()->withDisplayData(Auth::user() ?? null)->limit(4)->get() as $submission)
+                            @foreach ($gallery->submissions()->with('collaborators', 'participants')->withDisplayData(Auth::user() ?? null)->limit(4)->get() as $submission)
                                 <div class="col-md-3 text-center align-self-center">
                                     @include('galleries._thumb', ['submission' => $submission, 'gallery' => true])
                                 </div>
@@ -63,10 +63,9 @@
                             <div class="text-right"><a href="{{ url('gallery/' . $gallery->id) }}">See More...</a></div>
                         @endif
                     @elseif(
-                        $gallery->children_count &&
-                            $gallery->through('children')->has('submissions')->visible()->exists())
+                        $gallery->children_count && $gallery->childSubmissions()->exists())
                         <div class="row">
-                            @foreach ($gallery->through('children')->has('submissions')->visible()->withDisplayData(Auth::user() ?? null)->orderBy('created_at', 'DESC')->limit(4)->get() as $submission)
+                            @foreach ($gallery->childSubmissions()->with('gallery', 'collaborators', 'participants')->withDisplayData(Auth::user() ?? null)->limit(4)->get() as $submission)
                                 <div class="col-md-3 text-center align-self-center">
                                     @include('galleries._thumb', ['submission' => $submission, 'gallery' => false])
                                 </div>

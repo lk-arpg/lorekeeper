@@ -38,7 +38,12 @@ class GalleryController extends Controller {
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getGalleryIndex() {
-        $galleries = Gallery::whereNull('parent_id')->active()->sort()->with('children')->withCount('submissions', 'children');
+        $galleries = Gallery::whereNull('parent_id')
+            ->active()
+            ->sort()
+            ->with(['children' => function ($q) {
+                $q->visible();
+            }])->withCount('submissions', 'children');
 
         return view('galleries.index', [
             'galleries'       => $galleries->paginate(10),
@@ -100,9 +105,9 @@ class GalleryController extends Controller {
 
         return view('galleries.gallery', [
             'gallery'          => $gallery,
-            'submissions'      => $query->withDisplayData(Auth::user() ?? null)->paginate(20)->appends($request->query()),
+            'submissions'      => $query->with('collaborators', 'participants')->withDisplayData(Auth::user() ?? null)->paginate(20)->appends($request->query()),
             'prompts'          => [0 => 'Any Prompt'] + Prompt::whereIn('id', GallerySubmission::where('gallery_id', $gallery->id)->withOnly('prompt')->visible(Auth::user() ?? null)->whereNotNull('prompt_id')->select('prompt_id')->distinct()->pluck('prompt_id')->toArray())->orderBy('name')->pluck('name', 'id')->toArray(),
-            'childSubmissions' => $gallery->through('children')->has('submissions')->visible()->withDisplayData(Auth::user() ?? null),
+            'childSubmissions' => $gallery->childSubmissions()->with('gallery', 'collaborators', 'participants')->withDisplayData(Auth::user() ?? null)->paginate(20)->appends($request->query()),
             'galleryPage'      => true,
             'sideGallery'      => $gallery,
         ]);
@@ -156,7 +161,7 @@ class GalleryController extends Controller {
         }
 
         return view('galleries.showall', [
-            'submissions' => $query->withDisplayData(Auth::user() ?? null)->paginate(20)->appends($request->query()),
+            'submissions' => $query->with('collaborators', 'participants')->withDisplayData(Auth::user() ?? null)->paginate(20)->appends($request->query()),
             'prompts'     => [0 => 'Any Prompt'] + Prompt::whereIn('id', GallerySubmission::visible(Auth::user() ?? null)->accepted()->withOnly('prompt')->whereNotNull('prompt_id')->pluck('prompt_id')->toArray())->orderBy('name')->pluck('name', 'id')->toArray(),
             'galleryPage' => false,
         ]);

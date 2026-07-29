@@ -4,6 +4,7 @@ namespace App\Models\Gallery;
 
 use App\Models\Model;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class Gallery extends Model {
     /**
@@ -101,6 +102,18 @@ class Gallery extends Model {
      */
     public function submissions() {
         return $this->hasMany(GallerySubmission::class, 'gallery_id')->visible()->orderBy('created_at', 'DESC');
+    }
+
+    /**
+     * Get the submissions that belong specifically
+     * to children of this gallery. 
+     * (This is a builder, not a relation. Just put
+     * up here to be next to the submissions relation.)
+     * 
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function childSubmissions() {
+        return GallerySubmission::whereIn('gallery_id', $this->children->pluck('id'))->visible()->orderBy('created_at', 'DESC');
     }
 
     /**********************************************************************************************

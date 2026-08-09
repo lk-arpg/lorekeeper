@@ -467,7 +467,10 @@ class SubmissionManager extends Service {
             ];
 
             // Distribute user rewards
-            if (!$rewards = fillUserAssets($rewards, $user, $submission->user, $promptLogType, $promptData)) {
+            // $lootRolls keyed by id which is technically unneccessary for submissions,
+            // but is useful for situations where multiple users are receiving rewards and for consistent implementation
+            $lootRolls = [];
+            if (!$rewards = fillUserAssets($rewards, $user, $submission->user, $promptLogType, $promptData, $lootRolls)) {
                 throw new \Exception('Failed to distribute rewards to user.');
             }
 
@@ -507,11 +510,12 @@ class SubmissionManager extends Service {
             $submission->characters()->delete();
 
             // Distribute character rewards
+            $characterLootRolls = [];
             foreach ($characters as $c) {
                 // Users might not pass in clean arrays (may contain redundant data) so we need to clean that up
                 $assets = $this->processRewards($data + ['character_id' => $c->id, 'currencies' => $currencies, 'items' => $items, 'tables' => $tables], true);
 
-                if (!$assets = fillCharacterAssets($assets, $user, $c, $promptLogType, $promptData, $submission->user)) {
+                if (!$assets = fillCharacterAssets($assets, $user, $c, $promptLogType, $promptData, $submission->user, $characterLootRolls)) {
                     throw new \Exception('Failed to distribute rewards to character.');
                 }
 
@@ -545,9 +549,13 @@ class SubmissionManager extends Service {
                 'staff_id'              => $user->id,
                 'status'                => 'Approved',
                 'data'                  => [
-                    'user'                  => $addonData,
-                    'rewards'               => getDataReadyAssets($rewards),
-                    'gallery_submission_id' => $submission->data['gallery_submission_id'] ?? null,
+                    'user'                   => $addonData,
+                    'rewards'                => getDataReadyAssets($rewards),
+                    'gallery_submission_id'  => $submission->data['gallery_submission_id'] ?? null,
+                    'loot_rolls'             => [
+                        'user'       => $lootRolls[$submission->user_id] ?? [],
+                        'characters' => $characterLootRolls,
+                    ],
                 ], // list of rewards
             ]);
 

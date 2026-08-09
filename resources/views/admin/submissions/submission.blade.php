@@ -120,7 +120,14 @@
                 </div>
             @endif
             @foreach ($submission->characters()->whereRelation('character', 'deleted_at', null)->get() as $character)
-                @include('widgets._character_select_entry', ['characterCurrencies' => $characterCurrencies, 'items' => $items, 'tables' => $tables, 'character' => $character, 'expanded_rewards' => $expanded_rewards])
+                @include('widgets._character_select_entry', [
+                    'characterCurrencies' => $characterCurrencies,
+                    'items' => $items,
+                    'tables' => $tables,
+                    'character' => $character,
+                    'expanded_rewards' => $expanded_rewards,
+                    'showLootTables' => true,
+                ])
             @endforeach
         </div>
         <div class="text-right mb-3">

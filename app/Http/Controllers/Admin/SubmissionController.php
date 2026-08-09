@@ -74,6 +74,7 @@ class SubmissionController extends Controller {
         $limit = $prompt->limit;
 
         return view('admin.submissions.submission', [
+            'prompt'           => $prompt,
             'submission'       => $submission,
             'inventory'        => $inventory,
             'rewardsData'      => isset($submission->data['rewards']) ? parseAssetData($submission->data['rewards']) : null,

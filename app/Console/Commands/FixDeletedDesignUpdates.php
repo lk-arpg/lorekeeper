@@ -3,8 +3,6 @@
 namespace App\Console\Commands;
 
 use App\Models\Character\CharacterDesignUpdate;
-use App\Models\Character\CharacterFeature;
-use App\Models\Shop\ShopStockCost;
 use Illuminate\Console\Command;
 
 class FixDeletedDesignUpdates extends Command {

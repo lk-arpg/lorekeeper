@@ -35,18 +35,18 @@ class FixDeletedDesignUpdates extends Command {
     public function handle() {
         $deletedUpdates = CharacterDesignUpdate::onlyTrashed()->get();
 
-        foreach($deletedUpdates as $update) {
-            if($update->rawFeatures->count()) {
+        foreach ($deletedUpdates as $update) {
+            if ($update->rawFeatures->count()) {
                 $update->rawFeatures()->delete();
-                $this->info('Update #'. $update->id . ': Deleted orphaned features');
+                $this->info('Update #'.$update->id.': Deleted orphaned features');
             }
-            if($update->artists->count()) {
+            if ($update->artists->count()) {
                 $update->artists()->delete();
-                $this->info('Update #'. $update->id . ': Deleted orphaned artists');
+                $this->info('Update #'.$update->id.': Deleted orphaned artists');
             }
-            if($update->designers->count()) {
+            if ($update->designers->count()) {
                 $update->designers()->delete();
-                $this->info('Update #'. $update->id . ': Deleted orphaned designers');
+                $this->info('Update #'.$update->id.': Deleted orphaned designers');
             }
         }
 

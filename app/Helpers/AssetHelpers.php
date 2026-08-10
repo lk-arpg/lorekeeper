@@ -548,7 +548,7 @@ function canTradeAsset($type, $asset) {
  *
  * @return array
  */
-function fillCharacterAssets($assets, $sender, $recipient, $logType, $data, $submitter, &$lootRolls = []) {
+function fillCharacterAssets($assets, $sender, $recipient, $logType, $data, $submitter = null, &$lootRolls = []) {
     if (!config('lorekeeper.extensions.character_reward_expansion.default_recipient') && $recipient->user) {
         $item_recipient = $recipient->user;
     } else {

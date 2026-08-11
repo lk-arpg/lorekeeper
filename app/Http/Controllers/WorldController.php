@@ -551,7 +551,7 @@ class WorldController extends Controller {
             $query->with('artist', 'shopStock')->withCount('shopStock');
         }
 
-        $categoryVisibleCheck = ItemCategory::visible(Auth::user() ?? null)->pluck('id', 'name')->toArray();
+        $categoryVisibleCheck = ItemCategory::visible(Auth::check() ? Auth::user() : null)->pluck('id', 'name')->toArray();
         // query where category is visible, or, no category and released
         $query->where(function ($query) use ($categoryVisibleCheck) {
             $query->whereIn('item_category_id', $categoryVisibleCheck)->orWhereNull('item_category_id');

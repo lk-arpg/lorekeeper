@@ -80,6 +80,10 @@
     @endif
 
     @include('feed::links')
+    @if (Auth::check())
+        @include('layouts.user_style_settings')
+    @endif
+
 
     @yield('head')
 </head>

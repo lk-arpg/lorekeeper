@@ -289,7 +289,7 @@ class FeatureService extends Service {
                 }
             }
 
-            $data = $this->populateData($data);
+            $data = $this->populateData($data, $feature);
 
             $image = null;
             if (isset($data['image']) && $data['image']) {

@@ -27,6 +27,10 @@ class RaffleManager extends Service {
      * @return int
      */
     public function addTickets($raffle, $data) {
+        if (!$raffle->is_active) {
+            throw new \Exception('Raffle is not currently active!');
+        }
+
         $count = 0;
         foreach ($data['user_id'] as $key=> $id) {
             if ($user = User::where('id', $id)->first()) {
@@ -53,6 +57,10 @@ class RaffleManager extends Service {
      * @return int
      */
     public function addTicket($user, $raffle, $count = 1) {
+        if (!$raffle->is_active) {
+            throw new \Exception('Raffle is not currently active!');
+        }
+
         if (!$user) {
             return 0;
         } elseif (!$raffle) {
@@ -197,13 +205,8 @@ class RaffleManager extends Service {
 
             $ticketCount--;
 
-            // remove tickets for the same user...I'm unsure how this is going to hold up with 3000 tickets,
-            foreach ($ticketPool as $key=> $ticket) {
-                if (($ticket->user_id != null && $ticket->user_id == $winner->user_id) || ($ticket->user_id == null && $ticket->alias == $winner->alias)) {
-                    $ticketPool->forget($key);
-                }
-            }
-            $ticketPool = $ticketPool->values();
+            // remove tickets for the same user
+            $ticketPool = $ticketPool->whereNotIn('user_id', $winner->user_id)->whereNotIn('alias', $winner->alias)->values();
             $ticketCount = $ticketPool->count();
         }
 

@@ -27,10 +27,6 @@ class RaffleManager extends Service {
      * @return int
      */
     public function addTickets($raffle, $data) {
-        if (!$raffle->is_active) {
-            throw new \Exception('Raffle is not currently active!');
-        }
-
         $count = 0;
         foreach ($data['user_id'] as $key=> $id) {
             if ($user = User::where('id', $id)->first()) {
@@ -57,13 +53,11 @@ class RaffleManager extends Service {
      * @return int
      */
     public function addTicket($user, $raffle, $count = 1) {
-        if (!$raffle->is_active) {
-            throw new \Exception('Raffle is not currently active!');
-        }
-
         if (!$user) {
             return 0;
         } elseif (!$raffle) {
+            return 0;
+        } elseif (!$raffle->is_active) {
             return 0;
         } elseif ($count == 0) {
             return 0;

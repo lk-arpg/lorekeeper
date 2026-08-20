@@ -10,7 +10,7 @@
             @endif
         </h3>
         <div><strong>Displays as:</strong> {!! $currency->display(0) !!}</div>
-        <div><strong>Held by:</strong> <?php echo ucfirst(implode(' and ', ($currency->is_user_owned ? ['users'] : []) + ($currency->is_character_owned ? ['characters'] : []))); ?></div>
+        <div><strong>Held by:</strong> <?php echo implode(' and ', array_merge(($currency->is_user_owned ? ['Users'] : []), ($currency->is_character_owned ? ['Characters'] : []))); ?></div>
         <div class="world-entry-text parsed-text">
             {!! $currency->parsed_description !!}
         </div>

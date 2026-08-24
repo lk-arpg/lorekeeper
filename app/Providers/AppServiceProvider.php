@@ -54,8 +54,13 @@ class AppServiceProvider extends ServiceProvider {
         $this->bootToyhouseSocialite();
 
         // Set custom polymorphic types for rewards and limits dynamically based on asset keys
+
+        // prevent errors if config is not present (due to optimize, etc)
+        $limit_types = config('lorekeeper.limits.limit_types') !== null ? array_keys(config('lorekeeper.limits.limit_types')) : [];
+        $loot_types = config('lorekeeper.loot_types') !== null  ? array_map('strtolower', array_keys(config('lorekeeper.loot_types'))) : [];
+        
         // Merge both kinds of asset arrays, all of the limit types, and all of the loot types into one array
-        $models = array_unique(array_merge(getAssetKeys(), getAssetKeys(true), array_keys(config('lorekeeper.limits.limit_types')), array_map('strtolower', array_keys(config('lorekeeper.loot_types')))));
+        $models = array_unique(array_merge(getAssetKeys(), getAssetKeys(true), $limit_types, $loot_types));
         // Create the initial morph map by feeding the above into getAssetModelString()
         $morphMap = array_combine(array_values($models), array_map('getAssetModelString', array_values($models)));
         // Take all the model strings above and pair them with their class base name

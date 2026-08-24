@@ -57,8 +57,8 @@ class AppServiceProvider extends ServiceProvider {
 
         // prevent errors if config is not present (due to optimize, etc)
         $limit_types = config('lorekeeper.limits.limit_types') !== null ? array_keys(config('lorekeeper.limits.limit_types')) : [];
-        $loot_types = config('lorekeeper.loot_types') !== null  ? array_map('strtolower', array_keys(config('lorekeeper.loot_types'))) : [];
-        
+        $loot_types = config('lorekeeper.loot_types') !== null ? array_map('strtolower', array_keys(config('lorekeeper.loot_types'))) : [];
+
         // Merge both kinds of asset arrays, all of the limit types, and all of the loot types into one array
         $models = array_unique(array_merge(getAssetKeys(), getAssetKeys(true), $limit_types, $loot_types));
         // Create the initial morph map by feeding the above into getAssetModelString()

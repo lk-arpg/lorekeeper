@@ -41,7 +41,7 @@
     {!! Form::hidden('object_id', $object->id) !!}
     <div class="limit">
         <div id="limits">
-            @if ($limits)
+            @if (count($limits))
                 <h5>Limits for {!! $limits->first()->object->displayName !!}</h5>
             @endif
             <div class="row">
@@ -54,7 +54,7 @@
                         <br />
                         The "Yes" option is good for one-time unlocks such as shops, locations, certain prompts, etc.
                     </p>
-                    {!! Form::select('is_unlocked', ['yes' => 'Yes', 'no' => 'No'], $limits?->first()->is_unlocked ? 'yes' : 'no', ['class' => 'form-control']) !!}
+                    {!! Form::select('is_unlocked', [true => 'Yes', false => 'No'], (count($limits) ? $limits->first()->is_unlocked : false), ['class' => 'form-control']) !!}
                 </div>
                 @if (!$hideAutoUnlock)
                     <div class="col-md form-group border-left">
@@ -72,13 +72,13 @@
                             This option is not suitable for objects that should have limits as part of an action workflow, ex. prompt submissions.
                         </div>
                         </p>
-                        {!! Form::select('is_auto_unlocked', ['yes' => 'Yes', 'no' => 'No'], $limits?->first()->is_auto_unlocked ? 'yes' : 'no', ['class' => 'form-control']) !!}
+                        {!! Form::select('is_auto_unlocked', [true => 'Yes', false => 'No'], (count($limits) ? $limits->first()->is_auto_unlocked : false), ['class' => 'form-control']) !!}
                     </div>
                 @else
                     {!! Form::hidden('is_auto_unlocked', 'yes') !!}
                 @endif
             </div>
-            @if ($limits)
+            @if (count($limits))
                 @foreach ($limits as $limit)
                     <div class="row">
                         <div class="col-md-3 form-group">
@@ -104,7 +104,7 @@
                             </div>
                             <div class="form-group debit {{ $limit->limit_type == 'currency' || $limit->limit_type == 'item' ? '' : 'hide' }}">
                                 {!! Form::label('Debit') !!}
-                                {!! Form::select('debit[]', ['yes' => 'Debit', 'no' => 'Don\'t Debit'], $limit->debit ? 'yes' : 'no', ['class' => 'form-control']) !!}
+                                {!! Form::select('debit[]', [true => 'Debit', false => 'Don\'t Debit'], $limit->debit, ['class' => 'form-control']) !!}
                             </div>
                         </div>
                         <div class="col-md-1 d-flex align-items-center">
@@ -115,10 +115,10 @@
             @endif
         </div>
         <div class="btn btn-secondary" id="add-limit">Add Limit</div>
-        @if ($limits)
+        @if (count($limits))
             <i class="fas fa-trash text-danger float-right mt-2 mx-2 fa-2x" data-toggle="tooltip" title="To delete limits, simply remove all existing limits and click 'Edit Limits'"></i>
         @endif
-        {!! Form::submit(($limits ? 'Edit' : 'Create') . ' Limits', ['class' => 'btn btn-primary float-right']) !!}
+        {!! Form::submit((count($limits) ? 'Edit' : 'Create') . ' Limits', ['class' => 'btn btn-primary float-right']) !!}
     </div>
     {!! Form::close() !!}
 </div>
@@ -138,7 +138,7 @@
             </div>
             <div class="form-group hide debit">
                 {!! Form::label('Debit') !!}
-                {!! Form::select('debit[]', ['yes' => 'Debit', 'no' => 'Don\'t Debit'], 'no', ['class' => 'form-control']) !!}
+                {!! Form::select('debit[]', [true => 'Debit', false => 'Don\'t Debit'], false, ['class' => 'form-control']) !!}
             </div>
         </div>
         <div class="col-md-1 d-flex align-items-center">

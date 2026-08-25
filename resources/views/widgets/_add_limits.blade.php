@@ -54,7 +54,7 @@
                         <br />
                         The "Yes" option is good for one-time unlocks such as shops, locations, certain prompts, etc.
                     </p>
-                    {!! Form::select('is_unlocked', [true => 'Yes', false => 'No'], (count($limits) ? $limits->first()->is_unlocked : false), ['class' => 'form-control']) !!}
+                    {!! Form::select('is_unlocked', [true => 'Yes', false => 'No'], count($limits) ? $limits->first()->is_unlocked : false, ['class' => 'form-control']) !!}
                 </div>
                 @if (!$hideAutoUnlock)
                     <div class="col-md form-group border-left">
@@ -72,7 +72,7 @@
                             This option is not suitable for objects that should have limits as part of an action workflow, ex. prompt submissions.
                         </div>
                         </p>
-                        {!! Form::select('is_auto_unlocked', [true => 'Yes', false => 'No'], (count($limits) ? $limits->first()->is_auto_unlocked : false), ['class' => 'form-control']) !!}
+                        {!! Form::select('is_auto_unlocked', [true => 'Yes', false => 'No'], count($limits) ? $limits->first()->is_auto_unlocked : false, ['class' => 'form-control']) !!}
                     </div>
                 @else
                     {!! Form::hidden('is_auto_unlocked', 'yes') !!}

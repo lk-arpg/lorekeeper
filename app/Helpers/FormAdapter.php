@@ -195,6 +195,13 @@ class FormAdapter {
         return $this->mergeOptions($element, $options);
     }
 
+    public function selectRange($name, $min = null, $max = null, $value = null, $options = []) {
+        $range = array_combine($range = range($min, $max), $range);
+        $element = html()->select($name, $range, $value);
+
+        return $this->mergeOptions($element, $options);
+    }
+
     private function mergeOptions($element, $options = []) {
         $newElement = $element;
 

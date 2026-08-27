@@ -54,7 +54,7 @@ return [
     'twitter'    => [
         'full_name'     => 'Twitter',
         'display_name'  => 'twitter',
-        'regex'         => '/twitter\.com\/([A-Za-z0-9_-]+)/',
+        'regex'         => '/(x|twitter)\.com\/([A-Za-z0-9_-]+)/',
         'link'          => 'twitter.com',
         'icon'          => 'fab fa-twitter',
         'auth'          => 0,

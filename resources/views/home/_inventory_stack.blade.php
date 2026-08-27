@@ -197,6 +197,7 @@
 
     @if (!$readOnly && $user && $user->settings->stack_auto_selected)
         var $autoSelectNotice = $('#autoSelectNotice');
+
         function updateAutoSelectNotice() {
             $autoSelectNotice.toggle($('.item-check:checked').length == 0);
         }

@@ -132,10 +132,15 @@
         <div class="form-group row">
             <label class="col-md-2 col-form-label">Setting</label>
             <div class="col-md-10">
-                {!! Form::select('stack_auto_selected', [
-                    '0' => '0: Disabled. You must select a stack yourself.', 
-                    '1' => '1: Enabled. The first stack is used automatically.'
-                ], Auth::user()->settings->stack_auto_selected, ['class' => 'form-control']) !!}
+                {!! Form::select(
+                    'stack_auto_selected',
+                    [
+                        '0' => '0: Disabled. You must select a stack yourself.',
+                        '1' => '1: Enabled. The first stack is used automatically.',
+                    ],
+                    Auth::user()->settings->stack_auto_selected,
+                    ['class' => 'form-control'],
+                ) !!}
             </div>
         </div>
         <div class="text-right">

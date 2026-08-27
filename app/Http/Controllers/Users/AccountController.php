@@ -320,6 +320,25 @@ class AccountController extends Controller {
     }
 
     /**
+     * Changes user inventory stack auto-select setting.
+     *
+     * @param App\Services\UserService $service
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postStackAutoSelect(Request $request, UserService $service) {
+        if ($service->updateStackAutoSelectSetting($request->input('stack_auto_selected'), Auth::user())) {
+            flash('Setting updated successfully.')->success();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
+        }
+
+        return redirect()->back();
+    }
+
+    /**
      * Shows the notifications page.
      *
      * @return \Illuminate\Contracts\Support\Renderable

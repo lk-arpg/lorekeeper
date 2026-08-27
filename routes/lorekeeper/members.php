@@ -39,6 +39,7 @@ Route::group(['prefix' => 'account', 'namespace' => 'Users'], function () {
     Route::post('dob', 'AccountController@postBirthday');
     Route::post('warning', 'AccountController@postWarningVisibility');
     Route::post('comments', 'AccountController@postProfileComments');
+    Route::post('stack-auto-select', 'AccountController@postStackAutoSelect');
 
     Route::get('two-factor/confirm', 'AccountController@getConfirmTwoFactor');
     Route::post('two-factor/enable', 'AccountController@postEnableTwoFactor');

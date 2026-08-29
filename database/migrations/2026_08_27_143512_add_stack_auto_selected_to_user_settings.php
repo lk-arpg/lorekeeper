@@ -10,7 +10,7 @@ return new class extends Migration {
      */
     public function up(): void {
         Schema::table('user_settings', function (Blueprint $table) {
-            $table->boolean('stack_auto_selected')->default(0);
+            $table->boolean('stack_auto_selected')->default(1);
         });
     }
 

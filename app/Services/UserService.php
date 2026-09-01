@@ -339,7 +339,7 @@ class UserService extends Service {
 
         return true;
     }
-  
+
     /**
      * Updates user's inventory stack auto-select setting.
      *

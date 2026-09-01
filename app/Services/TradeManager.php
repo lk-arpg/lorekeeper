@@ -395,7 +395,7 @@ class TradeManager extends Service {
             }
 
             if ($trade->is_sender_trade_confirmed && $trade->is_recipient_trade_confirmed) {
-                if ((!Settings::get('open_trades_queue') || !(Settings::get('open_transfers_queue')) && (isset($trade->data['sender']['characters']) || isset($trade->data['recipient']['characters'])))) {
+                if ( (!Settings::get('open_trades_queue')) && (!isset($trade->data['sender']['characters']) && !isset($trade->data['recipient']['characters'])) || (!Settings::get('open_transfers_queue')) && (isset($trade->data['sender']['characters'])) )  {
                     // Distribute the trade attachments
                     $this->creditAttachments($trade);
 

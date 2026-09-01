@@ -19,6 +19,7 @@ class Kernel extends HttpKernel {
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
         Middleware\TrustProxies::class,
         Middleware\ParsePostRequestFields::class,
+        Middleware\SanitizeEmails::class,
     ];
 
     /**

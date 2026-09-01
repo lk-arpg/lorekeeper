@@ -31,6 +31,15 @@ class Reward extends Model {
     ];
 
     /**
+     * The relationships that should always be loaded.
+     *
+     * @var array
+     */
+    protected $with = [
+        'reward',
+    ];
+
+    /**
      * Validation rules for reward creation.
      *
      * @var array
@@ -67,6 +76,13 @@ class Reward extends Model {
     **********************************************************************************************/
 
     /**
+     * Get the object that this reward is attached to as something that morphMany will accept.
+     */
+    public function rewardable() {
+        return $this->morphTo('rewardable', 'object_model', 'object_id');
+    }
+
+    /**
      * Get the object that this reward is attached to.
      */
     public function object() {
@@ -77,14 +93,7 @@ class Reward extends Model {
      * Get the reward associated with this entry.
      */
     public function reward() {
-        $model = getAssetModelString(strtolower($this->rewardable_type));
-
-        if (!class_exists($model)) {
-            // Laravel requires a relationship instance to be returned (cannot return null), so returning one that doesn't exist here.
-            return $this->belongsTo(self::class, 'id', 'object_id')->whereNull('object_id');
-        }
-
-        return $this->belongsTo($model, 'rewardable_id');
+        return $this->morphTo('reward', 'rewardable_type', 'rewardable_id');
     }
 
     /**********************************************************************************************
@@ -94,20 +103,22 @@ class Reward extends Model {
     **********************************************************************************************/
 
     /**
-     * checks if a certain object has any rewards.
+     * Checks if a certain object has any rewards.
+     * This is kept for backwards compatibility, and forwards to the helper function.
      *
      * @param mixed $object
      */
     public static function hasRewards($object) {
-        return self::where('object_model', get_class($object))->where('object_id', $object->id)->exists();
+        return hasRewards($object);
     }
 
     /**
-     * get the rewards of a certain object.
+     * Get the rewards of a certain object.
+     * This is kept for backwards compatibility, and forwards to the helper function.
      *
      * @param mixed $object
      */
     public static function getRewards($object) {
-        return self::where('object_model', get_class($object))->where('object_id', $object->id)->get();
+        return getRewards($object);
     }
 }

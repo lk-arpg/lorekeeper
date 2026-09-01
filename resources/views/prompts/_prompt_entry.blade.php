@@ -59,7 +59,7 @@
                     </tbody>
                 </table>
             @endif
-            @if (count(getLimits($prompt)))
+            @if ($prompt->limits)
                 <hr />
                 @include('widgets._limits', [
                     'object' => $prompt,

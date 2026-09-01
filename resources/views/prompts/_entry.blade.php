@@ -1,10 +1,10 @@
 <div class="row world-entry">
-    @if ($category->imageUrl)
+    @if ($category->categoryImageUrl)
         <div class="col-md-3 world-entry-image">
-            <a href="{{ $category->imageUrl }}" data-lightbox="entry" data-title="{{ $category->name }}"><img src="{{ $category->imageUrl }}" class="world-entry-image" alt="{{ $category->name }}" /></a>
+            <a href="{{ $category->categoryImageUrl }}" data-lightbox="entry" data-title="{{ $category->name }}"><img src="{{ $category->categoryImageUrl }}" class="world-entry-image" alt="{{ $category->name }}" /></a>
         </div>
     @endif
-    <div class="{{ $category->imageUrl ? 'col-md-9' : 'col-12' }}">
+    <div class="{{ $category->categoryImageUrl ? 'col-md-9' : 'col-12' }}">
         @if (isset($category->edit))
             <x-admin-edit title="{{ $category->edit['title'] }}" :object="$category->edit['object']" />
         @endif

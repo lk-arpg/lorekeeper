@@ -70,11 +70,15 @@
 
         {!! $submissions->render() !!}
     @elseif($childSubmissions->count())
+        {!! $childSubmissions->render() !!}
+
         <div class="d-flex align-content-around flex-wrap mb-2">
-            @foreach ($childSubmissions->orderBy('created_at', 'DESC')->get()->take(20) as $submission)
+            @foreach ($childSubmissions as $submission)
                 @include('galleries._thumb', ['submission' => $submission, 'gallery' => false])
             @endforeach
         </div>
+
+        {!! $childSubmissions->render() !!}
     @else
         <p>No submissions found!</p>
     @endif

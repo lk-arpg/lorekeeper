@@ -362,10 +362,6 @@ class PromptService extends Service {
             unset($data['remove_image']);
         }
 
-        if (!isset($data['limit_character'])) {
-            $data['limit_character'] = null;
-        }
-
         return $data;
     }
 
@@ -401,6 +397,10 @@ class PromptService extends Service {
                 $this->deleteImage($prompt->imagePath, $prompt->imageFileName);
             }
             unset($data['remove_image']);
+        }
+
+        if (!isset($data['limit_character'])) {
+            $data['limit_character'] = null;
         }
 
         return $data;

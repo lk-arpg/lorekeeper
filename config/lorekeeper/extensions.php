@@ -97,7 +97,7 @@ return [
     // Previous & Next buttons on Character pages - Speedy
     // Adds buttons linking to the previous character as well as the next character on all character pages.
     'previous_and_next_characters' => [
-        'display' => 0,
+        'display' => 1,
         'reverse' => 0, // By default, 0 has the lower number on the 'Next' side and the higher number on the 'Previous' side, reflecting the default masterlist order. Setting this to 1 reverses this.
     ],
 
@@ -140,6 +140,12 @@ return [
 
     // Unmerge Item Page and Item Entry - Speedy
     'unmerge_item_page_and_entry' => 0, // If enabled, uses the html on world/item_page.blade.php instead of the include that links to world/_item_entry.blade.php
+
+    // Item Tag Tooltips - Min
+    'item_tag_tooltips' => 0, // If enabled, item tag badges & items show a tooltip with the tag's description. Tags without a description will not show a tooltip.
+
+    // Unmerge Trait Page and Trait Entry - Speedy
+    'unmerge_feature_page_and_entry' => 0, // If enabled, uses the html on world/feature_page.blade.php instead of the include that links to world/_feature_entry.blade.php
 
     // Show Species-only traits in dropdown - Speedy
     'show_exclusively_species_traits_in_dropdown' => 0, // If enabled, will only show traits from the associated species as well as traits that aren't species-limited in the dropdown menus.

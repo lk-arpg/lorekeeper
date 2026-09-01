@@ -51,7 +51,6 @@
     </div>
     <table>
         <tr class="character-reward-row">
-
             @if ($expanded_rewards)
                 <td>
                     {!! Form::select('character_rewardable_type[]', ['Item' => 'Item', 'Currency' => 'Currency'] + (isset($showLootTables) && $showLootTables ? ['LootTable' => 'Loot Table'] : []), null, [

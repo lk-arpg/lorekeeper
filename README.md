@@ -23,54 +23,20 @@ Lorekeeper is a framework for managing deviantART-based ARPGs/closed species mas
 
 # Setup
 
-Important: For those who are not familiar with web dev, please refer to the [Wiki](http://wiki.lorekeeper.me/index.php?title=Tutorial:_Setting_Up) for a much more detailed set of instructions!!
+Please refer to the [Wiki](http://wiki.lorekeeper.me/index.php?title=Tutorial:_Setting_Up) for a detailed set of instructions.
 
-## Obtain a copy of the code
+# AI Policy
 
-```
-$ git clone https://github.com/corowne/lorekeeper.git
-```
-
-## Configure .env in the directory
-
-```
-$ cp .env.example .env
-```
-
-Client ID and secret for at least one supported social media platform are required for this step. See [the Wiki](http://wiki.lorekeeper.me/index.php?title=Category:Social_Media_Authentication) for platform-specific instructions.
-
-Add the following to .env, filling them in as required (also fill in the rest of .env where relevant):
-```
-CONTACT_ADDRESS=(contact email address)
-DEVIANTART_ACCOUNT=(username of ARPG group account)
-```
-
-## Setting up
-
-Composer install:
-```
-$ composer install
-```
-
-Generate app key and run database migrations:
-```
-$ php artisan key:generate 
-$ php artisan migrate
-```
-
-Add basic site data:
-```
-$ php artisan add-site-settings
-$ php artisan add-text-pages
-$ php artisan copy-default-images
-```
-
-Finally, set up the admin account for logging in:
-```
-$ php artisan setup-admin-user
-```
-
-You will need to send yourself the verification email and then link your social media account as prompted.
+- **Lorekeeper maintains a strict no-GenAI policy.** This includes tools such as Claude, Copilot, ChatGPT, and other GenAI/LLM-powered tools.
+- Our community is an AI-hostile environment. Projects with AI features or developers who use AI at any point in their development process are not welcome. 
+    - What is considered "using AI in the development process" includes, but is not limited to:
+        - Code reviews with AI
+        - Fixing bugs with AI
+        - Analyzing/explaining errors with AI
+        - Writing documentation/text with AI
+        - Creating new code features with AI
+        - Generating visual assets with AI
+- **Contributions/PRs that include AI generated code will not be accepted.** While we have no explicit control over third party extensions, extensions found to be using AI generated code are not allowed to be advertised within our community. Any extensions found to be using AI generated code will be removed from the Wiki and Discord release channels.
 
 ## Contact
 

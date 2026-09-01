@@ -339,6 +339,29 @@ class UserService extends Service {
 
         return true;
     }
+  
+    /**
+     * Updates user's inventory stack auto-select setting.
+     *
+     * @param mixed $data
+     * @param mixed $user
+     *
+     * @return bool
+     */
+    public function updateStackAutoSelectSetting($data, $user) {
+        DB::beginTransaction();
+
+        try {
+            $user->settings->stack_auto_selected = $data ?? 0;
+            $user->settings->save();
+
+            return $this->commitReturn(true);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
+    }
 
     /**
      * Updates the user's avatar.

@@ -87,7 +87,10 @@ class AccountController extends Controller {
      */
     public function postAvatar(Request $request, UserService $service) {
         $request->validate(User::$avatarUpdateRules);
-        if ($service->updateAvatar($request->file('avatar'), Auth::user())) {
+        $data = $request->only([
+            'avatar', 'x0', 'x1', 'y0', 'y1',
+        ]);
+        if ($service->updateAvatar($data, Auth::user())) {
             flash('Avatar updated successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
@@ -325,6 +328,25 @@ class AccountController extends Controller {
      */
     public function postAdminNotificationSettings(Request $request, UserService $service) {
         if ($service->updateAdminNotificationSettings($request->only(['admin_notifs', 'admin_notifs_nr_size']), Auth::user())) {
+            flash('Setting updated successfully.')->success();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
+        }
+
+        return redirect()->back();
+    }
+
+    /**
+     * Changes user inventory stack auto-select setting.
+     *
+     * @param App\Services\UserService $service
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postStackAutoSelect(Request $request, UserService $service) {
+        if ($service->updateStackAutoSelectSetting($request->input('stack_auto_selected'), Auth::user())) {
             flash('Setting updated successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {

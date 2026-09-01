@@ -117,6 +117,7 @@ Route::group(['prefix' => 'world'], function () {
     Route::get('items/{id}', 'WorldController@getItem');
     Route::get('trait-categories', 'WorldController@getFeatureCategories');
     Route::get('traits', 'WorldController@getFeatures');
+    Route::get('traits/{id}', 'WorldController@getFeature');
     Route::get('traits/modal/{id}', 'WorldController@getFeatureDetail')->where(['id' => '[0-9]+']);
     Route::get('character-categories', 'WorldController@getCharacterCategories');
 });

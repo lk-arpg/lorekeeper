@@ -2,16 +2,16 @@
     @if ($extPrevAndNextBtns['prevCharName'] || $extPrevAndNextBtns['nextCharName'])
         <div class="row mb-4">
             @if ($extPrevAndNextBtns['prevCharName'])
-                <div class="col text-left float-left">
+                <div class="col text-left mb-2 mb-md-0">
                     <a class="btn btn-outline-success text-success" href="{{ $extPrevAndNextBtns['prevCharUrl'] }}{!! $extPrevAndNextBtnsUrl !!}">
-                        <i class="fas fa-angle-double-left"></i> Previous Character ・ <span class="text-primary">{!! $extPrevAndNextBtns['prevCharName'] !!}</span>
+                        <i class="fas fa-angle-double-left"></i> Previous Character ・ <span class="text-primary text-break text-wrap">{!! $extPrevAndNextBtns['prevCharName'] !!}</span>
                     </a>
                 </div>
             @endif
             @if ($extPrevAndNextBtns['nextCharName'])
-                <div class="col text-right float-right">
+                <div class="col text-right">
                     <a class="btn btn-outline-success text-success" href="{{ $extPrevAndNextBtns['nextCharUrl'] }}{!! $extPrevAndNextBtnsUrl !!}">
-                        <span class="text-primary">{!! $extPrevAndNextBtns['nextCharName'] !!}</span> ・ Next Character <i class="fas fa-angle-double-right"></i><br />
+                        <span class="text-primary text-break text-wrap">{!! $extPrevAndNextBtns['nextCharName'] !!}</span> ・ Next Character <i class="fas fa-angle-double-right"></i><br />
                     </a>
                 </div>
             @endif

@@ -459,10 +459,6 @@ main > .row {
     padding: .75rem 1.25rem;
     border-top: 1px solid rgba(0,0,0,0.1);
 }
-.text-break {
-    overflow-wrap: break-word;
-    word-break: break-word;
-}
 .small-icon {
     height: 2rem;
     padding-right: .5rem;

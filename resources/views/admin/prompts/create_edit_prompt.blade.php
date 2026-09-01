@@ -97,9 +97,7 @@
         <div class="card-body">
             <h3>Submission Limits</h3>
             <p>Limit the number of times a user can submit. Leave blank to allow endless submissions.</p>
-            <p>Set a number into number of submissions. This will be applied for all time if you leave period blank, or per time period (ex: once a month, twice a week) if selected.</p>
-            <p>If you turn 'per character' on, then the number of submissions multiplies per character (ex: if you can submit twice a month per character and you own three characters, that's 6 submissions) HOWEVER it will not keep track of which
-                characters are being submitted due to conflicts arising in character cameos. A user will be able to submit those full 6 times with just one character...!</p>
+            <p><strong>Setting a number will allow to a user to submit that many times to this prompt.</strong> This will be applied for all time if you leave period blank, or per time period (ex: once a month, twice a week) if selected.</p>
             <div class="row">
                 <div class="col-md-6 form-group">
                     {!! Form::label('limit', 'Number of Submissions (Optional)') !!} {!! add_help('Enter a number to limit how many times a user can submit. Leave blank to allow endless submissions.') !!}
@@ -110,9 +108,16 @@
                     {!! Form::select('limit_period', $limit_periods, $prompt->limit_period, ['class' => 'form-control', 'data-name' => 'limit_period']) !!}
                 </div>
             </div>
+            <div class="alert alert-info">
+                <strong>If you turn 'per character' on, then a user will be able to submit that many times per character.</strong> On submissions with multiple characters, it will check for the number of times <em>any</em> of those characters have been
+                attached to a submission.
+                <br />
+                <br />
+                For example: If Character A is in 1 submission and Character B is in 2 submissions, then the "previous submission count" on a submission with <em>both</em> characters will total 3.
+            </div>
             <div class="form-group">
                 {!! Form::checkbox('limit_character', 1, $prompt->limit_character, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
-                {!! Form::label('limit_character', 'Per Character', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If turned on, they can submit once per character they own on the masterlist.') !!}
+                {!! Form::label('limit_character', 'Per Character', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If turned on, the limit will apply per attached character, rather than per user.') !!}
             </div>
         </div>
     </div>

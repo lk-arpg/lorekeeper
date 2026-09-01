@@ -11,7 +11,7 @@ return new class extends Migration {
     public function up(): void {
         //
         Schema::table('submissions', function (Blueprint $table) {
-            $table->json('data')->change();
+            $table->json('data')->nullable()->default(null)->change();
         });
     }
 
@@ -21,7 +21,7 @@ return new class extends Migration {
     public function down(): void {
         //
         Schema::table('submissions', function (Blueprint $table) {
-            $table->string('data')->change();
+            $table->string('data')->nullable()->default(null)->change();
         });
     }
 };

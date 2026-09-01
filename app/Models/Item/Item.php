@@ -194,7 +194,33 @@ class Item extends Model {
      * @return string
      */
     public function getDisplayNameAttribute() {
-        return '<a href="'.$this->idUrl.'" class="display-item">'.$this->name.'</a>';
+        return '<a href="'.$this->idUrl.'" class="display-item">'.$this->name.'</a>'.$this->tagTooltip;
+    }
+
+    /**
+     * Builds a help-icon tooltip listing the item's active tags and their descriptions.
+     *
+     * @return string
+     */
+    public function getTagTooltipAttribute() {
+        if (!config('lorekeeper.extensions.item_tag_tooltips')) {
+            return null;
+        }
+
+        $lines = [];
+        foreach ($this->tags->where('is_active', 1) as $t) {
+            $description = config('lorekeeper.item_tags.'.$t->tag.'.description');
+            if (!$description) {
+                continue;
+            }
+            $lines[] = $t->displayTagTooltip.' '.$description;
+        }
+
+        if (empty($lines)) {
+            return null;
+        }
+
+        return add_help(implode('<br>', $lines));
     }
 
     /**

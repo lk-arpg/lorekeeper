@@ -327,6 +327,20 @@ class UserService extends Service {
     }
 
     /**
+     * Updates user's admin notifications visibility settings.
+     *
+     * @param mixed $data
+     * @param mixed $user
+     */
+    public function updateAdminNotificationSettings($data, $user) {
+        $user->settings->admin_notifs = $data['admin_notifs'];
+        $user->settings->admin_notifs_nr_size = $data['admin_notifs_nr_size'];
+        $user->settings->save();
+
+        return true;
+    }
+
+    /**
      * Updates user's inventory stack auto-select setting.
      *
      * @param mixed $data

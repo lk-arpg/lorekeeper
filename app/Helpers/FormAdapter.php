@@ -23,17 +23,25 @@ class FormAdapter {
     public function open(array $options = []) {
         $method = array_key_exists('method', $options) ? $options['method'] : 'POST';
         $route = array_key_exists('route', $options) ? $options['route'] : '';
+        $url = array_key_exists('url', $options) ? $options['url'] : null;
+        $action = array_key_exists('action', $options) ? $options['action'] : null;
         $files = array_key_exists('files', $options) ? $options['files'] : false;
 
-        unset($options['method'], $options['route'], $options['files']);
+        unset($options['method'], $options['route'], $options['url'], $options['action'], $options['files']);
 
         $form = html();
 
-        if (is_array($route) && count($route)) {
+        if ($url !== null) {
+            $url = is_array($url) ? url(array_shift($url), $url) : url($url);
+            $form = $form->form($method, $url);
+        } elseif (is_array($route) && count($route)) {
             $action = array_shift($route);
             $form = $form->form($method, route($action, $route));
         } elseif ($route != null && $route != [] && $route != '') {
             $form = $form->form($method, route($route));
+        } elseif ($action !== null) {
+            $action = is_array($action) ? action(array_shift($action), $action) : action($action);
+            $form = $form->form($method, $action);
         } else {
             $form = $form->form($method);
         }
@@ -72,6 +80,8 @@ class FormAdapter {
         array $optionsAttributes = [],
         array $optgroupsAttributes = []
     ) {
+        $list = $this->normalizeSelectOptions($list);
+
         if (isset($selectAttributes['multiple']) || in_array('multiple', $selectAttributes)) {
             $element = html()->select($name, $list, $selected)->multiple();
         } else {
@@ -200,6 +210,32 @@ class FormAdapter {
         $element = html()->select($name, $range, $value);
 
         return $this->mergeOptions($element, $options);
+    }
+
+    private function normalizeSelectOptions($options) {
+        if ($options instanceof \Traversable) {
+            $options = iterator_to_array($options);
+        }
+
+        if (!is_array($options)) {
+            return $options;
+        }
+
+        $normalized = [];
+        foreach ($options as $value => $display) {
+            if (is_int($value) && is_iterable($display)) {
+                $group = $display instanceof \Traversable ? iterator_to_array($display) : $display;
+
+                if (count($group) === 1 && is_iterable(reset($group))) {
+                    $normalized += $group;
+                    continue;
+                }
+            }
+
+            $normalized[$value] = $display;
+        }
+
+        return $normalized;
     }
 
     private function mergeOptions($element, $options = []) {

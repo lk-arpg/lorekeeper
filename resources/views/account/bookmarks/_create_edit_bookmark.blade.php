@@ -27,6 +27,10 @@
     </div>
 </div>
 <div class="form-group">
+    {!! Form::label('folder_id', 'Folder (Optional)') !!}
+    {!! Form::select('folder_id', $folders->pluck('name', 'id')->toArray(), $bookmark->folder_id, ['class' => 'form-control', 'placeholder' => '(No Folder)']) !!}
+</div>
+<div class="form-group">
     {!! Form::label('comment', 'Comment (Optional)') !!} {!! add_help('HTML will not be rendered. Newlines will be honoured.') !!}
     {!! Form::textarea('comment', $bookmark->comment, ['class' => 'form-control', 'maxLength' => 500]) !!}
 </div>

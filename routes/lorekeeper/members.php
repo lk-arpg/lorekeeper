@@ -57,6 +57,13 @@ Route::group(['prefix' => 'account', 'namespace' => 'Users'], function () {
     Route::post('bookmarks/edit/{id}', 'BookmarkController@postCreateEditBookmark');
     Route::get('bookmarks/delete/{id}', 'BookmarkController@getDeleteBookmark');
     Route::post('bookmarks/delete/{id}', 'BookmarkController@postDeleteBookmark');
+    Route::get('bookmarks/reorder', 'BookmarkController@getReorderBookmarks');
+    Route::post('bookmarks/sort', 'BookmarkController@postSortBookmarks');
+    Route::get('bookmarks/folders', 'BookmarkController@getManageFolders');
+    Route::post('bookmarks/folders/new', 'BookmarkController@postCreateFolder');
+    Route::post('bookmarks/folders/edit/{id}', 'BookmarkController@postEditFolder');
+    Route::post('bookmarks/folders/delete/{id}', 'BookmarkController@postDeleteFolder');
+    Route::post('bookmarks/folders/sort', 'BookmarkController@postSortFolders');
 });
 
 Route::group(['prefix' => 'inventory', 'namespace' => 'Users'], function () {

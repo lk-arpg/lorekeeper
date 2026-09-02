@@ -4,6 +4,7 @@ namespace App\Models\User;
 
 use App\Models\Character\Character;
 use App\Models\Character\CharacterBookmark;
+use App\Models\Character\CharacterBookmarkFolder;
 use App\Models\Character\CharacterImageCreator;
 use App\Models\Comment\CommentLike;
 use App\Models\Currency\Currency;
@@ -221,6 +222,13 @@ class User extends Authenticatable implements MustVerifyEmail {
      */
     public function bookmarks() {
         return $this->hasMany(CharacterBookmark::class)->where('user_id', $this->id);
+    }
+
+    /**
+     * Get all of the user's bookmark folders, in display order.
+     */
+    public function bookmarkFolders() {
+        return $this->hasMany(CharacterBookmarkFolder::class)->orderBy('sort', 'asc');
     }
 
     /**

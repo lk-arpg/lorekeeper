@@ -22,6 +22,19 @@ function set_active($path, $class = 'active') {
 }
 
 /**
+ * Get the day name for a given day number.
+ *
+ * @param int $day
+ *
+ * @return string
+ */
+function get_day_name($day) {
+    $days = [0 => 'Sunday', 1 => 'Monday', 2 => 'Tuesday', 3 => 'Wednesday', 4 => 'Thursday', 5 => 'Friday', 6 => 'Saturday'];
+
+    return $days[$day] ?? 'Unknown';
+}
+
+/**
  * Adds a help icon with a tooltip.
  *
  * @param string $text

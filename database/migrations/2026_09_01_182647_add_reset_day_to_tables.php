@@ -7,8 +7,6 @@ use Illuminate\Support\Facades\Schema;
 class AddResetDayToTables extends Migration {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
     public function up() {
         // Add reset_day to prompts table
@@ -19,8 +17,6 @@ class AddResetDayToTables extends Migration {
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
     public function down() {
         // Remove reset_day from prompts table

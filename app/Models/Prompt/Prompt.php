@@ -2,12 +2,12 @@
 
 namespace App\Models\Prompt;
 
+use App\Facades\Settings;
 use App\Models\Model;
 use App\Models\Submission\Submission;
 use App\Traits\Limitable;
 use App\Traits\Rewardable;
 use Carbon\Carbon;
-use App\Facades\Settings;
 
 class Prompt extends Model {
     use Limitable, Rewardable;
@@ -21,7 +21,7 @@ class Prompt extends Model {
         'prompt_category_id', 'name', 'summary', 'description', 'parsed_description', 'is_active',
         'start_at', 'end_at', 'hide_before_start', 'hide_after_end', 'has_image', 'prefix',
         'hide_submissions', 'staff_only', 'hash',
-        'limit', 'limit_period', 'limit_character', 'reset_day'
+        'limit', 'limit_period', 'limit_character', 'reset_day',
     ];
 
     /**

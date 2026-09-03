@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Admin\Data;
 
+use App\Facades\Settings;
 use App\Http\Controllers\Controller;
 use App\Models\Prompt\Prompt;
 use App\Models\Prompt\PromptCategory;
 use App\Services\PromptService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Facades\Settings;
 
 class PromptController extends Controller {
     /*
@@ -80,7 +80,7 @@ class PromptController extends Controller {
         } elseif (!$id && $category = $service->createPromptCategory($data, Auth::user())) {
             flash('Category created successfully.')->success();
 
-            return redirect()->to('admin/data/prompt-categories/edit/' . $category->id);
+            return redirect()->to('admin/data/prompt-categories/edit/'.$category->id);
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();
@@ -166,7 +166,7 @@ class PromptController extends Controller {
             }
         }
         if (isset($data['name'])) {
-            $query->where('name', 'LIKE', '%' . $data['name'] . '%');
+            $query->where('name', 'LIKE', '%'.$data['name'].'%');
         }
 
         if (isset($data['open_prompts'])) {
@@ -234,7 +234,7 @@ class PromptController extends Controller {
             'prompt'        => new Prompt,
             'categories'    => ['none' => 'No category'] + PromptCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'limit_periods' => config('lorekeeper.extensions.limit_periods'),
-            'reset_days'    => ['' => 'Default (' . get_day_name(Settings::get('weekly_reset_day') ?? 1) . ')', 0 => 'Sunday', 1 => 'Monday', 2 => 'Tuesday', 3 => 'Wednesday', 4 => 'Thursday', 5 => 'Friday', 6 => 'Saturday'],
+            'reset_days'    => ['' => 'Default ('.get_day_name(Settings::get('weekly_reset_day') ?? 1).')', 0 => 'Sunday', 1 => 'Monday', 2 => 'Tuesday', 3 => 'Wednesday', 4 => 'Thursday', 5 => 'Friday', 6 => 'Saturday'],
         ]);
     }
 
@@ -255,7 +255,7 @@ class PromptController extends Controller {
             'prompt'        => $prompt,
             'categories'    => ['none' => 'No category'] + PromptCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'limit_periods' => config('lorekeeper.extensions.limit_periods'),
-            'reset_days'    => ['' => 'Default (' . get_day_name(Settings::get('weekly_reset_day') ?? 1) . ')', 0 => 'Sunday', 1 => 'Monday', 2 => 'Tuesday', 3 => 'Wednesday', 4 => 'Thursday', 5 => 'Friday', 6 => 'Saturday'],
+            'reset_days'    => ['' => 'Default ('.get_day_name(Settings::get('weekly_reset_day') ?? 1).')', 0 => 'Sunday', 1 => 'Monday', 2 => 'Tuesday', 3 => 'Wednesday', 4 => 'Thursday', 5 => 'Friday', 6 => 'Saturday'],
         ]);
     }
 
@@ -272,14 +272,14 @@ class PromptController extends Controller {
         $data = $request->only([
             'name', 'prompt_category_id', 'summary', 'description', 'start_at', 'end_at', 'hide_before_start', 'hide_after_end', 'is_active', 'image', 'remove_image', 'prefix', 'hide_submissions', 'staff_only',
             'rewardable_type', 'rewardable_id', 'quantity', 'rewardable_recipient',
-            'limit', 'limit_period', 'limit_character', 'reset_day'
+            'limit', 'limit_period', 'limit_character', 'reset_day',
         ]);
         if ($id && $service->updatePrompt(Prompt::find($id), $data, Auth::user())) {
             flash('Prompt updated successfully.')->success();
         } elseif (!$id && $prompt = $service->createPrompt($data, Auth::user())) {
             flash('Prompt created successfully.')->success();
 
-            return redirect()->to('admin/data/prompts/edit/' . $prompt->id);
+            return redirect()->to('admin/data/prompts/edit/'.$prompt->id);
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();

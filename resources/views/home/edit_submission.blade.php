@@ -185,7 +185,50 @@
                     $submissionForm.submit();
                 });
 
+                $('.add-calc').on('click', function(e) {
+                    e.preventDefault();
+                    var clone = $('#copy-calc').clone();
+                    clone.removeClass('hide');
+                    var input = clone.find('[name*=criterion]');
+                    var count = $('.criterion-select').length;
+                    input.attr('name', input.attr('name').replace('#', count))
+                    clone.find('.criterion-select').on('change', loadForm);
+                    clone.find('.delete-calc').on('click', deleteCriterion);
+                    clone.removeAttr('id');
+                    $('#criteria').append(clone);
+                });
 
+                $('.delete-calc').on('click', deleteCriterion);
+
+                function deleteCriterion(e) {
+                    e.preventDefault();
+                    var toDelete = $(this).closest('.card');
+                    toDelete.remove();
+                }
+
+                function loadForm(e) {
+                    var id = $(this).val();
+                    var $prompt = $('#prompt');
+                    var promptId = $prompt.val();
+                    var formId = $(this).attr('name').split('[')[1].replace(']', '');
+
+                    if (id) {
+                        var form = $(this).closest('.card').find('.form');
+                        form.load("{{ url('criteria/prompt') }}/" + id + "/" + promptId + "/" + formId, (response, status, xhr) => {
+                            if (status == "error") {
+                                var msg = "Error: ";
+                                console.error(msg + xhr.status + " " + xhr.statusText);
+                            } else {
+                                form.find('[data-toggle=tooltip]').tooltip({
+                                    html: true
+                                });
+                                form.find('[data-toggle=toggle]').bootstrapToggle();
+                            }
+                        });
+                    }
+                }
+
+                $('.criterion-select').on('change', loadForm);
             });
         </script>
     @endif

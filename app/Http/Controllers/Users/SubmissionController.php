@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Users;
 use App\Facades\Settings;
 use App\Http\Controllers\Controller;
 use App\Models\Character\Character;
+use App\Models\Criteria\Criterion;
 use App\Models\Currency\Currency;
 use App\Models\Gallery\GalleryCollaborator;
 use App\Models\Gallery\GallerySubmission;
 use App\Models\Item\Item;
 use App\Models\Item\ItemCategory;
 use App\Models\Prompt\Prompt;
+use App\Models\Prompt\PromptCriterion;
 use App\Models\Raffle\Raffle;
 use App\Models\Submission\Submission;
 use App\Models\User\User;
@@ -109,22 +111,34 @@ class SubmissionController extends Controller {
             ];
         });
 
+        $prompt = $request->get('prompt_id');
+        $criteria = $prompt ? PromptCriterion::where('prompt_id', $prompt)->get() : null;
+        if ($criteria) {
+            $promptCriteria = $criteria->where('characterCriteria', '=', false)->pluck('criterion_id')->toArray();
+            $characterCriteria = $criteria->where('characterCriteria', '=', true)->pluck('criterion_id')->toArray();
+        } else {
+            $promptCriteria = [];
+            $characterCriteria = [];
+        }
+
         return view('home.create_submission', [
             'closed'  => $closed,
             'isClaim' => false,
         ] + ($closed ? [] : [
-            'submission'             => new Submission,
-            'prompts'                => Prompt::active()->sortAlphabetical()->pluck('name', 'id')->toArray(),
-            'characterCurrencies'    => Currency::where('is_character_owned', 1)->orderBy('sort_character', 'DESC')->pluck('name', 'id'),
-            'categories'             => ItemCategory::visible(Auth::user() ?? null)->orderBy('sort', 'DESC')->get(),
-            'item_filter'            => $item_filter,
-            'items'                  => Item::orderBy('name')->released()->pluck('name', 'id'),
-            'character_items'        => Item::whereIn('item_category_id', ItemCategory::where('is_character_owned', 1)->pluck('id')->toArray())->orderBy('name')->released()->pluck('name', 'id'),
-            'currencies'             => Currency::where('is_user_owned', 1)->orderBy('name')->pluck('name', 'id'),
-            'inventory'              => $inventory,
-            'page'                   => 'submission',
-            'expanded_rewards'       => config('lorekeeper.extensions.character_reward_expansion.expanded'),
-            'userGallerySubmissions' => $gallerySubmissions,
+            'submission'                   => new Submission,
+            'prompts'                      => Prompt::active()->sortAlphabetical()->pluck('name', 'id')->toArray(),
+            'characterCurrencies'          => Currency::where('is_character_owned', 1)->orderBy('sort_character', 'DESC')->pluck('name', 'id'),
+            'categories'                   => ItemCategory::visible(Auth::user() ?? null)->orderBy('sort', 'DESC')->get(),
+            'item_filter'                  => $item_filter,
+            'items'                        => Item::orderBy('name')->released()->pluck('name', 'id'),
+            'character_items'              => Item::whereIn('item_category_id', ItemCategory::where('is_character_owned', 1)->pluck('id')->toArray())->orderBy('name')->released()->pluck('name', 'id'),
+            'currencies'                   => Currency::where('is_user_owned', 1)->orderBy('name')->pluck('name', 'id'),
+            'inventory'                    => $inventory,
+            'page'                         => 'submission',
+            'expanded_rewards'             => config('lorekeeper.extensions.character_reward_expansion.expanded'),
+            'userGallerySubmissions'       => $gallerySubmissions,
+            'criteria'                     => $prompt ? Criterion::active()->whereIn('id', $promptCriteria)->orderBy('name')->pluck('name', 'id') : null,
+            'characterCriteria'            => $prompt ? Criterion::active()->whereIn('id', $characterCriteria)->orderBy('name')->pluck('name', 'id') : null,
         ]));
     }
 
@@ -162,12 +176,14 @@ class SubmissionController extends Controller {
         });
 
         $prompt = $submission->prompt;
-        $count['all'] = Submission::submitted($prompt->id, Auth::user()->id)->count();
-        $count['Hour'] = Submission::submitted($prompt->id, Auth::user()->id)->where('created_at', '>=', now()->startOfHour())->count();
-        $count['Day'] = Submission::submitted($prompt->id, Auth::user()->id)->where('created_at', '>=', now()->startOfDay())->count();
-        $count['Week'] = Submission::submitted($prompt->id, Auth::user()->id)->where('created_at', '>=', now()->startOfWeek())->count();
-        $count['Month'] = Submission::submitted($prompt->id, Auth::user()->id)->where('created_at', '>=', now()->startOfMonth())->count();
-        $count['Year'] = Submission::submitted($prompt->id, Auth::user()->id)->where('created_at', '>=', now()->startOfYear())->count();
+        $criteria = PromptCriterion::where('prompt_id', $submission->prompt_id)->get();
+        if ($criteria) {
+            $promptCriteria = $criteria->where('characterCriteria', '=', false)->pluck('criterion_id')->toArray();
+            $characterCriteria = $criteria->where('characterCriteria', '=', true)->pluck('criterion_id')->toArray();
+        } else {
+            $promptCriteria = [];
+            $characterCriteria = [];
+        }
 
         return view('home.edit_submission', [
             'closed'              => $closed,
@@ -185,8 +201,10 @@ class SubmissionController extends Controller {
             'page'                   => 'submission',
             'expanded_rewards'       => config('lorekeeper.extensions.character_reward_expansion.expanded'),
             'selectedInventory'      => isset($submission->data['user']) ? parseAssetData($submission->data['user']) : null,
-            'count'                  => $count,
+            'count'                  => $prompt->getCount(Auth::user()),
             'userGallerySubmissions' => $gallerySubmissions,
+            'criteria'               => Criterion::active()->whereIn('id', $promptCriteria)->orderBy('name')->pluck('name', 'id'),
+            'characterCriteria'      => Criterion::active()->whereIn('id', $characterCriteria)->orderBy('name')->pluck('name', 'id'),
         ]));
     }
 
@@ -263,7 +281,7 @@ class SubmissionController extends Controller {
             $request->only([
                 'url', 'prompt_id', 'comments', 'slug', 'character_rewardable_type', 'character_rewardable_id', 'character_rewardable_quantity',
                 'rewardable_type', 'rewardable_id', 'quantity', 'stack_id', 'stack_quantity', 'currency_id', 'currency_quantity',
-                'gallery_submission_id',
+                'gallery_submission_id', 'criterion_id', 'criterion', 'character_criterion',
             ]),
             Auth::user(),
             false,
@@ -309,12 +327,14 @@ class SubmissionController extends Controller {
             'url', 'prompt_id', 'comments', 'slug', 'character_rewardable_type', 'character_rewardable_id', 'character_rewardable_quantity',
             'rewardable_type', 'rewardable_id', 'quantity', 'stack_id', 'stack_quantity', 'currency_id', 'currency_quantity',
             'gallery_submission_id',
+            'criterion_id', 'criterion', 'character_criterion',
         ]), Auth::user(), false, $submit)) {
             flash('Draft submitted successfully.')->success();
         } elseif ($service->editSubmission($submission, $request->only([
             'url', 'prompt_id', 'comments', 'slug', 'character_rewardable_type', 'character_rewardable_id', 'character_rewardable_quantity',
             'rewardable_type', 'rewardable_id', 'quantity', 'stack_id', 'stack_quantity', 'currency_id', 'currency_quantity',
             'gallery_submission_id',
+            'criterion_id', 'criterion', 'character_criterion',
         ]), Auth::user())) {
             flash('Draft saved successfully.')->success();
 

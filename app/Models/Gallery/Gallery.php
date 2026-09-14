@@ -104,6 +104,13 @@ class Gallery extends Model {
     }
 
     /**
+     * Get the criteria attached to this gallery.
+     */
+    public function criteria() {
+        return $this->hasMany(GalleryCriterion::class, 'gallery_id');
+    }
+
+    /**
      * Get the submissions that belong specifically
      * to children of this gallery.
      * (This is a builder, not a relation. Just put

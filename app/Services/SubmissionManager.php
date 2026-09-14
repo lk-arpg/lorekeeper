@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Facades\Notifications;
 use App\Facades\Settings;
 use App\Models\Character\Character;
+use App\Models\Criteria\Criterion;
 use App\Models\Currency\Currency;
 use App\Models\Item\Item;
 use App\Models\Loot\LootTable;
@@ -89,6 +90,15 @@ class SubmissionManager extends Service {
                 $prompt = null;
             }
 
+            $withCriteriaSelected = isset($data['criterion']) ? array_filter($data['criterion'], function ($obj) {
+                return isset($obj['id']);
+            }) : [];
+            if (count($withCriteriaSelected) > 0) {
+                $data['criterion'] = $withCriteriaSelected;
+            } else {
+                $data['criterion'] = null;
+            }
+
             // Create the submission itself.
             $submission = Submission::create([
                 'user_id'   => $user->id,
@@ -111,6 +121,7 @@ class SubmissionManager extends Service {
                     'user'              => Arr::only(getDataReadyAssets($userAssets), ['user_items', 'currencies']),
                     'rewards'           => getDataReadyAssets($promptRewards),
                     'character_rewards' => getDataReadyAssets($characterRewards),
+                    'criterion'         => $data['criterion'] ?? null,
                 ] + (config('lorekeeper.settings.allow_gallery_submissions_on_prompts') ? ['gallery_submission_id' => $data['gallery_submission_id'] ?? null] : []),
             ]);
 
@@ -195,6 +206,15 @@ class SubmissionManager extends Service {
                 $prompt = null;
             }
 
+            $withCriteriaSelected = isset($data['criterion']) ? array_filter($data['criterion'], function ($obj) {
+                return isset($obj['id']);
+            }) : [];
+            if (count($withCriteriaSelected) > 0) {
+                $data['criterion'] = $withCriteriaSelected;
+            } else {
+                $data['criterion'] = null;
+            }
+
             // First, return all items and currency applied.
             // Also, as this is an edit, delete all attached characters to be re-applied later.
             $this->removeAttachments($submission);
@@ -220,6 +240,7 @@ class SubmissionManager extends Service {
                     'user'              => Arr::only(getDataReadyAssets($userAssets), ['user_items', 'currencies']),
                     'rewards'           => getDataReadyAssets($promptRewards),
                     'character_rewards' => getDataReadyAssets($characterRewards),
+                    'criterion'         => $data['criterion'] ?? null,
                 ] + (config('lorekeeper.settings.allow_gallery_submissions_on_prompts') ? ['gallery_submission_id' => $data['gallery_submission_id'] ?? null] : []),
             ] + ($isClaim ? [] : ['prompt_id' => $prompt->id]));
 
@@ -466,6 +487,20 @@ class SubmissionManager extends Service {
                 'data' => 'Received rewards for '.($submission->prompt_id ? 'submission' : 'claim').' (<a href="'.$submission->viewUrl.'">#'.$submission->id.'</a>)',
             ];
 
+            // Add currency to asset array from criteria
+            if (isset($data['criterion'])) {
+                foreach ($data['criterion'] as $key => $criterionData) {
+                    $criterion = Criterion::where('id', $criterionData['id'])->first();
+                    if (isset($criterionData['criterion_currency_id'])) {
+                        $criterion_currency = Currency::find($criterionData['criterion_currency_id']);
+                    } else {
+                        $criterion_currency = $criterion->currency;
+                    }
+
+                    addAsset($rewards, $criterion_currency, $criterion->calculateReward($criterionData));
+                }
+            }
+
             // Distribute user rewards
             // $lootRolls keyed by id which is technically unneccessary for submissions,
             // but is useful for situations where multiple users are receiving rewards and for consistent implementation
@@ -515,6 +550,18 @@ class SubmissionManager extends Service {
                 // Users might not pass in clean arrays (may contain redundant data) so we need to clean that up
                 $assets = $this->processRewards($data + ['character_id' => $c->id, 'currencies' => $currencies, 'items' => $items, 'tables' => $tables], true);
 
+                // Distribute character currency from character criteria
+                if (isset($data['character_criterion'])) {
+                    foreach ($data['character_criterion'] as $slug => $criterions) {
+                        if ($c->slug === $slug) {
+                            foreach ($criterions as $key => $criterionData) {
+                                $criterion = Criterion::where('id', $criterionData['id'])->first();
+                                addAsset($assets, $criterion->currency, $criterion->calculateReward($criterionData));
+                            }
+                        }
+                    }
+                }
+
                 if (!$assets = fillCharacterAssets($assets, $user, $c, $promptLogType, $promptData, $submission->user, $characterLootRolls)) {
                     throw new \Exception('Failed to distribute rewards to character.');
                 }
@@ -523,6 +570,7 @@ class SubmissionManager extends Service {
                     'character_id'  => $c->id,
                     'submission_id' => $submission->id,
                     'data'          => getDataReadyAssets($assets, true),
+                    'criterion'     => $data['character_criterion'][$c->slug] ?? null,
                 ]);
             }
 
@@ -556,6 +604,7 @@ class SubmissionManager extends Service {
                         'user'       => $lootRolls[$submission->user_id] ?? [],
                         'characters' => $characterLootRolls,
                     ],
+                    'criterion'             => $data['criterion'] ?? null,
                 ], // list of rewards
             ]);
 
@@ -895,6 +944,7 @@ class SubmissionManager extends Service {
                 'character_id'  => $c->id,
                 'submission_id' => $submission->id,
                 'data'          => getDataReadyAssets($assets, true),
+                'criterion'     => $data['character_criterion'][$c->slug] ?? null,
             ]);
         }
 

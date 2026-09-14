@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Character\Character;
+use App\Models\Criteria\Criterion;
 use App\Models\Currency\Currency;
 use App\Models\Item\Item;
 use App\Models\Loot\LootTable;
 use App\Models\Prompt\PromptCategory;
+use App\Models\Prompt\PromptCriterion;
 use App\Models\Raffle\Raffle;
 use App\Models\Submission\Submission;
 use App\Services\SubmissionManager;
@@ -65,13 +67,14 @@ class SubmissionController extends Controller {
         }
 
         $prompt = $submission->prompt;
-
         if ($prompt->limit_character) {
             $count = $prompt->getCount($submission->user, $submission->characters->pluck('character'));
         } else {
             $count = $prompt->getCount($submission->user);
         }
         $limit = $prompt->limit;
+
+        $promptCriteria = PromptCriterion::where('prompt_id', $prompt->id)->pluck('criterion_id')->toArray();
 
         return view('admin.submissions.submission', [
             'prompt'           => $prompt,
@@ -90,6 +93,7 @@ class SubmissionController extends Controller {
             'raffles'             => Raffle::where('rolled_at', null)->where('is_active', 1)->orderBy('name')->pluck('name', 'id'),
             'count'               => $count,
             'limit'               => $limit,
+            'criteria'            => Criterion::active()->whereIn('id', $promptCriteria)->orderBy('name')->pluck('name', 'id'),
         ] : []));
     }
 
@@ -163,7 +167,10 @@ class SubmissionController extends Controller {
      * @return \Illuminate\Http\RedirectResponse
      */
     public function postSubmission(Request $request, SubmissionManager $service, $id, $action) {
-        $data = $request->only(['slug',  'character_rewardable_quantity', 'character_rewardable_id',  'character_rewardable_type', 'character_currency_id', 'rewardable_type', 'rewardable_id', 'quantity', 'staff_comments']);
+        $data = $request->only([
+            'slug',  'character_rewardable_quantity', 'character_rewardable_id',  'character_rewardable_type', 'character_currency_id', 'rewardable_type', 'rewardable_id', 'quantity', 'staff_comments',
+            'criterion', 'character_criterion',
+        ]);
         if ($action == 'reject' && $service->rejectSubmission($request->only(['staff_comments']) + ['id' => $id], Auth::user())) {
             flash('Submission rejected successfully.')->success();
         } elseif ($action == 'cancel' && $service->cancelSubmission($request->only(['staff_comments']) + ['id' => $id], Auth::user())) {

@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Facades\Notifications;
 use App\Facades\Settings;
 use App\Models\Character\Character;
+use App\Models\Criteria\Criterion;
 use App\Models\Currency\Currency;
 use App\Models\Gallery\Gallery;
 use App\Models\Gallery\GalleryCharacter;
@@ -103,9 +104,23 @@ class GalleryManager extends Service {
 
             $data = $this->populateData($data);
 
-            if (isset($currencyFormData) && $currencyFormData) {
-                $data['data']['currencyData'] = $currencyFormData;
-                $data['data']['total'] = calculateGroupCurrency($currencyFormData);
+            $withCriteriaSelected = isset($currencyFormData) && $currencyFormData && isset($currencyFormData['criterion']) ? array_filter($currencyFormData['criterion'], function ($obj) {
+                return isset($obj['id']);
+            }) : [];
+            if (count($withCriteriaSelected) > 0) {
+                $currencyFormData['criterion'] = $withCriteriaSelected;
+            } else {
+                $currencyFormData['criterion'] = null;
+            }
+
+            if (isset($currencyFormData) && $currencyFormData && isset($currencyFormData['criterion'])) {
+                $data['data']['criterion'] = $currencyFormData['criterion'];
+                $total = 0;
+                foreach ($currencyFormData['criterion'] as $criteria) {
+                    $calc = Criterion::where('id', $criteria['id'])->first();
+                    $total += $calc->calculateReward($criteria);
+                }
+                $data['data']['total'] = $total;
             }
 
             $submission->update($data);
@@ -139,6 +154,9 @@ class GalleryManager extends Service {
             if (isset($data['participant_id']) && $participants->count()) {
                 // Attach any participants to the submission
                 foreach ($data['participant_id'] as $key=> $participant) {
+                    if (!isset($data['participant_type'][$key]) || !$data['participant_type'][$key]) {
+                        throw new \Exception('Please select a role for the participant: '.User::find($participant)->displayName);
+                    }
                     GalleryCollaborator::create([
                         'user_id'               => $participant,
                         'gallery_submission_id' => $submission->id,
@@ -307,6 +325,26 @@ class GalleryManager extends Service {
 
                 $data['staff_id'] = $user->id;
             }
+
+            $withCriteriaSelected = isset($data['criterion']) ? array_filter($data['criterion'], function ($obj) {
+                return isset($obj['id']);
+            }) : [];
+            if (count($withCriteriaSelected) > 0) {
+                $currencyFormData['criterion'] = $withCriteriaSelected;
+            } else {
+                $currencyFormData['criterion'] = null;
+            }
+
+            if (isset($currencyFormData) && $currencyFormData && isset($currencyFormData['criterion'])) {
+                $data['data']['criterion'] = $currencyFormData['criterion'];
+                $total = 0;
+                foreach ($currencyFormData['criterion'] as $criteria) {
+                    $calc = Criterion::where('id', $criteria['id'])->first();
+                    $total += $calc->calculateReward($criteria);
+                }
+                $data['data']['total'] = $total;
+            }
+            $submission->update($data);
 
             // Send notifications for staff edits if necessary
             if ($user->hasPower('manage_submissions') && $user->id != $submission->user->id && (isset($data['alert_user']) && $data['alert_user'])) {
@@ -568,67 +606,96 @@ class GalleryManager extends Service {
                 // Process data and award currency for each user associated with the submission
                 // First, set up CurrencyManager instance and log information
                 $currencyManager = new CurrencyManager;
-                $currency = Currency::find(Settings::get('group_currency'));
 
                 $awardType = 'Gallery Submission Reward';
                 $awardData = 'Received reward for gallery submission (<a href="'.$submission->url.'">#'.$submission->id.'</a>)';
 
                 $grantedList = [];
                 $awardQuantity = [];
+                $currencies = [];
+                $shouldDivideRewards = Settings::get('gallery_rewards_divided') === '1';
+                if (isset($data['criterion'])) {
+                    $total = [];
+                    $collaboratorCount = $submission->collaborators->count() + ($submission->collaborators()->where('user_id', $submission->user_id)->exists() ? 0 : 1);
+                    foreach ($data['criterion'] as $criterionData) {
+                        $criterion = Criterion::where('id', $criterionData['id'])->first();
+                        $criteriaTotal = $criterion->calculateReward($criterionData);
 
-                // Then cycle through associated users and award currency
-                if (isset($data['value']['submitted'])) {
-                    if (!$currencyManager->creditCurrency($user, $submission->user, $awardType, $awardData, $currency, $data['value']['submitted'][$submission->user->id])) {
-                        throw new \Exception('Failed to award currency to submitting user.');
+                        if (isset($criterionData['criterion_currency_id'])) {
+                            $criterion_currency = Currency::find($criterionData['criterion_currency_id']);
+                        } else {
+                            $criterion_currency = $criterion->currency;
+                        }
+
+                        if (!isset($total[$criterion_currency->id])) {
+                            $total[$criterion_currency->id] = 0;
+                        }
+                        $total[$criterion_currency->id] += $criteriaTotal;
                     }
 
-                    $grantedList[] = $submission->user;
-                    $awardQuantity[] = $data['value']['submitted'][$submission->user->id];
-                }
+                    //
+                    foreach ($total as $currencyId => $currencyTotal) {
+                        $currency = Currency::find($currencyId);
+                        if ($shouldDivideRewards) {
+                            $currencyTotal /= $collaboratorCount;
+                        }
 
-                if (isset($data['value']['collaborator'])) {
-                    foreach ($submission->collaborators as $collaborator) {
-                        if ($data['value']['collaborator'][$collaborator->user->id] > 0) {
-                            // Double check that the submitting user isn't being awarded currency twice
-                            if (isset($data['value']['submitted']) && $collaborator->user->id == $submission->user->id) {
-                                throw new \Exception("Can't award currency to the submitting user twice.");
+                        // Then cycle through associated users and award currency
+                        // don't award the submitting user if they are listed as a collaborator
+                        if (!$submission->collaborators->count() || $submission->collaborators->where('user_id', $submission->user_id)->first() == null) {
+                            if (!$currencyManager->creditCurrency($user, $submission->user, $awardType, $awardData, $currency, $currencyTotal)) {
+                                throw new \Exception('Failed to award currency to submitting user.');
                             }
 
-                            if (!$currencyManager->creditCurrency($user, $collaborator->user, $awardType, $awardData, $currency, $data['value']['collaborator'][$collaborator->user->id])) {
+                            $grantedList[] = $submission->user;
+                            $awardQuantity[] = $currencyTotal;
+                            $currencies[] = $currency;
+                        }
+
+                        foreach ($submission->collaborators as $collaborator) {
+                            // Double check that the submitting user isn't being awarded currency twice
+                            // we check for the existence of the submitting user as a collaborator
+                            // here too because in the above if we wouldn't have awarded the submitting user currency if they were listed as a collaborator
+                            if ($collaborator->user->id == $submission->user->id && $submission->collaborators->where('user_id', $submission->user_id)->first() == null) {
+                                // throw new \Exception("Can't award currency to the submitting user twice.");
+                                continue;
+                            }
+
+                            if (!$currencyManager->creditCurrency($user, $collaborator->user, $awardType, $awardData, $currency, $currencyTotal)) {
                                 throw new \Exception('Failed to award currency to one or more collaborators.');
                             }
 
                             $grantedList[] = $collaborator->user;
-                            $awardQuantity[] = $data['value']['collaborator'][$collaborator->user->id];
+                            $awardQuantity[] = $currencyTotal;
+                            $currencies[] = $currency;
                         }
                     }
                 }
 
                 if (isset($data['value']['participant'])) {
                     foreach ($submission->participants as $participant) {
-                        if ($data['value']['participant'][$participant->user->id] > 0) {
-                            if (!$currencyManager->creditCurrency($user, $participant->user, $awardType, $awardData, $currency, $data['value']['participant'][$participant->user->id])) {
-                                throw new \Exception('Failed to award currency to one or more participants.');
-                            }
+                        if (isset($data['value']['participant'][$participant->user->id])) {
+                            foreach ($data['value']['participant'][$participant->user->id]['currency_id'] as $key => $currencyId) {
+                                $currency = Currency::find($currencyId);
+                                $quantity = $data['value']['participant'][$participant->user->id]['quantity'][$key];
+                                if (!$currencyManager->creditCurrency($user, $participant->user, $awardType, $awardData, $currency, $quantity)) {
+                                    throw new \Exception('Failed to award currency to one or more participants.');
+                                }
 
-                            $grantedList[] = $participant->user;
-                            $awardQuantity[] = $data['value']['participant'][$participant->user->id];
+                                $grantedList[] = $participant->user;
+                                $awardQuantity[] = $quantity;
+                                $currencies[] = $currency;
+                            }
                         }
                     }
                 }
 
-                // Collect and json encode existing as well as new data for storage
-                if (isset($submission->data['total'])) {
-                    $valueData = collect([
-                        'currencyData' => $submission->data['currencyData'],
-                        'total'        => $submission->data['total'],
-                        'value'        => $data['value'],
-                        'staff'        => $user->id,
-                    ]);
-                } else {
-                    $valueData = ['value' => $data['value'], 'staff' => $user->id];
-                }
-
+                $valueData = [
+                    'criterion'     => $data['criterion'] ?? null,
+                    'participants'  => $data['value']['participant'] ?? null,
+                    'awardQuantity' => $awardQuantity,
+                    'staff'         => $user->id,
+                ];
                 // Update the submission with the new data and mark it as processed
                 $submission->update([
                     'data'      => $valueData,
@@ -640,24 +707,24 @@ class GalleryManager extends Service {
                 }
 
                 // Send a notification to each user that received a currency award
-                foreach ($grantedList as $key=> $grantedUser) {
+                foreach ($grantedList as $key => $grantedUser) {
                     Notifications::create('GALLERY_SUBMISSION_VALUED', $grantedUser, [
                         'currency_quantity' => $awardQuantity[$key],
-                        'currency_name'     => $currency->name,
+                        'currency_name'     => $currencies[$key]->name,
                         'submission_title'  => $submission->title,
                         'submission_id'     => $submission->id,
                     ]);
                 }
             } else {
-                // Collect and json encode existing as well as new data for storage
                 if (isset($submission->data['total'])) {
-                    $valueData = collect([
-                        'currencyData' => $submission->data['currencyData'],
-                        'total'        => $submission->data['total'],
-                        'ineligible'   => 1,
-                        'staff'        => $user->id,
-                    ]);
+                    $valueData = [
+                        'criterion'  => $submission->data['criterion'] ?? null,
+                        'total'      => $submission->data['total'],
+                        'ineligible' => 1,
+                        'staff'      => $user->id,
+                    ];
                 } else {
+                    // don't bother adding staff-added criterion in this instance
                     $valueData = ['ineligible' => 1, 'staff' => $user->id];
                 }
 

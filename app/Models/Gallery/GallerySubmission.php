@@ -2,7 +2,6 @@
 
 namespace App\Models\Gallery;
 
-use App\Facades\Settings;
 use App\Models\Comment\Comment;
 use App\Models\Currency\Currency;
 use App\Models\Model;
@@ -220,11 +219,7 @@ class GallerySubmission extends Model {
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeRequiresAward($query) {
-        if (!Settings::get('gallery_submissions_reward_currency')) {
-            return $query->whereNull('id');
-        }
-
-        return $query->where('status', 'Accepted')->whereIn('gallery_id', Gallery::where('currency_enabled', 1)->pluck('id')->toArray());
+        return $query->where('status', 'Accepted')->whereIn('gallery_id', Gallery::has('criteria')->pluck('id')->toArray());
     }
 
     /**
@@ -469,11 +464,6 @@ class GallerySubmission extends Model {
                     break;
                 case 'Comm':
                     $prefixList[] = 'Comm';
-                    break;
-                case 'Comm (Currency)':
-                    $currencyName = Currency::find(Settings::get('group_currency'))->abbreviation ? Currency::find(Settings::get('group_currency'))->abbreviation : Currency::find(Settings::get('group_currency'))->name;
-
-                    $prefixList[] = 'Comm ('.$currencyName.')';
                     break;
             }
         }

@@ -27,7 +27,7 @@
 <div class="row">
     <div class="col-md-{{ config('lorekeeper.settings.allow_gallery_submissions_on_prompts') && !$isClaim ? '6' : '12' }}">
         <div class="form-group">
-            {!! Form::label('url', $isClaim ? 'URL (Optional)' : 'Submission URL ' . (config('lorekeeper.settings.allow_gallery_submissions_on_prompts') ? ' / Title' : '') . '(Optional)') !!}
+            {!! Form::label('url', $isClaim ? 'URL (Optional)' : 'Submission URL ' . (config('lorekeeper.settings.allow_gallery_submissions_on_prompts') ? ' / Title' : '') . ' (Optional)') !!}
             @if ($isClaim)
                 {!! add_help('Enter a URL relevant to your claim (for example, a comment proving you may make this claim).') !!}
             @else
@@ -103,6 +103,42 @@
         @endif
     </div>
 </div>
+
+@if (!$isClaim)
+    <div id="criterion-section" class="{{ $submission->prompt_id ? '' : (Request::get('prompt_id') ? '' : 'hide') }}">
+        <div class="card mb-3">
+            <div class="card-header h2">
+                Criteria Rewards
+                <button class="btn  btn-outline-info float-right add-calc" type="button">Add Criterion</button>
+            </div>
+            <div class="card-body">
+                <p>Criteria can be used in addition to or in replacement of rewards. They take input on what you are turning in for the prompt in order to calculate your final reward.</p>
+                <p>Criteria may populate in with pre-selected minimum requirements for this prompt. </p>
+                <div id="criteria">
+                    @if (isset($submission->data['criterion']))
+                        @foreach ($submission->data['criterion'] ?? [] as $key => $criterionData)
+                            <div class="card p-3 mb-2">
+                                @php $criterion = \App\Models\Criteria\Criterion::where('id', $criterionData['id'])->first() @endphp
+                                <h3>{!! $criterion->displayName !!}</h3>
+                                {!! Form::hidden('criterion[' . $key . '][id]', $criterionData['id'], ['class' => 'criterion-select']) !!}
+                                @include('criteria._minimum_requirements', [
+                                    'criterion' => $criterion,
+                                    'values' => $criterionData,
+                                    'minRequirements' => $submission->prompt->criteria->where('criterion_id', $criterionData['id'])->first()->minRequirements ?? null,
+                                    'title' => 'Selections',
+                                    'limitByMinReq' => true,
+                                    'id' => $key,
+                                    'criterion_currency' => isset($criterionData['criterion_currency_id']) ? $criterionData['criterion_currency_id'] : $criterion->currency_id,
+                                ])
+                            </div>
+                        @endforeach
+                    @endif
+                </div>
+                <div class="mb-4"></div>
+            </div>
+        </div>
+    </div>
+@endif
 
 <div class="card mb-3">
     <div class="card-header h2">
@@ -182,3 +218,15 @@
 @else
     @include('widgets._loot_select_row', ['items' => $items, 'currencies' => $currencies, 'showLootTables' => false, 'showRaffles' => false])
 @endif
+
+<div id="copy-calc" class="card p-3 mb-2 pl-0 hide">
+    @if (isset($criteria))
+        @include('criteria._criterion_selector', ['criteria' => $criteria])
+    @endif
+</div>
+
+<div id="copy-character-calc" class="card p-3 mb-2 pl-0 hide">
+    @if (isset($characterCriteria))
+        @include('criteria._criterion_character_selector', ['criteria' => $characterCriteria])
+    @endif
+</div>

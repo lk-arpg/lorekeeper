@@ -12,7 +12,7 @@ class SubmissionCharacter extends Model {
      * @var array
      */
     protected $fillable = [
-        'submission_id', 'character_id', 'data',
+        'submission_id', 'character_id', 'data', 'criterion',
     ];
 
     /**
@@ -28,7 +28,8 @@ class SubmissionCharacter extends Model {
      * @var array
      */
     protected $casts = [
-        'data' => 'array',
+        'data'      => 'array',
+        'criterion' => 'array',
     ];
 
     /**********************************************************************************************

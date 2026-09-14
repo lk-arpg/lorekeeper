@@ -136,6 +136,20 @@ function parse($text, &$pings = null) {
     $text = parseCharacters($text, $characters);
     $text = parseCharacterThumbs($text, $characters);
     $text = parseGalleryThumbs($text, $submissions);
+    $text = parseItems($text, $items);
+    $text = parseTraitThumbs($text, $traits);
+    $text = parseItemThumbs($text, $items);
+    $text = parsePrompts($text, $prompts);
+    $text = parsePromptThumbs($text, $prompts);
+    // $text = parseRarityThumbs($text, $rarities);
+    // $text = parseSpeciesThumbs($text, $specieses);
+    // $text = parseSubtypeThumbs($text, $subtypes);
+    // $text = parseShopThumbs($text, $shops);
+    // $text = parseCurrencyThumbs($text, $currencies);
+    // $text = parseCharacterCategoryThumbs($text, $charactercategories);
+    // $text = parsePromptCategoryThumbs($text, $promptcategories);
+    // $text = parseTraitCategoryThumbs($text, $traitcategories);
+    // $text = parseItemCategoryThumbs($text, $itemcategories);
     if ($pings) {
         $pings = ['users' => $users, 'characters' => $characters];
     }
@@ -298,6 +312,145 @@ function parseCharacterThumbs($text, &$characters) {
             if ($character) {
                 $characters[] = $character;
                 $text = preg_replace('/\[charthumb='.$match.'\]/', '<a href="'.$character->url.'"><img class="img-thumbnail" alt="Thumbnail of '.$character->fullName.'" data-toggle="tooltip" title="'.$character->fullName.'" src="'.$character->image->thumbnailUrl.'"></a>', $text);
+            }
+        }
+    }
+
+    return $text;
+}
+
+/**
+ * Parses a piece of user-entered text to match item mentions
+ * and replace with a thumbnail link.
+ *
+ * @param string $text
+ * @param mixed  $items
+ *
+ * @return string
+ */
+function parseItems($text, &$items) {
+    $matches = null;
+    $items = [];
+    $count = preg_match_all('/\[item=([^\[\]&<>?"\']+)\]/', $text, $matches);
+    if ($count) {
+        $matches = array_unique($matches[1]);
+        foreach ($matches as $match) {
+            $item = App\Models\Item\Item::where('id', $match)->first();
+            if ($item) {
+                $items[] = $item;
+                $text = preg_replace('/\[item='.$match.'\]/', '<a href="'.$item->idUrl.'"><img src="'.$item->imageUrl.'" class="mw-100" alt="'.$item->name.'"></a>', $text);
+            }
+        }
+    }
+
+    return $text;
+}
+
+/**
+ * Parses a piece of user-entered text to match trait mentions
+ * and replace with the trait thumbnail.
+ *
+ * @param string $text
+ * @param mixed  $traits
+ *
+ * @return string
+ */
+function parseTraitThumbs($text, &$traits) {
+    $matches = null;
+    $traits = [];
+    $count = preg_match_all('/\[traitthumb=([^\[\]&<>?"\']+)\]/', $text, $matches);
+    if ($count) {
+        $matches = array_unique($matches[1]);
+        foreach ($matches as $match) {
+            $trait = App\Models\Feature\Feature::where('id', $match)->first();
+            if ($trait) {
+                $traits[] = $trait;
+                $trait_hasimg = $trait->has_image ? '<a class="badge" style="border-radius:.5em; '.$traitbg.'" href="'.$trait->url.'"><img class="my-1 modal-image" style="max-height:100%; height:150px; border-radius:.5em;" src="'.$trait->imageUrl.'" alt="'.$trait->name.'" /></a></ br>' : '';
+                $traitbg = $trait->rarity->color ? 'background-color:#'.$trait->rarity->color : '';
+                $text = preg_replace('/\[traitthumb='.$match.'\]/', '<div class="text-center align-self-center inventory-item px-1" style="display: inline-flex; max-width:15%; flex: 0 0 15%;"><p>'.$trait_hasimg.'<a class="display-trait" href="'.$trait->url.'">'.$trait->name.'</a></p></div>', $text);
+            }
+        }
+    }
+
+    return $text;
+}
+
+/**
+ * Parses a piece of user-entered text to match item mentions
+ * and replace with the item thumbnail.
+ *
+ * @param string $text
+ * @param mixed  $items
+ *
+ * @return string
+ */
+function parseItemThumbs($text, &$items) {
+    $matches = null;
+    $items = [];
+    $count = preg_match_all('/\[itemthumb=([^\[\]&<>?"\']+)\]/', $text, $matches);
+    if ($count) {
+        $matches = array_unique($matches[1]);
+        foreach ($matches as $match) {
+            $item = App\Models\Item\Item::where('id', $match)->first();
+            if ($item) {
+                $items[] = $item;
+                $item_hasimg = $item->has_image ? '<a class="badge" style="border-radius:.5em;" href="'.$item->idUrl.'"><img class="my-1 modal-image" style="max-height:100%; height:150px; border-radius:.5em;" src="'.$item->imageUrl.'" alt="'.$item->name.'" /></a></ br>' : '';
+                $text = preg_replace('/\[itemthumb='.$match.'\]/', '<div class="text-center align-self-center inventory-item px-1" style="display: inline-flex; max-width:15%; flex: 0 0 15%;"><p>'.$item_hasimg.'<a class="inventory-stack inventory-stack-name" href="'.$item->idUrl.'">'.$item->name.'</a></p></div>', $text);
+            }
+        }
+    }
+
+    return $text;
+}
+
+/**
+ * Parses a piece of user-entered text to match prompt mentions
+ * and replace with the prompt image.
+ *
+ * @param string $text
+ * @param mixed  $prompts
+ *
+ * @return string
+ */
+function parsePrompts($text, &$prompts) {
+    $matches = null;
+    $prompts = [];
+    $count = preg_match_all('/\[prompt=([^\[\]&<>?"\']+)\]/', $text, $matches);
+    if ($count) {
+        $matches = array_unique($matches[1]);
+        foreach ($matches as $match) {
+            $prompt = App\Models\Prompt\Prompt::where('id', $match)->first();
+            if ($prompt) {
+                $prompts[] = $prompt;
+                $text = preg_replace('/\[prompt='.$match.'\]/', '<a href="'.$prompt->idUrl.'"><img src="'.$prompt->imageUrl.'" class="mw-100" alt="'.$prompt->name.'"></a>', $text);
+            }
+        }
+    }
+
+    return $text;
+}
+
+/**
+ * Parses a piece of user-entered text to match prompt mentions
+ * and replace with the prompt thumbnail.
+ *
+ * @param string $text
+ * @param mixed  $prompts
+ *
+ * @return string
+ */
+function parsePromptThumbs($text, &$prompts) {
+    $matches = null;
+    $prompts = [];
+    $count = preg_match_all('/\[promptthumb=([^\[\]&<>?"\']+)\]/', $text, $matches);
+    if ($count) {
+        $matches = array_unique($matches[1]);
+        foreach ($matches as $match) {
+            $prompt = App\Models\Prompt\Prompt::where('id', $match)->first();
+            if ($prompt) {
+                $prompts[] = $prompt;
+                $prompt_hasimg = $prompt->has_image ? '<a class="badge" style="border-radius:.5em;" href="'.$prompt->idUrl.'"><img class="my-1 modal-image" style="max-height:100%; height:150px; border-radius:.5em;" src="'.$prompt->imageUrl.'" alt="'.$prompt->name.'" /></a></ br>' : '';
+                $text = preg_replace('/\[promptthumb='.$match.'\]/', '<div class="text-center align-self-center inventory-item px-1" style="display: inline-flex; max-width:15%; flex: 0 0 15%;"><p>'.$prompt_hasimg.'<a class="inventory-stack inventory-stack-name" href="prompts/'.$prompt->id.'">'.$prompt->name.'</a></p></div>', $text);
             }
         }
     }

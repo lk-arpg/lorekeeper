@@ -2,7 +2,7 @@
     $limitTypes = collect(config('lorekeeper.limits.limit_types'))->map(function ($value, $key) {
         return $value['name'];
     });
-    $limits = $object->limits;
+    $limits = hasLimits($object) ? getLimits($object) : null;
     if (!isset($hideUnlock)) {
         $hideUnlock = false;
     }
@@ -11,7 +11,7 @@
     }
 @endphp
 
-@if (count($limits))
+@if ($limits)
     @if (!isset($compact) || !$compact)
         <h4 class="my-3">{!! $object->displayName !!}'s Requirements</h4>
         <p>
@@ -96,17 +96,42 @@
             @endif
         @endif
     @else
-        <div class="alert alert-{{ $limits->first()->is_unlocked && $limits->first()->isUnlocked(Auth::user() ?? null) ? 'info' : 'danger' }} p-0 mt-2">
-            <small>
-                (Requires {!! implode(
-                    ', ',
-                    $limits->map(function ($limit) use ($limitTypes) {
-                            return ($limit->quantity ? $limit->quantity . ' ' : '') . $limit->limit->displayName;
-                        })->toArray(),
-                ) !!}
-                {{ $limits->first()->is_unlocked ? 'once' : 'every time you interact with it' }}.)
+        <div class="alert alert-{{ $limits->first()->is_unlocked && $limits->first()->isUnlocked(Auth::user() ?? null) ? 'info' : 'danger' }} p-1 mt-2 d-flex">
+            @if ($limits->first()->is_unlocked)
+                <div class="d-flex align-items-center pr-1">
+                    @if ($limits->first()->isUnlocked(Auth::user() ?? null))
+                        <span class="badge badge-success" data-toggle="tooltip" title="You have unlocked this limit.">
+                            <i class="fas fa-check" aria-hidden="true"></i>
+                        </span>
+                    @else
+                        <span class="badge badge-danger" data-toggle="tooltip" title="You have not unlocked this limit.">
+                            <i class="fas fa-times" aria-hidden="true"></i>
+                        </span>
+                    @endif
+                </div>
+            @endif
+            <small class="d-flex align-items-center {{ $hideUnlock ? 'flex-row' : 'flex-column w-100' }}">
+                {!! $limits->where('debit', false)->count()
+                    ? 'Requires ' .
+                        implode(
+                            ', ',
+                            $limits->where('debit', false)->map(function ($limit) use ($limitTypes) {
+                                    return ($limit->quantity ? $limit->quantity . ' ' : '') . $limit->limit->name;
+                                })->toArray(),
+                        )
+                    : '' !!}
+                {!! $limits->where('debit', true)->count() ? ($limits->where('debit', false)->count() ? 'and debits' : 'Debits') : '' !!}
+                {!! $limits->where('debit', true)->count()
+                    ? implode(
+                        ', ',
+                        $limits->where('debit', true)->map(function ($limit) use ($limitTypes) {
+                                return ($limit->quantity ? $limit->quantity . ' ' : '') . $limit->limit->name;
+                            })->toArray(),
+                    )
+                    : '' !!}
+                {{ $limits->first()->is_unlocked ? 'once' : 'every time you interact with it' }}.
                 @if (!$hideUnlock && !$limits->first()->isUnlocked(Auth::user() ?? null) && !$limits->first()->is_auto_unlocked)
-                    <div class="alert alert-secondary text-center p-0 mb-0">
+                    <div class="text-center p-0 mb-0">
                         <small>
                             {!! Form::open(['url' => 'limits/unlock/' . $limits->first()->id]) !!}
                             {!! Form::submit('Unlock', ['class' => 'btn btn-sm btn-secondary']) !!}

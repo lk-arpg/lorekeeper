@@ -551,3 +551,65 @@ function hasRewards($object) {
         return false;
     }
 }
+
+/**
+ * Gets the valid limit types, based on the config file.
+ *
+ * @return array
+ */
+function getLimitTypes() {
+    return array_map(function ($limit) {
+        return $limit['name'];
+    }, config('lorekeeper.limits.limit_types'));
+}
+
+/**
+ * Gets the reward data needed for limit selection blade.
+ *
+ * Builds an array structured to match keys with the above getLimitTypes.
+ * For example:
+ * [ 'item' => $items, 'currency' => $currencies]
+ *
+ * @return array
+ */
+function getLimitData() {
+    // We call getLimitTypes here, rather than as a parameter, to prevent accidentally getting mismatched arrays.
+    $limitTypes = getLimitTypes();
+
+    $limitData = [];
+
+    // Iterate through each valid key in $rewardTypes and get the data associated with it
+    // If character-specific limit handling is added in the future, this will need editing
+    foreach ($limitTypes as $limitKey => $limitType) {
+        $query = null;
+
+        switch ($limitKey) {
+            case 'item':
+                $query = App\Models\Item\Item::orderBy('name');
+                break;
+            case 'currency':
+                $query = App\Models\Currency\Currency::where('is_user_owned', 1)->orderBy('name');
+                break;
+            case 'prompt':
+                $query = App\Models\Prompt\Prompt::orderBy('name');
+                break;
+            case 'dynamic':
+                $query = App\Models\Limit\DynamicLimit::orderBy('name')->orderBy('name');
+                break;
+                // Add the query builder for your other limits here, set with the matching key in config('lorekeeper.limits.limit_types')
+                // If your limit type does not have a model, you may need to add special handling here.
+                //
+                // case 'Example':
+                //  $query = \App\Models\Example::orderby('name');
+                //  break;
+        }
+
+        // If your asset type does not have a model with an id and name value, then you may need to add special handling here.
+        $data = $query->pluck('name', 'id')->toArray();
+
+        // Finally, add the data to the array.
+        $limitData[$limitKey] = $data;
+    }
+
+    return $limitData;
+}

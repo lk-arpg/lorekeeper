@@ -4,7 +4,9 @@ namespace App\Models\User;
 
 use App\Models\Character\Character;
 use App\Models\Character\CharacterBookmark;
+use App\Models\Character\CharacterDesignUpdate;
 use App\Models\Character\CharacterImageCreator;
+use App\Models\Character\CharacterTransfer;
 use App\Models\Comment\CommentLike;
 use App\Models\Currency\Currency;
 use App\Models\Currency\CurrencyCategory;
@@ -17,14 +19,17 @@ use App\Models\Item\ItemLog;
 use App\Models\Limit\UserUnlockedLimit;
 use App\Models\Notification;
 use App\Models\Rank\Rank;
+use App\Models\Report\Report;
 use App\Models\Shop\ShopLog;
 use App\Models\Submission\Submission;
+use App\Models\Trade\Trade;
 use App\Traits\Commenter;
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Throwable;
@@ -744,5 +749,44 @@ class User extends Authenticatable implements MustVerifyEmail {
      */
     public function hasBookmarked($character) {
         return CharacterBookmark::where('user_id', $this->id)->where('character_id', $character->id)->first();
+    }
+
+    /**
+     * Check if there are any Admin Notifications.
+     *
+     * @param mixed $user
+     *
+     * @return int
+     */
+    public function hasAdminNotification($user) {
+        // This caches and remembers the admin notif count for this given user
+        // for 2 minutes, and then will refresh whenever the function hits again
+        // after 2 minutes from last cache (Laravel's default cache driver is file)
+
+        return Cache::remember('admin_notif_'.$this->id, now()->addMinutes(2), function () {
+            $count = [];
+            // So the power isn't requeried every single time...
+            $manageSubmissions = $this->hasPower('manage_submissions');
+            $manageCharacters = $this->hasPower('manage_characters');
+            $manageReports = $this->hasPower('manage_reports');
+
+            if ($manageSubmissions) {
+                $count[] = Submission::where('status', 'Pending')->count(); // submissionCount & claimCount
+                $count[] = GallerySubmission::pending()->collaboratorApproved()->count(); // galleryCount
+            }
+
+            if ($manageCharacters) {
+                $count[] = CharacterDesignUpdate::where('status', 'Pending')->count(); // designCount & myoCount
+                $count[] = CharacterTransfer::active()->where('is_approved', 0)->count(); // transferCount
+                $count[] = Trade::where('status', 'Pending')->count(); // tradeCount
+            }
+
+            if ($manageReports) {
+                $count[] = Report::where('status', 'Pending')->count(); // reportCount
+                $count[] = Report::assignedToMe($this)->count(); // assignedReportCount
+            }
+
+            return array_sum($count);
+        });
     }
 }

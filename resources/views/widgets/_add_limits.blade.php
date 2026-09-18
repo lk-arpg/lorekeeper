@@ -28,10 +28,10 @@
     // Hide "is unlocked" option when it makes sense for a limit to always be one or the other, much like the above
     if (!isset($hideIsUnlocked)) {
         $hideIsUnlocked = false;
-        // Opinionated choice, if "Is Unlocked" is hidden, then the limit will be assume to always be a one-time unlock
-        if (!isset($isUnlocked)) {
-            $isUnlocked = true;
-        }
+    }
+    // Opinionated choice, if "Is Unlocked" is hidden, then the limit will be assume to always be a one-time unlock
+    if (!isset($isUnlocked)) {
+        $isUnlocked = true;
     }
 @endphp
 

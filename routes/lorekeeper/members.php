@@ -190,6 +190,7 @@ Route::group(['prefix' => 'submissions', 'namespace' => 'Users'], function () {
     Route::post('draft/{id}/{submit}', 'SubmissionController@postEditSubmission')->where('submit', 'submit');
     Route::post('draft/{id}/delete', 'SubmissionController@postDeleteSubmission');
     Route::post('draft/{id}/cancel', 'SubmissionController@postCancelSubmission');
+    Route::get('counts/character/{id}/{slug}', 'SubmissionController@getCharacterPromptCounts');
 });
 
 Route::group(['prefix' => 'claims', 'namespace' => 'Users'], function () {

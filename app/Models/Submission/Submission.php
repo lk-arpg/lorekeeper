@@ -178,7 +178,7 @@ class Submission extends Model {
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeSubmitted($query, $prompt, $user) {
-        return $query->where('prompt_id', $prompt)->where('status', '!=', 'Rejected')->where('user_id', $user);
+        return $query->where('prompt_id', $prompt)->whereNotIn('status', ['Rejected', 'Draft'])->where('user_id', $user);
     }
 
     /**********************************************************************************************

@@ -127,14 +127,19 @@
 
                 @if (!$isClaim)
                     var $prompt = $('#prompt');
-                    var $rewards = $('#rewards');
+                    var $promptDetails = $('#promptDetails');
                     var $requirementsWarning = $('#requirementsWarning');
 
                     $prompt.selectize();
                     $prompt.on('change', function(e) {
-                        $rewards.load('{{ url('submissions/new/prompt') }}/' + $(this).val());
+                        $promptDetails.load('{{ url('submissions/new/prompt') }}/' + $(this).val());
                         $requirementsWarning.html('');
                         $requirementsWarning.load('{{ url('submissions/new/prompt') }}/' + $(this).val() + '/requirements');
+
+                        $('#characters .character-prompt-count').each(function(index, element) {
+                            var characterSlug = $(this).closest('.submission-character').find('.character-code').val();
+                            $(this).load('{{ url('submissions/counts/character') }}/' + $prompt.val() + '/' + characterSlug);
+                        });
                     });
                 @endif
 

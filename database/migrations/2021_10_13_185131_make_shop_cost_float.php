@@ -11,7 +11,7 @@ class MakeShopCostFloat extends Migration {
     public function up() {
         //
         Schema::table('shop_stock', function (Blueprint $table) {
-            $table->float('cost')->change();
+            $table->float('cost')->default(0)->change();
         });
     }
 
@@ -21,7 +21,7 @@ class MakeShopCostFloat extends Migration {
     public function down() {
         //
         Schema::table('shop_stock', function (Blueprint $table) {
-            $table->integer('cost')->change();
+            $table->integer('cost')->default(0)->change();
         });
     }
 }

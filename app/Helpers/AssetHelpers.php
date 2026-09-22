@@ -129,7 +129,7 @@ function getAssetModelString($type, $namespaced = true) {
             }
             break;
 
-        case 'characters':
+        case 'characters': case 'character':
             if ($namespaced) {
                 return '\App\Models\Character\Character';
             } else {
@@ -301,6 +301,23 @@ function parseAssetData($array, $isCharacter = false) {
 }
 
 /**
+ * Processes the associated Rewards objects into an asset array.
+ *
+ * @param Illuminate\Database\Eloquent\Collection $rewards
+ * @param bool                                    $isCharacter
+ *
+ * @return array
+ */
+function processRewards($rewards, $isCharacter = false) {
+    $assets = createAssetsArray($isCharacter);
+    foreach ($rewards as $reward) {
+        addAsset($assets, $reward->reward, $reward->quantity);
+    }
+
+    return $assets;
+}
+
+/**
  * Creates an asset array directly from dataReadyAssets, without needing to parse it first.
  *
  * @param array $array
@@ -433,7 +450,7 @@ function fillUserAssets($assets, $sender, $recipient, $logType, $data, &$lootRol
         } elseif ($key == 'characters' && count($contents)) {
             $service = new App\Services\CharacterManager;
             foreach ($contents as $asset) {
-                if (!$service->moveCharacter($asset['asset'], $recipient, $data, $asset['quantity'], $logType)) {
+                if (!$service->moveCharacter($asset['asset'], $recipient, $data['data'] ?? $data, $asset['quantity'], $logType)) {
                     foreach ($service->errors()->getMessages()['error'] as $error) {
                         flash($error)->error();
                     }
@@ -656,7 +673,8 @@ function getRewardTypes($showData, $recipient) {
     if ($recipient == 'User') {
         return ['Item' => 'Item', 'Currency' => 'Currency'] +
             ($showData['showLootTables'] ? ['LootTable' => 'Loot Table'] : []) +
-            ($showData['showRaffles'] ? ['Raffle' => 'Raffle Ticket'] : []);
+            ($showData['showRaffles'] ? ['Raffle' => 'Raffle Ticket'] : []) +
+            ($showData['showCharacters'] ? ['Character' => 'Character'] : []);
     } elseif ($recipient == 'Character') {
         return ['Item' => 'Item', 'Currency' => 'Currency'] +
             ($showData['showLootTables'] ? ['LootTable' => 'Loot Table'] : []);
@@ -723,6 +741,9 @@ function getRewardLootData($showData, $recipient = 'User', $useCustomSelectize =
             case 'Raffle':
                 $query = App\Models\Raffle\Raffle::where('rolled_at', null)->where('is_active', 1)->orderBy('name');
                 break;
+            case 'Character':
+                $query = App\Models\Character\Character::myo(0)->orderBy('slug');
+                break;
                 // Add the query builder for your other assets here, set with the matching key in getRewardTypes
                 // If your asset type does not have a model, you may need to add special handling here.
                 //
@@ -736,13 +757,13 @@ function getRewardLootData($showData, $recipient = 'User', $useCustomSelectize =
             $data = $query->get()->mapWithKeys(function ($item) {
                 return [
                     $item->id => json_encode([
-                        'name'      => $item->name,
+                        'name'      => $rewardKey == 'Character' ? $item->slug : $item->name,
                         'image_url' => $item->imageUrl ?? null,
                     ]),
                 ];
             });
         } else {
-            $data = $query->pluck('name', 'id')->toArray();
+            $data = $query->pluck(($rewardKey == 'Character' ? 'slug' : 'name'), 'id')->toArray();
         }
 
         // Finally, add the data to the array.

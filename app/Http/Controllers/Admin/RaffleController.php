@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Currency\Currency;
+use App\Models\Item\Item;
 use App\Models\Raffle\Raffle;
 use App\Models\Raffle\RaffleGroup;
 use App\Models\Raffle\RaffleTicket;
@@ -10,6 +12,7 @@ use App\Models\User\User;
 use App\Services\RaffleManager;
 use App\Services\RaffleService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class RaffleController extends Controller {
     /**
@@ -24,10 +27,16 @@ class RaffleController extends Controller {
         } else {
             $raffles->where('is_active', '!=', 2);
         }
-        $raffles = $raffles->orderBy('group_id')->orderBy('order');
+        $query = $raffles->orderBy('group_id', 'ASC')
+            ->orderBy('order')
+            ->get();
+
+        $grouped = $query->groupBy(function ($item) {
+            return $item->group ? $item->group->name : 'Ungrouped';
+        });
 
         return view('admin.raffle.index', [
-            'raffles' => $raffles->get(),
+            'raffles' => $grouped,
             'groups'  => RaffleGroup::whereIn('id', $raffles->pluck('group_id')->toArray())->get()->keyBy('id'),
         ]);
     }
@@ -51,8 +60,10 @@ class RaffleController extends Controller {
         }
 
         return view('admin.raffle._raffle_create_edit', [
-            'raffle' => $raffle,
-            'groups' => [0 => 'No group'] + RaffleGroup::where('is_active', '<', 2)->pluck('name', 'id')->toArray(),
+            'raffle'     => $raffle,
+            'groups'     => [0 => 'No group'] + RaffleGroup::where('is_active', '<', 2)->pluck('name', 'id')->toArray(),
+            'items'      => Item::orderBy('name')->pluck('name', 'id'),
+            'currencies' => Currency::where('is_user_owned', 1)->orderBy('name')->pluck('name', 'id'),
         ]);
     }
 
@@ -65,22 +76,24 @@ class RaffleController extends Controller {
      * @return \Illuminate\Http\RedirectResponse
      */
     public function postCreateEditRaffle(Request $request, RaffleService $service, $id = null) {
-        $data = $request->only(['name', 'is_active', 'winner_count', 'group_id', 'order', 'ticket_cap']);
-        $raffle = null;
-        if (!$id) {
-            $raffle = $service->createRaffle($data);
-        } elseif ($id) {
-            $raffle = $service->updateRaffle($data, Raffle::find($id));
-        }
-        if ($raffle) {
-            flash('Raffle '.($id ? 'updated' : 'created').' successfully!')->success();
-
-            return redirect()->back();
+        $data = $request->only([
+            'name', 'is_active', 'winner_count', 'group_id', 'order', 'allow_entry', 'is_fto', 'unordered', 'rewardable_type', 'rewardable_id', 'quantity', 'ticket_cap',
+            'end_at', 'roll_on_end', 'description',
+            'entry_rewardable_type', 'entry_rewardable_id', 'entry_quantity',
+            'winner_rewardable_type', 'winner_rewardable_id', 'winner_quantity', 'winner_position',
+        ]);
+        if ($id && $raffle = $service->updateRaffle($data, Raffle::find($id))) {
+            flash('Raffle updated successfully!')->success();
+        } elseif (!$id && $raffle = $service->createRaffle($data)) {
+            flash('Raffle created successfully!')->success();
         } else {
-            flash('Couldn\'t create raffle.')->error();
-
-            return redirect()->back()->withInput();
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
+            flash("Couldn't ".($id ? 'update' : 'create').' raffle.')->error();
         }
+
+        return redirect()->back();
     }
 
     /**
@@ -228,6 +241,9 @@ class RaffleController extends Controller {
 
             return redirect()->back();
         } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
             flash('Error in rolling winners.')->error();
 
             return redirect()->back()->withInput();
@@ -270,5 +286,43 @@ class RaffleController extends Controller {
 
             return redirect()->back()->withInput();
         }
+    }
+
+    /**
+     * Reroll a winner for a raffle.
+     *
+     * @param mixed $id
+     */
+    public function getRerollTicket(RaffleManager $service, $id) {
+        $ticket = RaffleTicket::find($id);
+        if (!$ticket) {
+            abort(404);
+        }
+
+        return view('admin.raffle._ticket_reroll', [
+            'ticket' => $ticket,
+        ]);
+    }
+
+    /**
+     * Reroll a winner for a raffle.
+     *
+     * @param mixed $id
+     */
+    public function rerollTicket(Request $request, RaffleManager $service, $id) {
+        $ticket = RaffleTicket::find($id);
+        if (!$ticket) {
+            abort(404);
+        }
+        $reason = $request->input('reason');
+        if ($service->rerollWinner($ticket, $reason, Auth::user())) {
+            flash('Winner rerolled!')->success();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
+        }
+
+        return redirect()->back();
     }
 }

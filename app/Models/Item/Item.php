@@ -8,8 +8,10 @@ use App\Models\Rarity;
 use App\Models\Shop\Shop;
 use App\Models\Shop\ShopStock;
 use App\Models\User\User;
+use App\Traits\AltText;
 
 class Item extends Model {
+    use AltText;
     /**
      * The attributes that are mass assignable.
      *

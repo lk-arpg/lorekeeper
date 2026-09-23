@@ -626,3 +626,35 @@ function getLimitData() {
 
     return $limitData;
 }
+
+/**
+ * Return the object's alt text.
+ *
+ * @param mixed  $object
+ * @param string $text_key
+ *
+ * @return mixed
+ */
+function getAltText($object, $text_key) {
+    if (in_array(App\Traits\AltText::class, class_uses_recursive(get_class($object)))) {
+        return $object->altText($text_key);
+    } else {
+        return null;
+    }
+}
+
+/**
+ * Check if an object has alt text.
+ *
+ * @param mixed  $object
+ * @param string $text_key
+ *
+ * @return bool
+ */
+function hasAltText($object, $text_key) {
+    if (in_array(App\Traits\AltText::class, class_uses_recursive(get_class($object)))) {
+        return $object->hasAltText($text_key);
+    } else {
+        return false;
+    }
+}

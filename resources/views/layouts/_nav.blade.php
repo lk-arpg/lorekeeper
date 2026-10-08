@@ -139,7 +139,7 @@
                     @if (Auth::user()->isStaff)
                         <li class="nav-item d-flex">
                             <a class="nav-link position-relative display-inline-block" href="{{ url('admin') }}"><i class="fas fa-crown"></i>
-                                @if (Config::get('lorekeeper.extensions.admin_notifications') && Auth::user()->hasAdminNotification(Auth::user()))
+                                @if (config('lorekeeper.extensions.admin_notifications') && Auth::user()->hasAdminNotification(Auth::user()))
                                     @if (Auth::user()->settings->admin_notifs_nr_size)
                                         <sup class="badge badge-danger">
                                             {{ Auth::user()->hasAdminNotification(Auth::user()) }}

@@ -170,7 +170,7 @@
         {!! Form::close() !!}
     </div>
 
-    @if (Auth::user()->isStaff && Config::get('lorekeeper.extensions.admin_notifications') && Auth::user()->hasAdminNotification(Auth::user()))
+    @if (Auth::user()->isStaff && config('lorekeeper.extensions.admin_notifications') && Auth::user()->hasAdminNotification(Auth::user()))
         <div class="card p-3 mb-2">
             <h3>Admin Notifications</h3>
             {!! Form::open(['url' => 'account/admin-notifs']) !!}

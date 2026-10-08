@@ -74,5 +74,7 @@ class UpdateLorekeeperV3 extends Command {
         } else {
             $this->line('Aborting! Please run composer update and then run this command again.');
         }
+
+        return Command::SUCCESS;
     }
 }

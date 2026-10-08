@@ -112,8 +112,6 @@ class InventoryController extends Controller {
     /**
      * Edits the inventory of involved users.
      *
-     * @param App\Services\InventoryManager $service
-     *
      * @return \Illuminate\Http\RedirectResponse
      */
     public function postEdit(Request $request, InventoryManager $service) {
@@ -288,8 +286,6 @@ class InventoryController extends Controller {
 
     /**
      * Transfers inventory items to another user.
-     *
-     * @param App\Services\InventoryManager $service
      *
      * @return \Illuminate\Http\RedirectResponse
      */

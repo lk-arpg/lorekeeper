@@ -289,5 +289,7 @@ class MigrateAliases extends Command {
         if (!$this->option('drop-columns')) {
             $this->line("After checking that all data has been moved from them,\nrun again with --drop-columns to drop alias columns if desired.");
         }
+
+        return Command::SUCCESS;
     }
 }

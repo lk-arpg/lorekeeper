@@ -77,8 +77,7 @@ class CommentController extends Controller {
             return redirect()->back();
         }
 
-        $commentClass = config('comments.model');
-        $comment = new $commentClass;
+        $comment = new Comment;
 
         if (!Auth::check()) {
             $comment->guest_name = $request->guest_name;
@@ -217,8 +216,7 @@ class CommentController extends Controller {
             'message' => 'required|string',
         ])->validate();
 
-        $commentClass = config('comments.model');
-        $reply = new $commentClass;
+        $reply = new Comment;
         $reply->commenter()->associate(Auth::user());
         $reply->commentable()->associate($comment->commentable);
         $reply->parent()->associate($comment);

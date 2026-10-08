@@ -28,10 +28,7 @@
 
             $slicedParentComments = $parentComments->slice($page * $perPage, $perPage);
 
-            $m = config('comments.model'); // This has to be done like this, otherwise it will complain.
-            $modelKeyName = (new $m())->getKeyName(); // This defaults to 'id' if not changed.
-
-            $slicedParentCommentsIds = $slicedParentComments->pluck($modelKeyName)->toArray();
+            $slicedParentCommentsIds = $slicedParentComments->pluck('id')->toArray();
 
             // Remove parent Comments from comments.
             $comments = $comments->where('child_id', '!=', '');

@@ -67,5 +67,7 @@ class WatermarkOldImages extends Command {
         } else {
             $this->line('Bye.');
         }
+
+        return Command::SUCCESS;
     }
 }

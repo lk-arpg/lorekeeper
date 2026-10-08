@@ -280,6 +280,8 @@ class Item extends Model {
         } elseif ($this->artist_url) {
             return prettyProfileLink($this->artist_url);
         }
+
+        return '';
     }
 
     /**

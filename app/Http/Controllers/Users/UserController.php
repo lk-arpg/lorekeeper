@@ -30,6 +30,9 @@ class UserController extends Controller {
     |
     */
 
+    /** @var User The user for this controller instance. */
+    protected User $user;
+
     /**
      * Create a new controller instance.
      */
@@ -219,7 +222,6 @@ class UserController extends Controller {
             'categories'  => $categories->keyBy('id'),
             'items'       => $items,
             'userOptions' => User::where('id', '!=', $this->user->id)->orderBy('name')->pluck('name', 'id')->toArray(),
-            'user'        => $this->user,
             'logs'        => $this->user->getItemLogs(),
         ]);
     }

@@ -183,7 +183,7 @@ class ShopService extends Service {
     /**
      * Sorts shop order.
      *
-     * @param array $data
+     * @param string $data
      *
      * @return bool
      */

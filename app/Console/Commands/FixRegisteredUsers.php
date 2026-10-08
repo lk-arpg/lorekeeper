@@ -44,5 +44,7 @@ class FixRegisteredUsers extends Command {
                 'user_id' => $user->id,
             ]);
         }
+
+        return Command::SUCCESS;
     }
 }

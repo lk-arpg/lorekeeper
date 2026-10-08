@@ -47,5 +47,7 @@ class CopyDefaultImages extends Command {
             copy($sourceDir.$image['filename'], $destDir.$image['filename']);
         }
         $this->line('Done!');
+
+        return Command::SUCCESS;
     }
 }

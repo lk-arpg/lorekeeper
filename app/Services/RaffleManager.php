@@ -57,6 +57,8 @@ class RaffleManager extends Service {
             return 0;
         } elseif (!$raffle) {
             return 0;
+        } elseif (!$raffle->is_active) {
+            return 0;
         } elseif ($count == 0) {
             return 0;
         } elseif ($raffle->rolled_at != null) {
@@ -197,13 +199,8 @@ class RaffleManager extends Service {
 
             $ticketCount--;
 
-            // remove tickets for the same user...I'm unsure how this is going to hold up with 3000 tickets,
-            foreach ($ticketPool as $key=> $ticket) {
-                if (($ticket->user_id != null && $ticket->user_id == $winner->user_id) || ($ticket->user_id == null && $ticket->alias == $winner->alias)) {
-                    $ticketPool->forget($key);
-                }
-            }
-            $ticketPool = $ticketPool->values();
+            // remove tickets for the same user
+            $ticketPool = $ticketPool->whereNotIn('user_id', $winner->user_id)->whereNotIn('alias', $winner->alias)->values();
             $ticketCount = $ticketPool->count();
         }
 

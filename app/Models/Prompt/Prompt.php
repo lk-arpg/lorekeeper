@@ -2,6 +2,7 @@
 
 namespace App\Models\Prompt;
 
+use App\Facades\Settings;
 use App\Models\Model;
 use App\Models\Submission\Submission;
 use App\Traits\Limitable;
@@ -20,7 +21,7 @@ class Prompt extends Model {
         'prompt_category_id', 'name', 'summary', 'description', 'parsed_description', 'is_active',
         'start_at', 'end_at', 'hide_before_start', 'hide_after_end', 'has_image', 'prefix',
         'hide_submissions', 'staff_only', 'hash',
-        'limit', 'limit_period', 'limit_character',
+        'limit', 'limit_period', 'limit_character', 'reset_day',
     ];
 
     /**
@@ -342,7 +343,7 @@ class Prompt extends Model {
         $count['all'] = $submissions->count();
         $count['Hour'] = $submissions->where('created_at', '>=', now()->startOfHour())->count();
         $count['Day'] = $submissions->where('created_at', '>=', now()->startOfDay())->count();
-        $count['Week'] = $submissions->where('created_at', '>=', now()->startOfWeek())->count();
+        $count['Week'] = $submissions->where('created_at', '>=', now()->startOfWeek($this->reset_day ?? Settings::get('weekly_reset_day') ?? 1))->count();
         $count['BiWeekly'] = $submissions->where('created_at', '>=', now()->subWeeks(2))->count();
         $count['Month'] = $submissions->where('created_at', '>=', now()->startOfMonth())->count();
         $count['BiMonthly'] = $submissions->where('created_at', '>=', now()->subMonths(2))->count();

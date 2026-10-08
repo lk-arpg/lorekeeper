@@ -25,6 +25,14 @@
                     {!! Form::label('slug[]', 'Character Code') !!}
                     {!! Form::select('slug[]', $characters, $character->character ? $character->character->slug : $character->slug, ['class' => 'form-control character-code', 'placeholder' => 'Select Character']) !!}
                 </div>
+                @if (isset($submission) && (isset($isClaim) && !$isClaim))
+                    <div class="character-prompt-count">
+                        @include('widgets._character_prompt_count', [
+                            'character' => $character->character ? $character->character : $character,
+                            'prompt' => $submission->prompt ?? null,
+                        ])
+                    </div>
+                @endif
                 <div class="character-rewards">
                     <h4>Character Rewards</h4>
                     <table class="table table-sm">

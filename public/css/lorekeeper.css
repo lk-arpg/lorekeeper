@@ -736,7 +736,12 @@ tr.accountbound {
 
 /* BOOKMARKS *************************************************************************************/
 .bookmark-table {
-    min-width: 1000px;
+    min-width: 640px;
+}
+
+.bookmark-comment-body {
+    max-height: 6rem;
+    overflow-y: auto;
 }
 
 .bookmark-table .bookmark-thumbnail {
@@ -758,6 +763,39 @@ tr.accountbound {
 
 .bookmark-table .img-thumbnail {
     width: 100px;
+}
+
+@media (max-width: 767.98px) {
+    .bookmark-table {
+        min-width: 0;
+    }
+
+    .bookmark-table thead {
+        display: none;
+    }
+
+    .bookmark-table tbody,
+    .bookmark-table tr,
+    .bookmark-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .bookmark-table tr {
+        border-bottom: 2px solid #dee2e6;
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.5rem;
+    }
+
+    .bookmark-table td {
+        border-top: 0;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .bookmark-table .bookmark-actions-cell {
+        text-align: left !important;
+    }
 }
 
 /* BOOTSTRAP TABLES *************************************************************************************/

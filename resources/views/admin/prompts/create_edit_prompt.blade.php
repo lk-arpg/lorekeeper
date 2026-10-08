@@ -108,6 +108,12 @@
                     {!! Form::select('limit_period', $limit_periods, $prompt->limit_period, ['class' => 'form-control', 'data-name' => 'limit_period']) !!}
                 </div>
             </div>
+            <div class="row">
+                <div class="form-group col-md-6" id="resetDayRow" @if ($prompt->limit_period !== 'Week') style="display: none;" @endif>
+                    {!! Form::label('reset_day', 'Weekly Reset Day') !!} {!! add_help('Day of week for weekly limit resets. Leave empty to use site default.') !!}
+                    {!! Form::select('reset_day', $reset_days, $prompt->reset_day ?? '', ['class' => 'form-control', 'data-name' => 'reset_day']) !!}
+                </div>
+            </div>
             <div class="alert alert-info">
                 <strong>If you turn 'per character' on, then a user will be able to submit that many times per character.</strong> On submissions with multiple characters, it will check for the number of times <em>any</em> of those characters have been
                 attached to a submission.
@@ -163,6 +169,10 @@
             $('.delete-prompt-button').on('click', function(e) {
                 e.preventDefault();
                 loadModal("{{ url('admin/data/prompts/delete') }}/{{ $prompt->id }}", 'Delete Prompt');
+            });
+
+            $('[name="limit_period"]').on('change', function() {
+                $('#resetDayRow').toggle($(this).val() === 'Week');
             });
         });
     </script>

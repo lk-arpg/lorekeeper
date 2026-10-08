@@ -1,32 +1,38 @@
 <div class="card">
     <div class="card-body">
-        <h4>Default Prompt Rewards</h4>
+        <h4>{!! $prompt->displayName !!} Details</h4>
+        <h5>Submission Limits</h5>
         @if (isset($staffView) && $staffView)
-            <p>For reference, these are the default rewards for this prompt. The editable section above is <u>inclusive</u> of these rewards.</p>
             @if ($count['all'])
                 <p>The user has completed this prompt <strong>{{ $count['all'] }}</strong> time{{ $count['all'] == 1 ? '' : 's' }} overall.</p>
                 @if ($prompt->limit)
                     <p>They have now submitted this prompt {{ $prompt->limit_period ? $count[$prompt->limit_period] : $count['all'] }} out of {{ $prompt->limit }} times
-                        {{ $prompt->limit_period ? 'for this ' . strtolower($prompt->limit_period) : '' }}.
+                        {{ $prompt->limit_period ? 'for this ' . strtolower(config('lorekeeper.extensions.limit_periods')[$prompt->limit_period]) : '' }}.
                 @endif
             @endif
             <div class="{{ $prompt->limit ? 'text-danger' : '' }}">
                 <p>{{ $prompt->limit ? 'Users can submit this prompt ' . $prompt->limit . ' time(s)' : 'Users can submit this prompt an unlimited number of times' }}
-                    {{ $prompt->limit_period ? ' per ' . strtolower($prompt->limit_period) : '' }}{{ $prompt->limit_character ? ' per character' : '' }}.</p>
+                    {{ $prompt->limit_period ? ' per ' . strtolower(config('lorekeeper.extensions.limit_periods')[$prompt->limit_period]) : '' }}{{ $prompt->limit_character ? ' per character' : '' }}.</p>
             </div>
         @else
-            <p>These are the default rewards for this prompt. The actual rewards you receive may be edited by a staff member during the approval process.</p>
             @if ($count['all'])
                 <p>You have completed this prompt <strong>{{ $count['all'] }}</strong> time{{ $count['all'] == 1 ? '' : 's' }} overall.</p>
                 @if ($prompt->limit)
                     <p>You have already submitted this prompt {{ $prompt->limit_period ? $count[$prompt->limit_period] : $count['all'] }} out of {{ $prompt->limit }} times
-                        {{ $prompt->limit_period ? 'for this ' . strtolower($prompt->limit_period) : '' }}{{ $prompt->limit_character ? ' across all characters' : '' }}.
+                        {{ $prompt->limit_period ? 'for this ' . strtolower(config('lorekeeper.extensions.limit_periods')[$prompt->limit_period]) : '' }}{{ $prompt->limit_character ? ' across all characters' : '' }}.
                 @endif
             @endif
             <div class="{{ $prompt->limit ? 'text-danger' : '' }}">
                 <p>{{ $prompt->limit ? 'You can submit this prompt ' . $prompt->limit . ' time(s)' : 'You can submit this prompt an unlimited number of times' }}
-                    {{ $prompt->limit_period ? ' per ' . strtolower($prompt->limit_period) : '' }}{{ $prompt->limit_character ? ' per character' : '' }}.</p>
+                    {{ $prompt->limit_period ? ' per ' . strtolower(config('lorekeeper.extensions.limit_periods')[$prompt->limit_period]) : '' }}{{ $prompt->limit_character ? ' per character' : '' }}.</p>
             </div>
+        @endif
+
+        <h5>Default Rewards</h5>
+        @if (isset($staffView) && $staffView)
+            <p>For reference, these are the default rewards for this prompt. The editable section above is <u>inclusive</u> of these rewards.</p>
+        @else
+            <p>These are the default rewards for this prompt. The actual rewards you receive may be edited by a staff member during the approval process.</p>
         @endif
         <table class="table table-sm mb-0">
             <thead>

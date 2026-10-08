@@ -5,13 +5,6 @@
   */
 
 /*!
- * The buffer module from node.js, for the browser.
- *
- * @author   Feross Aboukhadijeh <http://feross.org>
- * @license  MIT
- */
-
-/*!
  * jQuery JavaScript Library v3.7.1
  * https://jquery.com/
  *
@@ -223,9 +216,7 @@
  * http://jquery.org/license
  */
 
-/*! Axios v1.18.1 Copyright (c) 2026 Matt Zabriskie and contributors */
-
-/*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
+/*! Axios v1.20.0 Copyright (c) 2026 Matt Zabriskie and contributors */
 
 /*! jQuery UI - v1.13.1 - 2022-06-27
 * http://jqueryui.com

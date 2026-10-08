@@ -31,7 +31,7 @@
                     </p>
                     <div class="text-right">
                         {!! Form::open(['url' => 'characters/transfer/act/' . $transfer->id]) !!}
-                        {!! Form::submit('Cancel', ['class' => 'btn btn-danger', 'name' => 'action']) !!}
+                        {!! Form::submit('Cancel', ['class' => 'btn btn-danger', 'name' => 'action', 'value' => 'cancel']) !!}
                         {!! Form::close() !!}
                     </div>
                 </div>

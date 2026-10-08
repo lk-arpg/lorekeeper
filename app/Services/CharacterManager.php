@@ -1520,7 +1520,7 @@ class CharacterManager extends Service {
                 throw new \Exception('Invalid transfer selected.');
             }
 
-            if ($data['action'] == 'Accept') {
+            if ($data['action'] == 'accept') {
                 $cooldown = Settings::get('transfer_cooldown');
 
                 $transfer->status = 'Accepted';
@@ -1636,7 +1636,7 @@ class CharacterManager extends Service {
                 throw new \Exception('Invalid transfer selected.');
             }
 
-            if ($data['action'] == 'Approve') {
+            if ($data['action'] == 'approve') {
                 $transfer->is_approved = 1;
                 $transfer->data = [
                     'staff_id' => $user->id,

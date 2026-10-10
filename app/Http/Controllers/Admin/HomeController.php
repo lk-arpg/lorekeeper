@@ -25,7 +25,7 @@ class HomeController extends Controller {
      */
     public function getIndex() {
         $openTransfersQueue = Settings::get('open_transfers_queue');
-        $openTradesQueue = Settings::get('open_trades_queue');
+        $openTradesQueue = Settings::get('open_trades_queue') || $openTransfersQueue;
         $galleryRequireApproval = Settings::get('gallery_submissions_require_approval');
         $galleryCurrencyAwards = Settings::get('gallery_submissions_reward_currency');
 

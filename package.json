@@ -22,5 +22,9 @@
         "resolve-url-loader": "^5.0.0",
         "sass": "^1.105.0",
         "sass-loader": "^17.0.1"
+    },
+    "overrides": {
+        "webpack": "5.106.2",
+        "webpackbar": "^7.0.0"
     }
 }

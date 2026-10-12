@@ -46,7 +46,7 @@
                                 <tr class="d-flex">
                                     <td class="col-2">
                                         @if (isset($itemRow['asset']) && isset($items[$itemRow['asset']->item_id]->image_url))
-                                            <img class="small-icon" src="{{ $items[$itemRow['asset']->item_id]->image_url }}" alt=" {{ $items[$itemRow['asset']->item_id]->name }} ">
+                                            <img class="small-icon" src="{{ $items[$itemRow['asset']->item_id]->image_url }}" alt="">
                                         @endif {!! isset($itemRow['asset']) ? $items[$itemRow['asset']->item_id]->name : '<i>Deleted User Item</i>' !!}
                                     <td class="col-4">{!! isset($itemRow['asset']) && array_key_exists('data', $itemRow['asset']->data) ? ($itemRow['asset']->data['data'] ? $itemRow['asset']->data['data'] : 'N/A') : 'N/A' !!}</td>
                                     <td class="col-4">{!! isset($itemRow['asset']) && array_key_exists('notes', $itemRow['asset']->data) ? ($itemRow['asset']->data['notes'] ? $itemRow['asset']->data['notes'] : 'N/A') : 'N/A' !!}</td>

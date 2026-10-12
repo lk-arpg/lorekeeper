@@ -59,7 +59,7 @@
                                     @if ($stack->first()->has_image)
                                         <div class="mb-1">
                                             <a href="#" class="inventory-stack">
-                                                <img src="{{ $stack->first()->imageUrl }}" alt="{{ $stack->first()->name }}" />
+                                                <img src="{{ $stack->first()->imageUrl }}" alt="" />
                                             </a>
                                         </div>
                                     @endif
@@ -90,7 +90,7 @@
                     @foreach ($categoryItems as $itemtype)
                         <div class="col-lg-3 col-sm-4 col-12">
                             @if ($itemtype->first()->has_image)
-                                <img src="{{ $itemtype->first()->imageUrl }}" style="height: 25px;" alt="{{ $itemtype->first()->name }}" />
+                                <img src="{{ $itemtype->first()->imageUrl }}" style="height: 25px;" alt="" />
                             @endif
                             <a href="{{ $itemtype->first()->idUrl }}">
                                 {{ $itemtype->first()->name }}

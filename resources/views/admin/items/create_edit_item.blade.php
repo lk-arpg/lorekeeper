@@ -161,6 +161,14 @@
             <a href="{{ url('admin/data/items/tag/' . $item->id) }}" class="btn btn-outline-primary">Add a Tag</a>
         </div>
 
+        {{-- blade-formatter-disable --}}
+        @include('widgets._add_alt_text', [
+            'object' => $item,
+            'type' => 'item',
+            'text_key' => 'Main',
+        ])
+        {{-- blade-formatter-enable --}}
+
         <h3>Preview</h3>
         <div class="card mb-3">
             <div class="card-body">

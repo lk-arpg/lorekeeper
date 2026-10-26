@@ -301,7 +301,7 @@ class FeatureService extends Service {
                 $data['subtype_ids'] = [];
             }
 
-            $data = $this->populateData($data);
+            $data = $this->populateData($data, $feature);
 
             // remove old subtypes
             $feature->subtypes()->detach();

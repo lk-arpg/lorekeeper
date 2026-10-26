@@ -39,6 +39,8 @@ Route::group(['prefix' => 'account', 'namespace' => 'Users'], function () {
     Route::post('dob', 'AccountController@postBirthday');
     Route::post('warning', 'AccountController@postWarningVisibility');
     Route::post('comments', 'AccountController@postProfileComments');
+    Route::post('admin-notifs', 'AccountController@postAdminNotificationSettings');
+    Route::post('stack-auto-select', 'AccountController@postStackAutoSelect');
 
     Route::get('two-factor/confirm', 'AccountController@getConfirmTwoFactor');
     Route::post('two-factor/enable', 'AccountController@postEnableTwoFactor');
@@ -56,6 +58,13 @@ Route::group(['prefix' => 'account', 'namespace' => 'Users'], function () {
     Route::post('bookmarks/edit/{id}', 'BookmarkController@postCreateEditBookmark');
     Route::get('bookmarks/delete/{id}', 'BookmarkController@getDeleteBookmark');
     Route::post('bookmarks/delete/{id}', 'BookmarkController@postDeleteBookmark');
+    Route::get('bookmarks/reorder', 'BookmarkController@getReorderBookmarks');
+    Route::post('bookmarks/sort', 'BookmarkController@postSortBookmarks');
+    Route::get('bookmarks/folders', 'BookmarkController@getManageFolders');
+    Route::post('bookmarks/folders/new', 'BookmarkController@postCreateFolder');
+    Route::post('bookmarks/folders/edit/{id}', 'BookmarkController@postEditFolder');
+    Route::post('bookmarks/folders/delete/{id}', 'BookmarkController@postDeleteFolder');
+    Route::post('bookmarks/folders/sort', 'BookmarkController@postSortFolders');
 });
 
 Route::group(['prefix' => 'inventory', 'namespace' => 'Users'], function () {
@@ -182,6 +191,7 @@ Route::group(['prefix' => 'submissions', 'namespace' => 'Users'], function () {
     Route::post('draft/{id}/{submit}', 'SubmissionController@postEditSubmission')->where('submit', 'submit');
     Route::post('draft/{id}/delete', 'SubmissionController@postDeleteSubmission');
     Route::post('draft/{id}/cancel', 'SubmissionController@postCancelSubmission');
+    Route::get('counts/character/{id}/{slug}', 'SubmissionController@getCharacterPromptCounts');
 });
 
 Route::group(['prefix' => 'claims', 'namespace' => 'Users'], function () {
@@ -266,3 +276,6 @@ Route::group(['prefix' => 'limits'], function () {
 Route::group(['prefix' => 'rewards'], function () {
     Route::post('/types', 'RewardController@postRewardTypes');
 });
+
+// RAFFLE SELF ENTRY - NEWT
+Route::post('raffles/enter/{id}', 'RaffleController@postSelfEnter');

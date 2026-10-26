@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\MessageBag;
-use Intervention\Image\ImageManagerStatic as Image;
+use Intervention\Image\Facades\Image;
 
 abstract class Service {
     /*
@@ -265,31 +265,23 @@ abstract class Service {
      * @return mixed Image instance with watermark applied
      */
     public function applyWatermark($image, $watermarkPath = 'images/watermark.png', $resizeWatermark = false, $watermarkPercent = 0.9) {
-        if (!file_exists($watermarkPath)) { // stop silently failing if watermark file doesn't exist
+        if (!file_exists($watermarkPath)) {
+            flash('Watermark file not found: '.$watermarkPath)->error();
+
             return $image;
         }
 
         try {
-            // ensure matching drivers for watermark and image to prevent errors
-            $this->configureImageDriver($image->basePath());
             $watermark = Image::make($watermarkPath);
 
             if ($resizeWatermark) {
-                $imageWidth = $image->width();
-                $imageHeight = $image->height();
-                $wmWidth = $watermark->width();
-                $wmHeight = $watermark->height();
+                $maxSize = max($image->width(), $image->height()) * $watermarkPercent;
 
-                // calculate max size based on image dimensions and watermark percent
-                $maxSize = max($imageWidth, $imageHeight) * $watermarkPercent;
-
-                if ($wmWidth > $wmHeight) {
-                    // watermark is landscape
+                if ($watermark->width() > $watermark->height()) {
                     $watermark->resize($maxSize, null, function ($constraint) {
                         $constraint->aspectRatio();
                     });
                 } else {
-                    // watermark is portrait
                     $watermark->resize(null, $maxSize, function ($constraint) {
                         $constraint->aspectRatio();
                     });
@@ -300,7 +292,9 @@ abstract class Service {
 
             return $image;
         } catch (\Throwable $e) {
-            return $image; // Return unmodified image on error
+            flash('Error applying watermark: '.$e->getMessage())->error();
+
+            return $image;
         }
     }
 

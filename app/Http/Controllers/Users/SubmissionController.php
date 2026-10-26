@@ -161,14 +161,6 @@ class SubmissionController extends Controller {
             ];
         });
 
-        $prompt = $submission->prompt;
-        $count['all'] = Submission::submitted($prompt->id, Auth::user()->id)->count();
-        $count['Hour'] = Submission::submitted($prompt->id, Auth::user()->id)->where('created_at', '>=', now()->startOfHour())->count();
-        $count['Day'] = Submission::submitted($prompt->id, Auth::user()->id)->where('created_at', '>=', now()->startOfDay())->count();
-        $count['Week'] = Submission::submitted($prompt->id, Auth::user()->id)->where('created_at', '>=', now()->startOfWeek())->count();
-        $count['Month'] = Submission::submitted($prompt->id, Auth::user()->id)->where('created_at', '>=', now()->startOfMonth())->count();
-        $count['Year'] = Submission::submitted($prompt->id, Auth::user()->id)->where('created_at', '>=', now()->startOfYear())->count();
-
         return view('home.edit_submission', [
             'closed'              => $closed,
             'isClaim'             => false,
@@ -185,7 +177,7 @@ class SubmissionController extends Controller {
             'page'                   => 'submission',
             'expanded_rewards'       => config('lorekeeper.extensions.character_reward_expansion.expanded'),
             'selectedInventory'      => isset($submission->data['user']) ? parseAssetData($submission->data['user']) : null,
-            'count'                  => $count,
+            'count'                  => $submission->prompt ? $submission->prompt->getCount(Auth::user(), $submission->characters->pluck('character')) : [],
             'userGallerySubmissions' => $gallerySubmissions,
         ]));
     }
@@ -218,16 +210,9 @@ class SubmissionController extends Controller {
             return response(404);
         }
 
-        if ($prompt->limit_character) {
-            $limit = $prompt->limit * Character::visible()->where('is_myo_slot', 0)->where('user_id', Auth::user()->id)->count();
-        } else {
-            $limit = $prompt->limit;
-        }
-
         return view('home._prompt', [
             'prompt' => $prompt,
             'count'  => $prompt->getCount(Auth::user()),
-            'limit'  => $limit,
         ]);
     }
 
@@ -630,5 +615,26 @@ class SubmissionController extends Controller {
         }
 
         return redirect()->to('claims/draft/'.$submission->id);
+    }
+
+    /**
+     * Shows character prompt count information.
+     *
+     * @param int   $id
+     * @param mixed $slug
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getCharacterPromptCounts($id, $slug) {
+        $prompt = Prompt::active()->where('id', $id)->first();
+        $character = Character::where('slug', $slug)->first();
+        if (!$prompt || !$character) {
+            return response(404);
+        }
+
+        return view('widgets._character_prompt_count', [
+            'prompt'     => $prompt,
+            'character'  => $character,
+        ]);
     }
 }

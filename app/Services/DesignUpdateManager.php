@@ -953,6 +953,9 @@ class DesignUpdateManager extends Service {
             }
 
             // Delete the request
+            $request->rawFeatures()->delete();
+            $request->designers()->delete();
+            $request->artists()->delete();
             $request->delete();
 
             return $this->commitReturn(true);

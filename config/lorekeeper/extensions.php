@@ -141,6 +141,12 @@ return [
     // Unmerge Item Page and Item Entry - Speedy
     'unmerge_item_page_and_entry' => 0, // If enabled, uses the html on world/item_page.blade.php instead of the include that links to world/_item_entry.blade.php
 
+    // Item Tag Tooltips - Min
+    'item_tag_tooltips' => 0, // If enabled, item tag badges & items show a tooltip with the tag's description. Tags without a description will not show a tooltip.
+
+    // Unmerge Trait Page and Trait Entry - Speedy
+    'unmerge_feature_page_and_entry' => 0, // If enabled, uses the html on world/feature_page.blade.php instead of the include that links to world/_feature_entry.blade.php
+
     // Show Species-only traits in dropdown - Speedy
     'show_exclusively_species_traits_in_dropdown' => 0, // If enabled, will only show traits from the associated species as well as traits that aren't species-limited in the dropdown menus.
 
@@ -156,6 +162,9 @@ return [
         'Quarter'   => 'Quarter', // This is once every three months.
         'Year'      => 'Year',
     ],
+
+    // Admin Notifications - Uri, port by Speedy
+    'admin_notifications' => 1, // If enabled, will show a number next to the admin crown signifying the number of items waiting in queue. (Can be turned off per user.)
 
     // Limit Userpage Sublists to Characters - Speedy
     'limit_userpage_sublists_to_characters' => 0, // If enabled, will only show sub masterlists on user pages that the characters owned by the user belong to.

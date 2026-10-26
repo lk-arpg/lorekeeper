@@ -14,15 +14,17 @@
     @foreach ($images as $key => $image)
         <div class="card mb-3">
             <div class="card-body">
-                <div class="d-flex flex-column flex-sm-row">
-                    @if (file_exists(public_path('images/' . $image['filename'])))
-                        <img src="{{ asset('images/' . $image['filename'] . '?v=' . filemtime(public_path('images/' . $image['filename']))) }}" class="mw-100" alt="Site image: {{ $image['name'] }}" />
-                    @else
-                        No image found.
-                        <br>
-                        Please upload an image.
-                    @endif
-                    <div style="width: 100%;">
+                <div class="row">
+                    <div class="col-12 col-md-3 mb-3 mb-md-0">
+                        @if (file_exists(public_path('images/' . $image['filename'])))
+                            <img src="{{ asset('images/' . $image['filename'] . '?v=' . filemtime(public_path('images/' . $image['filename']))) }}" class="mw-100" alt="Site image: {{ $image['name'] }}" />
+                        @else
+                            No image found.
+                            <br>
+                            Please upload an image.
+                        @endif
+                    </div>
+                    <div class="col-12 col-md-9">
                         <h3 class="card-heading">{{ $image['name'] }} <a href="{{ asset('images/' . $image['filename']) }}" class="btn btn-info btn-sm float-right">View Current</a></h3>
                         <p>{{ $image['description'] }}</p>
                         {!! Form::open(['url' => 'admin/images/upload', 'files' => true]) !!}

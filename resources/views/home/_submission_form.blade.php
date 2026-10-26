@@ -59,9 +59,11 @@
     {!! Form::textarea('comments', isset($submission->comments) ? $submission->comments : old('comments') ?? Request::get('comments'), ['class' => 'form-control']) !!}
 </div>
 
-@if ($submission->prompt_id)
-    <div class="mb-3">
-        @include('home._prompt', ['prompt' => $submission->prompt, 'staffView' => false])
+@if (!$isClaim)
+    <div id="promptDetails" class="mb-3">
+        @if ($submission->prompt_id)
+            @include('home._prompt', ['prompt' => $submission->prompt, 'staffView' => false])
+        @endif
     </div>
 @endif
 
@@ -96,10 +98,6 @@
             @include('widgets._loot_select', ['loots' => $submission->id ? $submission->rewards : $loots ?? null, 'showLootTables' => false, 'showRaffles' => true])
         @else
             @include('widgets._loot_select', ['loots' => $submission->id ? $submission->rewards : $loots ?? null, 'showLootTables' => false, 'showRaffles' => false])
-        @endif
-
-        @if (!$isClaim)
-            <div id="rewards" class="mb-3"></div>
         @endif
     </div>
 </div>

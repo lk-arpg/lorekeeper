@@ -207,7 +207,7 @@ class Feature extends Model {
      * @return string
      */
     public function getDisplayNameAttribute() {
-        return '<a href="'.$this->url.'" class="display-trait">'.$this->name.'</a>'.($this->rarity ? ' ('.$this->rarity->displayName.')' : '');
+        return '<a href="'.$this->idUrl.'" class="display-trait">'.$this->name.'</a>'.($this->rarity ? ' ('.$this->rarity->displayName.')' : '');
     }
 
     /**
@@ -257,6 +257,15 @@ class Feature extends Model {
      */
     public function getUrlAttribute() {
         return url('world/traits?name='.$this->name);
+    }
+
+    /**
+     * Gets the URL of the individual trait's page, by ID.
+     *
+     * @return string
+     */
+    public function getIdUrlAttribute() {
+        return url('world/traits/'.$this->id);
     }
 
     /**

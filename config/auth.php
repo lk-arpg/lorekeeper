@@ -31,7 +31,11 @@ return [
     | users are actually retrieved out of your database or other storage
     | mechanisms used by this application to persist your user's data.
     |
-    | Supported: "session", "token"
+    | Supported: "session"
+    | 
+    | IMPORTANT: Do not use "token" authentication here due to TokenGuard vulnerability.
+    | Install Laravel Sanctum or Passport if API functionality is needed.
+    | See: https://packagist.org/security-advisories/PKSA-b41t-wbzk-9q51
     |
     */
 
@@ -39,12 +43,6 @@ return [
         'web' => [
             'driver' => 'session',
             'provider' => 'users',
-        ],
-
-        'api' => [
-            'driver' => 'token',
-            'provider' => 'users',
-            'hash' => false,
         ],
     ],
 

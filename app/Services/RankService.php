@@ -187,7 +187,7 @@ class RankService extends Service {
 
             // Check if the array contains the admin rank, or anything non-numeric
             $adminRank = Rank::where('is_admin', 1)->first();
-            $count = 0;
+            $count = 1;
             foreach ($sort as $key => $s) {
                 if (!is_numeric($s) || !is_numeric($key)) {
                     throw new \Exception('Invalid sort order.');
@@ -196,7 +196,7 @@ class RankService extends Service {
                     throw new \Exception('The sort order of the admin rank cannot be changed.');
                 }
 
-                Rank::where('id', $s)->update(['sort' => $key]);
+                Rank::where('id', $s)->update(['sort' => $key + 1]);
                 $count++;
             }
             $adminRank->update(['sort'=> $count]);

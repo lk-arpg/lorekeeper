@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Models\Loot\Loot;
 use App\Models\Loot\LootTable;
-use App\Models\Prompt\PromptReward;
+use App\Models\Reward\Reward;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 
@@ -82,7 +82,7 @@ class LootService extends Service {
                 if (!$type) {
                     throw new \Exception('Loot type is required.');
                 }
-                if ($type != 'ItemRarity' && !$data['rewardable_id'][$key]) {
+                if (($type != 'ItemRarity' && $type != 'ItemCategoryRarity') && !$data['rewardable_id'][$key]) {
                     throw new \Exception('Reward is required.');
                 }
                 if (!$data['quantity'][$key] || $data['quantity'][$key] < 1) {
@@ -127,7 +127,7 @@ class LootService extends Service {
             // Check first if the table is currently in use
             // - Prompts
             // - Box rewards (unfortunately this can't be checked easily)
-            if (PromptReward::where('rewardable_type', 'LootTable')->where('rewardable_id', $table->id)->exists()) {
+            if (Reward::where('rewardable_type', 'LootTable')->where('rewardable_id', $table->id)->exists()) {
                 throw new \Exception('A prompt uses this table to distribute rewards. Please remove it from the rewards list first.');
             }
 
@@ -160,13 +160,18 @@ class LootService extends Service {
                 ];
             }
 
+            if ($type == 'None') {
+                $type = null;
+                $data['rewardable_id'][$key] = null;
+            }
+
             Loot::create([
                 'loot_table_id'   => $table->id,
                 'rewardable_type' => $type,
-                'rewardable_id'   => $data['rewardable_id'][$key] ?? 1,
+                'rewardable_id'   => $data['rewardable_id'][$key],
                 'quantity'        => $data['quantity'][$key],
                 'weight'          => $data['weight'][$key],
-                'data'            => isset($lootData) ? json_encode($lootData) : null,
+                'data'            => $lootData ?? null,
             ]);
         }
     }

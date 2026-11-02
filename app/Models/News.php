@@ -18,6 +18,7 @@ class News extends Model implements Feedable {
      */
     protected $fillable = [
         'user_id', 'text', 'parsed_text', 'title', 'is_visible', 'post_at',
+        'has_image', 'hash',
     ];
 
     /**
@@ -51,6 +52,7 @@ class News extends Model implements Feedable {
     public static $createRules = [
         'title' => 'required|between:3,100',
         'text'  => 'required',
+        'image' => 'mimes:png',
     ];
 
     /**
@@ -61,6 +63,7 @@ class News extends Model implements Feedable {
     public static $updateRules = [
         'title' => 'required|between:3,100',
         'text'  => 'required',
+        'image' => 'mimes:png',
     ];
 
     /**********************************************************************************************
@@ -86,10 +89,15 @@ class News extends Model implements Feedable {
      * Scope a query to only include visible posts.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param mixed|null                            $user
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeVisible($query) {
+    public function scopeVisible($query, $user = null) {
+        if ($user && $user->hasPower('manage_news')) {
+            return $query;
+        }
+
         return $query->where('is_visible', 1);
     }
 
@@ -102,6 +110,42 @@ class News extends Model implements Feedable {
      */
     public function scopeShouldBeVisible($query) {
         return $query->whereNotNull('post_at')->where('post_at', '<', Carbon::now())->where('is_visible', 0);
+    }
+
+    /**
+     * Scope a query to sort sales in alphabetical order.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param bool                                  $reverse
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeSortAlphabetical($query, $reverse = false) {
+        return $query->orderBy('title', $reverse ? 'DESC' : 'ASC');
+    }
+
+    /**
+     * Scope a query to sort sales by newest first.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param mixed                                 $reverse
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeSortNewest($query, $reverse = false) {
+        return $query->orderBy('id', $reverse ? 'ASC' : 'DESC');
+    }
+
+    /**
+     * Scope a query to sort sales by bump date.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param bool                                  $reverse
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeSortBump($query, $reverse = false) {
+        return $query->orderBy('updated_at', $reverse ? 'DESC' : 'ASC');
     }
 
     /**********************************************************************************************
@@ -126,6 +170,46 @@ class News extends Model implements Feedable {
      */
     public function getDisplayNameAttribute() {
         return '<a href="'.$this->url.'">'.$this->title.'</a>';
+    }
+
+    /**
+     * Gets the file directory containing the model's image.
+     *
+     * @return string
+     */
+    public function getImageDirectoryAttribute() {
+        return 'images/data/news';
+    }
+
+    /**
+     * Gets the file name of the model's image.
+     *
+     * @return string
+     */
+    public function getImageFileNameAttribute() {
+        return $this->id.'-'.$this->hash.'-image.png';
+    }
+
+    /**
+     * Gets the path to the file directory containing the model's image.
+     *
+     * @return string
+     */
+    public function getImagePathAttribute() {
+        return public_path($this->imageDirectory);
+    }
+
+    /**
+     * Gets the URL of the model's image.
+     *
+     * @return string
+     */
+    public function getImageUrlAttribute() {
+        if (!$this->has_image) {
+            return null;
+        }
+
+        return asset($this->imageDirectory.'/'.$this->imageFileName);
     }
 
     /**

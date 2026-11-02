@@ -27,15 +27,25 @@ require_once __DIR__.'/lorekeeper/browse.php';
 
 Route::feeds('feeds');
 
+// Updating email from verification notice
+Route::middleware('auth')->group(function () {
+    Route::get('/email/update', 'HomeController@getEmail');
+    Route::post('/email/update', 'HomeController@postEmail');
+});
+
 /**************************************************************************************************
     Routes that require login
 **************************************************************************************************/
-Route::group(['middleware' => ['auth', 'verified']], function () {
-    // LINK DA ACCOUNT
+Route::group(['middleware' => ['auth', 'verified', 'post.throttle']], function () {
+    // LINK OFF-SITE ACCOUNT
     Route::get('/link', 'HomeController@getLink')->name('link');
 
     Route::get('/auth/redirect/{driver}', 'HomeController@getAuthRedirect');
     Route::get('/auth/callback/{driver}', 'HomeController@getAuthCallback');
+
+    // EMAIL
+    Route::get('/email', 'HomeController@getEmail')->name('email');
+    Route::post('/email', 'HomeController@postEmail');
 
     // SET BIRTHDATE
     Route::get('/birthday', 'HomeController@getBirthday')->name('birthday');

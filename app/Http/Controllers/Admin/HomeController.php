@@ -11,7 +11,7 @@ use App\Models\Currency\Currency;
 use App\Models\Gallery\GallerySubmission;
 use App\Models\Report\Report;
 use App\Models\Submission\Submission;
-use App\Models\Trade;
+use App\Models\Trade\Trade;
 use App\Models\User\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,6 +25,7 @@ class HomeController extends Controller {
      */
     public function getIndex() {
         $openTransfersQueue = Settings::get('open_transfers_queue');
+        $openTradesQueue = Settings::get('open_trades_queue');
         $galleryRequireApproval = Settings::get('gallery_submissions_require_approval');
         $galleryCurrencyAwards = Settings::get('gallery_submissions_reward_currency');
 
@@ -36,6 +37,7 @@ class HomeController extends Controller {
             'reportCount'            => Report::where('status', 'Pending')->count(),
             'assignedReportCount'    => Report::assignedToMe(Auth::user())->count(),
             'openTransfersQueue'     => $openTransfersQueue,
+            'openTradesQueue'        => $openTradesQueue,
             'transferCount'          => $openTransfersQueue ? CharacterTransfer::active()->where('is_approved', 0)->count() : 0,
             'tradeCount'             => $openTransfersQueue ? Trade::where('status', 'Pending')->count() : 0,
             'galleryRequireApproval' => $galleryRequireApproval,

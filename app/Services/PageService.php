@@ -39,7 +39,30 @@ class PageService extends Service {
                 $data['allow_dislikes'] = 0;
             }
 
+            $image = null;
+            if (isset($data['image']) && $data['image']) {
+                $data['has_image'] = 1;
+                $data['hash'] = randomString(10);
+                $image = $data['image'];
+                unset($data['image']);
+            } else {
+                $data['has_image'] = 0;
+            }
+
             $page = SitePage::create($data);
+
+            if (isset($data['remove_image'])) {
+                if ($page && $page->has_image && $data['remove_image']) {
+                    $data['has_image'] = 0;
+                    $image = null;
+                    $this->deleteImage($page->imagePath, $page->imageFileName);
+                }
+                unset($data['remove_image']);
+            }
+
+            if ($image) {
+                $this->handleImage($image, $page->imagePath, $page->imageFileName);
+            }
 
             return $this->commitReturn($page);
         } catch (\Exception $e) {
@@ -79,7 +102,32 @@ class PageService extends Service {
                 $data['allow_dislikes'] = 0;
             }
 
+            $oldImageFileName = null;
+            if ($page->has_image) {
+                $oldImageFileName = $page->imageFileName;
+            }
+            $image = null;
+            if (isset($data['image']) && $data['image']) {
+                $data['has_image'] = 1;
+                $data['hash'] = randomString(10);
+                $image = $data['image'];
+                unset($data['image']);
+            }
+
             $page->update($data);
+
+            if (isset($data['remove_image'])) {
+                if ($page && $page->has_image && $data['remove_image']) {
+                    $data['has_image'] = 0;
+                    $image = null;
+                    $this->deleteImage($page->imagePath, $page->imageFileName);
+                }
+                unset($data['remove_image']);
+            }
+
+            if ($image) {
+                $this->handleImage($image, $page->imagePath, $page->imageFileName, $oldImageFileName);
+            }
 
             return $this->commitReturn($page);
         } catch (\Exception $e) {
@@ -105,9 +153,33 @@ class PageService extends Service {
                 throw new \Exception('You cannot delete this page.');
             }
 
+            $this->deleteImage($page->imagePath, $page->imageFileName);
             $page->delete();
 
             return $this->commitReturn(true);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Regenerates a site page.
+     *
+     * @param mixed $page
+     *
+     * @return bool
+     */
+    public function regenPage($page) {
+        DB::beginTransaction();
+
+        try {
+            $page->parsed_text = parse($page->text);
+
+            $page->save();
+
+            return $this->commitReturn($page);
         } catch (\Exception $e) {
             $this->setError('error', $e->getMessage());
         }

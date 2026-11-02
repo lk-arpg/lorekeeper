@@ -1,5 +1,5 @@
 @php
-    $characters = \App\Models\Character\Character::visible(Auth::check() ? Auth::user() : null)
+    $characters = \App\Models\Character\Character::visible(Auth::user() ?? null)
         ->myo(0)
         ->orderBy('slug', 'DESC')
         ->get()
@@ -24,6 +24,10 @@
                         {!! Form::label('slug[]', 'Character Code') !!}
                         {!! Form::select('slug[]', $characters, null, ['class' => 'form-control character-code', 'placeholder' => 'Select Character']) !!}
                     </div>
+                    @if (isset($submission) && (isset($isClaim) && !$isClaim))
+                        <div class="character-prompt-count">
+                        </div>
+                    @endif
                     <div class="character-rewards hide">
                         <h4>Character Rewards</h4>
                         <table class="table table-sm">
@@ -51,7 +55,6 @@
     </div>
     <table>
         <tr class="character-reward-row">
-
             @if ($expanded_rewards)
                 <td>
                     {!! Form::select('character_rewardable_type[]', ['Item' => 'Item', 'Currency' => 'Currency'] + (isset($showLootTables) && $showLootTables ? ['LootTable' => 'Loot Table'] : []), null, [

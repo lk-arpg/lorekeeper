@@ -7,6 +7,7 @@ use App\Models\Currency\Currency;
 use App\Models\Item\Item;
 use App\Models\Item\ItemCategory;
 use App\Models\Prompt\Prompt;
+use App\Models\Rarity;
 use App\Models\Shop\Shop;
 use App\Models\Shop\ShopStock;
 use App\Models\User\User;
@@ -165,17 +166,62 @@ class ItemController extends Controller {
      */
     public function getItemIndex(Request $request) {
         $query = Item::query();
-        $data = $request->only(['item_category_id', 'name']);
-        if (isset($data['item_category_id']) && $data['item_category_id'] != 'none') {
-            $query->where('item_category_id', $data['item_category_id']);
+        $data = $request->only(['item_category_id', 'name', 'sort', 'artist', 'visibility', 'rarity_id']);
+        if (isset($data['item_category_id'])) {
+            if ($data['item_category_id'] == 'withoutOption') {
+                $query->whereNull('item_category_id');
+            } else {
+                $query->where('item_category_id', $data['item_category_id']);
+            }
         }
         if (isset($data['name'])) {
             $query->where('name', 'LIKE', '%'.$data['name'].'%');
         }
+        if (isset($data['artist'])) {
+            $query->where('artist_id', $data['artist']);
+        }
+        if (isset($data['rarity_id'])) {
+            if ($data['rarity_id'] == 'withoutOption') {
+                $query->whereNull('data->rarity_id');
+            } else {
+                $query->where('data->rarity_id', $data['rarity_id']);
+            }
+        }
+        if (isset($data['visibility'])) {
+            if ($data['visibility'] == 'visibleOnly') {
+                $query->where('is_released', '=', 1);
+            } else {
+                $query->where('is_released', '=', 0);
+            }
+        }
+
+        if (isset($data['sort'])) {
+            switch ($data['sort']) {
+                case 'alpha':
+                    $query->sortAlphabetical();
+                    break;
+                case 'alpha-reverse':
+                    $query->sortAlphabetical(true);
+                    break;
+                case 'category':
+                    $query->sortCategory();
+                    break;
+                case 'newest':
+                    $query->sortNewest();
+                    break;
+                case 'oldest':
+                    $query->sortNewest(true);
+                    break;
+            }
+        } else {
+            $query->sortNewest(true);
+        }
 
         return view('admin.items.items', [
             'items'      => $query->paginate(20)->appends($request->query()),
-            'categories' => ['none' => 'Any Category'] + ItemCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'categories' => ['withoutOption' => 'Without Category'] + ItemCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'artists'    => User::whereIn('id', Item::whereNotNull('artist_id')->pluck('artist_id')->toArray())->pluck('name', 'id')->toArray(),
+            'rarities'   => ['withoutOption' => 'Without Rarity'] + Rarity::orderBy('rarities.sort', 'DESC')->pluck('name', 'id')->toArray(),
         ]);
     }
 
@@ -187,6 +233,7 @@ class ItemController extends Controller {
     public function getCreateItem() {
         return view('admin.items.create_edit_item', [
             'item'           => new Item,
+            'rarities'       => Rarity::orderBy('sort', 'DESC')->pluck('name', 'id'),
             'categories'     => ['none' => 'No category'] + ItemCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'prompts'        => Prompt::where('is_active', 1)->orderBy('id')->pluck('name', 'id'),
             'userCurrencies' => Currency::where('is_user_owned', 1)->orderBy('sort_user', 'DESC')->pluck('name', 'id'),
@@ -209,6 +256,7 @@ class ItemController extends Controller {
 
         return view('admin.items.create_edit_item', [
             'item'           => $item,
+            'rarities'       => Rarity::orderBy('sort', 'DESC')->pluck('name', 'id'),
             'categories'     => ['none' => 'No category'] + ItemCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'shops'          => Shop::whereIn('id', ShopStock::where('item_id', $item->id)->pluck('shop_id')->unique()->toArray())->orderBy('sort', 'DESC')->get(),
             'prompts'        => Prompt::where('is_active', 1)->orderBy('id')->pluck('name', 'id'),
@@ -228,9 +276,9 @@ class ItemController extends Controller {
     public function postCreateEditItem(Request $request, ItemService $service, $id = null) {
         $id ? $request->validate(Item::$updateRules) : $request->validate(Item::$createRules);
         $data = $request->only([
-            'name', 'allow_transfer', 'item_category_id', 'description', 'image', 'remove_image', 'rarity',
+            'name', 'allow_transfer', 'item_category_id', 'description', 'image', 'remove_image', 'rarity_id',
             'reference_url', 'artist_id', 'artist_url', 'uses', 'shops', 'prompts', 'release', 'currency_id', 'currency_quantity',
-            'is_released',
+            'is_released', 'is_deletable',
         ]);
         if ($id && $service->updateItem(Item::find($id), $data, Auth::user())) {
             flash('Item updated successfully.')->success();
@@ -347,7 +395,7 @@ class ItemController extends Controller {
         return view('admin.items.edit_tag', [
             'item' => $item,
             'tag'  => $tag,
-        ] + $tag->getEditData());
+        ] + $tag->getEditData($tag));
     }
 
     /**

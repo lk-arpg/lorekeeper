@@ -22,6 +22,15 @@ class SubmissionCharacter extends Model {
      */
     protected $table = 'submission_characters';
 
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'data' => 'array',
+    ];
+
     /**********************************************************************************************
 
         RELATIONS
@@ -47,15 +56,6 @@ class SubmissionCharacter extends Model {
         ACCESSORS
 
     **********************************************************************************************/
-
-    /**
-     * Get the data attribute as an associative array.
-     *
-     * @return array
-     */
-    public function getDataAttribute() {
-        return json_decode($this->attributes['data'], true);
-    }
 
     /**
      * Get the rewards for the character.

@@ -40,7 +40,30 @@ class SalesService extends Service {
                 $data['is_open'] = 0;
             }
 
+            $image = null;
+            if (isset($data['image']) && $data['image']) {
+                $data['has_image'] = 1;
+                $data['hash'] = randomString(10);
+                $image = $data['image'];
+                unset($data['image']);
+            } else {
+                $data['has_image'] = 0;
+            }
+
             $sales = Sales::create($data);
+
+            if (isset($data['remove_image'])) {
+                if ($sales && $sales->has_image && $data['remove_image']) {
+                    $data['has_image'] = 0;
+                    $image = null;
+                    $this->deleteImage($sales->imagePath, $sales->imageFileName);
+                }
+                unset($data['remove_image']);
+            }
+
+            if ($image) {
+                $this->handleImage($image, $sales->imagePath, $sales->imageFileName);
+            }
 
             // The character identification comes in both the slug field and as character IDs
             // First, check if the characters are accessible to begin with.
@@ -92,6 +115,19 @@ class SalesService extends Service {
                 $data['is_open'] = 0;
             }
 
+            $oldImageFileName = null;
+            if ($sales->has_image) {
+                $oldImageFileName = $sales->imageFileName;
+            }
+
+            $image = null;
+            if (isset($data['image']) && $data['image']) {
+                $data['has_image'] = 1;
+                $data['hash'] = randomString(10);
+                $image = $data['image'];
+                unset($data['image']);
+            }
+
             if (isset($data['bump']) && $data['is_visible'] == 1 && $data['bump'] == 1) {
                 $this->alertUsers();
             }
@@ -115,6 +151,19 @@ class SalesService extends Service {
 
             $sales->update($data);
 
+            if (isset($data['remove_image'])) {
+                if ($sales && $sales->has_image && $data['remove_image']) {
+                    $data['has_image'] = 0;
+                    $image = null;
+                    $this->deleteImage($sales->imagePath, $sales->imageFileName);
+                }
+                unset($data['remove_image']);
+            }
+
+            if ($image) {
+                $this->handleImage($image, $sales->imagePath, $sales->imageFileName, $oldImageFileName);
+            }
+
             return $this->commitReturn($sales);
         } catch (\Exception $e) {
             $this->setError('error', $e->getMessage());
@@ -134,6 +183,7 @@ class SalesService extends Service {
         DB::beginTransaction();
 
         try {
+            $this->deleteImage($sales->imagePath, $sales->imageFileName);
             $sales->delete();
 
             return $this->commitReturn(true);
@@ -241,7 +291,7 @@ class SalesService extends Service {
                 'image_id'     => $data['image_id'][$key] ?? $character->image->id,
                 'sales_id'     => $sales->id,
                 'type'         => $charData[$key]['type'],
-                'data'         => json_encode($charData[$key]),
+                'data'         => $charData[$key],
                 'description'  => $data['description'][$key] ?? null,
                 'link'         => $data['link'][$key] ?? null,
                 'is_open'      => $data['character_is_open'][$character->slug] ?? ($data['new_entry'][$key] ? 1 : 0),

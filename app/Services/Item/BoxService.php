@@ -41,9 +41,10 @@ class BoxService extends Service {
                 $class = getAssetModelString($type, false);
                 foreach ($a as $id => $asset) {
                     $rewards[] = (object) [
-                        'rewardable_type' => $class,
-                        'rewardable_id'   => $id,
-                        'quantity'        => $asset['quantity'],
+                        'rewardable_recipient' => 'User',
+                        'rewardable_type'      => $class,
+                        'rewardable_id'        => $id,
+                        'quantity'             => $asset['quantity'],
                     ];
                 }
             }
@@ -69,7 +70,7 @@ class BoxService extends Service {
                 return true;
             }
 
-            // The data will be stored as an asset table, json_encode()d.
+            // The data will be stored as an asset table.
             // First build the asset table, then prepare it for storage.
             $assets = createAssetsArray();
             foreach ($data['rewardable_type'] as $key => $r) {
@@ -92,7 +93,7 @@ class BoxService extends Service {
             }
             $assets = getDataReadyAssets($assets);
 
-            $tag->update(['data' => json_encode($assets)]);
+            $tag->update(['data' => $assets]);
 
             return $this->commitReturn(true);
         } catch (\Exception $e) {

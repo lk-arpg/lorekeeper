@@ -471,17 +471,15 @@ class InventoryManager extends Service {
         DB::beginTransaction();
 
         try {
-            $encoded_data = \json_encode($data);
-
             if ($recipient->logType == 'User') {
                 $recipient_stack = UserItem::where([
                     ['user_id', '=', $recipient->id],
                     ['item_id', '=', $item->id],
-                    ['data', '=', $encoded_data],
+                    ['data', '=', json_encode($data)], // this must be encoded since eloquent hasn't casted it yet
                 ])->first();
 
                 if (!$recipient_stack) {
-                    $recipient_stack = UserItem::create(['user_id' => $recipient->id, 'item_id' => $item->id, 'data' => $encoded_data]);
+                    $recipient_stack = UserItem::create(['user_id' => $recipient->id, 'item_id' => $item->id, 'data' => $data]);
                 }
                 $recipient_stack->count += $quantity;
                 $recipient_stack->save();
@@ -489,11 +487,11 @@ class InventoryManager extends Service {
                 $recipient_stack = CharacterItem::where([
                     ['character_id', '=', $recipient->id],
                     ['item_id', '=', $item->id],
-                    ['data', '=', $encoded_data],
+                    ['data', '=', json_encode($data)],
                 ])->first();
 
                 if (!$recipient_stack) {
-                    $recipient_stack = CharacterItem::create(['character_id' => $recipient->id, 'item_id' => $item->id, 'data' => $encoded_data]);
+                    $recipient_stack = CharacterItem::create(['character_id' => $recipient->id, 'item_id' => $item->id, 'data' => $data]);
                 }
                 $recipient_stack->count += $quantity;
                 $recipient_stack->save();
@@ -536,11 +534,11 @@ class InventoryManager extends Service {
             $recipient_stack = UserItem::where([
                 ['user_id', '=', $recipient->id],
                 ['item_id', '=', $stack->item_id],
-                ['data', '=', json_encode($stack->data)],
+                ['data', '=', $stack->data],
             ])->first();
 
             if (!$recipient_stack) {
-                $recipient_stack = UserItem::create(['user_id' => $recipient->id, 'item_id' => $stack->item_id, 'data' => json_encode($stack->data)]);
+                $recipient_stack = UserItem::create(['user_id' => $recipient->id, 'item_id' => $stack->item_id, 'data' => $stack->data]);
             }
 
             $stack->count -= $quantity;
@@ -588,6 +586,56 @@ class InventoryManager extends Service {
         }
 
         return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Returns an array of debitable stacks for a user or character.
+     *
+     * @param mixed $owner
+     * @param mixed $itemId
+     * @param mixed $quantityRequired
+     */
+    public function getDebitableStacks($owner, $itemId, $quantityRequired) {
+        $stacks = [];
+        $totalAvailable = 0;
+
+        if ($owner->logType == 'User') {
+            $ownedStacks = UserItem::where([
+                ['user_id', '=', $owner->id],
+                ['item_id', '=', $itemId],
+                ['count', '>', 0],
+            ])->get()->filter(function ($stack) {
+                return $stack->getAvailableQuantityAttribute() > 0;
+            });
+        } else {
+            $ownedStacks = CharacterItem::where([
+                ['character_id', '=', $owner->id],
+                ['item_id', '=', $itemId],
+                ['count', '>', 0],
+            ])->get()->filter(function ($stack) {
+                return $stack->getAvailableQuantityAttribute() > 0;
+            });
+        }
+
+        foreach ($ownedStacks as $stack) {
+            $availableQuantity = $stack->getAvailableQuantityAttribute();
+            if ($availableQuantity > 0) {
+                $stacks[] = [
+                    'stack'    => $stack,
+                    'quantity' => min($availableQuantity, $quantityRequired - $totalAvailable),
+                ];
+                $totalAvailable += $availableQuantity;
+                if ($totalAvailable >= $quantityRequired) {
+                    break;
+                }
+            }
+        }
+
+        if ($totalAvailable < $quantityRequired) {
+            return false;
+        }
+
+        return $stacks;
     }
 
     /**

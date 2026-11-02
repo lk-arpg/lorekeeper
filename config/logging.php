@@ -89,6 +89,13 @@ return [
             'driver' => 'errorlog',
             'level'  => 'debug',
         ],
+
+        'throttle'   => [
+            'driver' => 'daily',
+            'path'   => storage_path('logs/throttle.log'),
+            'level'  => 'info',
+            'days'   => 14,
+        ],
     ],
 
 ];

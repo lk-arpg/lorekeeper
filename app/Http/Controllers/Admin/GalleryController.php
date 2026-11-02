@@ -33,11 +33,11 @@ class GalleryController extends Controller {
                     $submissions->sortNewest();
                     break;
                 case 'oldest':
-                    $submissions->sortOldest();
+                    $submissions->sortNewest(true);
                     break;
             }
         } else {
-            $submissions->sortOldest();
+            $submissions->sortNewest(true);
         }
         if ($status == 'pending' || !$status) {
             $submissions = $submissions->orderBy('created_at', 'ASC');
@@ -72,11 +72,11 @@ class GalleryController extends Controller {
                     $submissions->sortNewest();
                     break;
                 case 'oldest':
-                    $submissions->sortOldest();
+                    $submissions->sortNewest(true);
                     break;
             }
         } else {
-            $submissions->sortOldest();
+            $submissions->sortNewest(true);
         }
         if ($status == 'pending' || !$status) {
             $submissions = $submissions->orderBy('created_at', 'ASC');

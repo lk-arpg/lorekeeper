@@ -1,5 +1,5 @@
 @php
-    $characters = \App\Models\Character\Character::visible(Auth::check() ? Auth::user() : null)
+    $characters = \App\Models\Character\Character::visible(Auth::user() ?? null)
         ->myo(0)
         ->orderBy('slug', 'DESC')
         ->get()

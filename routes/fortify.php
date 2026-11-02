@@ -1,11 +1,11 @@
 <?php
 
+use App\Http\Controllers\Auth\VerificationController;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
 use Laravel\Fortify\Http\Controllers\ConfirmablePasswordController;
 use Laravel\Fortify\Http\Controllers\ConfirmedPasswordStatusController;
-use Laravel\Fortify\Http\Controllers\EmailVerificationNotificationController;
 use Laravel\Fortify\Http\Controllers\EmailVerificationPromptController;
 use Laravel\Fortify\Http\Controllers\NewPasswordController;
 use Laravel\Fortify\Http\Controllers\PasswordController;
@@ -84,7 +84,7 @@ Route::group(['middleware' => config('fortify.middleware', ['web'])], function (
             ->middleware(['auth', 'signed', 'throttle:6,1'])
             ->name('verification.verify');
 
-        Route::post('/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
+        Route::post('/email/verification-notification', [VerificationController::class, 'resend'])
             ->middleware(['auth', 'throttle:6,1'])
             ->name('verification.send');
     }

@@ -1,12 +1,15 @@
-<h2>
-    {!! $user->displayName !!}'s Offer
-    <span class="float-right">
+<div class="d-flex h2">
+    <div>{!! $user->displayName !!}'s Offer</div>
+    <div class="ml-auto">
         @if (Auth::user()->id == $user->id && $trade->status == 'Open')
             @if ($trade->{'is_' . $type . '_confirmed'})
                 <a href="#" class="btn btn-sm btn-outline-danger" id="confirmOfferButton" data-toggle="tooltip"
                     title="This will unconfirm your offer and allow you to edit it. You will need to reconfirm your offer after you have edited it to proceed.">Unconfirm</a>
             @else
-                <a href="{{ url('trades/' . $trade->id . '/edit') }}" class="btn btn-sm btn-primary">Edit</a> <a href="#" class="btn btn-sm btn-outline-primary" id="confirmOfferButton">Confirm</a>
+                <a href="{{ url('trades/' . $trade->id . '/edit') }}" class="btn btn-sm btn-primary">
+                    Edit {!! add_help('This will only edit your offer. You will need to confirm your offer again after editing.') !!}
+                </a>
+                <a href="#" class="btn btn-sm btn-outline-primary" id="confirmOfferButton">Confirm</a>
             @endif
         @else
             @if ($trade->{'is_' . $type . '_confirmed'})
@@ -19,8 +22,8 @@
                 <small class="text-muted">{!! add_help('This offer has yet to be confirmed.') !!} Pending</small>
             @endif
         @endif
-    </span>
-</h2>
+    </div>
+</div>
 <div class="card mb-3 trade-offer
         @if ($trade->{'is_' . $type . '_confirmed'}) @if ($trade->{'is_' . $type . '_trade_confirmed'})
                 border-success
@@ -49,7 +52,8 @@
                                 <td class="col-2">
                                     @if (isset($items[$itemRow['asset']->item_id]->image_url))
                                         <img class="small-icon" src="{{ $items[$itemRow['asset']->item_id]->image_url }}" alt="{{ $items[$itemRow['asset']->item_id]->name }}">
-                                    @endif {!! $items[$itemRow['asset']->item_id]->name !!}
+                                    @endif
+                                    {!! $items[$itemRow['asset']->item_id]->name !!}
                                 <td class="col-4">{!! array_key_exists('data', $itemRow['asset']->data) ? ($itemRow['asset']->data['data'] ? $itemRow['asset']->data['data'] : 'N/A') : 'N/A' !!}</td>
                                 <td class="col-4">{!! array_key_exists('notes', $itemRow['asset']->data) ? ($itemRow['asset']->data['notes'] ? $itemRow['asset']->data['notes'] : 'N/A') : 'N/A' !!}</td>
                                 <td class="col-2">{!! $itemRow['quantity'] !!}

@@ -2,6 +2,7 @@
 
 namespace App\Models\Submission;
 
+use App\Models\Gallery\GallerySubmission;
 use App\Models\Model;
 use App\Models\Prompt\Prompt;
 use App\Models\User\User;
@@ -25,6 +26,16 @@ class Submission extends Model {
      * @var string
      */
     protected $table = 'submissions';
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'data' => 'array',
+    ];
+
     /**
      * Whether the model contains timestamps to be saved and updated.
      *
@@ -146,25 +157,28 @@ class Submission extends Model {
     }
 
     /**
-     * Scope a query to sort submissions oldest first.
-     *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     *
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public function scopeSortOldest($query) {
-        return $query->orderBy('id');
-    }
-
-    /**
      * Scope a query to sort submissions by newest first.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param mixed                                 $reverse
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeSortNewest($query) {
-        return $query->orderBy('id', 'DESC');
+    public function scopeSortNewest($query, $reverse = false) {
+        return $query->orderBy('id', $reverse ? 'ASC' : 'DESC');
+    }
+
+    /**
+     * Scope a query to only include user's submissions.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param mixed                                 $prompt
+     * @param mixed                                 $user
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeSubmitted($query, $prompt, $user) {
+        return $query->where('prompt_id', $prompt)->whereNotIn('status', ['Rejected', 'Draft'])->where('user_id', $user);
     }
 
     /**********************************************************************************************
@@ -172,15 +186,6 @@ class Submission extends Model {
         ACCESSORS
 
     **********************************************************************************************/
-
-    /**
-     * Get the data attribute as an associative array.
-     *
-     * @return array
-     */
-    public function getDataAttribute() {
-        return json_decode($this->attributes['data'], true);
-    }
 
     /**
      * Gets the inventory of the user for selection.
@@ -238,13 +243,25 @@ class Submission extends Model {
             $class = getAssetModelString($type, false);
             foreach ($a as $id => $asset) {
                 $rewards[] = (object) [
-                    'rewardable_type' => $class,
-                    'rewardable_id'   => $id,
-                    'quantity'        => $asset['quantity'],
+                    'rewardable_recipient' => 'User',
+                    'rewardable_type'      => $class,
+                    'rewardable_id'        => $id,
+                    'quantity'             => $asset['quantity'],
                 ];
             }
         }
 
         return $rewards;
+    }
+
+    /**
+     * Gets the gallery submission (if there is one).
+     */
+    public function getGallerySubmissionAttribute() {
+        if (!config('lorekeeper.settings.allow_gallery_submissions_on_prompts') || !isset($this->data['gallery_submission_id'])) {
+            return null;
+        }
+
+        return GallerySubmission::find($this->data['gallery_submission_id'] ?? null);
     }
 }

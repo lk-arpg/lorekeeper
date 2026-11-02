@@ -1,45 +1,104 @@
 @php
-    // This file represents a common source and definition for assets used in loot_select
+    // This represents a common source and definition for assets used in loot_select
     // While it is not per se as tidy as defining these in the controller(s),
     // doing so this way enables better compatibility across disparate extensions
-    $characterCurrencies = \App\Models\Currency\Currency::where('is_character_owned', 1)
-        ->orderBy('sort_character', 'DESC')
-        ->pluck('name', 'id');
-    $items = \App\Models\Item\Item::orderBy('name')->pluck('name', 'id');
-    $currencies = \App\Models\Currency\Currency::where('is_user_owned', 1)
-        ->orderBy('name')
-        ->pluck('name', 'id');
-    if ($showLootTables) {
-        $tables = \App\Models\Loot\LootTable::orderBy('name')->pluck('name', 'id');
+
+    if (!isset($type)) {
+        $type = 'Reward';
     }
-    if ($showRaffles) {
-        $raffles = \App\Models\Raffle\Raffle::where('rolled_at', null)
-            ->where('is_active', 1)
-            ->orderBy('name')
-            ->pluck('name', 'id');
+    if (!isset($prefix)) {
+        $prefix = '';
+    }
+    if (!isset($showRecipient)) {
+        $showRecipient = false;
+    }
+    if (!isset($isCharacter)) {
+        $isCharacter = false;
+    }
+    if (!isset($useCustomSelectize)) {
+        $useCustomSelectize = false;
+    }
+
+    $rewardableRecipients = ['Character' => 'Character', 'User' => 'User'];
+    $recipient = $isCharacter ? 'Character' : 'User';
+
+    // Put any logic for handling 'showXYZ' variables in this array
+    $showData = isset($showData)
+        ? $showData
+        : [
+            'isTradeable' => isset($isTradeable) && $isTradeable ? $isTradeable : false,
+            'showLootTables' => isset($showLootTables) && $showLootTables ? $showLootTables : false,
+            'showRaffles' => isset($showRaffles) && $showRaffles ? $showRaffles : false,
+            'showCharacters' => isset($showCharacters) && $showCharacters ? $showCharacters : false,
+        ];
+
+    // Fetch reward data, defined in AssetHelpers
+    // All previous code that defines available asset IDs should now be moved to getRewardLootData
+    // Get the character specific loot availability if the recipient is being shown
+    if ($showRecipient) {
+        foreach ($rewardableRecipients as $recipient) {
+            $rewardLootData[$recipient] = getRewardLootData($showData, $recipient, $useCustomSelectize);
+            // Fetch valid reward types, defined in AssetHelpers
+            $rewardTypes[$recipient] = getRewardTypes($showData, $recipient);
+        }
+    } else {
+        $rewardLootData = getRewardLootData($showData, $recipient, $useCustomSelectize);
+        $rewardTypes = getRewardTypes($showData, $recipient);
     }
 @endphp
 
-<div id="lootRowData" class="hide">
+<div id="{{ $prefix }}lootRowData" class="hide">
     <table class="table table-sm">
-        <tbody id="lootRow">
+        <tbody id="{{ $prefix }}lootRow">
             <tr class="loot-row">
-                <td>{!! Form::select('rewardable_type[]', ['Item' => 'Item', 'Currency' => 'Currency'] + ($showLootTables ? ['LootTable' => 'Loot Table'] : []) + ($showRaffles ? ['Raffle' => 'Raffle Ticket'] : []), null, [
-                    'class' => 'form-control reward-type',
-                    'placeholder' => 'Select Reward Type',
-                ]) !!}</td>
-                <td class="loot-row-select"></td>
-                <td>{!! Form::text('quantity[]', 1, ['class' => 'form-control']) !!}</td>
+                @if ($showRecipient)
+                    <td>
+                        {!! Form::select($prefix . 'rewardable_recipient[]', $rewardableRecipients, null, [
+                            'class' => 'form-control recipient-type',
+                            'placeholder' => 'Select Recipient Type',
+                        ]) !!}
+                    </td>
+                @endif
+                <td class="{{ $prefix }}loot-row-type">
+                    {{-- The long array of key value pairs is now defined in getRewardTypes and data should be moved there --}}
+                    {!! Form::select($prefix . 'rewardable_type[]', $showRecipient ? [] : $rewardTypes, null, [
+                        'class' => 'form-control reward-type',
+                        'placeholder' => 'Select ' . $type . ' Type',
+                    ]) !!}
+                </td>
+                <td class="{{ $prefix }}loot-row-select"></td>
+                <td>{!! Form::text($prefix . 'quantity[]', 1, ['class' => 'form-control']) !!}</td>
+                @if (isset($extra_fields))
+                    @foreach ($extra_fields as $field => $data)
+                        <td>
+                            @php
+                                $field_name = $prefix . $field . '[]';
+                                $value = $data['default'] ?? null;
+                                $attributes = $data['attributes'] ?? [];
+                            @endphp
+                            {!! Form::{$data['type']}($field_name, $value, array_merge(['class' => 'form-control ' . ($data['class'] ?? ''), 'placeholder' => $data['placeholder'] ?? $data['label']], $attributes)) !!}
+                        </td>
+                        @if ($data['label'] == 'Weight')
+                            <td class="loot-row-chance"></td>
+                        @endif
+                    @endforeach
+                @endif
                 <td class="text-right"><a href="#" class="btn btn-danger remove-loot-button">Remove</a></td>
             </tr>
         </tbody>
     </table>
-    {!! Form::select('rewardable_id[]', $items, null, ['class' => 'form-control item-select', 'placeholder' => 'Select Item']) !!}
-    {!! Form::select('rewardable_id[]', $currencies, null, ['class' => 'form-control currency-select', 'placeholder' => 'Select Currency']) !!}
-    @if ($showLootTables)
-        {!! Form::select('rewardable_id[]', $tables, null, ['class' => 'form-control table-select', 'placeholder' => 'Select Loot Table']) !!}
-    @endif
-    @if ($showRaffles)
-        {!! Form::select('rewardable_id[]', $raffles, null, ['class' => 'form-control raffle-select', 'placeholder' => 'Select Raffle']) !!}
+    {{-- If statements here can be removed and replaced with the below code. They are now defined programmatically --}}
+    @if ($showRecipient)
+        @foreach ($rewardableRecipients as $recipient)
+            <div class="rewardable-ids-{{ strtolower($recipient) }}">
+                @foreach (getRewardTypes($showData, $recipient) as $rewardKey => $rewardType)
+                    {!! Form::select($prefix . 'rewardable_id[]', $rewardLootData[$recipient][$rewardKey], null, ['class' => 'form-control object-select ' . strtolower($rewardKey) . '-select', 'placeholder' => 'Select ' . $rewardType]) !!}
+                @endforeach
+            </div>
+        @endforeach
+    @else
+        @foreach ($rewardTypes as $rewardKey => $rewardType)
+            {!! Form::select($prefix . 'rewardable_id[]', $rewardLootData[$rewardKey], null, ['class' => 'form-control object-select ' . strtolower($rewardKey) . '-select', 'placeholder' => 'Select ' . $rewardType]) !!}
+        @endforeach
     @endif
 </div>

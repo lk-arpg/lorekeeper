@@ -29,14 +29,14 @@ class ReportController extends Controller {
                     $reports->sortNewest();
                     break;
                 case 'oldest':
-                    $reports->sortOldest();
+                    $reports->sortNewest(true);
                     break;
                 case 'bug':
                     $reports->whereNotNull('error_type');
                     break;
             }
         } else {
-            $reports->sortOldest();
+            $reports->sortNewest(true);
         }
 
         return view('admin.reports.index', [

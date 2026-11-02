@@ -72,7 +72,7 @@ class Rarity extends Model {
      * @return string
      */
     public function getRarityImageFileNameAttribute() {
-        return $this->hash.$this->id.'-image.png';
+        return $this->id.'-'.$this->hash.'-image.png';
     }
 
     /**
@@ -107,12 +107,19 @@ class Rarity extends Model {
     }
 
     /**
-     * Gets the URL for an encyclopedia search of features (character traits) in this category.
+     * Gets the URL for an encyclopedia search of features (character traits) of this rarity.
      *
      * @return string
      */
     public function getSearchFeaturesUrlAttribute() {
         return url('world/traits?rarity_id='.$this->id);
+    }
+
+    /**
+     * Gets the URL for an encyclopedia search of items of this rarity.
+     */
+    public function getSearchItemsUrlAttribute() {
+        return url('world/items?rarity_id='.$this->id);
     }
 
     /**

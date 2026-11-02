@@ -131,4 +131,50 @@ class Comment extends Model {
             return $this->parent->topComment;
         }
     }
+
+    /**
+     * Gets the end of a comment's thread.
+     *
+     * @return Comment
+     */
+    public function getEndOfThreadAttribute() {
+        if ($this->children->count() > 0) {
+            return $this->children->sortByDesc('created_at')->first()->endOfThread;
+        } else {
+            return $this;
+        }
+    }
+
+    /**
+     * Returns the comment contents but with links in clickable format.
+     *
+     * @return string
+     */
+    public function getCommentAttribute() {
+        if (config('lorekeeper.settings.wysiwyg_comments')) {
+            return preg_replace_callback(
+                '/(?<!href=")(?<!src=")(?<!\()(https?:\/\/[^\s<]+)/',
+                function ($matches) {
+                    $url = $matches[1];
+                    $parsedUrl = parse_url($url);
+                    $domain = $parsedUrl['host'];
+
+                    return '<a href="'.$url.'" target="_blank">'.$domain.'</a>';
+                },
+                $this->attributes['comment']
+            );
+        }
+
+        return preg_replace_callback(
+            '/(?<!\()(https?:\/\/[^\s]+)/',
+            function ($matches) {
+                $url = $matches[1];
+                $parsedUrl = parse_url($url);
+                $domain = $parsedUrl['host'];
+
+                return '['.$domain.']('.$url.')';
+            },
+            $this->attributes['comment']
+        );
+    }
 }

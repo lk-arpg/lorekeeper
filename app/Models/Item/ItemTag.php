@@ -22,6 +22,15 @@ class ItemTag extends Model {
      */
     protected $table = 'item_tags';
 
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'data' => 'array',
+    ];
+
     /**********************************************************************************************
 
         RELATIONS
@@ -78,7 +87,26 @@ class ItemTag extends Model {
     public function getDisplayTagAttribute() {
         $tag = config('lorekeeper.item_tags.'.$this->tag);
         if ($tag) {
-            return '<span class="badge" style="color: '.$tag['text_color'].';background-color: '.$tag['background_color'].';">'.$tag['name'].'</span>';
+            $tooltip = '';
+            if (config('lorekeeper.extensions.item_tag_tooltips') && isset($tag['description']) && $tag['description']) {
+                $tooltip = ' data-toggle="tooltip" title="'.$tag['description'].'"';
+            }
+
+            return '<span class="badge"'.$tooltip.' style="color: '.$tag['text_color'].';background-color: '.$tag['background_color'].';">'.$tag['name'].'</span>';
+        }
+
+        return null;
+    }
+
+    /**
+     * Displays the tag badge using single quotes, safe for embedding in a tooltip's title attribute.
+     *
+     * @return string
+     */
+    public function getDisplayTagTooltipAttribute() {
+        $tag = config('lorekeeper.item_tags.'.$this->tag);
+        if ($tag) {
+            return '<span class=\'badge mr-1\' style=\'color: '.$tag['text_color'].';background-color: '.$tag['background_color'].';\'>'.$tag['name'].'</span>';
         }
 
         return null;
@@ -100,15 +128,6 @@ class ItemTag extends Model {
      */
     public function getAdminUrlAttribute() {
         return url('admin/data/items/tag/'.$this->item_id.'/'.$this->tag);
-    }
-
-    /**
-     * Get the data attribute as an associative array.
-     *
-     * @return array
-     */
-    public function getDataAttribute() {
-        return json_decode($this->attributes['data'], true);
     }
 
     /**
@@ -134,7 +153,7 @@ class ItemTag extends Model {
      * @return mixed
      */
     public function getEditData() {
-        return $this->service->getEditData();
+        return $this->service->getEditData($this);
     }
 
     /**

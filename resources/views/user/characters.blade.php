@@ -11,5 +11,5 @@
         {!! $user->displayName !!}'s Characters
     </h1>
 
-    @include('user._characters', ['characters' => $characters, 'myo' => false])
+    @include('user._characters', ['characters' => $characters, 'myo' => false, 'owner' => true, 'userpage_exts' => true])
 @endsection

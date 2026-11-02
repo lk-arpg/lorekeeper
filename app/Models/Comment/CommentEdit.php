@@ -23,6 +23,15 @@ class CommentEdit extends Model {
     protected $table = 'comment_edits';
 
     /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'data' => 'array',
+    ];
+
+    /**
      * Whether the model contains timestamps to be saved and updated.
      *
      * @var string
@@ -47,24 +56,5 @@ class CommentEdit extends Model {
      */
     public function user() {
         return $this->belongsTo(User::class);
-    }
-
-    /**********************************************************************************************
-
-        ATTRIBUTES
-
-     **********************************************************************************************/
-
-    /**
-     * Get the data attribute as an associative array.
-     *
-     * @return array
-     */
-    public function getDataAttribute() {
-        if (!$this->id) {
-            return null;
-        }
-
-        return json_decode($this->attributes['data'], true);
     }
 }

@@ -12,9 +12,15 @@
     @auth
         @if ($submission->user_id == Auth::user()->id && $submission->status == 'Pending')
             {!! Form::open(['url' => url()->current(), 'id' => 'submissionForm']) !!}
-            <div class="text-right">
-                <a href="#" class="btn btn-danger mr-2" id="cancellationButton">Cancel {{ $submission->prompt_id ? 'submission' : 'claim' }}</a>
-            </div>
+            @if ($isClaim || !count(getLimits($submission->prompt)))
+                <div class="text-right">
+                    <a href="#" class="btn btn-danger mr-2" id="cancellationButton">Cancel {{ $submission->prompt_id ? 'submission' : 'claim' }}</a>
+                </div>
+            @else
+                <div class="alert alert-warning">
+                    This prompt cannot be edited after submission. If you need to make changes, please contact a staff member.
+                </div>
+            @endif
             <div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content hide" id="cancellationContent">

@@ -36,9 +36,32 @@
                 </div>
                 <div class="row">
                     <div class="col-md-2 col-4">
-                        <h5>Previous Submissions</h5>
+                        <h5>
+                            @if ($prompt->limit_character)
+                                Previous Submissions{!! add_help('This is the number of times the user has submitted this prompt before with the attached characters, pending or approved.') !!}
+                            @else
+                                Previous Submissions{!! add_help('This is the number of times the user has submitted this prompt before, pending or approved.') !!}
+                            @endif
+                        </h5>
                     </div>
-                    <div class="col-md-10 col-8">{{ $count }} {!! add_help('This is the number of times the user has submitted this prompt before and had their submission approved.') !!}</div>
+                    <div class="col-md-10 col-8">
+                        <div class="row text-center">
+                            <div class="col"><strong>All Time</strong></div>
+                            <div class="col"><strong>Past Hour</strong></div>
+                            <div class="col"><strong>Past Day</strong></div>
+                            <div class="col"><strong>Past Week</strong></div>
+                            <div class="col"><strong>Past Month</strong></div>
+                            <div class="col"><strong>Past Year</strong></div>
+                        </div>
+                        <div class="row text-center">
+                            <div class="col">{{ $count['all'] }}</div>
+                            <div class="col">{{ $count['Hour'] }}</div>
+                            <div class="col">{{ $count['Day'] }}</div>
+                            <div class="col">{{ $count['Week'] }}</div>
+                            <div class="col">{{ $count['Month'] }}</div>
+                            <div class="col">{{ $count['Year'] }}</div>
+                        </div>
+                    </div>
                 </div>
             @endif
             <div class="row">
@@ -47,6 +70,14 @@
                 </div>
                 <div class="col-md-10 col-8"><a href="{{ $submission->url }}">{{ $submission->url }}</a></div>
             </div>
+            @if (config('lorekeeper.settings.allow_gallery_submissions_on_prompts') && $submission->data['gallery_submission_id'])
+                <div class="row mb-2 no-gutters">
+                    <div class="col-md-2">
+                        <h5 class="mb-0">Gallery Submission</h5>
+                    </div>
+                    <div class="col-md-10"><a href="{{ $submission->gallerySubmission->url }}">{{ $submission->gallerySubmission->title }}</a></div>
+                </div>
+            @endif
             <div class="row">
                 <div class="col-md-2 col-4">
                     <h5>Submitted</h5>
@@ -83,14 +114,20 @@
 
         <h2>Characters</h2>
         <div id="characters" class="mb-3">
-            @if (count(
-                    $submission->characters()->whereRelation('character', 'deleted_at', null)->get()) != count($submission->characters()->get()))
+            @if (count($submission->characters()->whereRelation('character', 'deleted_at', null)->get()) != count($submission->characters()->get()))
                 <div class="alert alert-warning">
                     Some characters have been deleted since this submission was created.
                 </div>
             @endif
             @foreach ($submission->characters()->whereRelation('character', 'deleted_at', null)->get() as $character)
-                @include('widgets._character_select_entry', ['characterCurrencies' => $characterCurrencies, 'items' => $items, 'tables' => $tables, 'character' => $character, 'expanded_rewards' => $expanded_rewards])
+                @include('widgets._character_select_entry', [
+                    'characterCurrencies' => $characterCurrencies,
+                    'items' => $items,
+                    'tables' => $tables,
+                    'character' => $character,
+                    'expanded_rewards' => $expanded_rewards,
+                    'showLootTables' => true,
+                ])
             @endforeach
         </div>
         <div class="text-right mb-3">
@@ -247,7 +284,22 @@
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                     </div>
                     <div class="modal-body">
-                        <p>This will cancel the {{ $submission->prompt_id ? 'submission' : 'claim' }} and send it back to drafts. Make sure to include a staff comment if you do this!</p>
+                        <p>
+                            This will cancel the {{ $submission->prompt_id ? 'submission' : 'claim' }} and send it back to drafts.
+                            Make sure to include a staff comment if you do this!
+                        </p>
+                        @if ($submission->prompt_id && hasLimits($submission->prompt))
+                            <div class="alert alert-secondary">
+                                The user will not have to meet the prompt's requirements to submit again.
+                                <div class="text-center mb-0">
+                                    @include('widgets._limits', [
+                                        'object' => $submission->prompt,
+                                        'compact' => true,
+                                        'hideUnlock' => true,
+                                    ])
+                                </div>
+                            </div>
+                        @endif
                         <div class="text-right">
                             <a href="#" id="cancelSubmit" class="btn btn-secondary">Cancel</a>
                         </div>
@@ -279,7 +331,7 @@
     @if ($submission->status == 'Pending')
         @include('js._loot_js', ['showLootTables' => true, 'showRaffles' => true])
         @include('js._character_select_js')
-
+        @include('js._tinymce_wysiwyg')
         <script>
             $(document).ready(function() {
                 var $confirmationModal = $('#confirmationModal');

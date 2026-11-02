@@ -119,8 +119,8 @@
     </div>
 
     <div class="form-group" id="subtypes">
-        {!! Form::label('Subtype (Optional)') !!}
-        {!! Form::select('subtype_id', $subtypes, old('subtype_id') ?: $character->image->subtype_id, ['class' => 'form-control', 'id' => 'subtype']) !!}
+        {!! Form::label('Subtypes (Optional)') !!}
+        {!! Form::select('subtype_ids[]', $subtypes, old('subtype_ids') ?: $character->image->subtypes()?->pluck('subtype_id')->toArray(), ['class' => 'form-control', 'id' => 'subtype', 'multiple']) !!}
     </div>
 
     <div class="form-group">
@@ -158,9 +158,9 @@
 
 @section('scripts')
     @parent
+    @include('js._tinymce_wysiwyg')
     <script>
         $(document).ready(function() {
-
             // Cropper ////////////////////////////////////////////////////////////////////////////////////
 
             var $useCropper = $('#useCropper');
@@ -250,7 +250,7 @@
                     e.preventDefault();
                     removeFeatureRow($(this));
                 })
-                @if (config('lorekeeper.extensions.organised_traits_dropdown'))
+                @if (config('lorekeeper.extensions.organised_traits_dropdown.enable'))
                     $clone.find('.feature-select').selectize({
                         render: {
                             item: featureSelectedRender
@@ -265,7 +265,14 @@
                 $trigger.parent().remove();
             }
 
+            function featureOptionRender(item, escape) {
+                return '<div class="option"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + (item["text"].trim()) + '</span></div>';
+            }
+
             function featureSelectedRender(item, escape) {
+                @if (config('lorekeeper.extensions.organised_traits_dropdown.rarity.enable'))
+                    return '<div><span>' + (item["text"].trim()) + ' (' + (item["optgroup"].trim()) + ')' + '</span></div>';
+                @endif
                 return '<div><span>' + escape(item["text"].trim()) + ' (' + escape(item["optgroup"].trim()) + ')' + '</span></div>';
             }
 
@@ -322,8 +329,6 @@
 
         });
 
-
-
         $("#species").change(function() {
             var species = $('#species').val();
             var id = '<?php echo $character->image->id; ?>';
@@ -336,7 +341,10 @@
             }).fail(function(jqXHR, textStatus, errorThrown) {
                 alert("AJAX call failed: " + textStatus + ", " + errorThrown);
             });
+        });
 
+        $('#subtype').selectize({
+            maxItems: {{ config('lorekeeper.extensions.multiple_subtype_limit') }},
         });
     </script>
 @endsection

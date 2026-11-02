@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Data;
 
+use App\Facades\Settings;
 use App\Http\Controllers\Controller;
 use App\Models\Prompt\Prompt;
 use App\Models\Prompt\PromptCategory;
@@ -37,7 +38,8 @@ class PromptController extends Controller {
      */
     public function getCreatePromptCategory() {
         return view('admin.prompts.create_edit_prompt_category', [
-            'category' => new PromptCategory,
+            'category'   => new PromptCategory,
+            'categories' => PromptCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
         ]);
     }
 
@@ -55,7 +57,8 @@ class PromptController extends Controller {
         }
 
         return view('admin.prompts.create_edit_prompt_category', [
-            'category' => $category,
+            'category'   => $category,
+            'categories' => PromptCategory::where('id', '!=', $category->id)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
         ]);
     }
 
@@ -70,7 +73,7 @@ class PromptController extends Controller {
     public function postCreateEditPromptCategory(Request $request, PromptService $service, $id = null) {
         $id ? $request->validate(PromptCategory::$updateRules) : $request->validate(PromptCategory::$createRules);
         $data = $request->only([
-            'name', 'description', 'image', 'remove_image',
+            'name', 'description', 'image', 'remove_image', 'parent_id',
         ]);
         if ($id && $service->updatePromptCategory(PromptCategory::find($id), $data, Auth::user())) {
             flash('Category updated successfully.')->success();
@@ -145,26 +148,79 @@ class PromptController extends Controller {
 
         PROMPTS
 
-    **********************************************************************************************/
+     **********************************************************************************************/
 
     /**
-     * Shows the prompt category index.
+     * Shows the prompt index.
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getPromptIndex(Request $request) {
-        $query = Prompt::query();
-        $data = $request->only(['prompt_category_id', 'name']);
+        $query = Prompt::query()->with('category');
+        $data = $request->only(['prompt_category_id', 'name', 'sort', 'open_prompts']);
         if (isset($data['prompt_category_id']) && $data['prompt_category_id'] != 'none') {
-            $query->where('prompt_category_id', $data['prompt_category_id']);
+            if ($data['prompt_category_id'] == 'withoutOption') {
+                $query->whereNull('prompt_category_id');
+            } else {
+                $query->where('prompt_category_id', $data['prompt_category_id']);
+            }
         }
         if (isset($data['name'])) {
             $query->where('name', 'LIKE', '%'.$data['name'].'%');
         }
 
+        if (isset($data['open_prompts'])) {
+            switch ($data['open_prompts']) {
+                case 'open':
+                    $query->open(true);
+                    break;
+                case 'closed':
+                    $query->open(false);
+                    break;
+                case 'any':
+                default:
+                    // Don't filter
+                    break;
+            }
+        }
+
+        if (isset($data['sort'])) {
+            switch ($data['sort']) {
+                case 'alpha':
+                    $query->sortAlphabetical();
+                    break;
+                case 'alpha-reverse':
+                    $query->sortAlphabetical(true);
+                    break;
+                case 'category':
+                    $query->sortCategory();
+                    break;
+                case 'newest':
+                    $query->sortNewest();
+                    break;
+                case 'oldest':
+                    $query->sortNewest(true);
+                    break;
+                case 'start':
+                    $query->sortStart();
+                    break;
+                case 'start-reverse':
+                    $query->sortStart(true);
+                    break;
+                case 'end':
+                    $query->sortEnd();
+                    break;
+                case 'end-reverse':
+                    $query->sortEnd(true);
+                    break;
+            }
+        } else {
+            $query->sortCategory();
+        }
+
         return view('admin.prompts.prompts', [
             'prompts'    => $query->paginate(20)->appends($request->query()),
-            'categories' => ['none' => 'Any Category'] + PromptCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'categories' => ['none' => 'Any Category'] + ['withoutOption' => 'Without Category'] + PromptCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
         ]);
     }
 
@@ -175,8 +231,10 @@ class PromptController extends Controller {
      */
     public function getCreatePrompt() {
         return view('admin.prompts.create_edit_prompt', [
-            'prompt'     => new Prompt,
-            'categories' => ['none' => 'No category'] + PromptCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'prompt'        => new Prompt,
+            'categories'    => ['none' => 'No category'] + PromptCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'limit_periods' => config('lorekeeper.extensions.limit_periods'),
+            'reset_days'    => ['' => 'Default ('.get_day_name(Settings::get('weekly_reset_day') ?? 1).')', 0 => 'Sunday', 1 => 'Monday', 2 => 'Tuesday', 3 => 'Wednesday', 4 => 'Thursday', 5 => 'Friday', 6 => 'Saturday'],
         ]);
     }
 
@@ -194,8 +252,10 @@ class PromptController extends Controller {
         }
 
         return view('admin.prompts.create_edit_prompt', [
-            'prompt'     => $prompt,
-            'categories' => ['none' => 'No category'] + PromptCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'prompt'        => $prompt,
+            'categories'    => ['none' => 'No category'] + PromptCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'limit_periods' => config('lorekeeper.extensions.limit_periods'),
+            'reset_days'    => ['' => 'Default ('.get_day_name(Settings::get('weekly_reset_day') ?? 1).')', 0 => 'Sunday', 1 => 'Monday', 2 => 'Tuesday', 3 => 'Wednesday', 4 => 'Thursday', 5 => 'Friday', 6 => 'Saturday'],
         ]);
     }
 
@@ -210,7 +270,9 @@ class PromptController extends Controller {
     public function postCreateEditPrompt(Request $request, PromptService $service, $id = null) {
         $id ? $request->validate(Prompt::$updateRules) : $request->validate(Prompt::$createRules);
         $data = $request->only([
-            'name', 'prompt_category_id', 'summary', 'description', 'start_at', 'end_at', 'hide_before_start', 'hide_after_end', 'is_active', 'rewardable_type', 'rewardable_id', 'quantity', 'image', 'remove_image', 'prefix', 'hide_submissions', 'staff_only',
+            'name', 'prompt_category_id', 'summary', 'description', 'start_at', 'end_at', 'hide_before_start', 'hide_after_end', 'is_active', 'image', 'remove_image', 'prefix', 'hide_submissions', 'staff_only',
+            'rewardable_type', 'rewardable_id', 'quantity', 'rewardable_recipient',
+            'limit', 'limit_period', 'limit_character', 'reset_day',
         ]);
         if ($id && $service->updatePrompt(Prompt::find($id), $data, Auth::user())) {
             flash('Prompt updated successfully.')->success();

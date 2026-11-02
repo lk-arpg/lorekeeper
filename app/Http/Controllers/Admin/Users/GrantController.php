@@ -8,12 +8,15 @@ use App\Models\Character\CharacterDesignUpdate;
 use App\Models\Character\CharacterItem;
 use App\Models\Currency\Currency;
 use App\Models\Item\Item;
+use App\Models\Loot\LootTable;
 use App\Models\Submission\Submission;
-use App\Models\Trade;
+use App\Models\Trade\Trade;
 use App\Models\User\User;
 use App\Models\User\UserItem;
 use App\Services\CurrencyManager;
 use App\Services\InventoryManager;
+use App\Services\LootManager;
+use App\Services\RewardManager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -110,11 +113,85 @@ class GrantController extends Controller {
             'items'          => Item::orderBy('name')->pluck('name', 'id'),
             'userItems'      => $item ? $userItems : null,
             'characterItems' => $item ? $characterItems : null,
-            'users'          => $item ? $users : null,
-            'characters'     => $item ? $characters : null,
+            'users'          => $item ? $users->paginate(30)->appends($request->query()) : null,
+            'characters'     => $item ? $characters->paginate(30)->appends($request->query()) : null,
             'designUpdates'  => $item ? $designUpdates : null,
             'trades'         => $item ? $trades : null,
             'submissions'    => $item ? $submissions : null,
         ]);
+    }
+
+    /**
+     * Show the loot table grant page.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getLootTables() {
+        return view('admin.grants.loot_tables', [
+            'users'       => User::orderBy('id')->pluck('name', 'id'),
+            'loot_tables' => LootTable::orderBy('name')->pluck('name', 'id'),
+        ]);
+    }
+
+    /**
+     * Grants or removes loot tables from multiple users.
+     *
+     * @param App\Services\LootManager $service
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postLootTables(Request $request, LootManager $service) {
+        $data = $request->only(['names', 'loot_table_ids', 'quantities', 'data', 'disallow_transfer', 'notes']);
+        if ($service->grantLootTables($data, Auth::user())) {
+            flash('Loot tables granted successfully.')->success();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
+        }
+
+        return redirect()->back();
+    }
+
+    /**
+     * Show the user reward grant page.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getUserRewardGrant() {
+        return view('admin.grants.user_rewards', [
+            'users'          => User::orderBy('id')->pluck('name', 'id'),
+        ]);
+    }
+
+    /**
+     * Show the character reward grant page.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getCharacterRewardGrant() {
+        return view('admin.grants.character_rewards', [
+            'characters'    => Character::get()->pluck('fullName', 'id'),
+        ]);
+    }
+
+    /**
+     * Grants rewards to multiple users or characters.
+     *
+     * @param mixed $type
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postRewardGrant(Request $request, RewardManager $service, $type) {
+        $data = $request->only(['ids', 'rewardable_type', 'rewardable_id', 'quantity', 'data', 'disallow_transfer', 'notes']);
+        if ($service->grantRewards($data, Auth::user(), $type)) {
+            flash('Rewards granted successfully.')->success();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
+        }
+
+        return redirect()->back();
     }
 }

@@ -15,18 +15,6 @@
 @endif
 
 @if ($request->status != 'Draft' && Auth::user()->hasPower('manage_characters') && config('lorekeeper.extensions.design_update_voting'))
-    <?php
-    $rejectSum = 0;
-    $approveSum = 0;
-    foreach ($request->voteData as $voter => $vote) {
-        if ($vote == 1) {
-            $rejectSum += 1;
-        }
-        if ($vote == 2) {
-            $approveSum += 1;
-        }
-    }
-    ?>
     <div class="card mb-3">
         <div class="card-body">
             <h5 class="text-left">{{ $request->status == 'Pending' ? 'Vote' : 'Past Votes' }} on this {{ $request->update_type == 'MYO' ? 'MYO Submission' : 'Design Update' }}
@@ -34,15 +22,17 @@
                     <span class="text-right float-right">
                         <div class="row">
                             <div class="col-sm-6 text-center text-danger">
-                                {{ $rejectSum }}/{{ Settings::get('design_votes_needed') }}
+                                {{ $request->getVoteData()['reject'] }}/{{ Settings::get('design_votes_needed') }}
                                 {!! Form::open(['url' => 'admin/designs/vote/' . $request->id . '/reject', 'id' => 'voteRejectForm']) !!}
-                                <button class="btn {{ $request->voteData->get(Auth::user()->id) == 1 ? 'btn-danger' : 'btn-outline-danger' }}" style="min-width:40px;" data-action="reject"><i class="fas fa-times"></i></button>
+                                <button class="btn {{ ($request->getVoteData()['raw']->get(Auth::user()->id)['vote'] ?? 0) == 1 ? 'btn-danger' : 'btn-outline-danger' }}" style="min-width:40px;" data-action="reject"><i
+                                        class="fas fa-times"></i></button>
                                 {!! Form::close() !!}
                             </div>
                             <div class="col-sm-6 text-center text-success">
-                                {{ $approveSum }}/{{ Settings::get('design_votes_needed') }}
+                                {{ $request->getVoteData()['approve'] }}/{{ Settings::get('design_votes_needed') }}
                                 {!! Form::open(['url' => 'admin/designs/vote/' . $request->id . '/approve', 'id' => 'voteApproveForm']) !!}
-                                <button class="btn {{ $request->voteData->get(Auth::user()->id) == 2 ? 'btn-success' : 'btn-outline-success' }}" style="min-width:40px;" data-action="approve"><i class="fas fa-check"></i></button>
+                                <button class="btn {{ ($request->getVoteData()['raw']->get(Auth::user()->id)['vote'] ?? 0) == 2 ? 'btn-success' : 'btn-outline-success' }}" style="min-width:40px;" data-action="approve"><i
+                                        class="fas fa-check"></i></button>
                                 {!! Form::close() !!}
                             </div>
                         </div>
@@ -60,24 +50,20 @@
                     <div class="col-md">
                         <h5>Reject:</h5>
                         <ul>
-                            @foreach ($request->voteData as $voter => $vote)
-                                @if ($vote == 1)
-                                    <li>
-                                        {!! App\Models\User\User::find($voter)->displayName !!} {{ $voter == Auth::user()->id ? '(you)' : '' }}
-                                    </li>
-                                @endif
+                            @foreach ($request->getVoteData(1)['raw']->where('vote', 1) as $vote)
+                                <li>
+                                    {!! $vote['user']->displayName !!}{{ $vote['user']->id == Auth::user()->id ? ' (you)' : '' }}
+                                </li>
                             @endforeach
                         </ul>
                     </div>
                     <div class="col-md">
                         <h5>Approve:</h5>
                         <ul>
-                            @foreach ($request->voteData as $voter => $vote)
-                                @if ($vote == 2)
-                                    <li>
-                                        {!! App\Models\User\User::find($voter)->displayName !!} {{ $voter == Auth::user()->id ? '(you)' : '' }}
-                                    </li>
-                                @endif
+                            @foreach ($request->getVoteData(1)['raw']->where('vote', 2) as $vote)
+                                <li>
+                                    {!! $vote['user']->displayName !!}{{ $vote['user']->id == Auth::user()->id ? ' (you)' : '' }}
+                                </li>
                             @endforeach
                         </ul>
                     </div>

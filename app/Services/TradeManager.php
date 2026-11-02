@@ -7,7 +7,7 @@ use App\Facades\Settings;
 use App\Models\Character\Character;
 use App\Models\Character\CharacterTransfer;
 use App\Models\Currency\Currency;
-use App\Models\Trade;
+use App\Models\Trade\Trade;
 use App\Models\User\User;
 use App\Models\User\UserItem;
 use Illuminate\Support\Facades\DB;
@@ -49,6 +49,7 @@ class TradeManager extends Service {
                 'sender_id'              => $user->id,
                 'recipient_id'           => $data['recipient_id'],
                 'status'                 => 'Open',
+                'terms_link'             => $data['terms_link'],
                 'comments'               => $data['comments'] ?? null,
                 'is_sender_confirmed'    => 0,
                 'is_recipient_confirmed' => 0,
@@ -56,7 +57,9 @@ class TradeManager extends Service {
             ]);
 
             if ($assetData = $this->handleTradeAssets($trade, $data, $user)) {
-                $trade->data = json_encode(['sender' => getDataReadyAssets($assetData['sender'])]);
+                $trade->data = [
+                    'sender' => getDataReadyAssets($assetData['sender']),
+                ];
                 $trade->save();
 
                 // send a notification
@@ -103,13 +106,142 @@ class TradeManager extends Service {
                 $tradeData = $trade->data;
                 $isSender = ($trade->sender_id == $user->id);
                 $tradeData[$isSender ? 'sender' : 'recipient'] = getDataReadyAssets($assetData[$isSender ? 'sender' : 'recipient']);
-                $trade->data = json_encode($tradeData);
+                $trade->data = $tradeData;
                 $trade->{'is_'.($isSender ? 'sender' : 'recipient').'_confirmed'} = 0;
                 $trade->{'is_'.($isSender ? 'recipient' : 'sender').'_trade_confirmed'} = 0;
                 $trade->save();
 
                 return $this->commitReturn($trade);
             }
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Proposes a trade.
+     *
+     * @param array      $data
+     * @param User       $user
+     * @param mixed|null $trade
+     *
+     * @return bool|Trade
+     */
+    public function proposeTrade($data, $user, $trade = null) {
+        DB::beginTransaction();
+
+        try {
+            $created = true;
+            if ($trade) {
+                $created = false;
+                $recipient = $trade->recipient;
+                if ($trade->status != 'Proposal') {
+                    throw new \Exception('Invalid trade.');
+                }
+                if ($trade->recipient_id != $user->id && $trade->sender_id != $user->id) {
+                    throw new \Exception('You are not a participant in this trade.');
+                }
+
+                // update the confirmation status
+                $trade->is_sender_confirmed = $user->id == $trade->sender_id ? 1 : 0;
+                $trade->is_recipient_confirmed = $user->id == $trade->recipient_id ? 1 : 0;
+            } else {
+                $recipient = User::find($data['recipient_id']);
+                if (!$recipient) {
+                    throw new \Exception('Invalid recipient.');
+                }
+                if ($recipient->is_banned) {
+                    throw new \Exception('The recipient is a banned user and cannot receive a trade.');
+                }
+                if ($user->id == $recipient->id) {
+                    throw new \Exception('Cannot start a trade with yourself.');
+                }
+
+                $trade = Trade::create([
+                    'sender_id'              => $user->id,
+                    'recipient_id'           => $recipient->id,
+                    'status'                 => 'Proposal',
+                    'terms_link'             => 'Proposal from '.$user->name,
+                    'comments'               => $data['comments'] ?? null,
+                    'is_sender_confirmed'    => 1,
+                    'is_recipient_confirmed' => 0,
+                    'data'                   => null,
+                ]);
+            }
+
+            if (!$assetData = $this->handleTradeProposalAssets($data, $trade, $user, $recipient)) {
+                throw new \Exception('Failed to handle trade assets.');
+            }
+
+            $trade->data = [
+                'sender'    => getDataReadyAssets($assetData['sender']),
+                'recipient' => getDataReadyAssets($assetData['recipient']),
+            ];
+            $trade->save();
+
+            // send a notification
+            Notifications::create($created ? 'TRADE_PROPOSAL_RECEIVED' : 'TRADE_PROPOSAL_UPDATED', $user->id == $trade->sender_id ? $trade->recipient : $trade->sender, [
+                'sender_url'  => $user->url,
+                'sender_name' => $user->name,
+                'trade_id'    => $trade->id,
+            ]);
+
+            return $this->commitReturn($trade);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Responds to a trade proposal.
+     *
+     * @param Trade  $trade
+     * @param User   $user
+     * @param string $action
+     *
+     * @return bool|Trade
+     */
+    public function respondToTradeProposal($trade, $user, $action) {
+        DB::beginTransaction();
+
+        try {
+            // if it's an accept, simply confirm both sides of the trade and set the status to Open
+            if ($action == 'accept') {
+                // we also have to attach the assets to the trade
+                if (!$tradeData = $this->handleAcceptedTradeAssets($trade, $trade->data['sender'], $trade->data['recipient'])) {
+                    throw new \Exception('Failed to handle sender assets.');
+                }
+
+                $trade->update([
+                    'status'                 => 'Open',
+                    'is_sender_confirmed'    => 1,
+                    'is_recipient_confirmed' => 1,
+                    'data'                   => [
+                        'sender'    => getDataReadyAssets($tradeData['sender']),
+                        'recipient' => getDataReadyAssets($tradeData['recipient']),
+                    ],
+                ]);
+            } else {
+                // if it's a reject, return the assets to their owners
+                if (!$this->returnAttachments($trade)) {
+                    throw new \Exception('Failed to return trade attachments.');
+                }
+                $trade->status = 'Canceled';
+                $trade->save();
+            }
+
+            // send a notification
+            Notifications::create($action == 'accept' ? 'TRADE_PROPOSAL_ACCEPTED' : 'TRADE_PROPOSAL_REJECTED', $trade->sender_id == $user->id ? $trade->recipient : $trade->sender, [
+                'sender_name'    => $user->url,
+                'sender_url'     => $user->name,
+                'trade_id'       => $trade->id,
+            ]);
+
+            return $this->commitReturn(true);
         } catch (\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
@@ -263,7 +395,7 @@ class TradeManager extends Service {
             }
 
             if ($trade->is_sender_trade_confirmed && $trade->is_recipient_trade_confirmed) {
-                if (!(Settings::get('open_transfers_queue') && (isset($trade->data['sender']['characters']) || isset($trade->data['recipient']['characters'])))) {
+                if ((!Settings::get('open_trades_queue') || !(Settings::get('open_transfers_queue')) && (isset($trade->data['sender']['characters']) || isset($trade->data['recipient']['characters'])))) {
                     // Distribute the trade attachments
                     $this->creditAttachments($trade);
 
@@ -406,15 +538,48 @@ class TradeManager extends Service {
     }
 
     /**
+     * Handles the accepted assets of a trade proposal.
+     * This function increments the trade count of items and characters, and debits currencies.
+     *
+     * @param Trade $trade
+     * @param array $senderData
+     * @param array $recipientData
+     *
+     * @return bool
+     */
+    public function handleAcceptedTradeAssets($trade, $senderData, $recipientData) {
+        DB::beginTransaction();
+
+        try {
+            if (!$senderAssets = $this->attachAssets($trade, $senderData, $trade->sender)) {
+                throw new \Exception('Failed to handle sender assets.');
+            }
+            if (!$recipientAssets = $this->attachAssets($trade, $recipientData, $trade->recipient)) {
+                throw new \Exception('Failed to handle recipient assets.');
+            }
+
+            return $this->commitReturn([
+                'sender'    => $senderAssets,
+                'recipient' => $recipientAssets,
+            ]);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
+    }
+
+    /**
      * Handles modification of assets on the user's side of a trade.
      *
      * @param Trade $trade
      * @param array $data
      * @param User  $user
+     * @param mixed $isProposal
      *
      * @return array|bool
      */
-    private function handleTradeAssets($trade, $data, $user) {
+    private function handleTradeAssets($trade, $data, $user, $isProposal = false) {
         DB::beginTransaction();
         try {
             $tradeData = $trade->data;
@@ -423,35 +588,38 @@ class TradeManager extends Service {
             if (!$type) {
                 throw new \Exception('User not found.');
             }
-            // First return any item stacks attached to the trade
 
-            if (isset($tradeData[$type]['user_items'])) {
-                foreach ($tradeData[$type]['user_items'] as $userItemId=> $quantity) {
-                    $quantity = (int) $quantity;
-                    $userItemRow = UserItem::find($userItemId);
-                    if (!$userItemRow) {
-                        throw new \Exception('Cannot return an invalid item. ('.$userItemId.')');
+            // If this is a proposal, no items are actually attached to the trade yet.
+            if (!$isProposal) {
+                // First return any item stacks attached to the trade
+                if (isset($tradeData[$type]['user_items'])) {
+                    foreach ($tradeData[$type]['user_items'] as $userItemId=> $quantity) {
+                        $quantity = (int) $quantity;
+                        $userItemRow = UserItem::find($userItemId);
+                        if (!$userItemRow) {
+                            throw new \Exception('Cannot return an invalid item. ('.$userItemId.')');
+                        }
+                        if ($userItemRow->trade_count < $quantity) {
+                            throw new \Exception('Cannot return more items than was held. ('.$userItemId.')');
+                        }
+                        $userItemRow->trade_count -= $quantity;
+                        $userItemRow->save();
                     }
-                    if ($userItemRow->trade_count < $quantity) {
-                        throw new \Exception('Cannot return more items than was held. ('.$userItemId.')');
+                }
+
+                // Also return any currency attached to the trade
+                // This is stored in the data attribute
+                $currencyManager = new CurrencyManager;
+                if (isset($tradeData[$type]['currencies'])) {
+                    foreach ($tradeData[$type]['currencies'] as $currencyId=> $quantity) {
+                        $quantity = (int) $quantity;
+                        $currencyManager->creditCurrency(null, $user, null, null, $currencyId, $quantity);
                     }
-                    $userItemRow->trade_count -= $quantity;
-                    $userItemRow->save();
                 }
-            }
 
-            // Also return any currency attached to the trade
-            // This is stored in the data attribute
-            $currencyManager = new CurrencyManager;
-            if (isset($tradeData[$type]['currencies'])) {
-                foreach ($tradeData[$type]['currencies'] as $currencyId=> $quantity) {
-                    $quantity = (int) $quantity;
-                    $currencyManager->creditCurrency(null, $user, null, null, $currencyId, $quantity);
-                }
+                // Unattach characters too
+                Character::where('trade_id', $trade->id)->where('user_id', $user->id)->update(['trade_id' => null]);
             }
-
-            // Unattach characters too
-            Character::where('trade_id', $trade->id)->where('user_id', $user->id)->update(['trade_id' => null]);
 
             $userAssets = createAssetsArray();
             $assetCount = 0;
@@ -465,16 +633,25 @@ class TradeManager extends Service {
                     if (!$stack || $stack->user_id != $user->id) {
                         throw new \Exception('Invalid item selected.');
                     }
+
                     if (!isset($data['stack_quantity'][$stackId])) {
                         throw new \Exception('Invalid quantity selected.');
                     }
+                    $quantity = intval($data['stack_quantity'][$stackId]);
+                    if ($quantity <= 0 || $quantity > $stack->availableQuantity) {
+                        throw new \Exception('Invalid quantity selected for item stack.');
+                    }
+
                     if (!$stack->item->allow_transfer || isset($stack->data['disallow_transfer'])) {
                         throw new \Exception('One or more of the selected items cannot be transferred.');
                     }
-                    $stack->trade_count += intval($data['stack_quantity'][$stackId]);
-                    $stack->save();
 
-                    addAsset($userAssets, $stack, intval($data['stack_quantity'][$stackId]));
+                    if (!$isProposal) {
+                        $stack->trade_count += $quantity;
+                        $stack->save();
+                    }
+
+                    addAsset($userAssets, $stack, $quantity);
                     $assetCount++;
                 }
             }
@@ -487,16 +664,21 @@ class TradeManager extends Service {
                 if ($user->id != $trade->sender_id && $user->id != $trade->recipient_id) {
                     throw new \Exception('Error attaching currencies to this trade.');
                 }
-                // dd([$data['currency_id'], $data['currency_quantity']]);
                 $data['currency_id'] = $data['currency_id']['user-'.$user->id];
                 $data['currency_quantity'] = $data['currency_quantity']['user-'.$user->id];
-                foreach ($data['currency_id'] as $key=> $currencyId) {
+                foreach ($data['currency_id'] as $key => $currencyId) {
+                    if (!$currencyId) {
+                        continue;
+                    }
                     $currency = Currency::where('allow_user_to_user', 1)->where('id', $currencyId)->first();
                     if (!$currency) {
                         throw new \Exception('Invalid currency selected.');
                     }
-                    if (!$currencyManager->debitCurrency($user, null, null, null, $currency, intval($data['currency_quantity'][$key]))) {
-                        throw new \Exception('Invalid currency/quantity selected.');
+
+                    if (!$isProposal) {
+                        if (!$currencyManager->debitCurrency($user, null, null, null, $currency, intval($data['currency_quantity'][$key]))) {
+                            throw new \Exception('Invalid currency/quantity selected.');
+                        }
                     }
 
                     addAsset($userAssets, $currency, intval($data['currency_quantity'][$key]));
@@ -530,8 +712,10 @@ class TradeManager extends Service {
                         throw new \Exception('One or more of the selected characters is still on transfer cooldown and cannot be transferred.');
                     }
 
-                    $character->trade_id = $trade->id;
-                    $character->save();
+                    if (!$isProposal) {
+                        $character->trade_id = $trade->id;
+                        $character->save();
+                    }
 
                     addAsset($userAssets, $character, 1);
                     $assetCount++;
@@ -699,6 +883,134 @@ class TradeManager extends Service {
             }
 
             return $this->commitReturn(true);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Handles the initial creation of a proposed trade's assets, due to the nature of the data keys.
+     *
+     * @param array $data
+     * @param Trade $trade
+     * @param User  $user
+     * @param User  $recipient
+     *
+     * @return array|bool
+     */
+    private function handleTradeProposalAssets($data, $trade, $user, $recipient) {
+        DB::beginTransaction();
+
+        try {
+            // Prepare recipient data for use in the handleTradeAssets method
+            $recipientData = [
+                'stack_id'          => $data['recipient_stack_id'] ?? [],
+                'stack_quantity'    => $data['stack_quantity'], // this is keyed by stack id anyway
+                'currency_id'       => $data['currency_id'], // this is divided by user id anyway
+                'currency_quantity' => $data['currency_quantity'],
+                'character_id'      => $data['recipient_character_id'] ?? [],
+            ];
+
+            if (!$senderAssets = $this->handleTradeAssets($trade, $data, $trade->sender, true)) {
+                throw new \Exception('Failed to handle sender assets.');
+            }
+            if (!$recipientAssets = $this->handleTradeAssets($trade, $recipientData, $trade->recipient, true)) {
+                throw new \Exception('Failed to handle recipient assets.');
+            }
+
+            return $this->commitReturn([
+                'sender'    => $senderAssets['sender'],
+                'recipient' => $recipientAssets['recipient'],
+            ]);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Attaches assets from a proposal to a trade.
+     *
+     * @param Trade $trade
+     * @param array $data
+     * @param mixed $user
+     */
+    private function attachAssets($trade, $data, $user) {
+        DB::beginTransaction();
+
+        try {
+            $userAssets = createAssetsArray();
+            if (isset($data['user_items'])) {
+                foreach ($data['user_items'] as $stackId=>$quantity) {
+                    $stack = UserItem::with('item')->find($stackId);
+                    if (!$stack || $stack->user_id != $user->id) {
+                        throw new \Exception('Invalid item selected.');
+                    }
+                    if (!isset($quantity) || $stack->availableQuantity < intval($quantity)) {
+                        throw new \Exception('Invalid quantity of '.$stack->item->name.' selected.');
+                    }
+                    if (!$stack->item->allow_transfer || isset($stack->data['disallow_transfer'])) {
+                        throw new \Exception('One or more of the selected items cannot be transferred.');
+                    }
+
+                    $stack->trade_count += intval($quantity);
+                    $stack->save();
+
+                    addAsset($userAssets, $stack, intval($quantity));
+                }
+            }
+
+            // Attach currencies
+            if (isset($data['currencies'])) {
+                foreach ($data['currencies'] as $currencyId => $quantity) {
+                    $currency = Currency::where('allow_user_to_user', 1)->where('id', $currencyId)->first();
+                    if (!$currency) {
+                        throw new \Exception('Invalid currency selected.');
+                    }
+
+                    $currencyManager = new CurrencyManager;
+                    if (!$currencyManager->debitCurrency($user, null, null, null, $currency, intval($quantity))) {
+                        throw new \Exception('Invalid currency/quantity selected.');
+                    }
+
+                    addAsset($userAssets, $currency, intval($quantity));
+                }
+            }
+
+            // Attach characters.
+            if (isset($data['characters'])) {
+                foreach ($data['characters'] as $characterId=>$quantity) {
+                    $character = Character::where('id', $characterId)->where('user_id', $user->id)->first();
+                    if (!$character) {
+                        throw new \Exception('Invalid character selected.');
+                    }
+                    if (!$character->is_sellable && !$character->is_tradeable && !$character->is_giftable) {
+                        throw new \Exception('One or more of the selected characters cannot be transferred.');
+                    }
+                    if (CharacterTransfer::active()->where('character_id', $character->id)->exists()) {
+                        throw new \Exception('One or more of the selected characters is already pending a character transfer.');
+                    }
+                    if ($character->trade_id) {
+                        throw new \Exception('One or more of the selected characters is already in a trade.');
+                    }
+                    if ($character->designUpdate()->active()->exists()) {
+                        throw new \Exception('One or more of the selected characters has an active design update. Please wait for it to be processed, or delete it.');
+                    }
+                    if ($character->transferrable_at && $character->transferrable_at->isFuture()) {
+                        throw new \Exception('One or more of the selected characters is still on transfer cooldown and cannot be transferred.');
+                    }
+
+                    $character->trade_id = $trade->id;
+                    $character->save();
+
+                    addAsset($userAssets, $character, 1);
+                }
+            }
+
+            return $this->commitReturn($userAssets);
         } catch (\Exception $e) {
             $this->setError('error', $e->getMessage());
         }

@@ -12,7 +12,7 @@ use App\Models\Model;
 use App\Models\Rarity;
 use App\Models\Submission\Submission;
 use App\Models\Submission\SubmissionCharacter;
-use App\Models\Trade;
+use App\Models\Trade\Trade;
 use App\Models\User\User;
 use App\Models\User\UserCharacterLog;
 use Carbon\Carbon;
@@ -193,6 +193,24 @@ class Character extends Model {
         return $this->belongsToMany(Item::class, 'character_items')->withPivot('count', 'data', 'updated_at', 'id', 'stack_name')->whereNull('character_items.deleted_at');
     }
 
+    /**
+     * Gets the character's associated sublists.
+     *
+     * @return object
+     */
+    public function sublists() {
+        if (!$this->is_myo_slot) {
+            $categorySub = $this->category->masterlist_sub_id ?? null;
+            $speciesSub = $this->image->species->masterlist_sub_id ?? null;
+
+            $result = Sublist::where('id', $categorySub)->orWhere('id', $speciesSub)->get() ?? null;
+
+            return $result;
+        }
+
+        return null;
+    }
+
     /**********************************************************************************************
 
         SCOPES
@@ -330,6 +348,17 @@ class Character extends Model {
     }
 
     /**
+     * Gets the character's warnings, if they exist.
+     */
+    public function getWarningsAttribute() {
+        if (config('lorekeeper.settings.enable_character_content_warnings') && $this->image->content_warnings) {
+            return '<i class="fa fa-exclamation-triangle text-danger" data-toggle="tooltip" title="'.implode(', ', $this->image->content_warnings).'"></i> ';
+        }
+
+        return null;
+    }
+
+    /**
      * Gets the character's page's URL.
      *
      * @return string
@@ -358,6 +387,37 @@ class Character extends Model {
      */
     public function getLogTypeAttribute() {
         return 'Character';
+    }
+
+    /**
+     * Gets the character's trading, gift art and gift writing status as badges.
+     * If this is a MYO slot, only returns trading status.
+     *
+     * @return string
+     */
+    public function getMiniBadgeAttribute() {
+        $tradingCode = $this->is_trading ? 'badge-success' : 'badge-danger';
+        $tradingSection = "<span class='badge ".$tradingCode."'><i class='fas fa-comments-dollar'></i></span>";
+        $nonMyoSection = '';
+
+        if (!$this->is_myo_slot) {
+            $artCode = $this->is_gift_art_allowed == 1 ? 'badge-success' : ($this->is_gift_art_allowed == 2 ? 'badge-warning text-light' : 'badge-danger');
+            $writingCode = $this->is_gift_writing_allowed == 1 ? 'badge-success' : ($this->is_gift_writing_allowed == 2 ? 'badge-warning text-light' : 'badge-danger');
+            $nonMyoSection = "<span class='badge ".$artCode."'><i class='fas fa-pencil-ruler'></i></span> <span class='badge ".$writingCode."'><i class='fas fa-file-alt'></i></span> ";
+        }
+
+        return ' ・ <i class="fas fa-info-circle help-icon m-0" data-toggle="tooltip" data-html="true" title="'.$nonMyoSection.$tradingSection.'"></i>';
+    }
+
+    /**
+     * Returns the image URL of the character's thumbnail, or the full image if no thumbnail exists.
+     */
+    public function getImageUrlAttribute() {
+        if ($this->image) {
+            return $this->image->thumbnail_url ?? $this->image->url;
+        }
+
+        return null;
     }
 
     /**********************************************************************************************
@@ -438,10 +498,13 @@ class Character extends Model {
     public function getCurrencyLogs($limit = 10) {
         $character = $this;
         $query = CurrencyLog::with('currency')->where(function ($query) use ($character) {
-            $query->with('sender.rank')->where('sender_type', 'Character')->where('sender_id', $character->id)->where('log_type', '!=', 'Staff Grant');
-        })->orWhere(function ($query) use ($character) {
-            $query->with('recipient.rank')->where('recipient_type', 'Character')->where('recipient_id', $character->id)->where('log_type', '!=', 'Staff Removal');
+            $query->where(function ($query) use ($character) {
+                $query->with('sender.rank')->where('sender_type', 'Character')->where('sender_id', $character->id)->where('log_type', '!=', 'Staff Grant');
+            })->orWhere(function ($query) use ($character) {
+                $query->with('recipient.rank')->where('recipient_type', 'Character')->where('recipient_id', $character->id)->where('log_type', '!=', 'Staff Removal');
+            });
         })->orderBy('id', 'DESC');
+
         if ($limit) {
             return $query->take($limit)->get();
         } else {

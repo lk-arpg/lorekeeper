@@ -73,7 +73,7 @@
                                 $held = [];
                                 if (isset($holdLocations['trade'])) {
                                     foreach ($holdLocations['trade'] as $trade => $quantity) {
-                                        array_push($held, '<a href="' . App\Models\Trade::find($trade)->url . '">Trade #' . App\Models\Trade::find($trade)->id . '</a>' . ' (' . $quantity . ')');
+                                        array_push($held, '<a href="' . App\Models\Trade\Trade::find($trade)->url . '">Trade #' . App\Models\Trade\Trade::find($trade)->id . '</a>' . ' (' . $quantity . ')');
                                     }
                                 }
                                 if (isset($holdLocations['update'])) {

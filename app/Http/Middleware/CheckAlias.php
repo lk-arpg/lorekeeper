@@ -21,6 +21,9 @@ class CheckAlias {
         if (!$request->user()->hasAlias) {
             return redirect('/link');
         }
+        if (!$request->user()->hasEmail) {
+            return redirect('/email');
+        }
         if (!$request->user()->birthday) {
             return redirect('/birthday');
         }

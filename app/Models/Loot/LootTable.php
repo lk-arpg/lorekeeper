@@ -4,6 +4,7 @@ namespace App\Models\Loot;
 
 use App\Models\Item\Item;
 use App\Models\Model;
+use App\Models\Rarity;
 
 class LootTable extends Model {
     /**
@@ -52,6 +53,48 @@ class LootTable extends Model {
      */
     public function loot() {
         return $this->hasMany(Loot::class, 'loot_table_id');
+    }
+
+    /**********************************************************************************************
+
+        SCOPES
+
+    **********************************************************************************************/
+
+    /**
+     * Scope a query to sort sales in alphabetical order, by name.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param bool                                  $reverse
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeSortAlphabetical($query, $reverse = false) {
+        return $query->orderBy('name', $reverse ? 'DESC' : 'ASC');
+    }
+
+    /**
+     * Scope a query to sort sales in alphabetical order, by display name.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param bool                                  $reverse
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function sortAlphabeticalDisplayName($query, $reverse = false) {
+        return $query->orderBy('display_name', $reverse ? 'DESC' : 'ASC');
+    }
+
+    /**
+     * Scope a query to sort sales by newest first.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param mixed                                 $reverse
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeSortNewest($query, $reverse = false) {
+        return $query->orderBy('id', $reverse ? 'ASC' : 'DESC');
     }
 
     /**********************************************************************************************
@@ -105,12 +148,13 @@ class LootTable extends Model {
     /**
      * Rolls on the loot table and consolidates the rewards.
      *
-     * @param int $quantity
+     * @param int   $quantity
+     * @param mixed $isCharacter
      *
      * @return \Illuminate\Support\Collection
      */
-    public function roll($quantity = 1) {
-        $rewards = createAssetsArray();
+    public function roll($quantity = 1, $isCharacter = false) {
+        $rewards = createAssetsArray($isCharacter);
 
         $loot = $this->loot;
         $totalWeight = 0;
@@ -139,11 +183,23 @@ class LootTable extends Model {
             if ($result) {
                 // If this is chained to another loot table, roll on that table
                 if ($result->rewardable_type == 'LootTable') {
-                    $rewards = mergeAssetsArrays($rewards, $result->reward->roll($result->quantity));
+                    $rewards = mergeAssetsArrays(
+                        $rewards,
+                        $result->reward->roll($result->quantity),
+                        $isCharacter
+                    );
                 } elseif ($result->rewardable_type == 'ItemCategory' || $result->rewardable_type == 'ItemCategoryRarity') {
-                    $rewards = mergeAssetsArrays($rewards, $this->rollCategory($result->rewardable_id, $result->quantity, ($result->data['criteria'] ?? null), ($result->data['rarity'] ?? null)));
+                    $rewards = mergeAssetsArrays(
+                        $rewards,
+                        $this->rollCategory($result->rewardable_id, $result->quantity, ($result->data['criteria'] ?? null), ($result->data['rarity'] ?? null)),
+                        $isCharacter
+                    );
                 } elseif ($result->rewardable_type == 'ItemRarity') {
-                    $rewards = mergeAssetsArrays($rewards, $this->rollRarityItem($result->quantity, $result->data['criteria'], $result->data['rarity']));
+                    $rewards = mergeAssetsArrays(
+                        $rewards,
+                        $this->rollRarityItem($result->quantity, $result->data['criteria'], $result->data['rarity']),
+                        $isCharacter
+                    );
                 } else {
                     addAsset($rewards, $result->reward, $result->quantity);
                 }
@@ -167,11 +223,20 @@ class LootTable extends Model {
         $rewards = createAssetsArray();
 
         if (isset($criteria) && $criteria && isset($rarity) && $rarity) {
-            if (config('lorekeeper.extensions.item_entry_expansion.loot_tables.alternate_filtering')) {
-                $loot = Item::where('item_category_id', $id)->released()->whereNotNull('data')->where('data->rarity', $criteria, $rarity)->get();
-            } else {
-                $loot = Item::where('item_category_id', $id)->released()->whereNotNull('data')->whereRaw('JSON_EXTRACT(`data`, \'$.rarity\')'.$criteria.$rarity)->get();
+            $rarity = Rarity::find($rarity);
+            if (!$rarity) {
+                throw new \Exception('Invalid rarity!');
             }
+
+            $loot = Item::where('item_category_id', $id)->released()->whereNotNull('data')->get()->filter(function ($item) use ($criteria, $rarity) {
+                $itemRarity = Rarity::find($item->data['rarity_id'] ?? null);
+                if (!$itemRarity) {
+                    return false;
+                }
+
+                // check the sort order of the rarity
+                return eval('return '.$itemRarity->sort.$criteria.$rarity->sort.';');
+            })->values();
         } else {
             $loot = Item::where('item_category_id', $id)->released()->get();
         }
@@ -206,11 +271,20 @@ class LootTable extends Model {
     public function rollRarityItem($quantity, $criteria, $rarity) {
         $rewards = createAssetsArray();
 
-        if (config('lorekeeper.extensions.item_entry_expansion.loot_tables.alternate_filtering')) {
-            $loot = Item::released()->whereNotNull('data')->where('data->rarity', $criteria, $rarity)->get();
-        } else {
-            $loot = Item::released()->whereNotNull('data')->whereRaw('JSON_EXTRACT(`data`, \'$.rarity\')'.$criteria.$rarity)->get();
+        $rarity = Rarity::find($rarity);
+        if (!$rarity) {
+            throw new \Exception('Invalid rarity!');
         }
+
+        $loot = Item::released()->whereNotNull('data')->get()->filter(function ($item) use ($criteria, $rarity) {
+            $itemRarity = Rarity::find($item->data['rarity_id'] ?? null);
+            if (!$itemRarity) {
+                return false;
+            }
+
+            // check the sort order of the rarity
+            return eval('return '.$itemRarity->sort.$criteria.$rarity->sort.';');
+        })->values();
         if (!$loot->count()) {
             throw new \Exception('There are no items to select from!');
         }

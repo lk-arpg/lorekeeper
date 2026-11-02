@@ -22,6 +22,15 @@ class Notification extends Model {
     protected $table = 'notifications';
 
     /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'data' => 'array',
+    ];
+
+    /**
      * Whether the model contains timestamps to be saved and updated.
      *
      * @var string
@@ -48,15 +57,6 @@ class Notification extends Model {
     **********************************************************************************************/
 
     /**
-     * Get the data attribute as an associative array.
-     *
-     * @return array
-     */
-    public function getDataAttribute() {
-        return json_decode($this->attributes['data'], true);
-    }
-
-    /**
      * Get the notification message using the stored data.
      *
      * @return array
@@ -64,10 +64,10 @@ class Notification extends Model {
     public function getMessageAttribute() {
         $notification = config('lorekeeper.notifications.'.$this->notification_type_id);
 
-        $message = $notification['message'];
+        $message = $notification['message'] ?? 'Unknown Notification';
 
         // Replace the URL...
-        $message = str_replace('{url}', url($notification['url']), $message);
+        $message = isset($notification['url']) ? str_replace('{url}', url($notification['url']), $message) : $message;
 
         // Replace any variables in data...
         $data = $this->data;
@@ -136,6 +136,9 @@ class Notification extends Model {
     public const BOOKMARK_IMAGE = 37;
     public const CHARACTER_TRANSFER_ACCEPTABLE = 38;
     public const BOOKMARK_GIFT_WRITING = 39;
+    public const LOOT_TABLE_GRANT = 40;
+    public const USER_REWARD_GRANT = 41;
+    public const CHARACTER_REWARD_GRANT = 42;
     public const USER_REACTIVATED = 103;
     public const USER_DEACTIVATED = 104;
     public const SUBMISSION_CANCELLED = 108;
@@ -144,6 +147,10 @@ class Notification extends Model {
     public const REPORT_CLOSED = 221;
     public const COMMENT_MADE = 239;
     public const COMMENT_REPLY = 240;
+    public const TRADE_PROPOSAL_RECEIVED = 280;
+    public const TRADE_PROPOSAL_UPDATED = 281;
+    public const TRADE_PROPOSAL_ACCEPTED = 282;
+    public const TRADE_PROPOSAL_REJECTED = 283;
     public const CHARACTER_ITEM_GRANT = 501;
     public const CHARACTER_ITEM_REMOVAL = 502;
     public const GALLERY_SUBMISSION_COLLABORATOR = 505;

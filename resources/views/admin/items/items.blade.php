@@ -21,15 +21,52 @@
     </div>
 
     <div>
-        {!! Form::open(['method' => 'GET', 'class' => 'form-inline justify-content-end']) !!}
-        <div class="form-group mr-3 mb-3">
-            {!! Form::text('name', Request::get('name'), ['class' => 'form-control', 'placeholder' => 'Name']) !!}
+        {!! Form::open(['method' => 'GET', 'class' => '']) !!}
+        <div class="form-inline justify-content-end">
+            <div class="form-group ml-3 mb-3">
+                {!! Form::text('name', Request::get('name'), ['class' => 'form-control', 'placeholder' => 'Name']) !!}
+            </div>
+            <div class="form-group ml-3 mb-3">
+                {!! Form::select('item_category_id', $categories, Request::get('item_category_id'), ['class' => 'form-control', 'placeholder' => 'Any Category']) !!}
+            </div>
+            @if (config('lorekeeper.extensions.item_entry_expansion.extra_fields'))
+                <div class="form-group ml-3 mb-3">
+                    {!! Form::select('rarity_id', $rarities, Request::get('rarity_id'), ['class' => 'form-control', 'placeholder' => 'Any Rarity']) !!}
+                </div>
+                <div class="form-group ml-3 mb-3">
+                    {!! Form::select('artist', $artists, Request::get('artist'), ['class' => 'form-control', 'placeholder' => 'Any Artist']) !!}
+                </div>
+            @endif
         </div>
-        <div class="form-group mr-3 mb-3">
-            {!! Form::select('item_category_id', $categories, Request::get('item_category_id'), ['class' => 'form-control']) !!}
-        </div>
-        <div class="form-group mb-3">
-            {!! Form::submit('Search', ['class' => 'btn btn-primary']) !!}
+        <div class="form-inline justify-content-end">
+            <div class="form-group ml-3 mb-3">
+                {!! Form::select(
+                    'visibility',
+                    [
+                        'visibleOnly' => 'Released Only',
+                        'hiddenOnly' => 'Hidden Only',
+                    ],
+                    Request::get('visibility'),
+                    ['class' => 'form-control', 'placeholder' => 'Any Visibility'],
+                ) !!}
+            </div>
+            <div class="form-group ml-3 mb-3">
+                {!! Form::select(
+                    'sort',
+                    [
+                        'alpha' => 'Sort Alphabetically (A-Z)',
+                        'alpha-reverse' => 'Sort Alphabetically (Z-A)',
+                        'category' => 'Sort by Category',
+                        'newest' => 'Newest First',
+                        'oldest' => 'Oldest First',
+                    ],
+                    Request::get('sort') ?: 'oldest',
+                    ['class' => 'form-control'],
+                ) !!}
+            </div>
+            <div class="form-group ml-3 mb-3">
+                {!! Form::submit('Search', ['class' => 'btn btn-primary']) !!}
+            </div>
         </div>
         {!! Form::close() !!}
     </div>
@@ -41,19 +78,24 @@
         <div class="mb-4 logs-table">
             <div class="logs-table-header">
                 <div class="row">
-                    <div class="col-5 col-md-6">
+                    <div class="{{ config('lorekeeper.extensions.item_entry_expansion.extra_fields') ? 'col-6 col-md-5' : 'col-5 col-md-6' }}">
                         <div class="logs-table-cell">Name</div>
                     </div>
-                    <div class="col-5 col-md-5">
+                    <div class="{{ config('lorekeeper.extensions.item_entry_expansion.extra_fields') ? 'col-6 col-md-3' : 'col-5 col-md-5' }}">
                         <div class="logs-table-cell">Category</div>
                     </div>
+                    @if (config('lorekeeper.extensions.item_entry_expansion.extra_fields'))
+                        <div class="col-6 col-md-3">
+                            <div class="logs-table-cell">Rarity</div>
+                        </div>
+                    @endif
                 </div>
             </div>
             <div class="logs-table-body">
                 @foreach ($items as $item)
                     <div class="logs-table-row">
                         <div class="row flex-wrap">
-                            <div class="col-5 col-md-6">
+                            <div class="{{ config('lorekeeper.extensions.item_entry_expansion.extra_fields') ? 'col-6 col-md-5' : 'col-5 col-md-6' }}">
                                 <div class="logs-table-cell">
                                     @if (!$item->is_released)
                                         <i class="fas fa-eye-slash mr-1"></i>
@@ -61,10 +103,15 @@
                                     {{ $item->name }}
                                 </div>
                             </div>
-                            <div class="col-4 col-md-5">
-                                <div class="logs-table-cell">{{ $item->category ? $item->category->name : '' }}</div>
+                            <div class="{{ config('lorekeeper.extensions.item_entry_expansion.extra_fields') ? 'col-6 col-md-3' : 'col-4 col-md-5' }}">
+                                <div class="logs-table-cell">{{ $item->category ? $item->category->name : '---' }}</div>
                             </div>
-                            <div class="col-3 col-md-1 text-right">
+                            @if (config('lorekeeper.extensions.item_entry_expansion.extra_fields'))
+                                <div class="col-6 col-md-3">
+                                    <div class="logs-table-cell">{!! $item->rarity ? $item->rarity->displayName : '---' !!}</div>
+                                </div>
+                            @endif
+                            <div class="{{ config('lorekeeper.extensions.item_entry_expansion.extra_fields') ? 'col-2 col-md-1' : 'col-3 col-md-1' }} text-right">
                                 <div class="logs-table-cell">
                                     <a href="{{ url('admin/data/items/edit/' . $item->id) }}" class="btn btn-primary py-0 px-2">Edit</a>
                                 </div>

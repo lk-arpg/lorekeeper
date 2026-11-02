@@ -12,6 +12,45 @@
     <p>Loot tables can be attached to prompts as a reward for doing the prompt. This will roll a random reward from the contents of the table. Tables can be chained as well.</p>
 
     <div class="text-right mb-3"><a class="btn btn-primary" href="{{ url('admin/data/loot-tables/create') }}"><i class="fas fa-plus"></i> Create New Loot Table</a></div>
+
+    <div>
+        {!! Form::open(['method' => 'GET', 'class' => 'form-inline justify-content-end mb-3']) !!}
+        <div class="form-group">
+            {!! Form::text('name', Request::get('name'), ['class' => 'form-control', 'placeholder' => 'Name']) !!}
+        </div>
+        <div class="form-group ml-3">
+            {!! Form::select(
+                'namespec',
+                [
+                    'name' => 'Search for Name',
+                    'display-name' => 'Search for DisplayName',
+                    'both' => 'Search for both',
+                ],
+                Request::get('namespec') ?: 'name',
+                ['class' => 'form-control'],
+            ) !!}
+        </div>
+        <div class="form-group ml-3">
+            {!! Form::select(
+                'sort',
+                [
+                    'newest' => 'Created Newest',
+                    'oldest' => 'Created Oldest',
+                    'alpha' => 'Sort Alphabetically (A-Z) on Name',
+                    'alpha-reverse' => 'Sort Alphabetically (Z-A) on Name',
+                    'alpha-dn' => 'Sort Alphabetically (A-Z) on DisplayName',
+                    'alpha-dn-reverse' => 'Sort Alphabetically (Z-A) on DisplayName',
+                ],
+                Request::get('sort') ?: 'oldest',
+                ['class' => 'form-control'],
+            ) !!}
+        </div>
+        <div class="form-group ml-3">
+            {!! Form::submit('Search', ['class' => 'btn btn-primary']) !!}
+        </div>
+        {!! Form::close() !!}
+    </div>
+
     @if (!count($tables))
         <p>No loot tables found.</p>
     @else

@@ -22,6 +22,16 @@ class SalesCharacter extends Model {
      * @var string
      */
     protected $table = 'sales_characters';
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'data' => 'array',
+    ];
+
     /**
      * Validation rules.
      *
@@ -72,15 +82,6 @@ class SalesCharacter extends Model {
         ACCESSORS
 
     **********************************************************************************************/
-
-    /**
-     * Get the data attribute as an associative array.
-     *
-     * @return array
-     */
-    public function getDataAttribute() {
-        return json_decode($this->attributes['data'], true);
-    }
 
     /**
      * Get the data attribute as an associative array.

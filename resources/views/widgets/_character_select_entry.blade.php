@@ -1,5 +1,5 @@
 @php
-    $characters = \App\Models\Character\Character::visible(Auth::check() ? Auth::user() : null)
+    $characters = \App\Models\Character\Character::visible(Auth::user() ?? null)
         ->myo(0)
         ->orderBy('slug', 'DESC')
         ->get()
@@ -25,6 +25,14 @@
                     {!! Form::label('slug[]', 'Character Code') !!}
                     {!! Form::select('slug[]', $characters, $character->character ? $character->character->slug : $character->slug, ['class' => 'form-control character-code', 'placeholder' => 'Select Character']) !!}
                 </div>
+                @if (isset($submission) && (isset($isClaim) && !$isClaim))
+                    <div class="character-prompt-count">
+                        @include('widgets._character_prompt_count', [
+                            'character' => $character->character ? $character->character : $character,
+                            'prompt' => $submission->prompt ?? null,
+                        ])
+                    </div>
+                @endif
                 <div class="character-rewards">
                     <h4>Character Rewards</h4>
                     <table class="table table-sm">
@@ -55,7 +63,7 @@
                                                 'placeholder' => 'Select Currency',
                                             ]) !!}</div>
                                             <div class="character-items  {{ $reward->rewardable_type == 'Item' ? 'show' : 'hide' }}">{!! Form::select('character_rewardable_id[' . $character->character_id . '][]', $items, $reward->rewardable_type == 'Item' ? $reward->rewardable_id : null, ['class' => 'form-control character-item-id', 'placeholder' => 'Select Item']) !!}</div>
-                                            <div class="character-tables {{ $reward->rewardable_type == 'Loot Table' ? 'show' : 'hide' }}">{!! Form::select('character_rewardable_id[' . $character->character_id . '][]', $tables, $reward->rewardable_type == 'Loot Table' ? $reward->rewardable_id : null, [
+                                            <div class="character-tables {{ $reward->rewardable_type == 'LootTable' ? 'show' : 'hide' }}">{!! Form::select('character_rewardable_id[' . $character->character_id . '][]', $tables, $reward->rewardable_type == 'LootTable' ? $reward->rewardable_id : null, [
                                                 'class' => 'form-control character-table-id',
                                                 'placeholder' => 'Select Loot Table',
                                             ]) !!}</div>

@@ -4,10 +4,6 @@
     Transferring {{ $character->fullName }}
 @endsection
 
-@section('meta-img')
-    {{ $character->image->thumbnailUrl }}
-@endsection
-
 @section('profile-content')
     @if ($character->is_myo_slot)
         {!! breadcrumbs(['MYO Slot Masterlist' => 'myos', $character->fullName => $character->url, 'Transfer' => $character->url . '/transfer']) !!}
@@ -35,7 +31,7 @@
                     </p>
                     <div class="text-right">
                         {!! Form::open(['url' => 'characters/transfer/act/' . $transfer->id]) !!}
-                        {!! Form::submit('Cancel', ['class' => 'btn btn-danger', 'name' => 'action']) !!}
+                        {!! Form::submit('Cancel', ['class' => 'btn btn-danger', 'name' => 'action', 'value' => 'cancel']) !!}
                         {!! Form::close() !!}
                     </div>
                 </div>

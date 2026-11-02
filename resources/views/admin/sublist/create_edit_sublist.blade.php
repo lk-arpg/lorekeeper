@@ -18,17 +18,13 @@
     <h3>Basic Information</h3>
 
     <div class="row">
-        <div class="col-md-6">
-            <div class="form-group">
-                {!! Form::label('Name') !!}
-                {!! Form::text('name', $sublist->name, ['class' => 'form-control']) !!}
-            </div>
+        <div class="col-md-6 form-group">
+            {!! Form::label('Name') !!}
+            {!! Form::text('name', $sublist->name, ['class' => 'form-control']) !!}
         </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                {!! Form::label('Key') !!}
-                {!! Form::text('key', $sublist->key, ['class' => 'form-control']) !!}
-            </div>
+        <div class="col-md-6 form-group">
+            {!! Form::label('Key') !!}
+            {!! Form::text('key', $sublist->key, ['class' => 'form-control']) !!}
         </div>
     </div>
 

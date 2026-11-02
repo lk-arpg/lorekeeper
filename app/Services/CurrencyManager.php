@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Facades\Notifications;
 use App\Models\Character\CharacterCurrency;
 use App\Models\Currency\Currency;
+use App\Models\Currency\CurrencyConversion;
 use App\Models\User\User;
 use App\Models\User\UserCurrency;
 use Carbon\Carbon;
@@ -350,6 +351,73 @@ class CurrencyManager extends Service {
                 -$quantity
             )) {
                 throw new \Exception('Failed to create log.');
+            }
+
+            return $this->commitReturn(true);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Converts currency from one type to another.
+     *
+     * @param Currency $currency
+     * @param Currency $conversion
+     * @param int      $quantity
+     * @param User     $user
+     *
+     * @return bool
+     */
+    public function convertCurrency($currency, $conversion, $quantity, $user) {
+        DB::beginTransaction();
+
+        try {
+            if (!$currency) {
+                throw new \Exception('Invalid currency selected.');
+            }
+            if (!$conversion) {
+                throw new \Exception('Invalid conversion selected.');
+            }
+            if ($quantity <= 0) {
+                throw new \Exception('Invalid quantity entered.');
+            }
+
+            // first make sure that quantity is in the appropriate ratio
+            $conversion_rate = CurrencyConversion::where('currency_id', $currency->id)->where('conversion_id', $conversion->id)->first();
+
+            if (!$conversion_rate) {
+                throw new \Exception('Invalid conversion.');
+            }
+
+            $ratio = $conversion_rate->ratio(true);
+
+            // make sure the quantity is in the appropriate ratio
+            if ($quantity % $ratio[0] != 0) {
+                throw new \Exception('Invalid quantity entered, must be in multiples of '.$ratio[0].'.');
+            }
+
+            // make sure the user has enough of the currency to convert
+            $record = UserCurrency::where('user_id', $user->id)->where('currency_id', $currency->id)->first();
+            if (!$record || $record->quantity < $quantity) {
+                throw new \Exception('Not enough '.$currency->name.' to carry out this action.');
+            }
+
+            // save log since we change quantity later
+            $log = 'Converted '.$quantity.' '.$currency->displayName.' to '.$conversion->displayName;
+
+            // remove the currency
+            if (!$this->debitCurrency($user, null, 'Currency Conversion', $log, $currency, $quantity)) {
+                throw new \Exception('Failed to debit currency.');
+            }
+
+            $quantity = intval($quantity / $ratio[0] * $ratio[1]);
+
+            // add the converted currency
+            if (!$this->creditCurrency(null, $user, 'Currency Conversion', $log, $conversion, $quantity)) {
+                throw new \Exception('Failed to credit currency.');
             }
 
             return $this->commitReturn(true);

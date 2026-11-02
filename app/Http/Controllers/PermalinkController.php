@@ -86,7 +86,7 @@ class PermalinkController extends Controller {
             $comment->location = $comment->commentable->url;
         }
 
-        return view('comments._perma_layout', [
+        return view('comments.permalink_comment', [
             'comment' => $comment,
         ]);
     }

@@ -19,17 +19,13 @@
     </div>
 
     <div class="row">
-        <div class="col-md-6">
-            <div class="form-group">
-                {!! Form::label('currency_id', 'Currency') !!}
-                {!! Form::select('currency_id', $userCurrencies, null, ['class' => 'form-control']) !!}
-            </div>
+        <div class="col-md-6 form-group">
+            {!! Form::label('currency_id', 'Currency') !!}
+            {!! Form::select('currency_id', $userCurrencies, null, ['class' => 'form-control']) !!}
         </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                {!! Form::label('quantity', 'Quantity') !!} {!! add_help('If the value given is less than 0, this will be deducted from the user(s).') !!}
-                {!! Form::text('quantity', null, ['class' => 'form-control']) !!}
-            </div>
+        <div class="col-md-6 form-group">
+            {!! Form::label('quantity', 'Quantity') !!} {!! add_help('If the value given is less than 0, this will be deducted from the user(s).') !!}
+            {!! Form::text('quantity', null, ['class' => 'form-control']) !!}
         </div>
     </div>
 

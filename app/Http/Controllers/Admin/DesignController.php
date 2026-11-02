@@ -27,11 +27,11 @@ class DesignController extends Controller {
                     $requests->sortNewest();
                     break;
                 case 'oldest':
-                    $requests->sortOldest();
+                    $requests->sortNewest(true);
                     break;
             }
         } else {
-            $requests->sortOldest();
+            $requests->sortNewest(true);
         }
         if ($type == 'myo-approvals') {
             $requests = $requests->myos();

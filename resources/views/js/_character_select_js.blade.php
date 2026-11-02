@@ -29,10 +29,18 @@
                     $parent.find('.character-rewards').removeClass('hide');
                     updateRewardNames(node, node.find('.character-info').data('id'));
                 });
+                @if (isset($submission) && (isset($isClaim) && !$isClaim))
+                    $promptCount = $parent.find('.character-prompt-count');
+                    $promptCount.load('{{ url('submissions/counts/character') }}/' + $('#prompt').val() + '/' + $(this).val());
+                @endif
             });
             node.find('.remove-character').on('click', function(e) {
                 e.preventDefault();
                 $(this).parent().parent().parent().remove();
+            });
+            node.find('.remove-reward').on('click', function(e) {
+                e.preventDefault();
+                $(this).parent().parent().remove();
             });
             node.find('.add-reward').on('click', function(e) {
                 e.preventDefault();
@@ -78,6 +86,5 @@
             node.find('.character-item-id').attr('name', 'character_rewardable_id[' + id + '][]');
             node.find('.character-table-id').attr('name', 'character_rewardable_id[' + id + '][]');
         }
-
     });
 </script>

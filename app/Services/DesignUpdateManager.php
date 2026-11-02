@@ -7,6 +7,7 @@ use App\Models\Character\Character;
 use App\Models\Character\CharacterDesignUpdate;
 use App\Models\Character\CharacterFeature;
 use App\Models\Character\CharacterImage;
+use App\Models\Character\CharacterImageSubtype;
 use App\Models\Currency\Currency;
 use App\Models\Feature\Feature;
 use App\Models\Rarity;
@@ -63,7 +64,7 @@ class DesignUpdateManager extends Service {
                 // Set some data based on the character's existing stats
                 'rarity_id'     => $character->image->rarity_id,
                 'species_id'    => $character->image->species_id,
-                'subtype_id'    => $character->image->subtype_id,
+                'subtype_ids'   => $character->image->subtypes()->pluck('subtype_id'),
             ];
 
             $request = CharacterDesignUpdate::create($data);
@@ -338,10 +339,10 @@ class DesignUpdateManager extends Service {
             }
 
             $request->has_addons = 1;
-            $request->data = json_encode([
+            $request->data = [
                 'user'      => Arr::only(getDataReadyAssets($userAssets), ['user_items', 'currencies']),
                 'character' => Arr::only(getDataReadyAssets($characterAssets), ['currencies']),
-            ]);
+            ];
             $request->save();
 
             return $this->commitReturn(true);
@@ -373,19 +374,32 @@ class DesignUpdateManager extends Service {
 
             $rarity = ($request->character->is_myo_slot && $request->character->image->rarity_id) ? $request->character->image->rarity : Rarity::find($data['rarity_id']);
             $species = ($request->character->is_myo_slot && $request->character->image->species_id) ? $request->character->image->species : Species::find($data['species_id']);
-            if (isset($data['subtype_id']) && $data['subtype_id']) {
-                $subtype = ($request->character->is_myo_slot && $request->character->image->subtype_id) ? $request->character->image->subtype : Subtype::find($data['subtype_id']);
+
+            if (($request->character->is_myo_slot && count($request->character->image->subtypes))) {
+                $subtypes = $request->character->image->subtypes()->pluck('subtype_id')->toArray();
             } else {
-                $subtype = null;
+                if (isset($data['subtype_ids']) && $data['subtype_ids']) {
+                    if (count($data['subtype_ids']) > config('lorekeeper.extensions.multiple_subtype_limit')) {
+                        throw new \Exception('Too many subtypes selected.');
+                    }
+                    $subtypes = $data['subtype_ids'];
+                    foreach ($data['subtype_ids'] as $subtypeId) {
+                        $subtype = Subtype::find($subtypeId);
+                        if (!$subtype) {
+                            throw new \Exception('Invalid subtype selected.');
+                        }
+                        if ($subtype && $subtype->species_id != $species->id) {
+                            throw new \Exception('Subtype does not match the species.');
+                        }
+                    }
+                }
             }
+
             if (!$rarity) {
                 throw new \Exception('Invalid rarity selected.');
             }
             if (!$species) {
                 throw new \Exception('Invalid species selected.');
-            }
-            if ($subtype && $subtype->species_id != $species->id) {
-                throw new \Exception('Subtype does not match the species.');
             }
 
             // Clear old features
@@ -416,7 +430,7 @@ class DesignUpdateManager extends Service {
             // Update other stats
             $request->species_id = $species->id;
             $request->rarity_id = $rarity->id;
-            $request->subtype_id = $subtype ? $subtype->id : null;
+            $request->subtype_ids = $subtypes ?? null;
             $request->has_features = 1;
             $request->save();
 
@@ -574,10 +588,26 @@ class DesignUpdateManager extends Service {
                 'y0'                 => $request->y0,
                 'y1'                 => $request->y1,
                 'species_id'         => $request->species_id,
-                'subtype_id'         => ($request->character->is_myo_slot && isset($request->character->image->subtype_id)) ? $request->character->image->subtype_id : $request->subtype_id,
                 'rarity_id'          => $request->rarity_id,
                 'sort'               => 0,
             ]);
+
+            // do subtype stuff
+            if ($request->character->is_myo_slot && count($request->character->image->subtypes)) {
+                foreach ($request->character->image->subtypes as $subtype) {
+                    CharacterImageSubtype::create([
+                        'character_image_id' => $image->id,
+                        'subtype_id'         => $subtype->subtype_id,
+                    ]);
+                }
+            } elseif ($request->subtype_ids) {
+                foreach ($request->subtypes() as $subtypeId) {
+                    CharacterImageSubtype::create([
+                        'character_image_id' => $image->id,
+                        'subtype_id'         => $subtypeId,
+                    ]);
+                }
+            }
 
             // Shift the image credits over to the new image
             $request->designers()->update(['character_type' => 'Character', 'character_image_id' => $image->id]);
@@ -808,10 +838,11 @@ class DesignUpdateManager extends Service {
      * @param array                 $data
      * @param CharacterDesignUpdate $request
      * @param User                  $user
+     * @param bool                  $self
      *
      * @return bool
      */
-    public function cancelRequest($data, $request, $user) {
+    public function cancelRequest($data, $request, $user, $self = 0) {
         DB::beginTransaction();
 
         try {
@@ -828,21 +859,30 @@ class DesignUpdateManager extends Service {
             // to add a comment to it. Status is returned to Draft status.
             // Use when rejecting a request that just requires minor modifications to approve.
 
-            // Set staff comment and status
-            $request->staff_id = $user->id;
-            $request->staff_comments = $data['staff_comments'] ?? null;
-            $request->status = 'Draft';
-            if (!isset($data['preserve_queue'])) {
+            if (!$self) {
+                // Set staff comment if this is not a self-cancel
+                $request->staff_id = $user->id;
+                $request->staff_comments = $data['staff_comments'] ?? null;
+                if (!isset($data['preserve_queue'])) {
+                    $request->submitted_at = null;
+                }
+            } else {
                 $request->submitted_at = null;
             }
+
+            // Set status
+            $request->status = 'Draft';
             $request->save();
 
-            // Notify the user
-            Notifications::create('DESIGN_CANCELED', $request->user, [
-                'design_url'    => $request->url,
-                'character_url' => $request->character->url,
-                'name'          => $request->character->fullName,
-            ]);
+            if (!$self) {
+                // Notify the user if it is not being canceled by the user themself.
+                // Note that an admin canceling their own will also not result in a notification
+                Notifications::create('DESIGN_CANCELED', $request->user, [
+                    'design_url'    => $request->url,
+                    'character_url' => $request->character->url,
+                    'name'          => $request->character->fullName,
+                ]);
+            }
 
             return $this->commitReturn(true);
         } catch (\Exception $e) {
@@ -958,10 +998,10 @@ class DesignUpdateManager extends Service {
                     break;
             }
 
-            $voteData = (isset($request->vote_data) ? collect(json_decode($request->vote_data, true)) : collect([]));
+            $voteData = (isset($request->vote_data) ? collect($request->vote_data, true) : collect([]));
             $voteData->get($user->id) ? $voteData->pull($user->id) : null;
             $voteData->put($user->id, $vote);
-            $request->vote_data = $voteData->toJson();
+            $request->vote_data = $voteData;
 
             $request->save();
 

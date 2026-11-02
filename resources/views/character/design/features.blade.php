@@ -28,15 +28,14 @@
         </div>
 
         <div class="form-group">
-            {!! Form::label('subtype_id', 'Species Subtype') !!}
-            @if ($request->character->is_myo_slot && $request->character->image->subtype_id)
-                <div class="alert alert-secondary">{!! $request->character->image->subtype->displayName !!}</div>
+            {!! Form::label('subtype_ids', 'Species Subtype(s)') !!}
+            @if ($request->character->is_myo_slot && count($request->character->image->subtypes))
+                <div class="alert alert-secondary">{!! $request->character->image->displaySubtypes() !!}</div>
             @else
                 <div id="subtypes">
-                    {!! Form::select('subtype_id', $subtypes, $request->subtype_id, ['class' => 'form-control', 'id' => 'subtype']) !!}
+                    {!! Form::select('subtype_ids[]', $subtypes, $request->subtypes(), ['class' => 'form-control', 'id' => 'subtype', 'multiple']) !!}
                 </div>
             @endif
-
         </div>
 
         <div class="form-group">
@@ -74,7 +73,7 @@
                     @endforeach
                 @endif
             </div>
-            <div class="feature-row hide mb-2">
+            <div class="feature-row hide mb-2" id="new-feature">
                 {!! Form::select('feature_id[]', $features, null, ['class' => 'form-control mr-2 feature-select', 'placeholder' => 'Select Trait']) !!}
                 {!! Form::text('feature_data[]', null, ['class' => 'form-control mr-2', 'placeholder' => 'Extra Info (Optional)']) !!}
                 <a href="#" class="remove-feature btn btn-danger mb-2">×</a>
@@ -92,16 +91,16 @@
                 </div>
                 <div class="col-md-10 col-8">{!! $request->species ? $request->species->displayName : 'None Selected' !!}</div>
             </div>
-            @if ($request->subtype_id)
+            @if ($request->subtype_ids || count($request->character->image->subtypes))
                 <div class="row">
                     <div class="col-md-2 col-4">
-                        <h5>Subtype</h5>
+                        <h5>Subtype(s)</h5>
                     </div>
                     <div class="col-md-10 col-8">
-                        @if ($request->character->is_myo_slot && $request->character->image->subtype_id)
-                            {!! $request->character->image->subtype->displayName !!}
+                        @if ($request->subtype_ids)
+                            {!! $request->subtype_ids ? $request->displaySubtypes() : 'None Selected' !!}
                         @else
-                            {!! $request->subtype_id ? $request->subtype->displayName : 'None Selected' !!}
+                            {!! $request->character->image->displaySubtypes() ?? 'None Selected' !!}
                         @endif
                     </div>
                 </div>
@@ -145,6 +144,11 @@
 
     <script>
         $("#species").change(function() {
+            refreshSubtype();
+            refreshTrait();
+        });
+
+        function refreshSubtype() {
             var species = $('#species').val();
             var id = '<?php echo $request->id; ?>';
             $.ajax({
@@ -153,10 +157,29 @@
                 dataType: "text"
             }).done(function(res) {
                 $("#subtypes").html(res);
+                $("#subtype").selectize({
+                    maxItems: {{ config('lorekeeper.extensions.multiple_subtype_limit') }},
+                });
             }).fail(function(jqXHR, textStatus, errorThrown) {
                 alert("AJAX call failed: " + textStatus + ", " + errorThrown);
             });
+        };
 
+        function refreshTrait() {
+            var species = $('#species').val();
+            $.ajax({
+                type: "GET",
+                url: "{{ url('designs/traits/feature') }}?species=" + species,
+                dataType: "text"
+            }).done(function(res) {
+                $("#new-feature").html(res);
+            }).fail(function(jqXHR, textStatus, errorThrown) {
+                alert("AJAX call failed: " + textStatus + ", " + errorThrown);
+            });
+        };
+
+        $("#subtype").selectize({
+            maxItems: {{ config('lorekeeper.extensions.multiple_subtype_limit') }},
         });
     </script>
 @endsection

@@ -207,7 +207,7 @@
                     <div class="card-body">
                         <!-- Staff-User Comments -->
                         <div class="container">
-                            @comments(['model' => $submission, 'type' => 'Staff-Staff', 'perPage' => 5])
+                            @comments(['model' => $submission, 'type' => 'Staff-Staff', 'perPage' => 5, 'commentType' => 'staff'])
                         </div>
                     </div>
                 </div>

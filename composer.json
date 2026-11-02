@@ -57,7 +57,8 @@
                     "PKSA-zwc5-qtrz-zm1n": "Hotfixed using custom sanitization middleware, duplicate of PKSA-mdq4-51ck-6kdq",
                     "PKSA-m5cs-t1y6-qpcs": "Lorekeeper core does not use temporary signed URLs from the storage driver. Avoid using temporary signed urls as part of custom changes.",
                     "PKSA-d5tc-s1qs-h781": "Do not use APP_DEBUG=true on a live website. Only use it on a local copy.",
-                    "PKSA-w9tt-7782-78jx": "Lorekeeper core does not use the Storage facade. If Storage is used and league\\flysystem is <=3.35.2, consider creating a custom PathNormalizer in App\\Filesystem with the containing fix. Then, define custom storage drivers for live and local where the Flysystem configuration uses the custom PathNormalizer."
+                    "PKSA-w9tt-7782-78jx": "Lorekeeper core does not use the Storage facade. If Storage is used and league\\flysystem is <=3.35.2, consider creating a custom PathNormalizer in App\\Filesystem with the containing fix. Then, define custom storage drivers for live and local where the Flysystem configuration uses the custom PathNormalizer.",
+                    "PKSA-b41t-wbzk-9q51": "Lorekeeper core does not use TokenGuard authentication. If an API is desired, use Laravel Sanctum or Passport. Do not use the built-in 'token' auth guard."
                 }
             }
         }

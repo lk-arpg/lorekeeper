@@ -29,6 +29,9 @@ class CharacterController extends Controller {
     |
     */
 
+    /** @var Character The character for this controller instance. */
+    protected Character $character;
+
     /**
      * Gets the next number for a character in a category.
      *

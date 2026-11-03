@@ -38,6 +38,6 @@ class CheckReleasedItems extends Command {
             $this->line('No items need updating!');
         }
 
-        return 0;
+        return Command::SUCCESS;
     }
 }

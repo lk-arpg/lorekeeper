@@ -23,6 +23,9 @@ class MyoController extends Controller {
     |
     */
 
+    /** @var Character The MYO for this controller instance. */
+    protected Character $character;
+
     /**
      * Create a new controller instance.
      */

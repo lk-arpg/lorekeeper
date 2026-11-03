@@ -120,7 +120,7 @@ class SublistService extends Service {
     /**
      * Sorts sublist  order.
      *
-     * @param array $data
+     * @param string $data
      *
      * @return bool
      */

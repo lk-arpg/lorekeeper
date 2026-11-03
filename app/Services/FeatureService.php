@@ -149,7 +149,7 @@ class FeatureService extends Service {
     /**
      * Sorts category order.
      *
-     * @param array $data
+     * @param string $data
      *
      * @return bool
      */

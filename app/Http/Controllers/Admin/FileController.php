@@ -21,7 +21,7 @@ class FileController extends Controller {
         if (!file_exists($filesDirectory)) {
             // Create the directory.
             if (!mkdir($filesDirectory, 0755, true)) {
-                $this->abort(500);
+                abort(500);
 
                 return false;
             }

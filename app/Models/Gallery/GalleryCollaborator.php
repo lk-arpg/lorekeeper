@@ -86,5 +86,7 @@ class GalleryCollaborator extends Model {
                 return 'Commissioned ('.Currency::find(Settings::get('group_currency'))->name.')';
                 break;
         }
+
+        return '';
     }
 }

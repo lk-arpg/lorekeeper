@@ -35,6 +35,9 @@ class CharacterController extends Controller {
     |
     */
 
+    /** @var Character The character for this controller instance. */
+    protected Character $character;
+
     /**
      * Create a new controller instance.
      */

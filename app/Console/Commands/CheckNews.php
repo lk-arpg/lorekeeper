@@ -35,5 +35,7 @@ class CheckNews extends Command {
     public function handle() {
         //
         (new NewsService)->updateQueue();
+
+        return Command::SUCCESS;
     }
 }

@@ -68,5 +68,7 @@ class FixCharacterImageFormats extends Command {
                 }
             }
         }
+
+        return Command::SUCCESS;
     }
 }

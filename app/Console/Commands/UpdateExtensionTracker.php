@@ -98,5 +98,7 @@ class UpdateExtensionTracker extends Command {
         }
 
         $this->info("\n".'All extensions are in tracker.'."\n");
+
+        return Command::SUCCESS;
     }
 }

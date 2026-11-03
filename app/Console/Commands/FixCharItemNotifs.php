@@ -36,5 +36,7 @@ class FixCharItemNotifs extends Command {
         //
         (new ExtensionService)->updateNotifications(39, 501);
         (new ExtensionService)->updateNotifications(40, 502);
+
+        return Command::SUCCESS;
     }
 }

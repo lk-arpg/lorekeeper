@@ -51,5 +51,7 @@ class FixDeletedDesignUpdates extends Command {
         }
 
         $this->info('Success!');
+
+        return Command::SUCCESS;
     }
 }

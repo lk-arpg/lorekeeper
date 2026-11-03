@@ -51,7 +51,7 @@
                             <tr class="d-flex">
                                 <td class="col-2">
                                     @if (isset($items[$itemRow['asset']->item_id]->image_url))
-                                        <img class="small-icon" src="{{ $items[$itemRow['asset']->item_id]->image_url }}" alt="{{ $items[$itemRow['asset']->item_id]->name }}">
+                                        <img class="small-icon" src="{{ $items[$itemRow['asset']->item_id]->image_url }}" alt="">
                                     @endif
                                     {!! $items[$itemRow['asset']->item_id]->name !!}
                                 <td class="col-4">{!! array_key_exists('data', $itemRow['asset']->data) ? ($itemRow['asset']->data['data'] ? $itemRow['asset']->data['data'] : 'N/A') : 'N/A' !!}</td>

@@ -50,7 +50,7 @@ class PromptsController extends Controller {
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getPrompts(Request $request) {
-        $query = Prompt::active()->staffOnly(Auth::user() ?? null)->with('category');
+        $query = Prompt::active()->staffOnly(Auth::user() ?? null)->with('category', 'limits', 'rewards');
         $data = $request->only(['prompt_category_id', 'name', 'sort', 'open_prompts']);
         if (isset($data['prompt_category_id']) && $data['prompt_category_id'] != 'none') {
             if ($data['prompt_category_id'] == 'withoutOption') {
@@ -126,7 +126,7 @@ class PromptsController extends Controller {
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getPrompt(Request $request, $id) {
-        $prompt = Prompt::active()->where('id', $id)->first();
+        $prompt = Prompt::active()->where('id', $id)->with('limits', 'rewards')->first();
 
         if (!$prompt) {
             abort(404);

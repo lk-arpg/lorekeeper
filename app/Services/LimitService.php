@@ -42,7 +42,7 @@ class LimitService extends Service {
                 throw new \Exception('Object not found.');
             }
 
-            $limits = hasLimits($object) ? getLimits($object) : [];
+            $limits = $object->limits;
             if (count($limits) > 0) {
                 $limits->each(function ($limit) {
                     $limit->delete();
@@ -60,9 +60,9 @@ class LimitService extends Service {
                         'limit_type'       => $data['limit_type'][$key],
                         'limit_id'         => $data['limit_id'][$key],
                         'quantity'         => $data['quantity'][$key],
-                        'debit'            => $data['debit'][$key] == 'no' ? 0 : 1,
-                        'is_unlocked'      => $data['is_unlocked'] == 'no' ? 0 : 1,
-                        'is_auto_unlocked' => $data['is_auto_unlocked'] == 'no' ? 0 : 1,
+                        'debit'            => $data['debit'][$key],
+                        'is_unlocked'      => $data['is_unlocked'],
+                        'is_auto_unlocked' => $data['is_auto_unlocked'],
                     ]);
 
                     if (!$limit->save()) {

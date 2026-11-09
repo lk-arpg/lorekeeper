@@ -5,6 +5,6 @@
     {!! Form::textarea('reason', '', ['class' => 'form-control']) !!}
 </div>
 <div class="text-right">
-    {!! Form::submit('Reject', ['class' => 'btn btn-danger', 'name' => 'action']) !!}
+    {!! Form::submit('Reject', ['class' => 'btn btn-danger', 'name' => 'action', 'value' => 'reject']) !!}
 </div>
 {!! Form::close() !!}

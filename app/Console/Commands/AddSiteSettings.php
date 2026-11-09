@@ -101,6 +101,8 @@ class AddSiteSettings extends Command {
 
         $this->addSiteSetting('allow_users_to_delete_profile_comments', 0, '0: Users cannot delete profile comments, 1: Users can delete profile comments.');
 
+        $this->addSiteSetting('weekly_reset_day', 1, 'Default day of week for weekly limit resets (0=Sunday, 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday).');
+
         $this->line("\nSite settings up to date!");
     }
 

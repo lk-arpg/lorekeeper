@@ -29,6 +29,7 @@
             'isTradeable' => isset($isTradeable) && $isTradeable ? $isTradeable : false,
             'showLootTables' => isset($showLootTables) && $showLootTables ? $showLootTables : false,
             'showRaffles' => isset($showRaffles) && $showRaffles ? $showRaffles : false,
+            'showCharacters' => isset($showCharacters) && $showCharacters ? $showCharacters : false,
         ];
 
     // Fetch reward data, defined in AssetHelpers
@@ -75,7 +76,7 @@
                                 $value = $data['default'] ?? null;
                                 $attributes = $data['attributes'] ?? [];
                             @endphp
-                            {!! Form::{$data['type']}($field_name, $value, array_merge(['class' => 'form-control ' . ($data['class'] ?? ''), 'placeholder' => $data['label']], $attributes)) !!}
+                            {!! Form::{$data['type']}($field_name, $value, array_merge(['class' => 'form-control ' . ($data['class'] ?? ''), 'placeholder' => $data['placeholder'] ?? $data['label']], $attributes)) !!}
                         </td>
                         @if ($data['label'] == 'Weight')
                             <td class="loot-row-chance"></td>

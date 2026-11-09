@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Data;
 
+use App\Facades\Settings;
 use App\Http\Controllers\Controller;
 use App\Models\Prompt\Prompt;
 use App\Models\Prompt\PromptCategory;
@@ -147,7 +148,7 @@ class PromptController extends Controller {
 
         PROMPTS
 
-    **********************************************************************************************/
+     **********************************************************************************************/
 
     /**
      * Shows the prompt index.
@@ -233,6 +234,7 @@ class PromptController extends Controller {
             'prompt'        => new Prompt,
             'categories'    => ['none' => 'No category'] + PromptCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'limit_periods' => config('lorekeeper.extensions.limit_periods'),
+            'reset_days'    => ['' => 'Default ('.get_day_name(Settings::get('weekly_reset_day') ?? 1).')', 0 => 'Sunday', 1 => 'Monday', 2 => 'Tuesday', 3 => 'Wednesday', 4 => 'Thursday', 5 => 'Friday', 6 => 'Saturday'],
         ]);
     }
 
@@ -253,6 +255,7 @@ class PromptController extends Controller {
             'prompt'        => $prompt,
             'categories'    => ['none' => 'No category'] + PromptCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'limit_periods' => config('lorekeeper.extensions.limit_periods'),
+            'reset_days'    => ['' => 'Default ('.get_day_name(Settings::get('weekly_reset_day') ?? 1).')', 0 => 'Sunday', 1 => 'Monday', 2 => 'Tuesday', 3 => 'Wednesday', 4 => 'Thursday', 5 => 'Friday', 6 => 'Saturday'],
         ]);
     }
 
@@ -269,7 +272,7 @@ class PromptController extends Controller {
         $data = $request->only([
             'name', 'prompt_category_id', 'summary', 'description', 'start_at', 'end_at', 'hide_before_start', 'hide_after_end', 'is_active', 'image', 'remove_image', 'prefix', 'hide_submissions', 'staff_only',
             'rewardable_type', 'rewardable_id', 'quantity', 'rewardable_recipient',
-            'limit', 'limit_period', 'limit_character',
+            'limit', 'limit_period', 'limit_character', 'reset_day',
         ]);
         if ($id && $service->updatePrompt(Prompt::find($id), $data, Auth::user())) {
             flash('Prompt updated successfully.')->success();

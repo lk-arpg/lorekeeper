@@ -124,6 +124,32 @@
     </div>
 
     <div class="card p-3 mb-2">
+        <h3>Auto-Select First Stack</h3>
+        {!! Form::open(['url' => 'account/stack-auto-select']) !!}
+        <p>
+            If enabled, using an item without explicitly selecting a stack will automatically select and use the first stack you own instead of doing nothing.
+        </p>
+        <div class="form-group row">
+            <label class="col-md-2 col-form-label">Setting</label>
+            <div class="col-md-10">
+                {!! Form::select(
+                    'stack_auto_selected',
+                    [
+                        '0' => '0: Disabled. You must select a stack yourself.',
+                        '1' => '1: Enabled. The first stack is used automatically.',
+                    ],
+                    Auth::user()->settings->stack_auto_selected,
+                    ['class' => 'form-control'],
+                ) !!}
+            </div>
+        </div>
+        <div class="text-right">
+            {!! Form::submit('Edit', ['class' => 'btn btn-primary']) !!}
+        </div>
+        {!! Form::close() !!}
+    </div>
+
+    <div class="card p-3 mb-2">
         <h3>Character Warning Visibility</h3>
         <p>This setting will change how characters with content warnings are displayed to you.</p>
         {!! Form::open(['url' => 'account/warning']) !!}
@@ -143,6 +169,29 @@
         </div>
         {!! Form::close() !!}
     </div>
+
+    @if (Auth::user()->isStaff && config('lorekeeper.extensions.admin_notifications'))
+        <div class="card p-3 mb-2">
+            <h3>Admin Notifications</h3>
+            {!! Form::open(['url' => 'account/admin-notifs']) !!}
+            <div class="form-group row">
+                <label class="col-md-2 col-form-label">Setting</label>
+                <div class="col-md-10">
+                    {!! Form::select('admin_notifs', ['0' => '0: Do not show number of notifications.', '1' => '1: Show number of waiting notifications.'], Auth::user()->settings->admin_notifs, ['class' => 'form-control']) !!}
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-md-2 col-form-label">Compact Number</label>
+                <div class="col-md-10">
+                    {!! Form::select('admin_notifs_nr_size', ['0' => '0: Do not make number more compact.', '1' => '1: Make notification number more compact.'], Auth::user()->settings->admin_notifs_nr_size, ['class' => 'form-control']) !!}
+                </div>
+            </div>
+            <div class="text-right">
+                {!! Form::submit('Edit', ['class' => 'btn btn-primary']) !!}
+            </div>
+            {!! Form::close() !!}
+        </div>
+    @endif
 
     <div class="card p-3 mb-2">
         <h3>Email Address</h3>

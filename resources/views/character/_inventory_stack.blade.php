@@ -60,6 +60,11 @@
     </div>
 
     @if ($user && !$readOnly && ($owner_id == $user->id || $has_power == true))
+        @if ($user->settings->stack_auto_selected)
+            <div id="autoSelectNotice" class="alert alert-info py-2 mb-2 text-center font-weight-bold">
+                <i class="fas fa-info-circle" aria-hidden="true"></i> No stack selected. The first stack will be used automatically.
+            </div>
+        @endif
         <div class="card mt-3">
             <ul class="list-group list-group-flush">
                 @if ($item->category->can_name)
@@ -140,4 +145,26 @@
         var $rowId = "#itemRow" + $checkbox.value
         $($rowId).find('.quantity-select').prop('name', $checkbox.checked ? 'quantities[]' : '')
     }
+
+    @if (!$readOnly && $user && $user->settings->stack_auto_selected)
+        var $autoSelectNotice = $('#autoSelectNotice');
+
+        function updateAutoSelectNotice() {
+            $autoSelectNotice.toggle($('.item-check:checked').length == 0);
+        }
+
+        updateAutoSelectNotice();
+
+        $('.item-check').on('change', updateAutoSelectNotice);
+        $('#toggle-checks').on('click', updateAutoSelectNotice);
+
+        $('form[action="{{ url('character/' . $character->slug . '/inventory/edit') }}"]').on('submit', function() {
+            var $checks = $(this).find('.item-check');
+            if ($checks.length && !$checks.filter(':checked').length) {
+                var $first = $checks.first();
+                $first.prop('checked', true);
+                updateQuantities($first[0]);
+            }
+        });
+    @endif
 </script>

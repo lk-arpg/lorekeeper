@@ -65,7 +65,7 @@
                     <tbody>
                         @foreach ($inventory as $itemRow)
                             <tr id="{{ $fieldPrefix }}itemRow{{ $itemRow->id }}"
-                                class="d-flex {{ $itemRow->isTransferrable ? '' : 'accountbound' }} user-item select-item-row item-all category-all item-{{ $itemRow->item->id }} category-{{ $itemRow->item->item_category_id ?: 0 }} {{ (isset($selected) && in_array($itemRow->id, array_keys($selected))) || (isset($old_selection) && isset($old_selection[$itemRow->id])) ? 'category-selected' : '' }}">
+                                class="d-flex {{ $itemRow->isTransferrable ? '' : 'accountbound' }} {{ $fieldPrefix }}user-item select-item-row item-all category-all item-{{ $itemRow->item->id }} category-{{ $itemRow->item->item_category_id ?: 0 }} {{ (isset($selected) && in_array($itemRow->id, array_keys($selected))) || (isset($old_selection) && isset($old_selection[$itemRow->id])) ? 'category-selected' : '' }}">
                                 <td class="col-1">
                                     {!! Form::checkbox(isset($fieldName) && $fieldName ? $fieldName : 'stack_id[]', $itemRow->id, isset($selected) && in_array($itemRow->id, array_keys($selected)) ? true : false, ['class' => $fieldPrefix . 'inventory-checkbox']) !!}
                                 </td>

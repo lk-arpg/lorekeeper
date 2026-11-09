@@ -14,7 +14,7 @@
             }
         });
         $itemIdFilter.on('change', function(e) {
-            refreshFilter();
+            refreshFilter('{{ $fieldPrefix }}');
         });
         $('.{{ $fieldPrefix }}clear-item-filter').on('click', function(e) {
             e.preventDefault();
@@ -23,15 +23,15 @@
 
         var $userItemCategory = $('#{{ $fieldPrefix }}userItemCategory');
         $userItemCategory.on('change', function(e) {
-            refreshFilter();
+            refreshFilter('{{ $fieldPrefix }}');
         });
         $('.{{ $fieldPrefix }}inventory-select-all').on('click', function(e) {
             e.preventDefault();
-            selectVisible();
+            selectVisible('{{ $fieldPrefix }}');
         });
         $('.{{ $fieldPrefix }}inventory-clear-selection').on('click', function(e) {
             e.preventDefault();
-            deselectVisible();
+            deselectVisible('{{ $fieldPrefix }}');
         });
         $('.{{ $fieldPrefix }}inventory-checkbox').on('change', function() {
             $checkbox = $(this);
@@ -45,30 +45,30 @@
             }
         });
         $('#{{ $fieldPrefix }}toggle-checks').on('click', function() {
-            ($(this).is(":checked")) ? selectVisible(): deselectVisible();
+            ($(this).is(":checked")) ? selectVisible('{{ $fieldPrefix }}'): deselectVisible('{{ $fieldPrefix }}');
         });
 
-        function refreshFilter() {
+        function refreshFilter(prefix) {
             var display = $userItemCategory.val();
             var itemId = $itemIdFilter.val();
-            $('.{{ $fieldPrefix }}user-item').addClass('hide');
-            $('.{{ $fieldPrefix }}user-item.category-' + display + '.item-' + (itemId ? itemId : 'all')).removeClass('hide');
-            $('#{{ $fieldPrefix }}toggle-checks').prop('checked', false);
+            $('.' + prefix + 'user-item').addClass('hide');
+            $('.' + prefix + 'user-item.category-' + display + '.item-' + (itemId ? itemId : 'all')).removeClass('hide');
+            $('#' + prefix + 'toggle-checks').prop('checked', false);
         }
 
-        function selectVisible() {
-            var $target = $('.{{ $fieldPrefix }}user-item:not(.hide)');
-            $target.find('.{{ $fieldPrefix }}inventory-checkbox').prop('checked', true);
-            $target.find('.{{ $fieldPrefix }}inventory-checkbox').trigger('change');
-            $('#{{ $fieldPrefix }}toggle-checks').prop('checked', true);
+        function selectVisible(prefix) {
+            var $target = $('.' + prefix + 'user-item:not(.hide)');
+            $target.find('.' + prefix + 'inventory-checkbox').prop('checked', true);
+            $target.find('.' + prefix + 'inventory-checkbox').trigger('change');
+            $('#' + prefix + 'toggle-checks').prop('checked', true);
         }
 
-        function deselectVisible() {
-            var $target = $('.{{ $fieldPrefix }}user-item:not(.hide)');
-            $target.find('.{{ $fieldPrefix }}inventory-checkbox').prop('checked', false);
-            $target.find('.{{ $fieldPrefix }}inventory-checkbox').trigger('change');
-            $('#{{ $fieldPrefix }}toggle-checks').prop('checked', false);
-            $target.find('.{{ $fieldPrefix }}quantity-select').prop('name', '');
+        function deselectVisible(prefix) {
+            var $target = $('.' + prefix + 'user-item:not(.hide)');
+            $target.find('.' + prefix + 'inventory-checkbox').prop('checked', false);
+            $target.find('.' + prefix + 'inventory-checkbox').trigger('change');
+            $('#' + prefix + 'toggle-checks').prop('checked', false);
+            $target.find('.' + prefix + 'quantity-select').prop('name', '');
         }
 
         function customItemSelectizeRender(item, escape) {

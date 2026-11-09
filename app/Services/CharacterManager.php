@@ -965,7 +965,7 @@ class CharacterManager extends Service {
 
         try {
             $ids = explode(',', $data['sort']);
-            $images = CharacterImage::whereIn('id', $ids)->where('character_id', $character->id)->orderBy(DB::raw('FIELD(id, '.implode(',', $ids).')'))->get();
+            $images = CharacterImage::whereIn('id', $ids)->where('character_id', $character->id)->get();
 
             if (count($images) != count($ids)) {
                 throw new \Exception('Invalid image included in sorting order.');
@@ -974,17 +974,10 @@ class CharacterManager extends Service {
                 throw new \Exception("Cannot set a non-visible image as the character's active image.");
             }
 
-            $count = 0;
+            $order = array_flip($ids);
             foreach ($images as $image) {
-                // if($count == 1)
-                // {
-                //    // Set the first one as the active image
-                //    $image->character->image_id = $image->id;
-                //    $image->character->save();
-                // }
-                $image->sort = $count;
+                $image->sort = $order[$image->id];
                 $image->save();
-                $count++;
             }
 
             // Add a log for the character
@@ -1012,17 +1005,16 @@ class CharacterManager extends Service {
 
         try {
             $ids = array_reverse(explode(',', $data['sort']));
-            $characters = Character::myo(0)->whereIn('id', $ids)->where('user_id', $user->id)->where('is_visible', 1)->orderBy(DB::raw('FIELD(id, '.implode(',', $ids).')'))->get();
+            $characters = Character::myo(0)->whereIn('id', $ids)->where('user_id', $user->id)->where('is_visible', 1)->get();
 
             if (count($characters) != count($ids)) {
                 throw new \Exception('Invalid character included in sorting order.');
             }
 
-            $count = 0;
+            $order = array_flip($ids);
             foreach ($characters as $character) {
-                $character->sort = $count;
+                $character->sort = $order[$character->id];
                 $character->save();
-                $count++;
             }
 
             return $this->commitReturn(true);

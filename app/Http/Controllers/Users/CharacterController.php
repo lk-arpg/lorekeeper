@@ -114,7 +114,7 @@ class CharacterController extends Controller {
 
         $action = $request->get('action');
 
-        if ($action == 'Cancel' && $service->cancelTransfer(['transfer_id' => $id], Auth::user())) {
+        if ($action == 'cancel' && $service->cancelTransfer(['transfer_id' => $id], Auth::user())) {
             flash('Transfer cancelled.')->success();
         } elseif ($service->processTransfer($request->only(['action']) + ['transfer_id' => $id], Auth::user())) {
             if (strtolower($action) == 'approve') {

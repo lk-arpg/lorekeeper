@@ -65,7 +65,7 @@ class ConvertRewards extends Command {
                     'rewardable_type' => $raffleReward->rewardable_type,
                     'rewardable_id'   => $raffleReward->rewardable_id,
                     'quantity'        => $raffleReward->quantity,
-                    'data'            => ['type' => 'winner_reward', 'position' => null], // required to allow rewards to display
+                    'data'            => ['type' => 'entry_reward', 'position' => null], // required to allow rewards to display
                 ]);
 
                 $bar->advance();

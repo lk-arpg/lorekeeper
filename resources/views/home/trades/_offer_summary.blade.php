@@ -5,7 +5,7 @@
                 <div class="col-sm-6 col-md-4 col-12 mb-3" title="{{ $stack->first()->item->name }}" data-toggle="tooltip">
                     <div class="text-center inventory-item">
                         @if (isset($stack->first()->item->imageUrl))
-                            <img src="{{ $stack->first()->item->imageUrl }}" class="img-fluid" alt="{{ $stack->first()->item->name }}" />
+                            <img src="{{ $stack->first()->item->imageUrl }}" class="img-fluid" alt="" />
                         @endif
                         {{ $stack->first()->item->name }} x{{ $stack->sum('quantity') }}
                     </div>

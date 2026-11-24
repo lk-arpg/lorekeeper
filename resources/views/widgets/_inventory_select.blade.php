@@ -71,7 +71,7 @@
                                 </td>
                                 <td class="col-2">
                                     @if (isset($itemRow->item->image_url))
-                                        <img class="small-icon" src="{{ $itemRow->item->image_url }}" alt="{{ $itemRow->item->name }}">
+                                        <img class="small-icon" src="{{ $itemRow->item->image_url }}" alt="">
                                     @endif
                                     {!! $itemRow->item->name !!}
                                 </td>

@@ -2,7 +2,7 @@
     <div class="text-center">Invalid item selected.</div>
 @else
     <div class="text-center mb-3">
-        <div class="mb-1"><a href="{{ $stock->item->idUrl }}"><img class="img-fluid" src="{{ $stock->item->imageUrl }}" alt="{{ $stock->item->name }}" /></a></div>
+        <div class="mb-1"><a href="{{ $stock->item->idUrl }}"><img class="img-fluid" src="{{ $stock->item->imageUrl }}" alt="{{ hasAltText($stock->item, 'Main') ? getAltText($stock->item, 'Main')->alt_text : $stock->item->name }}" /></a></div>
         <div><a href="{{ $stock->item->idUrl }}"><strong>{{ $stock->item->name }}</strong></a></div>
         <div><strong>Cost: </strong> {!! $stock->displayCosts() ?? 'Free' !!}</div>
         @if ($stock->is_limited_stock)

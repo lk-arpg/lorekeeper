@@ -170,7 +170,7 @@ class CharacterDesignUpdate extends Model {
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeMyos($query) {
-        $query->select('design_updates.*')->where('update_type', 'MYO');
+        return $query->select('design_updates.*')->where('update_type', 'MYO');
     }
 
     /**
@@ -181,7 +181,7 @@ class CharacterDesignUpdate extends Model {
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeCharacters($query) {
-        $query->select('design_updates.*')->where('update_type', 'Character');
+        return $query->select('design_updates.*')->where('update_type', 'Character');
     }
 
     /**

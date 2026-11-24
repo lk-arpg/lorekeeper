@@ -43,6 +43,6 @@ class UpdateCommentTypes extends Command {
             $this->line('No comments need updating!');
         }
 
-        return 0;
+        return Command::SUCCESS;
     }
 }

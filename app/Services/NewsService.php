@@ -122,6 +122,8 @@ class NewsService extends Service {
             }
 
             return $this->rollbackReturn(false);
+        } else {
+            return true;
         }
     }
 

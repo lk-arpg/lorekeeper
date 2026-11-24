@@ -6,19 +6,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\View\Component;
 
 class AdminEdit extends Component {
-    /**
-     * The model object.
-     *
-     * @var string
-     */
-    public $object;
+    /** @var object The model object. */
+    public object $object;
 
-    /**
-     * The title for the button.
-     *
-     * @var string
-     */
-    public $title;
+    /** @var string The title for the button. */
+    public string $title;
 
     /**
      * Create a new component instance.
@@ -39,6 +31,8 @@ class AdminEdit extends Component {
     public function render() {
         if (Auth::check() && Auth::user()->hasPower($this->object->adminPower)) {
             return view('components.admin-edit');
+        } else {
+            return '';
         }
     }
 }

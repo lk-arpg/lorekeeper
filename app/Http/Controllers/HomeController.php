@@ -21,6 +21,9 @@ class HomeController extends Controller {
     |
     */
 
+    /** @var string Stores error for flashing to the user */
+    protected string $error;
+
     /**
      * Shows the homepage.
      *

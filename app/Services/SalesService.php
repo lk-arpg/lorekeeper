@@ -165,6 +165,8 @@ class SalesService extends Service {
             }
 
             return $this->rollbackReturn(false);
+        } else {
+            return true;
         }
     }
 
@@ -247,6 +249,8 @@ class SalesService extends Service {
                 'is_open'      => $data['character_is_open'][$character->slug] ?? ($data['new_entry'][$key] ? 1 : 0),
             ]);
         }
+
+        return true;
     }
 
     /**

@@ -129,7 +129,7 @@ class SpeciesService extends Service {
     /**
      * Sorts species order.
      *
-     * @param array $data
+     * @param string $data
      *
      * @return bool
      */
@@ -259,7 +259,7 @@ class SpeciesService extends Service {
     /**
      * Sorts subtype order.
      *
-     * @param array $data
+     * @param string $data
      *
      * @return bool
      */

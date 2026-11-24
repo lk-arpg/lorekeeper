@@ -89,7 +89,7 @@ class SetupAdminUser extends Command {
                 } else {
                     $this->info('Please adjust your APP_ENV to Production and APP_DEBUG to false in your .env file before continuing set-up!');
 
-                    return;
+                    return Command::SUCCESS;
                 }
             }
 
@@ -121,7 +121,7 @@ class SetupAdminUser extends Command {
                 $this->line('Admin account created. You can now log in with the registered email and password.');
                 $this->line('If necessary, you can run this command again to change the email address and password of the admin account.');
 
-                return;
+                return Command::SUCCESS;
             }
         } else {
             // Change the admin email/password. Honestly you can do this with the forgotten password feature...
@@ -157,7 +157,7 @@ class SetupAdminUser extends Command {
                 } else {
                     $this->info('Please adjust your APP_ENV to Production and APP_DEBUG to false in your .env file before continuing set-up!');
 
-                    return;
+                    return Command::SUCCESS;
                 }
 
                 if (isset($verifiedAt)) {
@@ -181,8 +181,10 @@ class SetupAdminUser extends Command {
                 $this->line('Updates complete.');
             }
 
-            return;
+            return Command::SUCCESS;
         }
         $this->line('Action cancelled.');
+
+        return Command::SUCCESS;
     }
 }

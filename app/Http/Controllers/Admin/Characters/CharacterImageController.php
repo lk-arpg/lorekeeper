@@ -24,6 +24,9 @@ class CharacterImageController extends Controller {
     |
     */
 
+    /** @var Character The character for this controller instance. */
+    protected Character $character;
+
     /**
      * Shows the add image page. Existing characters only, not MYO slots.
      *

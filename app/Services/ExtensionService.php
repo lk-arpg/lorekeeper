@@ -40,6 +40,8 @@ class ExtensionService extends Service {
             }
 
             return $this->rollbackReturn(false);
+        } else {
+            return true;
         }
     }
 }

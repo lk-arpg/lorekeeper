@@ -129,7 +129,7 @@ class RarityService extends Service {
     /**
      * Sorts rarity order.
      *
-     * @param array $data
+     * @param string $data
      *
      * @return bool
      */

@@ -118,7 +118,7 @@ class Prompt extends Model {
      */
     public function scopeOpen($query, $isOpen) {
         if ($isOpen) {
-            $query->where(function ($query) {
+            return $query->where(function ($query) {
                 $query->whereNull('end_at')->where('start_at', '<', Carbon::now());
             })->orWhere(function ($query) {
                 $query->whereNull('start_at')->where('end_at', '>', Carbon::now());
@@ -128,7 +128,7 @@ class Prompt extends Model {
                 $query->whereNull('end_at')->whereNull('start_at');
             });
         } else {
-            $query->where(function ($query) {
+            return $query->where(function ($query) {
                 $query->whereNull('end_at')->where('start_at', '>', Carbon::now());
             })->orWhere(function ($query) {
                 $query->whereNull('start_at')->where('end_at', '<', Carbon::now());

@@ -61,5 +61,7 @@ class AddTextPages extends Command {
                 $this->line('Skipped: '.$page['title']);
             }
         }
+
+        return Command::SUCCESS;
     }
 }

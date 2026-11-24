@@ -83,7 +83,7 @@ class SalesCharacter extends Model {
     }
 
     /**
-     * Get the data attribute as an associative array.
+     * Get the display type of the sales character.
      *
      * @return string
      */
@@ -111,10 +111,12 @@ class SalesCharacter extends Model {
                 return 'PWYW';
                 break;
         }
+
+        return '';
     }
 
     /**
-     * Get the data attribute as an associative array.
+     * Get the type of link label for the sales character.
      *
      * @return string
      */
@@ -142,6 +144,8 @@ class SalesCharacter extends Model {
                 return 'Claim Here';
                 break;
         }
+
+        return '';
     }
 
     /**
@@ -179,6 +183,8 @@ class SalesCharacter extends Model {
                 return isset($this->data['minimum']) ? 'Minimum: '.$symbol.$this->data['minimum'].'<br/>' : '';
                 break;
         }
+
+        return '';
     }
 
     /**

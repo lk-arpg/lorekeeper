@@ -35,5 +35,7 @@ class CheckSales extends Command {
     public function handle() {
         //
         (new SalesService)->updateQueue();
+
+        return Command::SUCCESS;
     }
 }

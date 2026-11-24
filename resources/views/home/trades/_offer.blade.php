@@ -35,7 +35,7 @@
             </div>
             <div class="card-body user-items">
                 <table class="table table-sm">
-                    <thead class="thead-light">
+                    <thead>
                         <tr class="d-flex">
                             <th class="col-2">Item</th>
                             <th class="col-4">Source</th>

@@ -37,7 +37,7 @@
             </div>
             <div id="userItems" class="user-items">
                 <table class="table table-sm">
-                    <thead class="thead-light">
+                    <thead>
                         <tr class="d-flex">
                             <th class="col-1"><input id="toggle-checks" type="checkbox"></th>
                             <th class="col-2">Item</th>

@@ -74,7 +74,7 @@
         <div class="card-header h2">Rewards</div>
         <div class="card-body">
             <table class="table table-sm">
-                <thead class="thead-light">
+                <thead>
                     <tr>
                         <th width="70%">Reward</th>
                         <th width="30%">Amount</th>
@@ -116,7 +116,7 @@
                             <div class="submission-character-info-body">
                                 @if (array_filter(parseAssetData($character->data)))
                                     <table class="table table-sm mb-0">
-                                        <thead class="thead-light">
+                                        <thead>
                                             <tr>
                                                 <th width="70%">Reward</th>
                                                 <th width="30%">Amount</th>
@@ -171,7 +171,7 @@
         <div class="card-body">
             <p>These items have been removed from the {{ $submission->prompt_id ? 'submitter' : 'claimant' }}'s inventory and will be refunded if the request is rejected or consumed if it is approved.</p>
             <table class="table table-sm">
-                <thead class="thead-light">
+                <thead>
                     <tr class="d-flex">
                         <th class="col-2">Item</th>
                         <th class="col-4">Source</th>
@@ -202,7 +202,7 @@
         <div class="card-header h2">{!! $submission->user->displayName !!}'s Bank</div>
         <div class="card-body">
             <table class="table table-sm mb-3">
-                <thead class="thead-light">
+                <thead>
                     <tr>
                         <th width="70%">Currency</th>
                         <th width="30%">Quantity</th>

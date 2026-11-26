@@ -184,7 +184,7 @@ class FeatureController extends Controller {
         }
         if (isset($data['subtype_id']) && $data['subtype_id'] != 'none') {
             if ($data['subtype_id'] == 'withoutOption') {
-                $query->subtypes->isEmpty();
+                $query->doesntHave('subtypes');
             } else {
                 $query->whereHas('subtypes', function ($query) use ($data) {
                     $query->where('subtype_id', $data['subtype_id']);

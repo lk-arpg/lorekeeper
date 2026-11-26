@@ -44,4 +44,6 @@ User-agent: Timpibot
 User-agent: VelenPublicWebCrawler
 User-agent: YouBot
 User-agent: SemrushBot
+User-agent: Baiduspider
+User-agent: Baiduspider-image
 Disallow: /

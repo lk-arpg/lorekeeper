@@ -45,7 +45,7 @@
             <div class="d-flex row flex-wrap col-12 mt-1 pt-1 px-0 ubt-top">
                 <div class="col-12 col-md-4 ">{!! $user->displayName !!}</div>
                 <div class="col-4 col-md-2">{!! $user->displayAlias !!}</div>
-                <div class="col-4 col-md-3">{!! $user->deactivated_by == $user->id ? 'Self' : 'Staff' !!}</div>
+                <div class="col-4 col-md-3">{!! $user->deactivater_id == $user->id ? 'Self' : 'Staff' !!}</div>
                 <div class="col-4 col-md-2">{!! pretty_date($user->settings->deactivated_at, false) !!}</div>
             </div>
         @endforeach

@@ -12,7 +12,7 @@ class CharacterBookmark extends Model {
      * @var array
      */
     protected $fillable = [
-        'user_id', 'character_id', 'notify_on_trade_status', 'notify_on_gift_art_status', 'notify_on_gift_writing_status', 'notify_on_transfer', 'notify_on_image', 'comment',
+        'user_id', 'character_id', 'notify_on_trade_status', 'notify_on_gift_art_status', 'notify_on_gift_writing_status', 'notify_on_transfer', 'notify_on_image', 'comment', 'folder_id', 'sort',
     ];
 
     /**
@@ -78,5 +78,12 @@ class CharacterBookmark extends Model {
      */
     public function user() {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the folder this bookmark is filed under, if any.
+     */
+    public function folder() {
+        return $this->belongsTo(CharacterBookmarkFolder::class, 'folder_id');
     }
 }

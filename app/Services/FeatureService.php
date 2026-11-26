@@ -107,10 +107,6 @@ class FeatureService extends Service {
                 throw new \Exception('Failed to log admin action.');
             }
 
-            if (!$this->logAdminAction($user, 'Updated Feature Category', 'Updated '.$category->displayName)) {
-                throw new \Exception('Failed to log admin action.');
-            }
-
             if ($image) {
                 $this->handleImage($image, $category->categoryImagePath, $category->categoryImageFileName, $oldImageFileName);
             }
@@ -308,7 +304,7 @@ class FeatureService extends Service {
                 $data['subtype_ids'] = [];
             }
 
-            $data = $this->populateData($data);
+            $data = $this->populateData($data, $feature);
 
             // remove old subtypes
             $feature->subtypes()->detach();

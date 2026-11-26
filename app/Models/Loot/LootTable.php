@@ -148,12 +148,13 @@ class LootTable extends Model {
     /**
      * Rolls on the loot table and consolidates the rewards.
      *
-     * @param int $quantity
+     * @param int   $quantity
+     * @param mixed $isCharacter
      *
      * @return \Illuminate\Support\Collection
      */
-    public function roll($quantity = 1) {
-        $rewards = createAssetsArray();
+    public function roll($quantity = 1, $isCharacter = false) {
+        $rewards = createAssetsArray($isCharacter);
 
         $loot = $this->loot;
         $totalWeight = 0;
@@ -182,11 +183,23 @@ class LootTable extends Model {
             if ($result) {
                 // If this is chained to another loot table, roll on that table
                 if ($result->rewardable_type == 'LootTable') {
-                    $rewards = mergeAssetsArrays($rewards, $result->reward->roll($result->quantity));
+                    $rewards = mergeAssetsArrays(
+                        $rewards,
+                        $result->reward->roll($result->quantity),
+                        $isCharacter
+                    );
                 } elseif ($result->rewardable_type == 'ItemCategory' || $result->rewardable_type == 'ItemCategoryRarity') {
-                    $rewards = mergeAssetsArrays($rewards, $this->rollCategory($result->rewardable_id, $result->quantity, ($result->data['criteria'] ?? null), ($result->data['rarity'] ?? null)));
+                    $rewards = mergeAssetsArrays(
+                        $rewards,
+                        $this->rollCategory($result->rewardable_id, $result->quantity, ($result->data['criteria'] ?? null), ($result->data['rarity'] ?? null)),
+                        $isCharacter
+                    );
                 } elseif ($result->rewardable_type == 'ItemRarity') {
-                    $rewards = mergeAssetsArrays($rewards, $this->rollRarityItem($result->quantity, $result->data['criteria'], $result->data['rarity']));
+                    $rewards = mergeAssetsArrays(
+                        $rewards,
+                        $this->rollRarityItem($result->quantity, $result->data['criteria'], $result->data['rarity']),
+                        $isCharacter
+                    );
                 } else {
                     addAsset($rewards, $result->reward, $result->quantity);
                 }

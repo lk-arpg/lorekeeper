@@ -7,11 +7,24 @@ version: 2
 updates:
   - package-ecosystem: "npm"
     directory: "/"
-    target-branch: "develop"
+    target-branch: "unstable"
+    cooldown:
+      default-days: 7
     schedule:
       interval: "weekly"
+
   - package-ecosystem: "composer"
     directory: "/"
-    target-branch: "develop"
+    target-branch: "unstable"
+    cooldown:
+      default-days: 7
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    target-branch: "unstable"
+    cooldown:
+      default-days: 7
     schedule:
       interval: "weekly"

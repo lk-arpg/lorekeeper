@@ -4,9 +4,12 @@ namespace App\Models\Shop;
 
 use App\Models\Item\Item;
 use App\Models\Model;
+use App\Traits\Limitable;
 use Carbon\Carbon;
 
 class Shop extends Model {
+    use Limitable;
+
     /**
      * The attributes that are mass assignable.
      *

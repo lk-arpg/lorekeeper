@@ -32,8 +32,9 @@
                                     @if (!$item->is_released)
                                         <i class="fas fa-eye-slash mr-1"></i>
                                     @endif
-                                    <a href="{{ $item->idUrl }}">
-                                        {!! $item->name !!}
+                                    {!! $item->displayName !!}
+                                    <a href="{{ $item->url }}" class="world-entry-search text-muted">
+                                        <i class="fa-solid fa-filter" data-toggle="tooltip" title="Search in Encyclopedia"></i>
                                     </a>
                                 </h1>
                                 <div class="row">

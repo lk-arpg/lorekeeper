@@ -129,7 +129,7 @@ function getAssetModelString($type, $namespaced = true) {
             }
             break;
 
-        case 'characters':
+        case 'characters': case 'character':
             if ($namespaced) {
                 return '\App\Models\Character\Character';
             } else {
@@ -150,6 +150,22 @@ function getAssetModelString($type, $namespaced = true) {
                 return '\App\Models\Prompt\Prompt';
             } else {
                 return 'Prompt';
+            }
+            break;
+
+        case 'dynamic':
+            if ($namespaced) {
+                return '\App\Models\Limit\DynamicLimit';
+            } else {
+                return 'DynamicLimit';
+            }
+            break;
+
+        case 'itemcategory': case 'itemcategoryrarity':
+            if ($namespaced) {
+                return '\App\Models\Item\ItemCategory';
+            } else {
+                return 'ItemCategory';
             }
             break;
     }
@@ -285,6 +301,45 @@ function parseAssetData($array, $isCharacter = false) {
 }
 
 /**
+ * Processes the associated Rewards objects into an asset array.
+ *
+ * @param Illuminate\Database\Eloquent\Collection $rewards
+ * @param bool                                    $isCharacter
+ *
+ * @return array
+ */
+function processRewards($rewards, $isCharacter = false) {
+    $assets = createAssetsArray($isCharacter);
+    foreach ($rewards as $reward) {
+        addAsset($assets, $reward->reward, $reward->quantity);
+    }
+
+    return $assets;
+}
+
+/**
+ * Creates an asset array directly from dataReadyAssets, without needing to parse it first.
+ *
+ * @param array $array
+ * @param mixed $isCharacter
+ *
+ * @return array
+ */
+function createAssetsFromData($array, $isCharacter = false) {
+    $assets = createAssetsArray($isCharacter);
+    foreach ($array as $key => $contents) {
+        $model = getAssetModelString($key);
+        if ($model) {
+            foreach ($contents as $id => $quantity) {
+                addAsset($assets, $model::find($id), $quantity['quantity'] ?? $quantity);
+            }
+        }
+    }
+
+    return $assets;
+}
+
+/**
  * Returns if two asset arrays are identical.
  *
  * @param array $first
@@ -329,14 +384,20 @@ function compareAssetArrays($first, $second, $isCharacter = false, $absQuantitie
  * @param App\Models\User\User $recipient
  * @param string               $logType
  * @param string               $data
+ * @param mixed                $lootRolls
  *
  * @return array
  */
-function fillUserAssets($assets, $sender, $recipient, $logType, $data) {
+function fillUserAssets($assets, $sender, $recipient, $logType, $data, &$lootRolls = []) {
     // Roll on any loot tables
     if (isset($assets['loot_tables'])) {
         foreach ($assets['loot_tables'] as $table) {
-            $assets = mergeAssetsArrays($assets, $table['asset']->roll($table['quantity']));
+            $lootRoll = $table['asset']->roll($table['quantity']);
+            $lootRolls[$recipient->id][] = [
+                'table'   => $table['asset']->id,
+                'results' => $lootRoll,
+            ];
+            $assets = mergeAssetsArrays($assets, $lootRoll);
         }
         unset($assets['loot_tables']);
     }
@@ -389,7 +450,7 @@ function fillUserAssets($assets, $sender, $recipient, $logType, $data) {
         } elseif ($key == 'characters' && count($contents)) {
             $service = new App\Services\CharacterManager;
             foreach ($contents as $asset) {
-                if (!$service->moveCharacter($asset['asset'], $recipient, $data, $asset['quantity'], $logType)) {
+                if (!$service->moveCharacter($asset['asset'], $recipient, $data['data'] ?? $data, $asset['quantity'], $logType)) {
                     foreach ($service->errors()->getMessages()['error'] as $error) {
                         flash($error)->error();
                     }
@@ -516,10 +577,11 @@ function canTradeAsset($type, $asset) {
  * @param string                         $logType
  * @param string                         $data
  * @param mixed|null                     $submitter
+ * @param mixed                          $lootRolls
  *
  * @return array
  */
-function fillCharacterAssets($assets, $sender, $recipient, $logType, $data, $submitter = null) {
+function fillCharacterAssets($assets, $sender, $recipient, $logType, $data, $submitter = null, &$lootRolls = []) {
     if (!config('lorekeeper.extensions.character_reward_expansion.default_recipient') && $recipient->user) {
         $item_recipient = $recipient->user;
     } else {
@@ -529,7 +591,12 @@ function fillCharacterAssets($assets, $sender, $recipient, $logType, $data, $sub
     // Roll on any loot tables
     if (isset($assets['loot_tables'])) {
         foreach ($assets['loot_tables'] as $table) {
-            $assets = mergeAssetsArrays($assets, $table['asset']->roll($table['quantity']));
+            $lootRoll = $table['asset']->roll($table['quantity']);
+            $lootRolls[$recipient->id][] = [
+                'table'   => $table['asset']->id,
+                'results' => $lootRoll,
+            ];
+            $assets = mergeAssetsArrays($assets, $lootRoll);
         }
         unset($assets['loot_tables']);
     }
@@ -606,7 +673,8 @@ function getRewardTypes($showData, $recipient) {
     if ($recipient == 'User') {
         return ['Item' => 'Item', 'Currency' => 'Currency'] +
             ($showData['showLootTables'] ? ['LootTable' => 'Loot Table'] : []) +
-            ($showData['showRaffles'] ? ['Raffle' => 'Raffle Ticket'] : []);
+            ($showData['showRaffles'] ? ['Raffle' => 'Raffle Ticket'] : []) +
+            ($showData['showCharacters'] ? ['Character' => 'Character'] : []);
     } elseif ($recipient == 'Character') {
         return ['Item' => 'Item', 'Currency' => 'Currency'] +
             ($showData['showLootTables'] ? ['LootTable' => 'Loot Table'] : []);
@@ -673,6 +741,9 @@ function getRewardLootData($showData, $recipient = 'User', $useCustomSelectize =
             case 'Raffle':
                 $query = App\Models\Raffle\Raffle::where('rolled_at', null)->where('is_active', 1)->orderBy('name');
                 break;
+            case 'Character':
+                $query = App\Models\Character\Character::myo(0)->orderBy('slug');
+                break;
                 // Add the query builder for your other assets here, set with the matching key in getRewardTypes
                 // If your asset type does not have a model, you may need to add special handling here.
                 //
@@ -683,16 +754,31 @@ function getRewardLootData($showData, $recipient = 'User', $useCustomSelectize =
 
         // If your asset type does not have a model with an id and name value, then you may need to add special handling here.
         if ($useCustomSelectize) {
-            $data = $query->get()->mapWithKeys(function ($item) {
-                return [
-                    $item->id => json_encode([
-                        'name'      => $item->name,
-                        'image_url' => $item->imageUrl ?? null,
-                    ]),
-                ];
-            });
+            if ($rewardKey == 'Character') {
+                $data = $query->get()->mapWithKeys(function ($item) {
+                    return [
+                        $item->id => [
+                            'name'      => $item->fullName,
+                            'image_url' => $item->imageUrl ?? null,
+                        ],
+                    ];
+                })->toArray();
+            } else {
+                $data = $query->get()->mapWithKeys(function ($item) {
+                    return [
+                        $item->id => [
+                            'name'      => $item->name,
+                            'image_url' => $item->imageUrl ?? null,
+                        ],
+                    ];
+                })->toArray();
+            }
         } else {
-            $data = $query->pluck('name', 'id')->toArray();
+            if ($rewardKey == 'Character') {
+                $data = $query->get()->pluck('fullName', 'id')->toArray();
+            } else {
+                $data = $query->pluck('name', 'id')->toArray();
+            }
         }
 
         // Finally, add the data to the array.

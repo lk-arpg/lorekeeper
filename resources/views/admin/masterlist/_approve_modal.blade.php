@@ -9,6 +9,6 @@
     {!! Form::text('cooldown', $cooldown, ['class' => 'form-control']) !!}
 </div>
 <div class="text-right">
-    {!! Form::submit('Approve', ['class' => 'btn btn-success', 'name' => 'action']) !!}
+    {!! Form::submit('Approve', ['class' => 'btn btn-success', 'name' => 'action', 'value' => 'approve']) !!}
 </div>
 {!! Form::close() !!}

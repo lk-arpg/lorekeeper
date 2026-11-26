@@ -7,7 +7,6 @@
 
 </h1>
 
-
 <div class="card mb-3" style="clear:both;">
     <div class="card-body">
         <div class="row mb-2 no-gutters">
@@ -81,6 +80,19 @@
     <div class="card mb-3">
         <div class="card-header h2">Rewards</div>
         <div class="card-body">
+            @if (isset($submission->data['loot_rolls']['user']) && array_filter($submission->data['loot_rolls']['user']))
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h4>Loot Rolls</h4>
+                        @foreach ($submission->data['loot_rolls']['user'] as $rolls)
+                            <div>
+                                Rolled on {!! \App\Models\Loot\LootTable::find($rolls['table'])->displayName !!} and received:
+                                {!! createRewardsString(createAssetsFromData($rolls['results']), true) !!}
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
             <table class="table table-sm">
                 <thead class="thead-light">
                     <tr>
@@ -121,6 +133,19 @@
                         <div class="submission-character-info-content">
                             <h3 class="mb-2 submission-character-info-header"><a href="{{ $character->character->url }}">{{ $character->character->fullName }}</a></h3>
                             <div class="submission-character-info-body">
+                                @if (isset($submission->data['loot_rolls']['characters'][$character->character->id]))
+                                    <div class="card mb-3">
+                                        <div class="card-body">
+                                            <h5>Loot Rolls</h5>
+                                            @foreach ($submission->data['loot_rolls']['characters'][$character->character->id] as $rolls)
+                                                <div>
+                                                    Rolled on {!! \App\Models\Loot\LootTable::find($rolls['table'])->displayName !!} and received:
+                                                    {!! createRewardsString(createAssetsFromData($rolls['results']), true) !!}
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endif
                                 @if (array_filter(parseAssetData($character->data)))
                                     <table class="table table-sm mb-0">
                                         <thead class="thead-light">
@@ -133,7 +158,7 @@
                                             @foreach (parseAssetData($character->data) as $key => $type)
                                                 @foreach ($type as $asset)
                                                     <tr>
-                                                        <td>{!! $asset['asset']->displayName !!} ({!! ucfirst($key) !!})</td>
+                                                        <td>{!! $asset['asset']->displayName !!} ({!! ucwords(str_replace('_', ' ', $key)) !!})</td>
                                                         <td>{{ $asset['quantity'] }}</td>
                                                     </tr>
                                                 @endforeach

@@ -60,8 +60,8 @@ class CharacterDesignUpdate extends Model {
      * @var array
      */
     public static $imageRules = [
-        'image'          => 'nullable|mimes:jpeg,gif,png',
-        'thumbnail'      => 'nullable|mimes:jpeg,gif,png',
+        'image'          => 'nullable|mimes:jpeg,jpg,gif,png,webp|max:2048',
+        'thumbnail'      => 'nullable|mimes:jpeg,jpg,gif,png,webp|max:2048',
         'artist_url.*'   => 'nullable|url',
         'designer_url.*' => 'nullable|url',
     ];

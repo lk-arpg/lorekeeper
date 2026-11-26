@@ -8,15 +8,33 @@
     @endif
     <div class="{{ $feature->has_image ? 'col-md-9' : 'col-12' }}">
         <x-admin-edit title="Trait" :object="$feature" />
-        <h3>
-            @if (!$feature->is_visible)
-                <i class="fas fa-eye-slash mr-1"></i>
-            @endif
-            {!! $feature->displayName !!}
-            <a href="{{ $feature->searchUrl }}" class="world-entry-search text-muted">
-                <i class="fas fa-search"></i>
-            </a>
-        </h3>
+        @if (isset($isPage) && $isPage)
+            <h1>
+                @if (!$feature->is_visible)
+                    <i class="fas fa-eye-slash mr-1"></i>
+                @endif
+                {!! $feature->displayName !!}
+                <a href="{{ $feature->url }}" class="world-entry-search text-muted">
+                    <i class="fa-solid fa-filter" data-toggle="tooltip" title="Search in Encyclopedia"></i>
+                </a>
+                <a href="{{ $feature->searchUrl }}" class="world-entry-search text-muted">
+                    <i class="fas fa-search" data-toggle="tooltip" title="Search in Masterlist"></i>
+                </a>
+            </h1>
+        @else
+            <h3>
+                @if (!$feature->is_visible)
+                    <i class="fas fa-eye-slash mr-1"></i>
+                @endif
+                {!! $feature->displayName !!}
+                <a href="{{ $feature->url }}" class="world-entry-search text-muted">
+                    <i class="fa-solid fa-filter" data-toggle="tooltip" title="Search in Encyclopedia"></i>
+                </a>
+                <a href="{{ $feature->searchUrl }}" class="world-entry-search text-muted">
+                    <i class="fas fa-search" data-toggle="tooltip" title="Search in Masterlist"></i>
+                </a>
+            </h3>
+        @endif
         @if ($feature->feature_category_id)
             <div>
                 <strong>Category:</strong> {!! $feature->category->displayName !!}

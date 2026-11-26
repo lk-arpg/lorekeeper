@@ -15,9 +15,11 @@
             toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | spoiler-add spoiler-remove | removeformat | {{ config('lorekeeper.extensions.tinymce_code_editor') ? 'codeeditor' : 'code' }}',
             content_css: [
                 '{{ asset('css/app.css') }}',
-                '{{ asset('css/lorekeeper.css') }}'
+                '{{ asset('css/lorekeeper.css') }}',
+                '{{ faVersion() }}' // fontawesome
             ],
             spoiler_caption: 'Toggle Spoiler',
+            extended_valid_elements: '#i[class],#em[class]', // # <- sets autopadding with &nbsp;
             target_list: false
         });
 @if (!isset($tinymceScript) || $tinymceScript)

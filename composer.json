@@ -1,4 +1,5 @@
 {
+    "$schema": "https://getcomposer.org/schema.json",
     "name": "laravel/laravel",
     "type": "project",
     "description": "The Laravel Framework.",
@@ -45,6 +46,9 @@
         "preferred-install": "dist",
         "sort-packages": true,
         "policy": {
+            "cooldown": {
+                "period": "7 days"
+            },
             "advisories": {
                 "ignore-id": {
                     "PKSA-mdq4-51ck-6kdq": "Hotfixed using custom sanitization middleware.",

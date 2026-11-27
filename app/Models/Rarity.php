@@ -10,6 +10,7 @@ class Rarity extends Model {
      */
     protected $fillable = [
         'name', 'sort', 'color', 'has_image', 'description', 'parsed_description', 'hash',
+        'image_extension',
     ];
 
     /**
@@ -27,7 +28,7 @@ class Rarity extends Model {
         'name'        => 'required|unique:rarities|between:3,100',
         'color'       => 'nullable|regex:/^#?[0-9a-fA-F]{6}$/i',
         'description' => 'nullable',
-        'image'       => 'mimes:png',
+        'image'       => 'mimes:png,gif,jpg,jpeg,webp,apng',
     ];
 
     /**
@@ -39,7 +40,7 @@ class Rarity extends Model {
         'name'        => 'required|between:3,100',
         'color'       => 'nullable|regex:/^#?[0-9a-fA-F]{6}$/i',
         'description' => 'nullable',
-        'image'       => 'mimes:png',
+        'image'       => 'mimes:png,gif,jpg,jpeg,webp,apng',
     ];
 
     /**********************************************************************************************
@@ -72,7 +73,7 @@ class Rarity extends Model {
      * @return string
      */
     public function getRarityImageFileNameAttribute() {
-        return $this->id.'-'.$this->hash.'-image.png';
+        return $this->id.'-'.$this->hash.'-image.'.$this->image_extension;
     }
 
     /**

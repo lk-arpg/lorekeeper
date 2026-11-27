@@ -33,8 +33,9 @@ class RarityService extends Service {
 
             $image = null;
             if (isset($data['image']) && $data['image']) {
-                $data['hash'] = randomString(10);
                 $data['has_image'] = 1;
+                $data['image_extension'] = $data['image']->getClientOriginalExtension();
+                $data['hash'] = randomString(10);
                 $image = $data['image'];
                 unset($data['image']);
             } else {
@@ -83,6 +84,7 @@ class RarityService extends Service {
             $image = null;
             if (isset($data['image']) && $data['image']) {
                 $data['has_image'] = 1;
+                $data['image_extension'] = $data['image']->getClientOriginalExtension();
                 $data['hash'] = randomString(10);
                 $image = $data['image'];
                 unset($data['image']);
